@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 Artix-7 NPU에서 4-lane PE를 start/busy/done 기반 vector dot product controller로 확장하고 vector length, group count, tail mask, pipeline drain, self-checking을 구현하는 자료." name="description">
+<title>SoC 26 · Vector Dot Product Controller</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 26</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 26</p>
+<h1>Vector Dot Product Controller</h1>
+<p class="hero-desc">SoC 25의 4-Lane PE를 실제 명령 기반 연산기로 확장한다. start와 vector_length를 받아 필요한 Group 수를 계산하고, 마지막 Group의 Tail Lane을 Zero Mask한 뒤 PE4 Pipeline을 끝까지 Drain하여 최종 result_valid/done을 발생시킨다.</p>
+<div class="hero-meta"><span class="chip">FSM</span><span class="chip">start / busy / done</span><span class="chip">Vector Length</span><span class="chip">Tail Mask</span><span class="chip">Pipeline Drain</span><span class="chip">READY / VALID</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html" selected>SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc26_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc26">이 장 검증</a></div></div><p class="nav-title">SOC 26 · LEARNING FLOW</p><p class="nav-help">Command → Feed → Drain → Result</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>Datapath에서 연산기로</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Controller Interface</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>start / busy / done</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Vector Length</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Group Count</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>17-bit 중간 계산</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Tail Lane 수</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Tail Zero Mask</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>길이 10 예제</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>FSM 전체 구조</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>IDLE</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>CLEAR</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>FEED</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>DRAIN</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>FINALIZE</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Accepted Group Count</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Completed Group Count</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>왜 Pipeline Latency를 하드코딩하지 않는가</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>READY / VALID 입력</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Source Gap 허용</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Zero Length 정책</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Controller RTL</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Basys3 Demo Source</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Board Top</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Tail Garbage Test</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Python Reference</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Vivado Simulation</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>Vivado Implementation</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>Timing / Resource / Power</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>FSM Synthesis</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>SoC 27 연결</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">35</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">36</span><span>공식 매뉴얼 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 24 MAC</span><span class="arrow">→</span><span class="stage">SoC 25 PE4</span><span class="arrow">→</span><span class="stage"><strong>SoC 26 Vector Controller</strong></span><span class="arrow">→</span><span class="stage">SoC 27 BRAM / Address Generator</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc26/soc26_interface.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC26 vector controller interface · 원본 보기 (새 탭)"><img src="../../images/soc26/soc26_interface.svg" alt="SoC26 vector controller interface"></a><figcaption>명령 Interface와 Vector Stream, Result Interface를 분리한다.<br><a href="../../images/soc26/soc26_interface.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC26 vector controller interface · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Datapath에서 연산기로</h2>
+<p>SoC 25 PE4는 <code>valid_i</code>가 들어오면 4개 Lane을 계산하는 Datapath였다. SoC 26은 “Vector 길이가 몇 개인가?”, “몇 Group을 받아야 하는가?”, “마지막 Lane은 몇 개가 유효한가?”, “언제 계산이 진짜 끝났는가?”를 Controller가 관리한다.</p>
+<div class="flow">Datapath + Control Protocol → 실행 가능한 Vector 연산기</div>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Controller Interface</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Controller Interface · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">Signal</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="방향" role="cell">입력</td><td data-label="Signal" role="cell"><code>start_i</code></td><td data-label="역할" role="cell">새 Vector 연산 시작</td></tr>
+<tr role="row"><td data-label="방향" role="cell">입력</td><td data-label="Signal" role="cell"><code>vector_length_i</code></td><td data-label="역할" role="cell">Scalar Element 개수</td></tr>
+<tr role="row"><td data-label="방향" role="cell">입력</td><td data-label="Signal" role="cell"><code>vec_valid_i</code></td><td data-label="역할" role="cell">4-Lane Group 유효</td></tr>
+<tr role="row"><td data-label="방향" role="cell">출력</td><td data-label="Signal" role="cell"><code>vec_ready_o</code></td><td data-label="역할" role="cell">현재 Group 수락 가능</td></tr>
+<tr role="row"><td data-label="방향" role="cell">출력</td><td data-label="Signal" role="cell"><code>busy_o</code></td><td data-label="역할" role="cell">연산 진행 중</td></tr>
+<tr role="row"><td data-label="방향" role="cell">출력</td><td data-label="Signal" role="cell"><code>done_o</code></td><td data-label="역할" role="cell">연산 완료 Pulse</td></tr>
+<tr role="row"><td data-label="방향" role="cell">출력</td><td data-label="Signal" role="cell"><code>result_valid_o</code></td><td data-label="역할" role="cell">최종 결과 유효 Pulse</td></tr>
+<tr role="row"><td data-label="방향" role="cell">출력</td><td data-label="Signal" role="cell"><code>result_o</code></td><td data-label="역할" role="cell">32-bit 누산 결과</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>start / busy / done</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="04절 신호 및 실행 흐름">IDLE
+ start ↑
+   ↓
+ busy = 1
+   ↓
+ CLEAR → FEED → DRAIN
+   ↓
+ FINALIZE
+   ↓
+ result_valid = 1 pulse
+ done = 1 pulse
+ busy = 0</div>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Vector Length</h2>
+<p><code>vector_length_i</code>는 4-Lane Group 수가 아니라 실제 Scalar Element 수다. 예를 들어 길이 10은 10개의 <code>a[i]×b[i]</code>를 의미한다.</p>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Group Count</h2>
+<div class="flow">groups → ceil(vector_length / 4)</div>
+<p>Hardware 정수 연산에서는 다음처럼 계산한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Group Count · 소스 코드"><code>groups = (vector_length + 3) &gt;&gt; 2;</code></pre>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Group Count · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Length</th><th scope="col" role="columnheader">Group</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Length" role="cell">1~4</td><td data-label="Group" role="cell">1</td></tr><tr role="row"><td data-label="Length" role="cell">5~8</td><td data-label="Group" role="cell">2</td></tr><tr role="row"><td data-label="Length" role="cell">9~12</td><td data-label="Group" role="cell">3</td></tr><tr role="row"><td data-label="Length" role="cell">16</td><td data-label="Group" role="cell">4</td></tr><tr role="row"><td data-label="Length" role="cell">17</td><td data-label="Group" role="cell">5</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>17-bit 중간 계산</h2>
+<p><code>vector_length_i</code>가 16-bit이면 최대 65535다. <code>65535 + 3</code>은 16-bit를 넘을 수 있으므로 먼저 17-bit로 확장한 뒤 Shift한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="17-bit 중간 계산 · 소스 코드"><code>length_plus3_w =
+    {1'b0, vector_length_i} + 17'd3;
+
+groups_from_length_w =
+    length_plus3_w[16:2];</code></pre>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Tail Lane 수</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Tail Lane 수 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Length mod 4</th><th scope="col" role="columnheader">마지막 Group 유효 Lane</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Length mod 4" role="cell">1</td><td data-label="마지막 Group 유효 Lane" role="cell">1개</td></tr><tr role="row"><td data-label="Length mod 4" role="cell">2</td><td data-label="마지막 Group 유효 Lane" role="cell">2개</td></tr><tr role="row"><td data-label="Length mod 4" role="cell">3</td><td data-label="마지막 Group 유효 Lane" role="cell">3개</td></tr><tr role="row"><td data-label="Length mod 4" role="cell">0</td><td data-label="마지막 Group 유효 Lane" role="cell">4개</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Tail Zero Mask</h2>
+<figure class="manual-figure"><a href="../../images/soc26/soc26_tail_mask.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Tail lane masking for vector length 10 · 원본 보기 (새 탭)"><img src="../../images/soc26/soc26_tail_mask.svg" alt="Tail lane masking for vector length 10"></a><figcaption>마지막 Group의 Vector 범위 밖 Lane을 0으로 바꾸어 계산에서 제거한다.<br><a href="../../images/soc26/soc26_tail_mask.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Tail lane masking for vector length 10 · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>A와 B 양쪽을 모두 0으로 Mask하므로 해당 Lane의 Product는 0이 된다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>길이 10 예제</h2>
+<div class="flow">Length 10 → ceil(10/4) → 3 Group → 마지막 Group 유효 Lane 2개</div>
+<p>Board Demo에서는 raw A를 1~10, raw B를 1로 두어 최종 Raw Result가 55가 된다. LED 하위 16-bit 예상값은 <code>0x0037</code>이다.</p>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>FSM 전체 구조</h2>
+<figure class="manual-figure"><a href="../../images/soc26/soc26_controller_fsm.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Vector controller finite state machine · 원본 보기 (새 탭)"><img src="../../images/soc26/soc26_controller_fsm.svg" alt="Vector controller finite state machine"></a><figcaption>IDLE → CLEAR → FEED → DRAIN → FINALIZE 구조로 역할을 분리한다.<br><a href="../../images/soc26/soc26_controller_fsm.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Vector controller finite state machine · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>IDLE</h2>
+<p><code>start_i</code>를 기다린다. Length가 0이면 결과 0을 즉시 반환하고, 0보다 크면 Group 수와 Tail Lane 수를 저장한 뒤 CLEAR로 이동한다.</p>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>CLEAR</h2>
+<p>PE4 내부 Product/Adder Pipeline과 Accumulator를 한 Clock 상태 동안 Clear한다. Start와 첫 Vector 입력을 같은 Clock에 처리하지 않아 첫 Group이 Clear에 의해 사라지는 문제를 방지한다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>FEED</h2>
+<p><code>vec_ready_o=1</code>로 Source Group을 수락한다. 실제 Group 수락 기준은 다음 하나뿐이다.</p>
+<div class="flow">accept → vec_valid_i &amp;&amp; vec_ready_o</div>
+<p>마지막 Group이 수락되면 더 이상 입력을 받지 않고 DRAIN으로 이동한다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>DRAIN</h2>
+<figure class="manual-figure"><a href="../../images/soc26/soc26_pipeline_drain.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Pipeline drain after input feed · 원본 보기 (새 탭)"><img src="../../images/soc26/soc26_pipeline_drain.svg" alt="Pipeline drain after input feed"></a><figcaption>Input 전송 종료와 계산 완료는 같은 시점이 아니다.<br><a href="../../images/soc26/soc26_pipeline_drain.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Pipeline drain after input feed · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>PE4 Pipeline에 남아 있는 Group의 <code>pe_valid_o</code>가 모두 나올 때까지 기다린다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>FINALIZE</h2>
+<p>마지막 PE Completion 이후 최종 Accumulator를 <code>result_o</code>에 Capture하고 <code>done_o</code>, <code>result_valid_o</code>를 한 Clock Pulse로 발생시킨다.</p>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Accepted Group Count</h2>
+<p><code>accepted_groups_o</code>는 Input Handshake가 실제 발생할 때만 증가한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Accepted Group Count · 소스 코드"><code>if (vec_valid_i &amp;&amp; vec_ready_o)
+    accepted_groups_o &lt;=
+        accepted_groups_o + 1;</code></pre>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Completed Group Count</h2>
+<p><code>completed_groups_o</code>는 PE4의 실제 <code>pe_valid_o</code>를 기준으로 증가한다.</p>
+<div class="flow">Accepted Count → Input Side 진행도<br>Completed Count → Datapath Output Side 진행도</div>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>왜 Pipeline Latency를 하드코딩하지 않는가</h2>
+<p>Controller가 “PE는 정확히 4 Clock 뒤에 끝난다”는 숫자에 의존하면 PE Pipeline Stage를 변경할 때 Controller도 수정해야 한다.</p>
+<div class="flow">권장 구조 → 실제 pe_valid_o를 Completion Event로 사용</div>
+<p>따라서 이후 Timing 개선으로 PE 내부 Stage 수가 바뀌어도 Interface Protocol을 유지하기 쉽다.</p>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>READY / VALID 입력</h2>
+<p>Source는 <code>vec_valid_i</code>로 현재 Group이 유효함을 알리고 Controller는 <code>vec_ready_o</code>로 FEED 상태임을 알린다. 둘이 동시에 1인 Rising Edge에서만 Group이 소비된다.</p>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Source Gap 허용</h2>
+<p>Vector Group은 반드시 연속 Clock으로 들어올 필요가 없다. Testbench는 홀수 Group 전에 일부러 <code>vec_valid_i=0</code> Gap을 넣어 Controller가 Input Stall을 정상적으로 처리하는지 확인한다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Zero Length 정책</h2>
+<p>길이 0의 의미를 애매하게 두지 않고 명시적으로 정의했다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="22절 신호 및 실행 흐름">vector_length = 0
+→ group = 0
+→ result = 0
+→ busy = 0
+→ done = 1 cycle
+→ result_valid = 1 cycle</div>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Controller RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Controller RTL · 소스 코드"><code>module vector_dot_controller_pe4 (
+    input  wire               clk,
+    input  wire               resetn,
+
+    input  wire               start_i,
+    input  wire [15:0]        vector_length_i,
+
+    input  wire               vec_valid_i,
+    output wire               vec_ready_o,
+    input  wire [31:0]        a_vec_i,
+    input  wire [31:0]        b_vec_i,
+
+    output wire               busy_o,
+    output reg                done_o,
+    output reg                result_valid_o,
+    output reg signed [31:0]  result_o,
+
+    output reg  [15:0]        accepted_groups_o,
+    output reg  [15:0]        completed_groups_o
+);
+
+// Controller policy:
+// - 4 signed 8-bit lanes per accepted input group
+// - vector_length_i is the number of scalar elements, not the number of groups
+// - ceil(vector_length / 4) groups are consumed
+// - unused tail lanes are forced to zero
+// - the PE pipeline latency is NOT hard-coded
+// - completion is counted from pe_valid_o
+//
+// State flow:
+// IDLE -&gt; CLEAR -&gt; FEED -&gt; DRAIN -&gt; FINALIZE -&gt; IDLE
+
+localparam [2:0] ST_IDLE     = 3'd0;
+localparam [2:0] ST_CLEAR    = 3'd1;
+localparam [2:0] ST_FEED     = 3'd2;
+localparam [2:0] ST_DRAIN    = 3'd3;
+localparam [2:0] ST_FINALIZE = 3'd4;
+
+reg [2:0] state_q;
+
+reg [15:0] total_groups_q;
+reg [2:0]  tail_lanes_q;
+
+wire [16:0] length_plus3_w;
+wire [15:0] groups_from_length_w;
+
+assign length_plus3_w =
+    {1'b0, vector_length_i} + 17'd3;
+
+assign groups_from_length_w =
+    length_plus3_w[16:2];
+
+// Remainder 0 means the final group uses all four lanes.
+wire [2:0] tail_from_length_w;
+
+assign tail_from_length_w =
+    (vector_length_i[1:0] == 2'd0)
+    ? 3'd4
+    : {1'b0, vector_length_i[1:0]};
+
+assign busy_o =
+    (state_q != ST_IDLE);
+
+assign vec_ready_o =
+    (state_q == ST_FEED);
+
+// The current FEED transfer is the final input group when the accepted
+// group counter points to total_groups_q - 1.
+wire current_group_is_last_w;
+
+assign current_group_is_last_w =
+    (state_q == ST_FEED) &amp;&amp;
+    (total_groups_q != 16'd0) &amp;&amp;
+    (accepted_groups_o == (total_groups_q - 16'd1));
+
+function [31:0] mask_tail_lanes;
+    input [31:0] vec;
+    input [2:0]  valid_lanes;
+
+    begin
+        case (valid_lanes)
+            3'd1: mask_tail_lanes = {
+                24'h000000,
+                vec[7:0]
+            };
+
+            3'd2: mask_tail_lanes = {
+                16'h0000,
+                vec[15:0]
+            };
+
+            3'd3: mask_tail_lanes = {
+                8'h00,
+                vec[23:0]
+            };
+
+            default: mask_tail_lanes = vec;
+        endcase
+    end
+endfunction
+
+wire [31:0] masked_a_vec_w;
+wire [31:0] masked_b_vec_w;
+
+assign masked_a_vec_w =
+    current_group_is_last_w
+    ? mask_tail_lanes(a_vec_i, tail_lanes_q)
+    : a_vec_i;
+
+assign masked_b_vec_w =
+    current_group_is_last_w
+    ? mask_tail_lanes(b_vec_i, tail_lanes_q)
+    : b_vec_i;
+
+wire pe_valid_i;
+wire pe_clear_i;
+
+assign pe_valid_i =
+    vec_valid_i &amp;&amp;
+    vec_ready_o;
+
+assign pe_clear_i =
+    (state_q == ST_CLEAR);
+
+wire signed [31:0] pe_acc_w;
+wire               pe_valid_o;
+
+pe4_dot_accum_pipelined u_pe4 (
+    .clk(clk),
+    .resetn(resetn),
+    .clear_i(pe_clear_i),
+    .valid_i(pe_valid_i),
+
+    .a_vec_i(masked_a_vec_w),
+    .b_vec_i(masked_b_vec_w),
+
+    .acc_o(pe_acc_w),
+    .valid_o(pe_valid_o)
+);
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q             &lt;= ST_IDLE;
+        total_groups_q      &lt;= 16'd0;
+        tail_lanes_q        &lt;= 3'd4;
+
+        done_o              &lt;= 1'b0;
+        result_valid_o      &lt;= 1'b0;
+        result_o            &lt;= 32'sd0;
+
+        accepted_groups_o   &lt;= 16'd0;
+        completed_groups_o  &lt;= 16'd0;
+    end else begin
+        // One-cycle output pulses by default.
+        done_o         &lt;= 1'b0;
+        result_valid_o &lt;= 1'b0;
+
+        // Count actual PE completions independently of input feeding.
+        if (
+            pe_valid_o &amp;&amp;
+            ((state_q == ST_FEED) || (state_q == ST_DRAIN))
+        ) begin
+            completed_groups_o &lt;=
+                completed_groups_o + 16'd1;
+        end
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    result_o           &lt;= 32'sd0;
+                    accepted_groups_o  &lt;= 16'd0;
+                    completed_groups_o &lt;= 16'd0;
+
+                    if (vector_length_i == 16'd0) begin
+                        // Defined zero-length behavior:
+                        // result = 0, immediate one-cycle completion pulse.
+                        total_groups_q &lt;= 16'd0;
+                        tail_lanes_q   &lt;= 3'd4;
+
+                        result_o       &lt;= 32'sd0;
+                        done_o         &lt;= 1'b1;
+                        result_valid_o &lt;= 1'b1;
+                    end else begin
+                        total_groups_q &lt;= groups_from_length_w;
+                        tail_lanes_q   &lt;= tail_from_length_w;
+
+                        state_q &lt;= ST_CLEAR;
+                    end
+                end
+            end
+
+            ST_CLEAR: begin
+                // pe_clear_i is asserted for this full clock state.
+                // Move to FEED only after the PE has observed the clear.
+                state_q &lt;= ST_FEED;
+            end
+
+            ST_FEED: begin
+                if (pe_valid_i) begin
+                    accepted_groups_o &lt;=
+                        accepted_groups_o + 16'd1;
+
+                    if (current_group_is_last_w) begin
+                        state_q &lt;= ST_DRAIN;
+                    end
+                end
+            end
+
+            ST_DRAIN: begin
+                // Count the final registered PE completion first.
+                // FINALIZE isolates the final result capture and done pulse
+                // from the pipeline-drain bookkeeping, without hard-coding
+                // the PE latency.
+                if (
+                    pe_valid_o &amp;&amp;
+                    (completed_groups_o == (total_groups_q - 16'd1))
+                ) begin
+                    state_q &lt;= ST_FINALIZE;
+                end
+            end
+
+            ST_FINALIZE: begin
+                result_o       &lt;= pe_acc_w;
+                done_o         &lt;= 1'b1;
+                result_valid_o &lt;= 1'b1;
+
+                state_q &lt;= ST_IDLE;
+            end
+
+            default: begin
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Basys3 Demo Source</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 Demo Source · 소스 코드"><code>module vector_demo_source_len10 (
+    input  wire        clk,
+    input  wire        resetn,
+
+    output reg         start_o,
+    output wire [15:0] vector_length_o,
+
+    output reg         vec_valid_o,
+    input  wire        vec_ready_i,
+    output reg  [31:0] a_vec_o,
+    output reg  [31:0] b_vec_o,
+
+    input  wire        done_i
+);
+
+// One-shot demonstration:
+// vector length = 10 scalar elements
+// group count   = ceil(10 / 4) = 3
+//
+// The final group intentionally places non-zero garbage in lanes 2/3.
+// The controller must zero-mask those two tail lanes.
+
+localparam [2:0] S_START = 3'd0;
+localparam [2:0] S_WAIT  = 3'd1;
+localparam [2:0] S_SEND0 = 3'd2;
+localparam [2:0] S_SEND1 = 3'd3;
+localparam [2:0] S_SEND2 = 3'd4;
+localparam [2:0] S_DONE  = 3'd5;
+
+reg [2:0] state_q;
+
+assign vector_length_o = 16'd10;
+
+always @(*) begin
+    start_o     = 1'b0;
+    vec_valid_o = 1'b0;
+    a_vec_o     = 32'h0000_0000;
+    b_vec_o     = 32'h0000_0000;
+
+    case (state_q)
+        S_START: begin
+            start_o = 1'b1;
+        end
+
+        S_SEND0: begin
+            vec_valid_o = 1'b1;
+
+            // Lane order in each 32-bit word:
+            // {lane3, lane2, lane1, lane0}
+            a_vec_o = {
+                8'd4,
+                8'd3,
+                8'd2,
+                8'd1
+            };
+
+            b_vec_o = {
+                8'd1,
+                8'd1,
+                8'd1,
+                8'd1
+            };
+        end
+
+        S_SEND1: begin
+            vec_valid_o = 1'b1;
+
+            a_vec_o = {
+                8'd8,
+                8'd7,
+                8'd6,
+                8'd5
+            };
+
+            b_vec_o = {
+                8'd1,
+                8'd1,
+                8'd1,
+                8'd1
+            };
+        end
+
+        S_SEND2: begin
+            vec_valid_o = 1'b1;
+
+            // Only lane0/lane1 belong to vector length 10.
+            // lane2/lane3 are intentional garbage.
+            a_vec_o = {
+                8'h7F,
+                8'h7F,
+                8'd10,
+                8'd9
+            };
+
+            b_vec_o = {
+                8'h7F,
+                8'h7F,
+                8'd1,
+                8'd1
+            };
+        end
+
+        default: begin
+        end
+    endcase
+end
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q &lt;= S_START;
+    end else begin
+        case (state_q)
+            S_START: begin
+                state_q &lt;= S_WAIT;
+            end
+
+            S_WAIT: begin
+                if (vec_ready_i) begin
+                    state_q &lt;= S_SEND0;
+                end
+            end
+
+            S_SEND0: begin
+                if (vec_ready_i) begin
+                    state_q &lt;= S_SEND1;
+                end
+            end
+
+            S_SEND1: begin
+                if (vec_ready_i) begin
+                    state_q &lt;= S_SEND2;
+                end
+            end
+
+            S_SEND2: begin
+                if (vec_ready_i) begin
+                    state_q &lt;= S_DONE;
+                end
+            end
+
+            S_DONE: begin
+                // Hold until controller reports completion.
+                if (done_i) begin
+                    state_q &lt;= S_DONE;
+                end
+            end
+
+            default: begin
+                state_q &lt;= S_START;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+<p>Length 10의 마지막 Group에 일부러 Garbage Lane을 넣어 Zero Mask가 없으면 LED 결과가 55가 되지 않도록 구성했다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Board Top</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Board Top · 소스 코드"><code>module vector_dot_controller_basys3_top (
+    input  wire        clk,
+    input  wire        btnC,
+    output wire [15:0] led_o
+);
+
+// Pure board Shell / Wrapper.
+
+wire resetn;
+
+wire        start;
+wire [15:0] vector_length;
+
+wire        vec_valid;
+wire        vec_ready;
+wire [31:0] a_vec;
+wire [31:0] b_vec;
+
+wire        busy;
+wire        done;
+wire        result_valid;
+wire signed [31:0] result;
+
+wire [15:0] accepted_groups;
+wire [15:0] completed_groups;
+
+reset_active_high_to_active_low u_reset_adapter (
+    .reset_i(btnC),
+    .resetn_o(resetn)
+);
+
+vector_demo_source_len10 u_demo_source (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_o(start),
+    .vector_length_o(vector_length),
+
+    .vec_valid_o(vec_valid),
+    .vec_ready_i(vec_ready),
+    .a_vec_o(a_vec),
+    .b_vec_o(b_vec),
+
+    .done_i(done)
+);
+
+vector_dot_controller_pe4 u_controller (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start),
+    .vector_length_i(vector_length),
+
+    .vec_valid_i(vec_valid),
+    .vec_ready_o(vec_ready),
+    .a_vec_i(a_vec),
+    .b_vec_i(b_vec),
+
+    .busy_o(busy),
+    .done_o(done),
+    .result_valid_o(result_valid),
+    .result_o(result),
+
+    .accepted_groups_o(accepted_groups),
+    .completed_groups_o(completed_groups)
+);
+
+vector_result_sink u_result_sink (
+    .clk(clk),
+    .resetn(resetn),
+
+    .result_i(result),
+    .result_valid_i(result_valid),
+
+    .led_o(led_o)
+);
+
+endmodule
+</code></pre>
+<p>Top은 Reset Adapter, Demo Source, Controller, Result Sink 연결만 수행한다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Self-Checking Testbench</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_vector_dot_controller_pe4;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic        start_i = 1'b0;
+logic [15:0] vector_length_i = 16'd0;
+
+logic        vec_valid_i = 1'b0;
+wire         vec_ready_o;
+logic [31:0] a_vec_i = 32'h0;
+logic [31:0] b_vec_i = 32'h0;
+
+wire         busy_o;
+wire         done_o;
+wire         result_valid_o;
+wire signed [31:0] result_o;
+
+wire [15:0] accepted_groups_o;
+wire [15:0] completed_groups_o;
+
+int error_count = 0;
+int check_count = 0;
+
+always #5 clk = ~clk;
+
+vector_dot_controller_pe4 dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_i),
+    .vector_length_i(vector_length_i),
+
+    .vec_valid_i(vec_valid_i),
+    .vec_ready_o(vec_ready_o),
+    .a_vec_i(a_vec_i),
+    .b_vec_i(b_vec_i),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .result_valid_o(result_valid_o),
+    .result_o(result_o),
+
+    .accepted_groups_o(accepted_groups_o),
+    .completed_groups_o(completed_groups_o)
+);
+
+function automatic integer ceil_div4(
+    input integer n
+);
+    ceil_div4 = (n + 3) / 4;
+endfunction
+
+function automatic integer signed gen_a(
+    input integer scalar_index
+);
+    integer temp;
+
+    begin
+        // Deterministic signed 8-bit pattern.
+        temp = ((scalar_index * 29) + 17) &amp; 8'hFF;
+
+        if (temp &gt;= 128) begin
+            temp = temp - 256;
+        end
+
+        gen_a = temp;
+    end
+endfunction
+
+function automatic integer signed gen_b(
+    input integer scalar_index
+);
+    integer temp;
+
+    begin
+        temp = ((scalar_index * 47) + 91) &amp; 8'hFF;
+
+        if (temp &gt;= 128) begin
+            temp = temp - 256;
+        end
+
+        gen_b = temp;
+    end
+endfunction
+
+function automatic [31:0] pack4(
+    input integer x0,
+    input integer x1,
+    input integer x2,
+    input integer x3
+);
+    begin
+        pack4 = {
+            x3[7:0],
+            x2[7:0],
+            x1[7:0],
+            x0[7:0]
+        };
+    end
+endfunction
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count++;
+
+        if (!condition) begin
+            error_count++;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic signed [31:0] actual,
+    input logic signed [31:0] expected
+);
+    begin
+        check_count++;
+
+        if (actual !== expected) begin
+            error_count++;
+            $error(
+                "CHECK FAIL: %s actual=%0d expected=%0d",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = %0d",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic pulse_start(
+    input integer length
+);
+    begin
+        @(negedge clk);
+        vector_length_i = length[15:0];
+        start_i = 1'b1;
+
+        @(negedge clk);
+        start_i = 1'b0;
+    end
+endtask
+
+task automatic drive_group(
+    input integer group_index,
+    input integer length,
+    inout integer signed expected_acc
+);
+    integer lane;
+    integer scalar_index;
+
+    integer signed a0;
+    integer signed a1;
+    integer signed a2;
+    integer signed a3;
+
+    integer signed b0;
+    integer signed b1;
+    integer signed b2;
+    integer signed b3;
+
+    integer signed lane_a;
+    integer signed lane_b;
+
+    begin
+        // Deliberately insert a one-cycle source gap before odd groups.
+        if ((group_index &amp; 1) != 0) begin
+            @(negedge clk);
+            vec_valid_i = 1'b0;
+            a_vec_i = 32'h0;
+            b_vec_i = 32'h0;
+        end
+
+        while (vec_ready_o !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        a0 = 127;
+        a1 = 127;
+        a2 = 127;
+        a3 = 127;
+
+        b0 = -128;
+        b1 = -128;
+        b2 = -128;
+        b3 = -128;
+
+        // Values beyond vector_length are intentional garbage.
+        // The DUT tail-mask must remove them.
+        for (lane = 0; lane &lt; 4; lane++) begin
+            scalar_index = (group_index * 4) + lane;
+
+            if (scalar_index &lt; length) begin
+                lane_a = gen_a(scalar_index);
+                lane_b = gen_b(scalar_index);
+
+                expected_acc =
+                    expected_acc +
+                    (lane_a * lane_b);
+
+                case (lane)
+                    0: begin a0 = lane_a; b0 = lane_b; end
+                    1: begin a1 = lane_a; b1 = lane_b; end
+                    2: begin a2 = lane_a; b2 = lane_b; end
+                    3: begin a3 = lane_a; b3 = lane_b; end
+                endcase
+            end
+        end
+
+        @(negedge clk);
+
+        while (vec_ready_o !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        a_vec_i = pack4(a0, a1, a2, a3);
+        b_vec_i = pack4(b0, b1, b2, b3);
+        vec_valid_i = 1'b1;
+
+        // READY is checked before the sampling edge because the DUT may
+        // deassert READY immediately after the final group is accepted.
+        check_true(
+            "group presented only when ready",
+            vec_ready_o === 1'b1
+        );
+
+        // Handshake occurs on the next rising edge.
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+        vec_valid_i = 1'b0;
+    end
+endtask
+
+task automatic run_case(
+    input integer length
+);
+    integer group_count;
+    integer group_index;
+    integer signed expected_acc;
+    integer timeout;
+
+    begin
+        expected_acc = 0;
+        group_count = ceil_div4(length);
+
+        $display("");
+        $display(
+            "RUN length=%0d groups=%0d",
+            length,
+            group_count
+        );
+
+        pulse_start(length);
+
+        if (length == 0) begin
+            timeout = 0;
+
+            while (
+                (result_valid_o !== 1'b1) &amp;&amp;
+                (timeout &lt; 20)
+            ) begin
+                @(posedge clk);
+                #1;
+                timeout++;
+            end
+
+            check_true(
+                "zero-length result_valid",
+                result_valid_o === 1'b1
+            );
+
+            check_true(
+                "zero-length done",
+                done_o === 1'b1
+            );
+
+            check_eq32(
+                "zero-length result",
+                result_o,
+                32'sd0
+            );
+
+            check_true(
+                "zero-length busy low",
+                busy_o === 1'b0
+            );
+
+            @(posedge clk);
+            #1;
+            return;
+        end
+
+        // Wait for CLEAR state to finish and FEED to begin.
+        while (vec_ready_o !== 1'b1) begin
+            @(posedge clk);
+            #1;
+        end
+
+        check_true(
+            "busy asserted during operation",
+            busy_o === 1'b1
+        );
+
+        for (
+            group_index = 0;
+            group_index &lt; group_count;
+            group_index++
+        ) begin
+            drive_group(
+                group_index,
+                length,
+                expected_acc
+            );
+        end
+
+        // Tail garbage has been sent for partial final groups.
+        // Now wait for the PE pipeline to drain.
+        timeout = 0;
+
+        while (
+            (result_valid_o !== 1'b1) &amp;&amp;
+            (timeout &lt; 100)
+        ) begin
+            @(posedge clk);
+            #1;
+            timeout++;
+        end
+
+        check_true(
+            "result_valid after pipeline drain",
+            result_valid_o === 1'b1
+        );
+
+        check_true(
+            "done with result_valid",
+            done_o === 1'b1
+        );
+
+        check_true(
+            "busy low when done pulses",
+            busy_o === 1'b0
+        );
+
+        check_eq32(
+            "vector dot result",
+            result_o,
+            expected_acc
+        );
+
+        check_true(
+            "accepted group count",
+            accepted_groups_o == group_count
+        );
+
+        check_true(
+            "completed group count",
+            completed_groups_o == group_count
+        );
+
+        @(posedge clk);
+        #1;
+
+        check_true(
+            "result_valid is one-cycle pulse",
+            result_valid_o === 1'b0
+        );
+    end
+endtask
+
+initial begin
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // Zero length is explicitly defined as immediate result 0.
+    run_case(0);
+
+    // Every tail size: 1, 2, 3, and full 4 lanes.
+    run_case(1);
+    run_case(2);
+    run_case(3);
+    run_case(4);
+
+    // Multiple groups + tail cases.
+    run_case(5);
+    run_case(10);
+    run_case(16);
+    run_case(17);
+    run_case(31);
+
+    $display("");
+    $display("SOC26 CHECK COUNT : %0d", check_count);
+    $display("SOC26 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC26 VECTOR CONTROLLER TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC26 VECTOR CONTROLLER TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Tail Garbage Test</h2>
+<p>길이 1,2,3처럼 일부 Lane만 유효한 마지막 Group의 나머지 Lane에는 <code>127</code>과 <code>-128</code> 같은 큰 값을 넣는다. Reference Model은 Vector Length 안의 Scalar만 더하므로 Mask가 빠지면 즉시 Result Mismatch가 발생한다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Python Reference</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Reference · 소스 코드"><code>length,groups,tail,result_raw,last_group_masked_a
+0,0,0,0,[]
+1,1,1,1547,[17, 0, 0, 0]
+2,1,2,-3881,[17, 46, 0, 0]
+3,1,3,-9206,[17, 46, 75, 0]
+4,1,4,-11702,[17, 46, 75, 104]
+5,2,1,-14531,[-123, 0, 0, 0]
+10,3,2,-25045,[-7, 22, 0, 0]
+16,4,4,-19384,[109, -118, -89, -60]
+17,5,1,-21709,[-31, 0, 0, 0]
+31,8,3,-19552,[61, 90, 119, 0]
+
+demo length 10 -&gt; 3 groups, tail lanes = 2
+demo expected raw result = 55 (LED lower 16 bits = 0x0037)
+SOC26 PYTHON CONTROLLER REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
+</code></pre>
+<p>Length 0/1/2/3/4/5/10/16/17/31에 대해 Group 수와 Tail Lane 수를 실제 실행으로 확인했다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Vivado Simulation</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Vivado Simulation · 소스 코드"><code>vivado -mode batch \
+  -source scripts/prepare_soc26_simulation.tcl</code></pre>
+<p>생성된 Project에서 <code>tb_vector_dot_controller_pe4</code>를 Run All하면 자동 PASS/FAIL Testbench를 실행할 수 있다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>Vivado Implementation</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Vivado Implementation · 소스 코드"><code># SoC 26 · Vector Dot Product Controller analysis
+#
+#   vivado -mode batch -source scripts/run_vector_controller_analysis.tcl
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set xdc_dir    [file join $root_dir "constraints"]
+set out_dir    [file normalize [file join $root_dir "reports"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "reset_active_high_to_active_low.v"]
+read_verilog [file join $rtl_dir "mul_s8_dsp.v"]
+read_verilog [file join $rtl_dir "pe4_dot_accum_pipelined.v"]
+read_verilog [file join $rtl_dir "vector_dot_controller_pe4.v"]
+read_verilog [file join $rtl_dir "vector_demo_source_len10.v"]
+read_verilog [file join $rtl_dir "vector_result_sink.v"]
+read_verilog [file join $rtl_dir "vector_dot_controller_basys3_top.v"]
+
+synth_design \
+    -top vector_dot_controller_basys3_top \
+    -part xc7a35tcpg236-1
+
+read_xdc [file join $xdc_dir "basys3_vector_controller_lab.xdc"]
+
+create_clock \
+    -name sys_clk \
+    -period 10.000 \
+    [get_ports clk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_post_synth.rpt"]
+
+redirect -file [file join $out_dir "02_dsp48_cells_post_synth.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 cell count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts $cell
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 10 \
+    -file [file join $out_dir "03_timing_summary_post_synth.rpt"]
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "04_utilization_post_route.rpt"]
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "05_timing_summary_post_route.rpt"]
+
+report_timing \
+    -delay_type max \
+    -max_paths 20 \
+    -nworst 1 \
+    -sort_by group \
+    -input_pins \
+    -file [file join $out_dir "06_worst_setup_paths.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "07_design_analysis_post_route.rpt"]
+
+# Keep the same What-If activity assumption as SoC 23~25.
+set_switching_activity \
+    -default_static_probability 0.5 \
+    -default_toggle_rate 12.5
+
+report_power \
+    -file [file join $out_dir "08_power_normalized_activity.rpt"] \
+    -rpx  [file join $out_dir "08_power_normalized_activity.rpx"]
+
+report_methodology \
+    -file [file join $out_dir "09_methodology_post_route.rpt"]
+
+write_checkpoint -force \
+    [file join $out_dir "soc26_vector_controller_post_route.dcp"]
+
+puts ""
+puts "SoC 26 vector controller analysis complete."
+puts "Reports: $out_dir"
+puts ""
+puts "Board demo expectation:"
+puts "  vector length = 10"
+puts "  raw result = 55"
+puts "  LED[15:0] = 0x0037"
+</code></pre>
+<p>Post-route Timing, Resource, DSP48 Cell, Design Analysis, Power, Methodology Report를 생성한다.</p>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>Timing / Resource / Power</h2>
+<p>Controller가 추가되면서 FSM, Counter, Comparator, Mask Mux가 Resource와 Critical Path에 추가된다. SoC 22/23의 분석 축을 그대로 사용해 PE Datapath만 있을 때와 Controller가 붙었을 때를 비교한다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>FSM Synthesis</h2>
+<p>Vivado 2026.1은 Moore/Mealy FSM을 추론하고 기본적으로 FSM Extraction을 수행한다. Encoding은 Tool의 Auto 선택을 기본으로 유지하며, 실제 Timing/Area 요구가 있을 때만 <code>FSM_ENCODING</code>을 명시적으로 검토한다.</p>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>SoC 27 연결</h2>
+<p>현재 Source가 Vector Group을 외부에서 밀어 넣는다. 다음 단계에서는 PE가 필요한 Data를 Local BRAM에서 읽도록 바꾼다.</p>
+<div class="flow">Controller → Address Generator → Activation BRAM / Weight BRAM → PE4 → Result</div>
+<p>이 단계부터 Compute와 Data Movement가 분리되고 Memory Bandwidth가 실제 NPU Architecture의 핵심 설계축이 된다.</p>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">첫 Group이 사라짐</td><td data-label="원인" role="cell">Clear와 첫 Valid가 같은 Cycle</td><td data-label="확인" role="cell">CLEAR 상태 분리</td></tr>
+<tr role="row"><td data-label="증상" role="cell">마지막 결과가 작음</td><td data-label="원인" role="cell">Pipeline Drain 전에 Done</td><td data-label="확인" role="cell">completed_groups / DRAIN</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Length 5/10/17에서 오답</td><td data-label="원인" role="cell">Tail Mask 오류</td><td data-label="확인" role="cell">마지막 Group Lane Mask</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Length 4/16에서 마지막 Lane 누락</td><td data-label="원인" role="cell">remainder 0을 0 Lane으로 해석</td><td data-label="확인" role="cell">0 → 4 valid lanes</td></tr>
+<tr role="row"><td data-label="증상" role="cell">65535 부근 Group 수 오류</td><td data-label="원인" role="cell">Length+3 Overflow</td><td data-label="확인" role="cell">17-bit 중간 계산</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Source Gap에서 Count 오류</td><td data-label="원인" role="cell">VALID만 세고 READY 미확인</td><td data-label="확인" role="cell">VALID &amp;&amp; READY</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Pipeline 변경 후 Controller 오동작</td><td data-label="원인" role="cell">Latency 숫자 하드코딩</td><td data-label="확인" role="cell">pe_valid_o 기반 완료</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Board 결과가 55가 아님</td><td data-label="원인" role="cell">Tail garbage 미마스킹</td><td data-label="확인" role="cell">LED 0x0037 예상</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 26 완료 체크리스트</h2>
+<ul>
+<li>[ ] start/busy/done/result_valid Protocol을 정의한다.</li>
+<li>[ ] vector_length가 Scalar 수라는 것을 구분한다.</li>
+<li>[ ] <code>(length+3)&gt;&gt;2</code>로 Group 수를 계산한다.</li>
+<li>[ ] 16-bit Length의 +3 계산을 17-bit로 확장한다.</li>
+<li>[ ] Length mod 4로 Tail Lane 수를 계산한다.</li>
+<li>[ ] remainder 0은 4개 Lane 유효로 처리한다.</li>
+<li>[ ] 마지막 Group의 unused A/B Lane을 0으로 Mask한다.</li>
+<li>[ ] CLEAR 상태로 PE 초기화와 첫 입력을 분리한다.</li>
+<li>[ ] FEED와 DRAIN을 분리한다.</li>
+<li>[ ] Accepted Count와 Completed Count를 구분한다.</li>
+<li>[ ] Pipeline Latency 숫자를 Controller에 하드코딩하지 않는다.</li>
+<li>[ ] Length 0의 동작 정책을 명시한다.</li>
+<li>[ ] Tail Garbage Test로 Mask를 검증한다.</li>
+<li>[ ] Board Demo에서 Length 10 → Result 55를 확인한다.</li>
+</ul>
+<div class="flow">SoC 26 완료 → SoC 27 Local BRAM / Address Generator / Data Feeding</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/FSM-Description" target="_blank" rel="noopener">AMD UG901 · FSM Description · 2026.1</a></td><td data-label="확인 항목" role="cell">Vivado의 Moore/Mealy FSM 추론</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/FSM_ENCODING" target="_blank" rel="noopener">AMD UG901 · FSM_ENCODING · 2026.1</a></td><td data-label="확인 항목" role="cell">auto/one_hot/sequential/gray 등 Encoding 선택</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations" target="_blank" rel="noopener">AMD UG949 · Pipelining Considerations · 2026.1</a></td><td data-label="확인 항목" role="cell">Pipeline으로 Logic Path를 분산하며 Latency 관리 필요</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Coding-for-Optimal-DSP-and-Arithmetic-Inference" target="_blank" rel="noopener">AMD UG949 · Optimal DSP Inference · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP Datapath Pipeline 권장</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Using-the-UltraFast-Design-Methodology-DRCs" target="_blank" rel="noopener">AMD UG949 · Methodology DRC · 2026.1</a></td><td data-label="확인 항목" role="cell"><code>report_methodology</code> 단계별 검증</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Baselining-the-Design" target="_blank" rel="noopener">AMD UG949 · Baselining · 2026.1</a></td><td data-label="확인 항목" role="cell">단순하고 유효한 Constraint로 RTL 구조를 조기 검증</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="25_pe_parallel_mac_vector_dot_product.html">← SoC 25</a><a href="../../index.html">전체 목차</a><a href="27_local_bram_address_generator_data_feeding.html">SoC 27 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

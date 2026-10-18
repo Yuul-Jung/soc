@@ -1,0 +1,23 @@
+tensor_bram_data_plane_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   ├── tensor_bram_data_plane_engine.v
+│   └── tensor_bram_data_plane_demo_top.v
+├── testbench/
+│   └── tb_tensor_bram_data_plane.sv
+├── software/
+│   ├── tensor_buffer.h
+│   └── tensor_buffer_demo.c
+├── scripts/
+│   ├── run_soc33_data_plane_ooc.tcl
+│   ├── prepare_soc33_simulation.tcl
+│   └── run_soc33_analysis.sh
+├── reference/
+│   ├── soc33_tensor_bram_reference.py
+│   └── reference_output.txt
+├── doc/
+│   ├── README_SOC33.md
+│   └── VIVADO_TENSOR_BRAM_GUIDE.md
+└── SOURCE_TREE.txt

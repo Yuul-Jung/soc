@@ -1,0 +1,29 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_axi_register_rw_path -o validation-tools/rtl_runs/soc13_tb_axi_register_rw_path.vvp code/soc13/tb_axi_register_rw_path.v code/soc13/axi4lite_slave_adapter.v code/soc13/custom_register_bank.v code/soc13/custom_axi4lite_ip.v
+code/soc13/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc13/tb_axi_register_rw_path.v:1: ...: The inherited timescale is here.
+code/soc13/custom_register_bank.v:1: warning: timescale for custom_register_bank inherited from another file.
+code/soc13/tb_axi_register_rw_path.v:1: ...: The inherited timescale is here.
+code/soc13/custom_axi4lite_ip.v:1: warning: timescale for custom_axi4lite_ip inherited from another file.
+code/soc13/tb_axi_register_rw_path.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+---- WRITE PATH: CONTROL ----
+PASS: CONTROL hardware output = 00000005
+---- READ PATH: CONTROL ----
+PASS: CONTROL readback = 00000005
+---- WRITE/READ PATH: DATA_IN ----
+PASS: DATA_IN hardware output = 12345678
+PASS: DATA_IN readback = 12345678
+---- READ PATH: STATUS ----
+PASS: STATUS read = 00000003
+---- READ PATH: DATA_OUT ----
+PASS: DATA_OUT read = cafe1234
+---- WRITE PATH: COMMAND W1P ----
+PASS: start_pulse_o one clock
+---- W1C PATH: IRQ_STATUS ----
+PASS: IRQ_STATUS set = 00000001
+PASS: IRQ_STATUS cleared = 00000000
+---- FIXED RO REGISTERS ----
+PASS: VERSION = 00010000
+PASS: ID = 524d4150
+SOC13 REGISTER R/W PATH TEST: PASS

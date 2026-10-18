@@ -1,0 +1,402 @@
+[
+  {
+    "chapter": 3,
+    "file": "code/soc03/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 3,
+    "file": "code/soc03/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 4,
+    "file": "code/soc04/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 4,
+    "file": "code/soc04/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 6,
+    "file": "code/soc06/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 6,
+    "file": "code/soc06/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 7,
+    "file": "code/soc07/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 7,
+    "file": "code/soc07/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 8,
+    "file": "code/soc08/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 8,
+    "file": "code/soc08/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 9,
+    "file": "code/soc09/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 9,
+    "file": "code/soc09/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 10,
+    "file": "code/soc10/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 10,
+    "file": "code/soc10/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 13,
+    "file": "code/soc13/custom_regmap_access.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 13,
+    "file": "code/soc13/custom_regmap_access.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 14,
+    "file": "code/soc14/custom_controller_demo.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 14,
+    "file": "code/soc14/custom_controller_demo.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 15,
+    "file": "code/soc15/custom_driver.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 15,
+    "file": "code/soc15/custom_driver.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 15,
+    "file": "code/soc15/custom_driver_example.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 15,
+    "file": "code/soc15/custom_driver_example.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 16,
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/drivers/custom_processing_v1_0/src/custom_driver.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 16,
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/drivers/custom_processing_v1_0/src/custom_driver.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 16,
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/examples/custom_driver_example.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 16,
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/examples/custom_driver_example.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 17,
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/drivers/legacy_processing_v1_0/src/custom_driver.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 17,
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/drivers/legacy_processing_v1_0/src/custom_driver.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 17,
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/examples/custom_driver_example.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 17,
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/examples/custom_driver_example.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 18,
+    "file": "code/soc18/demo/soc18_uart_pwm_demo.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 18,
+    "file": "code/soc18/demo/soc18_uart_pwm_demo.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 18,
+    "file": "code/soc18/pwm_controller_ip_1_0/drivers/pwm_controller_v1_0/src/pwm_driver.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 18,
+    "file": "code/soc18/pwm_controller_ip_1_0/drivers/pwm_controller_v1_0/src/pwm_driver.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 18,
+    "file": "code/soc18/uart_tx_ip_1_0/drivers/uart_tx_v1_0/src/uart_tx_driver.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 18,
+    "file": "code/soc18/uart_tx_ip_1_0/drivers/uart_tx_v1_0/src/uart_tx_driver.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 19,
+    "file": "code/soc19/axi_control_status_bridge_1_0/drivers/axi_control_status_bridge_v1_0/src/axi_control_status_bridge_driver.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 19,
+    "file": "code/soc19/axi_control_status_bridge_1_0/drivers/axi_control_status_bridge_v1_0/src/axi_control_status_bridge_driver.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 31,
+    "file": "code/soc31/npu_axi_register_map_lab/software/main.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 31,
+    "file": "code/soc31/npu_axi_register_map_lab/software/main.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 32,
+    "file": "code/soc32/npu_interrupt_lab/software/main_interrupt.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 32,
+    "file": "code/soc32/npu_interrupt_lab/software/main_interrupt.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 33,
+    "file": "code/soc33/tensor_bram_data_plane_lab/software/tensor_buffer_demo.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 33,
+    "file": "code/soc33/tensor_bram_data_plane_lab/software/tensor_buffer_demo.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 34,
+    "file": "code/soc34/npu_job_descriptor_lab/software/npu_job_demo.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 34,
+    "file": "code/soc34/npu_job_descriptor_lab/software/npu_job_demo.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 35,
+    "file": "code/soc35/full_npu_accelerator_lab/software/main_full_npu.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 35,
+    "file": "code/soc35/full_npu_accelerator_lab/software/main_full_npu.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 36,
+    "file": "code/soc36/cpu_npu_end_to_end_lab/software/main_end_to_end.c",
+    "SDT": false,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "chapter": 36,
+    "file": "code/soc36/cpu_npu_end_to_end_lab/software/main_end_to_end.c",
+    "SDT": true,
+    "exit": 0,
+    "status": "PASS",
+    "diagnostic": ""
+  }
+]

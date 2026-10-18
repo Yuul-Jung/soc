@@ -1,0 +1,207 @@
+[
+  {
+    "file": "01_microblaze_bram_minimal_soc.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "02_clock_reset_processor_system_reset.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "03_microblaze_bram_program_execution.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "04_memory_map_memory_mapped_io.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "05_axi4_axi4lite_axi4stream.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "06_axi_gpio.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "07_axi_uart_lite.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "08_axi_timer.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "09_axi_interrupt_controller.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "10_microblaze_gpio_uart_timer_integration.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "11_register_map_design_principles.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "12_custom_axi4lite_slave_basics.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "13_axi_register_read_write_path.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "14_register_bank_rtl_controller.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "15_microblaze_software_driver.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "16_vivado_ip_packaging_reuse.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "17_existing_verilog_rtl_to_ip.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "18_uart_pwm_controller_ip.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "19_axi_control_status_bridge.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "20_cdc_reset_safe_design.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "21_self_checking_assertion_coverage.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "22_timing_critical_path_wns_tns.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "23_resource_power_thermal.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "24_npu_mac_datapath.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "25_pe_parallel_mac_vector_dot_product.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "26_vector_dot_product_controller.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "27_local_bram_address_generator_data_feeding.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "29_data_reuse_weight_stationary_tiling.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "30_bias_requantization_rounding_saturation_int8.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "31_npu_register_map_microblaze_axi_integration.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "32_npu_done_interrupt_axi_intc_isr.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "34_command_descriptor_job_control.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "35_full_npu_accelerator_integration.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "36_cpu_npu_end_to_end_software_inference.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "37_performance_baseline_timing_resource_power_throughput.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "39_parallel4_requantization_optimization.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "40_prefetch_pingpong_data_compute_overlap.html",
+    "viewport": 1440,
+    "body": 1440
+  },
+  {
+    "file": "41_group8_cumulative_signoff_matrix.html",
+    "viewport": 1440,
+    "body": 1440
+  }
+]

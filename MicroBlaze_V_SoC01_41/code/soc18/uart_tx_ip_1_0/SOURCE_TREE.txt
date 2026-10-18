@@ -1,0 +1,17 @@
+uart_tx_ip_1_0/
+├── hdl/
+│   ├── legacy_uart_tx_core.v
+│   ├── uart_tx_controller_adapter.v
+│   ├── uart_tx_register_bank.v
+│   ├── axi4lite_slave_adapter.v
+│   └── uart_tx_axi4lite_ip.v
+├── testbench/
+│   └── tb_legacy_uart_tx_core.v
+├── drivers/uart_tx_v1_0/src/
+│   ├── uart_tx_driver.c
+│   ├── uart_tx_driver.h
+│   └── uart_tx_regmap.h
+├── examples/
+│   └── test_uart_tx_driver_mock.c
+├── doc/
+└── tcl/

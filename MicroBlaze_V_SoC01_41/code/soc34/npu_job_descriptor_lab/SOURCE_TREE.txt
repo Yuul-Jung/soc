@@ -1,0 +1,23 @@
+npu_job_descriptor_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   ├── npu_job_descriptor_controller.v
+│   ├── tensor_job_engine.v
+│   └── npu_job_descriptor_demo_top.v
+├── testbench/
+│   └── tb_npu_job_descriptor.sv
+├── software/
+│   ├── npu_job.h
+│   └── npu_job_demo.c
+├── scripts/
+│   ├── run_soc34_job_ooc.tcl
+│   ├── prepare_soc34_simulation.tcl
+│   └── run_soc34_analysis.sh
+├── reference/
+│   ├── soc34_descriptor_reference.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_SOC34.md
+└── SOURCE_TREE.txt

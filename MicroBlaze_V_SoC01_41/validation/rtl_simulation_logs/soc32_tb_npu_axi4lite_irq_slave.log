@@ -1,0 +1,102 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_npu_axi4lite_irq_slave -o validation-tools/rtl_runs/soc32_tb_npu_axi4lite_irq_slave.vvp code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv code/soc32/npu_interrupt_lab/rtl/npu_axi_irq_accel_ip.v code/soc32/npu_interrupt_lab/rtl/npu_axi4lite_irq_slave.v code/soc32/npu_interrupt_lab/rtl/requantize_batch2x4_serial.v code/soc32/npu_interrupt_lab/rtl/requantize_s32_to_s8.v code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v
+code/soc32/npu_interrupt_lab/rtl/npu_axi_irq_accel_ip.v:1: warning: timescale for npu_axi_irq_accel_ip inherited from another file.
+code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv:1: ...: The inherited timescale is here.
+code/soc32/npu_interrupt_lab/rtl/npu_axi4lite_irq_slave.v:1: warning: timescale for npu_axi4lite_irq_slave inherited from another file.
+code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv:1: ...: The inherited timescale is here.
+code/soc32/npu_interrupt_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv:1: ...: The inherited timescale is here.
+code/soc32/npu_interrupt_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv:1: ...: The inherited timescale is here.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:1: warning: timescale for npu_register_bank_irq inherited from another file.
+code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv:1: ...: The inherited timescale is here.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:519: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:520: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:521: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:522: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:524: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:525: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:526: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v:527: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+
+--- SIMULATION ---
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: VERSION = 0x00010000
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: WSTRB partial BIAS_CH0 = 0x1122aa44
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: IRQ low before start
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: IRQ remains low when disabled
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: DONE pending latched while disabled
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: pending DONE asserts IRQ after enable
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: DONE IRQ clear drops level
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: STATUS DONE independent from IRQ_STATUS
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: IRQ_STATUS DONE pending
+CHECK PASS: IRQ_STATUS ERROR clear
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: OUT_CH0 = 0x20181008
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: OUT_CH1 = 0x7f7f6333
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: SAT_COUNT = 0x00000002
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: DONE W1C deasserts IRQ
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: ERROR source asserts IRQ
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: IRQ_STATUS ERROR pending
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: STATUS ERROR sticky
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: ERROR W1C deasserts IRQ
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: DONE disabled so IRQ stays low
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: IRQ_STATUS final clear = 0x00000000
+
+SOC32 CHECK COUNT : 77
+SOC32 ERROR COUNT : 0
+SOC32 NPU INTERRUPT TEST: PASS

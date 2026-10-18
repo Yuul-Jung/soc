@@ -1,0 +1,23 @@
+custom_processing_ip_1_0/
+├── hdl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── custom_register_bank.v
+│   ├── custom_axi4lite_ip.v
+│   ├── example_processing_controller.v
+│   └── custom_axi4lite_controller_ip.v
+├── testbench/
+│   └── tb_custom_axi4lite_controller_ip.v
+├── drivers/
+│   └── custom_processing_v1_0/
+│       └── src/
+│           ├── custom_driver.c
+│           ├── custom_driver.h
+│           └── custom_regmap.h
+├── examples/
+│   ├── custom_driver_example.c
+│   └── test_custom_driver_mock.c
+├── doc/
+│   └── README_PACKAGE.md
+└── tcl/
+    ├── prepare_packaging_project.tcl
+    └── add_ip_repo.tcl

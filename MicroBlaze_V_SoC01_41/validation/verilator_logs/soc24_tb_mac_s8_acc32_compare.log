@@ -1,0 +1,104 @@
+make: Entering directory 'validation-tools/verilator_runs/soc24_tb_mac_s8_acc32_compare'
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated.o validation-tools/tools/usr/share/verilator/include/verilated.cpp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated_timing.o validation-tools/tools/usr/share/verilator/include/verilated_timing.cpp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated_threads.o validation-tools/tools/usr/share/verilator/include/verilated_threads.cpp
+/usr/bin/python3 validation-tools/tools/usr/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtb_mac_s8_acc32_compare.cpp Vtb_mac_s8_acc32_compare___024root__DepSet_h975ef42f__0.cpp Vtb_mac_s8_acc32_compare___024root__DepSet_hcec9596b__0.cpp Vtb_mac_s8_acc32_compare__main.cpp Vtb_mac_s8_acc32_compare___024root__Slow.cpp Vtb_mac_s8_acc32_compare___024root__DepSet_h975ef42f__0__Slow.cpp Vtb_mac_s8_acc32_compare___024root__DepSet_hcec9596b__0__Slow.cpp Vtb_mac_s8_acc32_compare__Syms.cpp > Vtb_mac_s8_acc32_compare__ALL.cpp
+echo "" > Vtb_mac_s8_acc32_compare__ALL.verilator_deplist.tmp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o Vtb_mac_s8_acc32_compare__ALL.o Vtb_mac_s8_acc32_compare__ALL.cpp
+Archive ar -rcs Vtb_mac_s8_acc32_compare__ALL.a Vtb_mac_s8_acc32_compare__ALL.o
+g++    verilated.o verilated_timing.o verilated_threads.o Vtb_mac_s8_acc32_compare__ALL.a    -pthread -lpthread -latomic   -o Vtb_mac_s8_acc32_compare
+rm Vtb_mac_s8_acc32_compare__ALL.verilator_deplist.tmp
+make: Leaving directory 'validation-tools/verilator_runs/soc24_tb_mac_s8_acc32_compare'
+%Warning-WIDTH: code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:85:13: Operator ASSIGN expects 8 bits on the Assign RHS, but Assign RHS's VARREF 'a_value' generates 32 bits.
+                                                                                                                                             : ... In instance tb_mac_s8_acc32_compare
+   85 |         a_i = a_value;
+      |             ^
+                ... For warning description see https://verilator.org/warn/WIDTH?v=5.006
+                ... Use "/* verilator lint_off WIDTH */" and lint_on around source to disable this message.
+%Warning-WIDTH: code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:86:13: Operator ASSIGN expects 8 bits on the Assign RHS, but Assign RHS's VARREF 'b_value' generates 32 bits.
+                                                                                                                                             : ... In instance tb_mac_s8_acc32_compare
+   86 |         b_i = b_value;
+      |             ^
+
+--- SIMULATION ---
+PASS BASIC: acc=-2048
+PASS BASIC: acc=14081
+PASS PIPE: acc=-2048
+PASS BASIC: acc=-2175
+PASS PIPE: acc=14081
+PASS BASIC: acc=14209
+PASS PIPE: acc=-2175
+PASS BASIC: acc=14208
+PASS PIPE: acc=14209
+PASS BASIC: acc=14208
+PASS PIPE: acc=14208
+PASS PIPE: acc=14208
+PASS BASIC: acc=6000
+PASS BASIC: acc=5944
+PASS PIPE: acc=6000
+PASS BASIC: acc=-2216
+PASS PIPE: acc=5944
+PASS BASIC: acc=-144
+PASS PIPE: acc=-2216
+PASS BASIC: acc=-6203
+PASS PIPE: acc=-144
+PASS BASIC: acc=-7226
+PASS PIPE: acc=-6203
+PASS BASIC: acc=208
+PASS PIPE: acc=-7226
+PASS BASIC: acc=5402
+PASS PIPE: acc=208
+PASS BASIC: acc=6950
+PASS PIPE: acc=5402
+PASS BASIC: acc=6986
+PASS PIPE: acc=6950
+PASS BASIC: acc=12178
+PASS PIPE: acc=6986
+PASS BASIC: acc=5002
+PASS PIPE: acc=12178
+PASS BASIC: acc=2062
+PASS PIPE: acc=5002
+PASS BASIC: acc=3826
+PASS PIPE: acc=2062
+PASS BASIC: acc=5714
+PASS PIPE: acc=3826
+PASS BASIC: acc=-622
+PASS PIPE: acc=5714
+PASS BASIC: acc=364
+PASS PIPE: acc=-622
+PASS BASIC: acc=-398
+PASS PIPE: acc=364
+PASS BASIC: acc=11482
+PASS PIPE: acc=-398
+PASS BASIC: acc=5932
+PASS PIPE: acc=11482
+PASS BASIC: acc=6355
+PASS PIPE: acc=5932
+PASS BASIC: acc=-5307
+PASS PIPE: acc=6355
+PASS BASIC: acc=-14987
+PASS PIPE: acc=-5307
+PASS BASIC: acc=-20438
+PASS PIPE: acc=-14987
+PASS BASIC: acc=-17198
+PASS PIPE: acc=-20438
+PASS BASIC: acc=-14036
+PASS PIPE: acc=-17198
+PASS BASIC: acc=-14297
+PASS PIPE: acc=-14036
+PASS BASIC: acc=-18141
+PASS PIPE: acc=-14297
+PASS BASIC: acc=-21150
+PASS PIPE: acc=-18141
+PASS BASIC: acc=-28650
+PASS PIPE: acc=-21150
+PASS BASIC: acc=-27935
+PASS PIPE: acc=-28650
+PASS BASIC: acc=-26909
+PASS PIPE: acc=-27935
+PASS PIPE: acc=-26909
+
+SOC24 CHECK COUNT : 76
+SOC24 ERROR COUNT : 0
+SOC24 MAC SELF-CHECKING TEST: PASS
+- code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:248: Verilog $finish

@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<title>SoC 35 · Full NPU Accelerator Integration</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 35</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner"><p class="hero-kicker">Group 7 · NPU SoC Integration · SoC 35</p><h1>Full NPU Accelerator Integration</h1><p class="hero-desc">SoC 32의 IRQ, SoC 33의 Tensor BRAM Data Plane, SoC 34의 Job Descriptor를 하나의 NPU Accelerator IP로 통합한다. Software가 Tensor와 Descriptor를 준비하고 START하면 NPU가 BRAM Port B에서 데이터를 읽어 계산하고 결과를 기록한 뒤 DONE IRQ를 발생시킨다.</p><div class="hero-meta"><span class="chip">AXI4-Lite</span><span class="chip">Descriptor</span><span class="chip">Tensor BRAM</span><span class="chip">IRQ</span><span class="chip">MicroBlaze V</span></div></div></header>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html" selected>SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc35_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc35">이 장 검증</a></div></div><p class="nav-title">SOC 35 · LEARNING FLOW</p><p class="nav-help">Tensor → Job → Compute → IRQ → Result</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>통합 전 위치</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Full NPU Architecture</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Control Plane 유지</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Data Plane 유지</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Interrupt 통합</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>통합 Register Map</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Descriptor + IRQ</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Job 실행 순서</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Buffer Ownership</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Shadow / Active</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>DONE 경로</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>ERROR 경로</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>AXI4-Lite Bridge</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Native BRAM Interface</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Full Accelerator Top</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Top Shell/Wrapper 원칙</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Vivado Block Design</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>AXI BRAM Controller</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>True Dual-Port BMG</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>AXI Interrupt Controller</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Address Editor</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Software Driver</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>End-to-End Software</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>ISR</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Tensor Write / Read</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Self-Checking Regression</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>AXI Write Ordering</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Snapshot Regression</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>DONE IRQ Regression</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>ERROR IRQ Regression</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Python Reference</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>OOC Synthesis</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>Timing / Resource</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>SoC36 연결</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">37</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">38</span><span>공식 문서 및 근거</span></a></li></ol></aside><main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 32 IRQ</span><span class="arrow">+</span><span class="stage">SoC 33 Tensor BRAM</span><span class="arrow">+</span><span class="stage">SoC 34 Descriptor</span><span class="arrow">→</span><span class="stage"><strong>SoC 35 Full NPU</strong></span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2><figure class="manual-figure"><a href="../../images/soc35/soc35_full_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Full NPU architecture · 원본 보기 (새 탭)"><img src="../../images/soc35/soc35_full_architecture.svg" alt="Full NPU architecture"></a><figcaption>제어·Tensor Memory·Interrupt가 하나의 Accelerator 경로로 결합된다.<br><a href="../../images/soc35/soc35_full_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Full NPU architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>통합 전 위치</h2><div class="flow">SoC32 IRQ + SoC33 Data Plane + SoC34 Job Descriptor → SoC35 Full Accelerator</div></section>
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Full NPU Architecture</h2><figure class="manual-figure"><a href="../../images/soc35/soc35_full_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Full NPU system · 원본 보기 (새 탭)"><img src="../../images/soc35/soc35_full_architecture.svg" alt="Full NPU system"></a><figcaption>NPU IP는 S_AXI, BRAM, irq의 세 경계를 가진다.<br><a href="../../images/soc35/soc35_full_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Full NPU system · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Control Plane 유지</h2><p>Descriptor, START, STATUS, JOB_ID, ERROR_CODE, IRQ Register는 AXI4-Lite 경로에 둔다.</p></section>
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Data Plane 유지</h2><p>Tensor 데이터는 Register로 되돌리지 않고 AXI BRAM Controller + True Dual-Port BRAM 구조를 유지한다.</p></section>
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Interrupt 통합</h2><div class="flow">DONE/ERROR event → IRQ_STATUS → IRQ_ENABLE → level irq → AXI INTC → MicroBlaze V ISR</div></section>
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>통합 Register Map</h2><p>SoC 34 Map을 유지하고 <code>0x48 IRQ_ENABLE</code>, <code>0x4C IRQ_STATUS</code>만 추가한다.</p></section>
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Descriptor + IRQ</h2><p>정상 Job 완료는 DONE Pending을, Descriptor Reject 또는 Engine Error는 ERROR Pending을 만든다. IRQ_STATUS는 W1C다.</p></section>
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Job 실행 순서</h2><figure class="manual-figure"><a href="../../images/soc35/soc35_job_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="End to end job flow · 원본 보기 (새 탭)"><img src="../../images/soc35/soc35_job_flow.svg" alt="End to end job flow"></a><figcaption>Tensor Fill부터 Output Read까지 하나의 Job 흐름으로 연결한다.<br><a href="../../images/soc35/soc35_job_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="End to end job flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Buffer Ownership</h2><div class="flow">CPU_FILL → NPU_OWNS → DONE → CPU_READ</div></section>
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Shadow / Active</h2><p>START 수락 시 Active Snapshot을 만들고 실행 중 Shadow 변경은 현재 Job에 영향을 주지 않는다.</p></section>
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>DONE 경로</h2><div class="flow">Engine DONE → DONE_STICKY + IRQ_STATUS.DONE → irq → ISR → W1C</div></section>
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>ERROR 경로</h2><div class="flow">Descriptor Reject / Engine Error → ERROR_CODE + IRQ_STATUS.ERROR → irq</div></section>
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>AXI4-Lite Bridge</h2><p>AW/W 독립 Capture를 유지하며 두 채널을 확보한 Commit Clock에서 Register Write와 BVALID를 생성한다.</p></section>
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Native BRAM Interface</h2><p>NPU의 Tensor Job Engine은 AXI Master가 아니라 Native BRAM Port를 사용한다. CPU는 다른 Port를 AXI BRAM Controller를 통해 사용한다.</p></section>
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Full Accelerator Top</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Full Accelerator Top · 소스 코드"><code>module npu_full_accelerator_ip (
+    (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 s_axi_aclk CLK" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axi_aclk, ASSOCIATED_BUSIF S_AXI:BRAM, ASSOCIATED_RESET s_axi_aresetn" *)
+    input  wire        s_axi_aclk,
+
+    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 s_axi_aresetn RST" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axi_aresetn, POLARITY ACTIVE_LOW" *)
+    input  wire        s_axi_aresetn,
+
+    // --------------------------------------------------------
+    // AXI4-Lite Control Plane
+    // --------------------------------------------------------
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWADDR" *)
+    input  wire [7:0]  s_axi_awaddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWVALID" *)
+    input  wire        s_axi_awvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWREADY" *)
+    output wire        s_axi_awready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WDATA" *)
+    input  wire [31:0] s_axi_wdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WSTRB" *)
+    input  wire [3:0]  s_axi_wstrb,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WVALID" *)
+    input  wire        s_axi_wvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WREADY" *)
+    output wire        s_axi_wready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BRESP" *)
+    output wire [1:0]  s_axi_bresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BVALID" *)
+    output wire        s_axi_bvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BREADY" *)
+    input  wire        s_axi_bready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARADDR" *)
+    input  wire [7:0]  s_axi_araddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARVALID" *)
+    input  wire        s_axi_arvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARREADY" *)
+    output wire        s_axi_arready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RDATA" *)
+    output wire [31:0] s_axi_rdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RRESP" *)
+    output wire [1:0]  s_axi_rresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RVALID" *)
+    output wire        s_axi_rvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RREADY" *)
+    input  wire        s_axi_rready,
+
+    // --------------------------------------------------------
+    // Native BRAM Data Plane
+    // --------------------------------------------------------
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM CLK" *)
+    output wire        bram_clk_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM RST" *)
+    output wire        bram_rst_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM EN" *)
+    output wire        bram_en_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM WE" *)
+    output wire [3:0]  bram_we_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM ADDR" *)
+    output wire [11:0] bram_addr_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM DIN" *)
+    output wire [31:0] bram_wdata_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM DOUT" *)
+    input  wire [31:0] bram_rdata_i,
+
+    // --------------------------------------------------------
+    // Interrupt
+    // --------------------------------------------------------
+    (* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 irq INTERRUPT" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME irq, SENSITIVITY LEVEL_HIGH" *)
+    output wire        irq
+);
+
+// Pure Shell / Wrapper:
+// AXI bridge + control/descriptor/IRQ + job engine + BRAM clock/reset adapter.
+
+wire        reg_wr_en;
+wire [7:0]  reg_wr_addr;
+wire [31:0] reg_wr_data;
+wire [3:0]  reg_wr_strb;
+
+wire [7:0]  reg_rd_addr;
+wire [31:0] reg_rd_data;
+
+wire job_start;
+
+wire [11:0] active_input_base;
+wire [11:0] active_output_base;
+wire [15:0] active_length_words;
+
+wire signed [31:0] active_bias_ch0;
+wire signed [31:0] active_bias_ch1;
+
+wire signed [15:0] active_mult_ch0;
+wire signed [15:0] active_mult_ch1;
+
+wire [5:0] active_shift_ch0;
+wire [5:0] active_shift_ch1;
+
+wire signed [15:0] active_zp_ch0;
+wire signed [15:0] active_zp_ch1;
+
+wire engine_busy;
+wire engine_done;
+wire engine_error;
+
+wire [15:0] read_word_count;
+wire [15:0] write_word_count;
+
+wire ctrl_busy;
+wire done_sticky;
+wire error_sticky;
+wire [7:0] error_code;
+wire [31:0] job_id;
+wire [1:0] irq_enable;
+wire [1:0] irq_status;
+
+axi4lite_reg_bridge u_axi_bridge (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(s_axi_aresetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .reg_wr_en_o(reg_wr_en),
+    .reg_wr_addr_o(reg_wr_addr),
+    .reg_wr_data_o(reg_wr_data),
+    .reg_wr_strb_o(reg_wr_strb),
+
+    .reg_rd_addr_o(reg_rd_addr),
+    .reg_rd_data_i(reg_rd_data)
+);
+
+npu_full_control_irq u_control (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .wr_en_i(reg_wr_en),
+    .wr_addr_i(reg_wr_addr),
+    .wr_data_i(reg_wr_data),
+    .wr_strb_i(reg_wr_strb),
+
+    .rd_addr_i(reg_rd_addr),
+    .rd_data_o(reg_rd_data),
+
+    .job_start_o(job_start),
+
+    .active_input_base_o(active_input_base),
+    .active_output_base_o(active_output_base),
+    .active_length_words_o(active_length_words),
+
+    .active_bias_ch0_o(active_bias_ch0),
+    .active_bias_ch1_o(active_bias_ch1),
+
+    .active_mult_ch0_o(active_mult_ch0),
+    .active_mult_ch1_o(active_mult_ch1),
+
+    .active_shift_ch0_o(active_shift_ch0),
+    .active_shift_ch1_o(active_shift_ch1),
+
+    .active_zp_ch0_o(active_zp_ch0),
+    .active_zp_ch1_o(active_zp_ch1),
+
+    .engine_busy_i(engine_busy),
+    .engine_done_i(engine_done),
+    .engine_error_i(engine_error),
+
+    .read_word_count_i(read_word_count),
+    .write_word_count_i(write_word_count),
+
+    .busy_o(ctrl_busy),
+    .done_sticky_o(done_sticky),
+    .error_sticky_o(error_sticky),
+    .error_code_o(error_code),
+    .job_id_o(job_id),
+
+    .irq_o(irq),
+    .irq_enable_o(irq_enable),
+    .irq_status_o(irq_status)
+);
+
+tensor_job_engine u_engine (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .start_i(job_start),
+
+    .input_base_i(active_input_base),
+    .output_base_i(active_output_base),
+    .length_words_i(active_length_words),
+
+    .bias_ch0_i(active_bias_ch0),
+    .bias_ch1_i(active_bias_ch1),
+
+    .mult_ch0_i(active_mult_ch0),
+    .mult_ch1_i(active_mult_ch1),
+
+    .shift_ch0_i(active_shift_ch0),
+    .shift_ch1_i(active_shift_ch1),
+
+    .zp_ch0_i(active_zp_ch0),
+    .zp_ch1_i(active_zp_ch1),
+
+    .busy_o(engine_busy),
+    .done_o(engine_done),
+    .error_o(engine_error),
+
+    .bram_en_o(bram_en_o),
+    .bram_we_o(bram_we_o),
+    .bram_addr_o(bram_addr_o),
+    .bram_wdata_o(bram_wdata_o),
+    .bram_rdata_i(bram_rdata_i),
+
+    .read_word_count_o(read_word_count),
+    .write_word_count_o(write_word_count)
+);
+
+bram_clock_reset_adapter u_bram_clock_reset (
+    .clk_i(s_axi_aclk),
+    .resetn_i(s_axi_aresetn),
+
+    .bram_clk_o(bram_clk_o),
+    .bram_rst_o(bram_rst_o)
+);
+
+endmodule
+</code></pre></section>
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Top Shell/Wrapper 원칙</h2><p>Top에는 기능 FSM, 계산, 정책 판단을 넣지 않고 AXI Bridge, Control, Engine, Clock/Reset Adapter 인스턴스 연결만 둔다.</p></section>
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Vivado Block Design</h2><div class="signal-map" tabindex="0" role="region" aria-label="18절 신호 및 실행 흐름">MicroBlaze V → SmartConnect → NPU S_AXI
+MicroBlaze V → AXI BRAM Controller → BMG Port A
+NPU BRAM → BMG Port B
+NPU irq → xlconcat → AXI INTC → MicroBlaze V</div></section>
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>AXI BRAM Controller</h2><p>CPU가 사용하는 BRAM Interface를 한 Port로 제한하고 BMG의 다른 Port를 NPU Native Port에 남기는 구성을 확인한다.</p></section>
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>True Dual-Port BMG</h2><p>Port A는 CPU, Port B는 NPU가 사용한다. 같은 Tensor Buffer의 동시 수정은 Ownership Rule로 금지한다.</p></section>
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>AXI Interrupt Controller</h2><p>MicroBlaze V에서는 AXI Interrupt Controller를 사용하고 여러 Source는 Concat으로 결합한다.</p><p>CPU는 표준 외부 인터럽트 모드로 설정한다. AXI INTC의 <code>irq</code>를 <code>microblaze_riscv_0/Interrupt</code>에 연결하고 입력은 Level-High로 맞춘다. MicroBlaze V의 <code>mtvec</code> 진입과 <code>mepc</code> 저장·<code>MRET</code> 복귀는 생성 BSP가 처리한다. <code>Xil_ExceptionEnable()</code>은 외부 인터럽트 허용과 전역 허용을 설정하며, ISR은 주변장치의 원인을 해제한다.</p></section>
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Address Editor</h2><p>NPU Control Base와 Tensor BRAM Base를 각각 할당한다. Descriptor의 INPUT_BASE/OUTPUT_BASE는 Tensor BRAM 내부 Offset이다.</p><p>SDT 빌드는 <code>INTC_BASEADDR</code>, 비 SDT 빌드는 <code>INTC_DEVICE_ID</code>를 생성 메타데이터에 연결한다. <code>NPU_INTR_ID</code>는 실제 <code>xlconcat</code>·INTC 입력 번호와 일치시킨다.</p></section>
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Software Driver</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Software Driver · 소스 코드"><code>#ifndef NPU_FULL_H
+#define NPU_FULL_H
+
+#include "xil_io.h"
+#include "xil_types.h"
+
+#define NPU_CONTROL_OFFSET          0x00U
+#define NPU_STATUS_OFFSET           0x04U
+#define NPU_VERSION_OFFSET          0x08U
+#define NPU_JOB_ID_OFFSET           0x0CU
+
+#define NPU_INPUT_BASE_OFFSET       0x10U
+#define NPU_OUTPUT_BASE_OFFSET      0x14U
+#define NPU_LENGTH_WORDS_OFFSET     0x18U
+#define NPU_ERROR_CODE_OFFSET       0x1CU
+
+#define NPU_BIAS_CH0_OFFSET         0x20U
+#define NPU_BIAS_CH1_OFFSET         0x24U
+#define NPU_SCALE_CH0_OFFSET        0x28U
+#define NPU_SCALE_CH1_OFFSET        0x2CU
+#define NPU_ZERO_POINT_OFFSET       0x30U
+
+#define NPU_ACTIVE_INPUT_OFFSET     0x34U
+#define NPU_ACTIVE_OUTPUT_OFFSET    0x38U
+#define NPU_ACTIVE_LENGTH_OFFSET    0x3CU
+
+#define NPU_READ_COUNT_OFFSET       0x40U
+#define NPU_WRITE_COUNT_OFFSET      0x44U
+
+#define NPU_IRQ_ENABLE_OFFSET       0x48U
+#define NPU_IRQ_STATUS_OFFSET       0x4CU
+
+#define NPU_CONTROL_START_MASK      0x00000001U
+#define NPU_CONTROL_CLR_DONE_MASK   0x00000002U
+#define NPU_CONTROL_CLR_ERROR_MASK  0x00000004U
+
+#define NPU_STATUS_BUSY_MASK        0x00000001U
+#define NPU_STATUS_DONE_MASK        0x00000002U
+#define NPU_STATUS_ERROR_MASK       0x00000004U
+#define NPU_STATUS_DESC_VALID_MASK  0x00000008U
+
+#define NPU_IRQ_DONE_MASK           0x00000001U
+#define NPU_IRQ_ERROR_MASK          0x00000002U
+#define NPU_IRQ_ALL_MASK            0x00000003U
+
+typedef struct {
+    u32 InputBase;
+    u32 OutputBase;
+    u32 LengthWords;
+
+    s32 BiasCh0;
+    s32 BiasCh1;
+
+    s16 MultCh0;
+    s16 MultCh1;
+
+    u8 ShiftCh0;
+    u8 ShiftCh1;
+
+    s16 ZpCh0;
+    s16 ZpCh1;
+} NpuDescriptor;
+
+static inline void Npu_WriteReg(
+    UINTPTR Base,
+    u32 Offset,
+    u32 Value
+)
+{
+    Xil_Out32(Base + (UINTPTR)Offset, Value);
+}
+
+static inline u32 Npu_ReadReg(
+    UINTPTR Base,
+    u32 Offset
+)
+{
+    return Xil_In32(Base + (UINTPTR)Offset);
+}
+
+static inline u32 Npu_PackScale(
+    s16 Multiplier,
+    u8 Shift
+)
+{
+    return
+        ((u32)Multiplier &amp; 0xFFFFU) |
+        (((u32)Shift &amp; 0x3FU) &lt;&lt; 16U);
+}
+
+static inline u32 Npu_PackZeroPoint(
+    s16 ZpCh0,
+    s16 ZpCh1
+)
+{
+    return
+        ((u32)ZpCh0 &amp; 0xFFFFU) |
+        (((u32)ZpCh1 &amp; 0xFFFFU) &lt;&lt; 16U);
+}
+
+static inline void Npu_ProgramDescriptor(
+    UINTPTR Base,
+    const NpuDescriptor *Desc
+)
+{
+    Npu_WriteReg(Base, NPU_INPUT_BASE_OFFSET, Desc-&gt;InputBase);
+    Npu_WriteReg(Base, NPU_OUTPUT_BASE_OFFSET, Desc-&gt;OutputBase);
+    Npu_WriteReg(Base, NPU_LENGTH_WORDS_OFFSET, Desc-&gt;LengthWords);
+
+    Npu_WriteReg(Base, NPU_BIAS_CH0_OFFSET, (u32)Desc-&gt;BiasCh0);
+    Npu_WriteReg(Base, NPU_BIAS_CH1_OFFSET, (u32)Desc-&gt;BiasCh1);
+
+    Npu_WriteReg(
+        Base,
+        NPU_SCALE_CH0_OFFSET,
+        Npu_PackScale(Desc-&gt;MultCh0, Desc-&gt;ShiftCh0)
+    );
+
+    Npu_WriteReg(
+        Base,
+        NPU_SCALE_CH1_OFFSET,
+        Npu_PackScale(Desc-&gt;MultCh1, Desc-&gt;ShiftCh1)
+    );
+
+    Npu_WriteReg(
+        Base,
+        NPU_ZERO_POINT_OFFSET,
+        Npu_PackZeroPoint(Desc-&gt;ZpCh0, Desc-&gt;ZpCh1)
+    );
+}
+
+static inline void Npu_EnableIrq(
+    UINTPTR Base,
+    u32 Mask
+)
+{
+    Npu_WriteReg(
+        Base,
+        NPU_IRQ_ENABLE_OFFSET,
+        Mask &amp; NPU_IRQ_ALL_MASK
+    );
+}
+
+static inline u32 Npu_GetIrqStatus(UINTPTR Base)
+{
+    return Npu_ReadReg(Base, NPU_IRQ_STATUS_OFFSET);
+}
+
+static inline void Npu_ClearIrq(
+    UINTPTR Base,
+    u32 Mask
+)
+{
+    Npu_WriteReg(
+        Base,
+        NPU_IRQ_STATUS_OFFSET,
+        Mask &amp; NPU_IRQ_ALL_MASK
+    );
+}
+
+static inline void Npu_Start(UINTPTR Base)
+{
+    Npu_WriteReg(
+        Base,
+        NPU_CONTROL_OFFSET,
+        NPU_CONTROL_START_MASK
+    );
+}
+
+#endif
+</code></pre></section>
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>End-to-End Software</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="End-to-End Software · 소스 코드"><code>#include "xil_exception.h"
+#include "xil_printf.h"
+#include "xintc.h"
+#include "xparameters.h"
+
+#include "npu_full.h"
+
+#ifndef NPU_CTRL_BASEADDR
+#error "Define NPU_CTRL_BASEADDR from generated xparameters.h."
+#endif
+
+#ifndef TENSOR_BRAM_BASEADDR
+#error "Define TENSOR_BRAM_BASEADDR from generated xparameters.h."
+#endif
+
+// (변경) 생성 BSP 흐름에 맞춰 INTC 식별자를 선택한다.
+#ifndef SDT
+#ifndef INTC_DEVICE_ID
+#error "Define INTC_DEVICE_ID from generated xparameters.h."
+#endif
+#else
+#ifndef INTC_BASEADDR
+#if defined(XPAR_XINTC_0_BASEADDR)
+#define INTC_BASEADDR XPAR_XINTC_0_BASEADDR
+#elif defined(XPAR_INTC_0_BASEADDR)
+#define INTC_BASEADDR XPAR_INTC_0_BASEADDR
+#else
+#error "Define INTC_BASEADDR from generated xparameters.h."
+#endif
+#endif
+#endif
+
+#ifndef NPU_INTR_ID
+#error "Define NPU_INTR_ID from generated xparameters.h."
+#endif
+
+static XIntc Intc;
+
+static volatile u32 NpuDoneFlag = 0U;
+static volatile u32 NpuErrorFlag = 0U;
+static volatile u32 NpuLastIrq = 0U;
+
+static void NpuIsr(void *CallbackRef)
+{
+    const UINTPTR base = (UINTPTR)CallbackRef;
+    const u32 pending = Npu_GetIrqStatus(base);
+
+    NpuLastIrq = pending;
+
+    if ((pending &amp; NPU_IRQ_DONE_MASK) != 0U) {
+        NpuDoneFlag = 1U;
+    }
+
+    if ((pending &amp; NPU_IRQ_ERROR_MASK) != 0U) {
+        NpuErrorFlag = 1U;
+    }
+
+    Npu_ClearIrq(
+        base,
+        pending &amp; NPU_IRQ_ALL_MASK
+    );
+}
+
+static int SetupInterruptSystem(UINTPTR npu_base)
+{
+    int status;
+
+    // (변경) SDT는 BaseAddress, 비 SDT는 DeviceId를 사용한다.
+#ifndef SDT
+    status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
+#else
+    status = XIntc_Initialize(&amp;Intc, INTC_BASEADDR);
+#endif
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Connect(
+        &amp;Intc,
+        NPU_INTR_ID,
+        (XInterruptHandler)NpuIsr,
+        (void *)npu_base
+    );
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Start(
+        &amp;Intc,
+        XIN_REAL_MODE
+    );
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XIntc_Enable(
+        &amp;Intc,
+        NPU_INTR_ID
+    );
+
+    Xil_ExceptionInit();
+
+    Xil_ExceptionRegisterHandler(
+        XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler,
+        &amp;Intc
+    );
+
+    Xil_ExceptionEnable();
+
+    return XST_SUCCESS;
+}
+
+static void TensorWrite(
+    UINTPTR TensorBase,
+    u32 Offset,
+    u32 Value
+)
+{
+    Xil_Out32(
+        TensorBase + (UINTPTR)Offset,
+        Value
+    );
+}
+
+static u32 TensorRead(
+    UINTPTR TensorBase,
+    u32 Offset
+)
+{
+    return Xil_In32(
+        TensorBase + (UINTPTR)Offset
+    );
+}
+
+int main(void)
+{
+    const UINTPTR npu_base =
+        (UINTPTR)NPU_CTRL_BASEADDR;
+
+    const UINTPTR tensor_base =
+        (UINTPTR)TENSOR_BRAM_BASEADDR;
+
+    const NpuDescriptor job = {
+        .InputBase = 0x200U,
+        .OutputBase = 0x300U,
+        .LengthWords = 8U,
+
+        .BiasCh0 = 0,
+        .BiasCh1 = 4,
+
+        .MultCh0 = 1,
+        .MultCh1 = 3,
+
+        .ShiftCh0 = 1U,
+        .ShiftCh1 = 1U,
+
+        .ZpCh0 = 0,
+        .ZpCh1 = -3
+    };
+
+    u32 timeout;
+    u32 out0;
+    u32 out1;
+
+    xil_printf("\r\nSoC35 Full NPU Accelerator\r\n");
+
+    if (SetupInterruptSystem(npu_base) != XST_SUCCESS) {
+        xil_printf("ERROR: interrupt setup\r\n");
+        return 1;
+    }
+
+    TensorWrite(tensor_base, 0x200U, 16U);
+    TensorWrite(tensor_base, 0x204U, 32U);
+    TensorWrite(tensor_base, 0x208U, 48U);
+    TensorWrite(tensor_base, 0x20CU, 64U);
+
+    TensorWrite(tensor_base, 0x210U, 32U);
+    TensorWrite(tensor_base, 0x214U, 64U);
+    TensorWrite(tensor_base, 0x218U, 96U);
+    TensorWrite(tensor_base, 0x21CU, 128U);
+
+    Npu_ProgramDescriptor(npu_base, &amp;job);
+
+    if (
+        (
+            Npu_ReadReg(
+                npu_base,
+                NPU_STATUS_OFFSET
+            ) &amp;
+            NPU_STATUS_DESC_VALID_MASK
+        ) == 0U
+    ) {
+        xil_printf("ERROR: descriptor invalid\r\n");
+        return 1;
+    }
+
+    Npu_ClearIrq(npu_base, NPU_IRQ_ALL_MASK);
+    Npu_EnableIrq(npu_base, NPU_IRQ_ALL_MASK);
+
+    NpuDoneFlag = 0U;
+    NpuErrorFlag = 0U;
+    NpuLastIrq = 0U;
+
+    Npu_Start(npu_base);
+
+    timeout = 1000000U;
+
+    while (
+        (NpuDoneFlag == 0U) &amp;&amp;
+        (NpuErrorFlag == 0U) &amp;&amp;
+        (timeout != 0U)
+    ) {
+        timeout--;
+    }
+
+    if (timeout == 0U) {
+        xil_printf("ERROR: NPU timeout\r\n");
+        return 1;
+    }
+
+    if (NpuErrorFlag != 0U) {
+        xil_printf(
+            "ERROR: IRQ=0x%08x CODE=%u\r\n",
+            (unsigned int)NpuLastIrq,
+            (unsigned int)Npu_ReadReg(
+                npu_base,
+                NPU_ERROR_CODE_OFFSET
+            )
+        );
+        return 1;
+    }
+
+    out0 = TensorRead(tensor_base, 0x300U);
+    out1 = TensorRead(tensor_base, 0x304U);
+
+    xil_printf("OUT_CH0 = 0x%08x\r\n", (unsigned int)out0);
+    xil_printf("OUT_CH1 = 0x%08x\r\n", (unsigned int)out1);
+
+    if (
+        (out0 != 0x20181008U) ||
+        (out1 != 0x7F7F6333U)
+    ) {
+        xil_printf("SOC35 RESULT: FAIL\r\n");
+        return 1;
+    }
+
+    xil_printf("SOC35 RESULT: PASS\r\n");
+
+    return 0;
+}</code></pre></section>
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>ISR</h2><p>ISR은 IRQ_STATUS를 읽고 Software Flag를 갱신한 뒤 같은 Pending Bit를 W1C하여 Level IRQ를 내린다.</p></section>
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Tensor Write / Read</h2><p>Software는 Tensor BRAM 시스템 Base + Descriptor Offset으로 Input을 쓰고 DONE 이후 Output을 읽는다.</p></section>
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Self-Checking Regression</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Regression · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_npu_full_accelerator;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic [7:0]  awaddr = 8'h00;
+logic        awvalid = 1'b0;
+wire         awready;
+
+logic [31:0] wdata = 32'h0000_0000;
+logic [3:0]  wstrb = 4'h0;
+logic        wvalid = 1'b0;
+wire         wready;
+
+wire [1:0]   bresp;
+wire         bvalid;
+logic        bready = 1'b1;
+
+logic [7:0]  araddr = 8'h00;
+logic        arvalid = 1'b0;
+wire         arready;
+
+wire [31:0]  rdata;
+wire [1:0]   rresp;
+wire         rvalid;
+logic        rready = 1'b1;
+
+logic        cpu_mem_en_i = 1'b0;
+logic [3:0]  cpu_mem_we_i = 4'h0;
+logic [11:0] cpu_mem_addr_i = 12'h000;
+logic [31:0] cpu_mem_wdata_i = 32'h0000_0000;
+wire [31:0]  cpu_mem_rdata_o;
+
+wire irq_o;
+
+integer check_count = 0;
+integer error_count = 0;
+
+always #5 clk = ~clk;
+
+npu_full_accelerator_sim_top dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready),
+
+    .cpu_mem_en_i(cpu_mem_en_i),
+    .cpu_mem_we_i(cpu_mem_we_i),
+    .cpu_mem_addr_i(cpu_mem_addr_i),
+    .cpu_mem_wdata_i(cpu_mem_wdata_i),
+    .cpu_mem_rdata_o(cpu_mem_rdata_o),
+
+    .irq_o(irq_o)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        check_count = check_count + 1;
+        if (actual !== expected) begin
+            error_count = error_count + 1;
+            $error(
+                "CHECK FAIL: %s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic axi_write(
+    input [7:0] address,
+    input [31:0] data,
+    input integer order
+);
+    bit aw_done;
+    bit w_done;
+    integer timeout;
+
+    begin
+        aw_done = 0;
+        w_done = 0;
+
+        @(negedge clk);
+
+        awaddr = address;
+        wdata = data;
+        wstrb = 4'hF;
+
+        case (order)
+            0: begin
+                awvalid = 1'b1;
+                wvalid = 1'b1;
+            end
+
+            1: begin
+                awvalid = 1'b1;
+                wvalid = 1'b0;
+            end
+
+            default: begin
+                awvalid = 1'b0;
+                wvalid = 1'b1;
+            end
+        endcase
+
+        timeout = 0;
+
+        while (!(aw_done &amp;&amp; w_done)) begin
+            @(posedge clk);
+            // (변경) READY가 갱신되기 전 상승 에지의 handshake를 관측한다.
+
+            if (awvalid &amp;&amp; awready)
+                aw_done = 1;
+
+            if (wvalid &amp;&amp; wready)
+                w_done = 1;
+
+            @(negedge clk);
+
+            if (aw_done)
+                awvalid = 1'b0;
+
+            if (w_done)
+                wvalid = 1'b0;
+
+            if (
+                (order == 1) &amp;&amp;
+                aw_done &amp;&amp;
+                !w_done
+            )
+                wvalid = 1'b1;
+
+            if (
+                (order == 2) &amp;&amp;
+                w_done &amp;&amp;
+                !aw_done
+            )
+                awvalid = 1'b1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI write timeout");
+        end
+
+        timeout = 0;
+
+        while (!bvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI BVALID timeout");
+        end
+
+        check_true(
+            "BRESP OKAY",
+            bresp == 2'b00
+        );
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic axi_read(
+    input [7:0] address,
+    output [31:0] data
+);
+    integer timeout;
+
+    begin
+        @(negedge clk);
+
+        araddr = address;
+        arvalid = 1'b1;
+
+        timeout = 0;
+
+        while (!arready) begin
+            @(posedge clk);
+            #1;
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI ARREADY timeout");
+        end
+
+        @(posedge clk);
+        #1;
+
+        timeout = 0;
+
+        while (!rvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI RVALID timeout");
+        end
+
+        data = rdata;
+
+        check_true(
+            "RRESP OKAY",
+            rresp == 2'b00
+        );
+
+        @(negedge clk);
+        arvalid = 1'b0;
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic mem_write32(
+    input [11:0] address,
+    input [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b1;
+        cpu_mem_we_i = 4'hF;
+        cpu_mem_addr_i = address;
+        cpu_mem_wdata_i = data;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b0;
+        cpu_mem_we_i = 4'h0;
+        cpu_mem_addr_i = 12'h000;
+        cpu_mem_wdata_i = 32'h0000_0000;
+    end
+endtask
+
+task automatic mem_read32(
+    input [11:0] address,
+    output [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b1;
+        cpu_mem_we_i = 4'h0;
+        cpu_mem_addr_i = address;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b0;
+        cpu_mem_addr_i = 12'h000;
+
+        data = cpu_mem_rdata_o;
+    end
+endtask
+
+task automatic wait_irq_high;
+    integer timeout;
+    begin
+        timeout = 0;
+
+        while (irq_o !== 1'b1) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 300)
+                $fatal(1, "IRQ did not assert");
+        end
+    end
+endtask
+
+initial begin
+    reg [31:0] rd;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. CPU fills Tensor BRAM through Port A.
+    // --------------------------------------------------------
+    mem_write32(12'h200, 32'd16);
+    mem_write32(12'h204, 32'd32);
+    mem_write32(12'h208, 32'd48);
+    mem_write32(12'h20C, 32'd64);
+
+    mem_write32(12'h210, 32'd32);
+    mem_write32(12'h214, 32'd64);
+    mem_write32(12'h218, 32'd96);
+    mem_write32(12'h21C, 32'd128);
+
+    // --------------------------------------------------------
+    // 2. Program descriptor / parameter / IRQ registers.
+    //    Exercise all three AXI write channel orders.
+    // --------------------------------------------------------
+    axi_write(8'h10, 32'h0000_0200, 0);
+    axi_write(8'h14, 32'h0000_0300, 1);
+    axi_write(8'h18, 32'd8,         2);
+
+    axi_write(8'h20, 32'd0,         0);
+    axi_write(8'h24, 32'd4,         1);
+    axi_write(8'h28, 32'h0001_0001, 2);
+    axi_write(8'h2C, 32'h0001_0003, 0);
+    axi_write(8'h30, 32'hFFFD_0000, 1);
+
+    // Clear stale IRQ and status, then enable DONE/ERROR.
+    axi_write(8'h4C, 32'h0000_0003, 2);
+    axi_write(8'h00, 32'h0000_0006, 0);
+    axi_write(8'h48, 32'h0000_0003, 1);
+
+    axi_read(8'h04, rd);
+
+    check_true(
+        "descriptor valid",
+        (rd &amp; 32'h8) != 0
+    );
+
+    // --------------------------------------------------------
+    // 3. START and wait for DONE IRQ.
+    // --------------------------------------------------------
+    axi_write(8'h00, 32'h0000_0001, 0);
+
+    // Wait until BUSY appears.
+    do begin
+        axi_read(8'h04, rd);
+    end while ((rd &amp; 32'h1) == 0);
+
+    // Shadow changes while the active job is running.
+    axi_write(8'h10, 32'h0000_0400, 1);
+    axi_write(8'h14, 32'h0000_0500, 2);
+
+    axi_read(8'h34, rd);
+    check_eq32(
+        "ACTIVE_INPUT remains 0x200",
+        rd,
+        32'h0000_0200
+    );
+
+    axi_read(8'h38, rd);
+    check_eq32(
+        "ACTIVE_OUTPUT remains 0x300",
+        rd,
+        32'h0000_0300
+    );
+
+    wait_irq_high();
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "DONE IRQ pending",
+        (rd &amp; 32'h1) != 0
+    );
+
+    check_true(
+        "ERROR IRQ clear",
+        (rd &amp; 32'h2) == 0
+    );
+
+    // CPU reclaims Tensor Buffer after completion.
+    mem_read32(12'h300, rd);
+    check_eq32(
+        "full integration OUT_CH0",
+        rd,
+        32'h2018_1008
+    );
+
+    mem_read32(12'h304, rd);
+    check_eq32(
+        "full integration OUT_CH1",
+        rd,
+        32'h7F7F_6333
+    );
+
+    axi_read(8'h0C, rd);
+    check_eq32(
+        "JOB_ID = 1",
+        rd,
+        32'd1
+    );
+
+    axi_read(8'h40, rd);
+    check_eq32(
+        "READ_WORD_COUNT = 8",
+        rd,
+        32'd8
+    );
+
+    axi_read(8'h44, rd);
+    check_eq32(
+        "WRITE_WORD_COUNT = 2",
+        rd,
+        32'd2
+    );
+
+    // ISR-equivalent W1C.
+    axi_write(8'h4C, 32'h0000_0001, 0);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "DONE W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    // --------------------------------------------------------
+    // 4. Integrated descriptor ERROR IRQ.
+    // --------------------------------------------------------
+    axi_write(8'h00, 32'h0000_0006, 1);
+    axi_write(8'h4C, 32'h0000_0003, 2);
+    axi_write(8'h48, 32'h0000_0002, 0);
+
+    axi_write(8'h10, 32'h0000_0202, 1);
+    axi_write(8'h14, 32'h0000_0600, 2);
+    axi_write(8'h18, 32'd8,         0);
+
+    axi_write(8'h00, 32'h0000_0001, 1);
+
+    wait_irq_high();
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "descriptor ERROR IRQ pending",
+        (rd &amp; 32'h2) != 0
+    );
+
+    axi_read(8'h1C, rd);
+
+    check_eq32(
+        "descriptor ERROR_CODE = 2",
+        rd,
+        32'd2
+    );
+
+    axi_read(8'h0C, rd);
+
+    check_eq32(
+        "rejected job keeps JOB_ID = 1",
+        rd,
+        32'd1
+    );
+
+    axi_write(8'h4C, 32'h0000_0002, 2);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "ERROR W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    $display("");
+    $display("SOC35 CHECK COUNT : %0d", check_count);
+    $display("SOC35 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC35 FULL NPU ACCELERATOR TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC35 FULL NPU ACCELERATOR TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre></section>
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>AXI Write Ordering</h2><p>AW/W 동시, AW 먼저, W 먼저 세 경우를 통합 Testbench에서도 반복 검증한다.</p></section>
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Snapshot Regression</h2><p>BUSY 중 Shadow를 0x400/0x500으로 바꿔도 Active INPUT/OUTPUT은 0x200/0x300을 유지하는지 검사한다.</p></section>
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>DONE IRQ Regression</h2><div class="signal-map" tabindex="0" role="region" aria-label="30절 신호 및 실행 흐름">OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+READ_WORD_COUNT = 8
+WRITE_WORD_COUNT = 2
+IRQ_STATUS.DONE = 1</div></section>
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>ERROR IRQ Regression</h2><div class="flow">INPUT_BASE=0x202 → Descriptor Reject → ERROR_CODE=2 → IRQ_STATUS.ERROR=1 → JOB_ID 유지</div></section>
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Python Reference</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Reference · 소스 코드"><code>Control Plane: AXI4-Lite descriptor + IRQ
+Data Plane: Tensor BRAM native Port B
+active INPUT_BASE = 0x200
+active OUTPUT_BASE = 0x300
+shadow change during BUSY does not affect active snapshot: PASS
+OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+DONE pending + enable -&gt; level IRQ: PASS
+W1C DONE -&gt; IRQ deassert: PASS
+descriptor reject -&gt; ERROR IRQ path: required by RTL/TB
+SOC35 PYTHON FULL-INTEGRATION REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=&lt;seconds&gt; to increase the limit.
+</code></pre></section>
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>OOC Synthesis</h2><p>Full Accelerator IP만 OOC 합성하여 Control/Engine/DSP Timing을 확인하고 실제 Tensor BRAM은 Block Design에서 BMG로 구현한다.</p></section>
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>Timing / Resource</h2><p>실제 DSP48, LUT/FF, WNS/TNS는 Vivado Report로 확인한다. SoC 35에서는 단일 100 MHz Clock Domain을 유지한다.</p></section>
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>SoC36 연결</h2><div class="flow">SoC35 Hardware Integration 완료 → SoC36 MicroBlaze V End-to-End Inference / Driver Flow</div></section>
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>오류 점검</h2><div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="증상" role="cell">Control은 되지만 Tensor 값 오류</td><td data-label="원인" role="cell">BRAM Port 연결/Address 의미 오류</td><td data-label="확인" role="cell">Port A/B, Byte Address</td></tr><tr role="row"><td data-label="증상" role="cell">IRQ 계속 High</td><td data-label="원인" role="cell">IRQ_STATUS 미Clear</td><td data-label="확인" role="cell">ISR W1C</td></tr><tr role="row"><td data-label="증상" role="cell">현재 Job 주소 변경</td><td data-label="원인" role="cell">Shadow 직접 연결</td><td data-label="확인" role="cell">Active Snapshot</td></tr><tr role="row"><td data-label="증상" role="cell">CPU/NPU 데이터 충돌</td><td data-label="원인" role="cell">Ownership 위반</td><td data-label="확인" role="cell">BUSY 동안 CPU 접근 금지</td></tr><tr role="row"><td data-label="증상" role="cell">Vivado BMG Port 없음</td><td data-label="원인" role="cell">AXI BRAM Controller가 두 Port 사용</td><td data-label="확인" role="cell">BRAM Interface 수 확인</td></tr></tbody></table></div></section>
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 35 완료 체크리스트</h2><ul><li>[ ] S_AXI / BRAM / irq 세 인터페이스를 설명한다.</li><li>[ ] Control Plane과 Data Plane을 통합 후에도 분리한다.</li><li>[ ] Descriptor START가 Active Snapshot을 만든다.</li><li>[ ] Tensor BRAM Port A/B 역할을 구분한다.</li><li>[ ] DONE/ERROR가 Level IRQ로 연결된다.</li><li>[ ] ISR에서 W1C한다.</li><li>[ ] AXI Write 순서 3가지를 회귀 검증한다.</li><li>[ ] 정상 결과와 Descriptor Error IRQ를 모두 확인한다.</li><li>[ ] Top을 Shell/Wrapper로 유지한다.</li><li>[ ] SoC36 Software End-to-End 준비를 완료한다.</li></ul></section>
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2><div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table role="table"><tbody role="rowgroup"><tr role="row"><td role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Handling-Interrupts">AMD UG994 · Handling Interrupts · 2026.1</a></td><td role="cell">MicroBlaze V AXI INTC / Concat / Level Interrupt</td></tr><tr role="row"><td role="cell"><a href="https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Run-Connection-Automation?contentId=IxPWsMFdU_lj2UFNFL_LnQ">AMD UG1711 · Run Connection Automation · 2026.1</a></td><td role="cell">AXI BRAM Controller / BMG 연결</td></tr><tr role="row"><td role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Connecting-Ports-with-Different-Widths">AMD UG994 · Port Widths · 2026.1</a></td><td role="cell">BRAM Address Width 경고 확인</td></tr><tr role="row"><td role="cell" data-label="문서"><a href="https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc.h" target="_blank" rel="noopener">AMD AXI INTC · xintc.h</a></td><td role="cell" data-label="확인 항목">비 SDT DeviceId / SDT BaseAddr 초기화 함수 원형</td></tr></tbody></table></div></section>
+<nav class="chapter-nav"><a href="34_command_descriptor_job_control.html">← SoC 34</a><a href="../../index.html">전체 목차</a><a href="36_cpu_npu_end_to_end_software_inference.html">SoC 36 →</a></nav>
+</main></div><footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer></body></html>

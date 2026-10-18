@@ -1,0 +1,82 @@
+[
+  {
+    "file": "images/common/original_14.png",
+    "sha256": "022cd4fac6a7a94344f809fed36043f1a966f522ea3b8b01839f4c8ebf1d539f",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/basys3_board_callout.jpg",
+    "sha256": "ac8d42b65b1494b771e603fd8ebee1da48c89704477117314175099a2af2ad92",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/v_address.png",
+    "sha256": "2a2ece13677c33908594fd1abd3851d23e78485afdf717ea6e38b6e6cd84cf94",
+    "source": "AMD UG1711 2026.1"
+  },
+  {
+    "file": "images/common/original_09.png",
+    "sha256": "0620282ab815004bb62444944573585cfbd0af617d7470d76226cc7f51a0e26b",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/original_17.png",
+    "sha256": "0ef2e90eacdceca5e67df137aba498a1c32366e67bf3c40e7107cc89dec4d9d9",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/v_clock_before.png",
+    "sha256": "d1c6c744cac8f16b305da2422e10f6772991ccd32c9626cf15f5661e5674490f",
+    "source": "AMD UG1711 2026.1"
+  },
+  {
+    "file": "images/common/original_16.png",
+    "sha256": "e109792aa4454f8f372636f48dc23eb4d707919c5dde5eeccd017b96d32251d0",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/original_13.png",
+    "sha256": "7530b85f1a8f256dffa41f7cf7918a5275415a26d5f2e87d07a837e9eb74ec2b",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/v_core.png",
+    "sha256": "2eec1aabfb58764016d1a2f976132b7f2ab26211f567e0cb3d334bd1c908e4a9",
+    "source": "AMD UG1711 2026.1"
+  },
+  {
+    "file": "images/common/v_clock_after.png",
+    "sha256": "72caf0625cc7ac1f79c492f31c3975691c561302f84c0c813229443030a259b7",
+    "source": "AMD UG1711 2026.1"
+  },
+  {
+    "file": "images/common/original_11.png",
+    "sha256": "1dee7739f247b47ef4d748c67d83a2f09910054a373e67c10d1852aed7482a14",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/v_automation.png",
+    "sha256": "e4852024ca523982e8507f95fc1f37cfb6bef9fbb3ecac2674306a35b522c15a",
+    "source": "AMD UG1711 2026.1"
+  },
+  {
+    "file": "images/common/v_system.png",
+    "sha256": "708d9061bf10e861ef85201431a99967868cddc1bbfaae44132580f3e4501246",
+    "source": "AMD UG1711 2026.1"
+  },
+  {
+    "file": "images/common/original_15.png",
+    "sha256": "00368ce08681f70838b6bfbfece700245ead77b0c0321015bcf59784c6f0e007",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/original_10.png",
+    "sha256": "9c6f8f904c72518cee8663870b1148c8423d582f38366ad5e66216feaaef64b1",
+    "source": "original chapter image, localized"
+  },
+  {
+    "file": "images/common/original_08.png",
+    "sha256": "28f3e0cbbc233b707a52ca541738dd8ac416dc5d625b364708099eaebe497b9d",
+    "source": "original chapter image, localized"
+  }
+]

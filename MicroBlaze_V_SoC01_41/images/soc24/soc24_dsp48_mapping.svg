@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="600" viewBox="0 0 1260 600">
+<rect width="1260" height="600" fill="white"/>
+<text x="630" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Basys3 · Artix-7 DSP48E1와 MAC</text>
+
+<rect x="80" y="145" width="300" height="300" rx="16" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="230" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">XC7A35T</text>
+<text x="230" y="235" text-anchor="middle" font-family="sans-serif" font-size="18">DSP48E1 × 90</text>
+<text x="230" y="285" text-anchor="middle" font-family="sans-serif" font-size="17">Multiplier</text>
+<text x="230" y="320" text-anchor="middle" font-family="sans-serif" font-size="17">25 × 18 bit</text>
+<text x="230" y="370" text-anchor="middle" font-family="sans-serif" font-size="17">48-bit ALU / Accumulate</text>
+<text x="230" y="415" text-anchor="middle" font-family="sans-serif" font-size="16">Internal Pipeline 지원</text>
+
+<rect x="480" y="145" width="300" height="300" rx="16" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="630" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">SoC 24 MAC</text>
+<text x="630" y="240" text-anchor="middle" font-family="sans-serif" font-size="18">signed 8 × 8</text>
+<text x="630" y="285" text-anchor="middle" font-family="sans-serif" font-size="18">→ 16-bit product</text>
+<text x="630" y="335" text-anchor="middle" font-family="sans-serif" font-size="18">32-bit accumulator</text>
+<text x="630" y="395" text-anchor="middle" font-family="sans-serif" font-size="16">DSP48E1 범위 안의 연산 폭</text>
+
+<rect x="880" y="145" width="300" height="300" rx="16" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1030" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Vivado Synthesis</text>
+<text x="1030" y="240" text-anchor="middle" font-family="monospace" font-size="16">(* use_dsp = "yes" *)</text>
+<text x="1030" y="290" text-anchor="middle" font-family="sans-serif" font-size="17">DSP 사용 지시</text>
+<text x="1030" y="340" text-anchor="middle" font-family="sans-serif" font-size="17">실제 결과는</text>
+<text x="1030" y="375" text-anchor="middle" font-family="sans-serif" font-size="17">report_utilization</text>
+<text x="1030" y="410" text-anchor="middle" font-family="sans-serif" font-size="17">DSP48 Cell Report로 확인</text>
+
+<text x="630" y="540" text-anchor="middle" font-family="sans-serif" font-size="16">“DSP 추론 예상”과 “합성 결과로 확인된 DSP 추론”을 구분한다.</text>
+</svg>

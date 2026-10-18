@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="620" viewBox="0 0 1260 620">
+<rect width="1260" height="620" fill="white"/>
+<text x="630" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Power Estimate 신뢰도를 높이는 단계</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="55" y="185" width="240" height="190" rx="14" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="175" y="230" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">1. Vectorless</text>
+<text x="175" y="275" text-anchor="middle" font-family="sans-serif" font-size="16">Tool Default</text>
+<text x="175" y="315" text-anchor="middle" font-family="sans-serif" font-size="16">빠른 초기 추정</text>
+<text x="175" y="350" text-anchor="middle" font-family="sans-serif" font-size="15">Activity 불확실</text>
+
+<rect x="350" y="165" width="240" height="230" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="470" y="210" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">2. What-If</text>
+<text x="470" y="255" text-anchor="middle" font-family="sans-serif" font-size="16">동일 Toggle 가정</text>
+<text x="470" y="295" text-anchor="middle" font-family="sans-serif" font-size="16">구조 비교</text>
+<text x="470" y="335" text-anchor="middle" font-family="sans-serif" font-size="15">절대값보다 상대 비교</text>
+
+<rect x="645" y="145" width="240" height="270" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="765" y="180" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold"><tspan x="765" y="180">3. Simulation</tspan><tspan x="765" y="205">Activity</tspan></text>
+<text x="765" y="235" text-anchor="middle" font-family="sans-serif" font-size="16">SAIF 등</text>
+<text x="765" y="275" text-anchor="middle" font-family="sans-serif" font-size="16">실제 Scenario 반영</text>
+<text x="765" y="315" text-anchor="middle" font-family="sans-serif" font-size="16">Clock/Data Activity</text>
+<text x="765" y="355" text-anchor="middle" font-family="sans-serif" font-size="15">입력 품질이 중요</text>
+
+<rect x="940" y="125" width="260" height="310" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1070" y="160" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold"><tspan x="1070" y="160">4. Hardware</tspan><tspan x="1070" y="185">Correlation</tspan></text>
+<text x="1070" y="215" text-anchor="middle" font-family="sans-serif" font-size="16">Current Measurement</text>
+<text x="1070" y="255" text-anchor="middle" font-family="sans-serif" font-size="16">Die Temperature</text>
+<text x="1070" y="295" text-anchor="middle" font-family="sans-serif" font-size="16">Ambient / Cooling</text>
+<text x="1070" y="335" text-anchor="middle" font-family="sans-serif" font-size="16">Operating Condition 정합</text>
+<text x="1070" y="385" text-anchor="middle" font-family="sans-serif" font-size="15">최종 상관 검증</text>
+
+<g stroke="#111827" stroke-width="3" marker-end="url(#a)">
+<line x1="295" y1="280" x2="350" y2="280"/>
+<line x1="590" y1="280" x2="645" y2="280"/>
+<line x1="885" y1="280" x2="940" y2="280"/>
+</g>
+
+<text x="630" y="535" text-anchor="middle" font-family="sans-serif" font-size="17">Post-route Netlist가 정확해도 Switching Activity와 Thermal 입력이 부정확하면 Power Estimate 역시 부정확하다.</text>
+</svg>

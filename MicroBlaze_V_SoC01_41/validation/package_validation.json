@@ -1,0 +1,415 @@
+{
+  "packages": [
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC01_update.zip",
+      "entries": 17,
+      "bytes": 375461,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC02_update.zip",
+      "entries": 15,
+      "bytes": 190934,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC03_update.zip",
+      "entries": 17,
+      "bytes": 264570,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC04_update.zip",
+      "entries": 17,
+      "bytes": 224453,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC05_update.zip",
+      "entries": 15,
+      "bytes": 181324,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC06_update.zip",
+      "entries": 18,
+      "bytes": 130109,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC07_update.zip",
+      "entries": 19,
+      "bytes": 44835,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC08_update.zip",
+      "entries": 19,
+      "bytes": 45816,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC09_update.zip",
+      "entries": 19,
+      "bytes": 44231,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC10_update.zip",
+      "entries": 19,
+      "bytes": 51968,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC11_update.zip",
+      "entries": 21,
+      "bytes": 48964,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC12_update.zip",
+      "entries": 25,
+      "bytes": 64806,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC13_update.zip",
+      "entries": 27,
+      "bytes": 61042,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC14_update.zip",
+      "entries": 30,
+      "bytes": 67258,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC15_update.zip",
+      "entries": 30,
+      "bytes": 64602,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC16_update.zip",
+      "entries": 30,
+      "bytes": 62802,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC17_update.zip",
+      "entries": 33,
+      "bytes": 71019,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC18_update.zip",
+      "entries": 45,
+      "bytes": 74649,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC19_update.zip",
+      "entries": 28,
+      "bytes": 65216,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC20_update.zip",
+      "entries": 35,
+      "bytes": 71166,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC21_update.zip",
+      "entries": 28,
+      "bytes": 65624,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC22_update.zip",
+      "entries": 49,
+      "bytes": 77761,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC23_update.zip",
+      "entries": 32,
+      "bytes": 56752,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC24_update.zip",
+      "entries": 32,
+      "bytes": 60661,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC25_update.zip",
+      "entries": 32,
+      "bytes": 65888,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC26_update.zip",
+      "entries": 32,
+      "bytes": 69462,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC27_update.zip",
+      "entries": 35,
+      "bytes": 70593,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC28_update.zip",
+      "entries": 38,
+      "bytes": 82472,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC29_update.zip",
+      "entries": 33,
+      "bytes": 70797,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC30_update.zip",
+      "entries": 33,
+      "bytes": 70758,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC31_update.zip",
+      "entries": 32,
+      "bytes": 81241,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC32_update.zip",
+      "entries": 32,
+      "bytes": 81743,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC33_update.zip",
+      "entries": 32,
+      "bytes": 70736,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC34_update.zip",
+      "entries": 31,
+      "bytes": 77330,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC35_update.zip",
+      "entries": 34,
+      "bytes": 76393,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC36_update.zip",
+      "entries": 41,
+      "bytes": 87664,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC37_update.zip",
+      "entries": 35,
+      "bytes": 76476,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC38_update.zip",
+      "entries": 37,
+      "bytes": 87605,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC39_update.zip",
+      "entries": 43,
+      "bytes": 102281,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC40_update.zip",
+      "entries": 40,
+      "bytes": 90204,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/chapter_updates/Technical_Learning_SoC41_update.zip",
+      "entries": 36,
+      "bytes": 75481,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc16/custom_processing_ip_1_0_source_package.zip",
+      "entries": 15,
+      "bytes": 17757,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc17/legacy_processing_ip_1_0_source_package.zip",
+      "entries": 18,
+      "bytes": 18775,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc18/pwm_controller_ip_1_0_source_package.zip",
+      "entries": 14,
+      "bytes": 11099,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc18/uart_tx_ip_1_0_source_package.zip",
+      "entries": 14,
+      "bytes": 11502,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc19/axi_control_status_bridge_1_0_source_package.zip",
+      "entries": 13,
+      "bytes": 14436,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc20/dual_clock_control_status_bridge_1_0_source_package.zip",
+      "entries": 19,
+      "bytes": 17432,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc21/soc21_verification_harness.zip",
+      "entries": 13,
+      "bytes": 13897,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc22/soc22_timing_lab.zip",
+      "entries": 33,
+      "bytes": 26850,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc23/soc23_resource_power_lab.zip",
+      "entries": 15,
+      "bytes": 9806,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc24/soc24_npu_mac_lab.zip",
+      "entries": 15,
+      "bytes": 10612,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc25/soc25_npu_pe4_lab.zip",
+      "entries": 16,
+      "bytes": 12807,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc26/soc26_vector_dot_controller_lab.zip",
+      "entries": 16,
+      "bytes": 14740,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc27/soc27_local_bram_feeding_lab.zip",
+      "entries": 20,
+      "bytes": 18300,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc28/soc28_prefetch_fifo_double_buffer_lab.zip",
+      "entries": 22,
+      "bytes": 23722,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc29/soc29_weight_stationary_tiling_lab.zip",
+      "entries": 17,
+      "bytes": 16441,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc30/soc30_requantization_int8_lab.zip",
+      "entries": 17,
+      "bytes": 16343,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc31/soc31_npu_axi_register_map_lab.zip",
+      "entries": 16,
+      "bytes": 20392,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc32/soc32_npu_interrupt_lab.zip",
+      "entries": 16,
+      "bytes": 20768,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc33/soc33_tensor_bram_data_plane_lab.zip",
+      "entries": 16,
+      "bytes": 17770,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc34/soc34_npu_job_descriptor_lab.zip",
+      "entries": 16,
+      "bytes": 19748,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc35/soc35_full_npu_accelerator_lab.zip",
+      "entries": 20,
+      "bytes": 25804,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc36/soc36_cpu_npu_end_to_end_lab.zip",
+      "entries": 25,
+      "bytes": 30851,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc37/soc37_performance_signoff_baseline_lab.zip",
+      "entries": 20,
+      "bytes": 26803,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc38/soc38_pipelined_bram_read_optimization_lab.zip",
+      "entries": 22,
+      "bytes": 31228,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc39/soc39_parallel4_requant_optimization_lab.zip",
+      "entries": 28,
+      "bytes": 40374,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc40/soc40_prefetch_double_buffer_overlap_lab.zip",
+      "entries": 25,
+      "bytes": 34043,
+      "crc": "PASS"
+    },
+    {
+      "file": "packages/source_labs/soc41/soc41_group8_signoff_matrix_lab.zip",
+      "entries": 21,
+      "bytes": 26586,
+      "crc": "PASS"
+    }
+  ],
+  "count": 68,
+  "source_content_mismatches": [],
+  "phase": "2026-10-19 finishing"
+}

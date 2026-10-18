@@ -1,0 +1,2266 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 MicroBlaze V NPU에서 programmable input/output base, length, shadow-active snapshot, job validation, job ID를 구성하는 SoC 34 자료." name="description">
+<title>SoC 34 · Command / Descriptor / Job Control</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 34</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Group 7 · NPU SoC Integration · SoC 34</p>
+<h1>Command · Descriptor · Job Control</h1>
+<p class="hero-desc">SoC 33의 고정 Tensor 주소를 Software가 지정하는 Job 구조로 바꾼다. INPUT_BASE, OUTPUT_BASE, LENGTH, Quantization Parameter를 Shadow Descriptor에 작성하고 START가 수락되는 순간 Active Snapshot으로 복사한다. Descriptor 검증, JOB_ID, ERROR_CODE까지 추가해 NPU 실행을 하나의 Job 단위로 관리한다.</p>
+<div class="hero-meta"><span class="chip">Job Descriptor</span><span class="chip">Shadow</span><span class="chip">Active Snapshot</span><span class="chip">Validation</span><span class="chip">JOB_ID</span><span class="chip">ERROR_CODE</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html" selected>SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc34_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc34">이 장 검증</a></div></div><p class="nav-title">SOC 34 · LEARNING FLOW</p><p class="nav-help">Program → Validate → Snapshot → Run</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>고정 주소의 한계</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Job Descriptor 개념</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Direct Job과 Scatter-Gather 구분</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>전체 Job Flow</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Register Map</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Shadow Descriptor</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Active Snapshot</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>왜 Snapshot이 필요한가</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>INPUT_BASE</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>OUTPUT_BASE</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>LENGTH_WORDS</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Kernel Parameter</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Descriptor Validation</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Alignment Check</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Range Check</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Buffer Overlap Check</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>BUSY Check</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Error Code</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>JOB_ID</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>START 의미의 변화</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Descriptor Controller RTL</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Programmable Tensor Engine</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Demo Top</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Software Descriptor Struct</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Descriptor Programming</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Software Demo</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Shadow 변경 중 Active 고정</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Rejected Job</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>Valid Job Test</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Invalid Alignment Test</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>Invalid Length Test</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>Overlap / Range Test</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>Python Reference</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>OOC Synthesis</span></a></li>
+<li><a href="#s37"><span class="n">37</span><span>RAMB / DSP / Timing</span></a></li>
+<li><a href="#s38"><span class="n">38</span><span>SoC35 통합 위치</span></a></li>
+<li><a href="#s39"><span class="n">39</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">40</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">41</span><span>공식 문서 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 32 Interrupt</span><span class="arrow">→</span><span class="stage">SoC 33 Tensor BRAM</span><span class="arrow">→</span><span class="stage"><strong>SoC 34 Job Descriptor</strong></span><span class="arrow">→</span><span class="stage">SoC 35 Full NPU Integration</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc34/soc34_descriptor_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="NPU job descriptor flow · 원본 보기 (새 탭)"><img src="../../images/soc34/soc34_descriptor_flow.svg" alt="NPU job descriptor flow"></a><figcaption>Software가 Shadow Descriptor를 작성하고 START가 수락되면 Active Snapshot으로 Job을 실행한다.<br><a href="../../images/soc34/soc34_descriptor_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="NPU job descriptor flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>고정 주소의 한계</h2>
+<figure class="manual-figure"><a href="../../images/soc34/soc34_programmable_address.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Fixed to programmable address · 원본 보기 (새 탭)"><img src="../../images/soc34/soc34_programmable_address.svg" alt="Fixed to programmable address"></a><figcaption>SoC 33의 RTL 고정 주소를 Software가 지정하는 INPUT_BASE / OUTPUT_BASE로 바꾼다.<br><a href="../../images/soc34/soc34_programmable_address.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Fixed to programmable address · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Job Descriptor 개념</h2>
+<p>Descriptor는 한 번의 Accelerator 작업에 필요한 주소, 길이, Parameter, 상태 정보를 하나의 Job 정의로 묶는 방법이다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="03절 신호 및 실행 흐름">INPUT_BASE
+OUTPUT_BASE
+LENGTH_WORDS
+BIAS / SCALE / ZERO_POINT
+CONTROL.START
+STATUS
+JOB_ID
+ERROR_CODE</div>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Direct Job과 Scatter-Gather 구분</h2>
+<p>이번 장은 AXI DMA의 Scatter-Gather Descriptor를 구현하는 장이 아니다. AXI DMA에서 사용되는 Buffer Address, Length, Control, Status와 같은 개념을 참고해 하나의 Job만 직접 실행하는 교육용 Direct Descriptor를 구성한다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>전체 Job Flow</h2>
+<div class="flow">Software Write → Shadow Descriptor → START → Validation → Active Snapshot → NPU Run → DONE/ERROR</div>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Register Map</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Offset" role="cell">0x00</td><td data-label="Register" role="cell">CONTROL</td><td data-label="Access" role="cell">W1P</td><td data-label="역할" role="cell">START / CLEAR_DONE / CLEAR_ERROR</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x04</td><td data-label="Register" role="cell">STATUS</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">BUSY / DONE / ERROR / DESC_VALID</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x08</td><td data-label="Register" role="cell">VERSION</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">0x00010000</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x0C</td><td data-label="Register" role="cell">JOB_ID</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">수락된 Job 번호</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x10</td><td data-label="Register" role="cell">INPUT_BASE</td><td data-label="Access" role="cell">RW</td><td data-label="역할" role="cell">Tensor Input Byte Address</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x14</td><td data-label="Register" role="cell">OUTPUT_BASE</td><td data-label="Access" role="cell">RW</td><td data-label="역할" role="cell">Tensor Output Byte Address</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x18</td><td data-label="Register" role="cell">LENGTH_WORDS</td><td data-label="Access" role="cell">RW</td><td data-label="역할" role="cell">Input Length</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x1C</td><td data-label="Register" role="cell">ERROR_CODE</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">Descriptor/Engine Error</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x20~0x30</td><td data-label="Register" role="cell">PARAMETERS</td><td data-label="Access" role="cell">RW</td><td data-label="역할" role="cell">Bias / Scale / Zero Point</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x34~0x3C</td><td data-label="Register" role="cell">ACTIVE_DESC</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">현재 Job Snapshot</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x40~0x44</td><td data-label="Register" role="cell">COUNTERS</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">Read/Write Word Count</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Shadow Descriptor</h2>
+<p>Software가 수정하는 작업 준비 영역이다. 다음 Job의 주소와 Parameter를 저장한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Active Snapshot</h2>
+<p>START가 정상 수락되는 Clock에 Shadow 값을 Active Register로 복사한다. Job Engine은 Active 값만 사용한다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>왜 Snapshot이 필요한가</h2>
+<p>Job 실행 중 Software가 다음 Job을 준비하기 위해 Shadow를 바꾸더라도 현재 NPU의 주소와 Parameter가 변하지 않아야 한다. Shadow/Active 분리는 Software와 Hardware 실행 시점을 분리한다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>INPUT_BASE</h2>
+<p>Input Tensor가 시작되는 BRAM Byte Address다. 32-bit Word 접근을 사용하므로 4-byte Alignment가 필요하다.</p>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>OUTPUT_BASE</h2>
+<p>결과 Tensor의 시작 Byte Address다. 현재 Kernel은 CH0/CH1 Packed Result 두 Word를 기록하므로 8 Byte 공간이 필요하다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>LENGTH_WORDS</h2>
+<div class="warn">Descriptor에는 길이를 명시하지만 현재 Requantization Kernel은 8개의 int32 입력만 처리한다. 따라서 SoC 34에서는 <code>LENGTH_WORDS=8</code>만 Valid하다.</div>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Kernel Parameter</h2>
+<p>Bias, Multiplier, Shift, Zero Point도 Descriptor와 같은 시점에 Active Snapshot으로 복사한다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Descriptor Validation</h2>
+<figure class="manual-figure"><a href="../../images/soc34/soc34_descriptor_validation.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Descriptor validation · 원본 보기 (새 탭)"><img src="../../images/soc34/soc34_descriptor_validation.svg" alt="Descriptor validation"></a><figcaption>잘못된 Descriptor는 NPU를 시작하지 않고 Error Code를 남긴다.<br><a href="../../images/soc34/soc34_descriptor_validation.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Descriptor validation · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Alignment Check</h2>
+<div class="flow">INPUT_BASE[1:0] → 00<br>OUTPUT_BASE[1:0] → 00</div>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Range Check</h2>
+<div class="flow">input_end → INPUT_BASE + LENGTH_WORDS × 4 ≤ 4096<br>output_end → OUTPUT_BASE + 8 ≤ 4096</div>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Buffer Overlap Check</h2>
+<p>Input 범위와 Output 범위가 겹치면 현재 교육용 Kernel은 Reject한다. In-place 연산을 지원한다고 가정하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>BUSY Check</h2>
+<p>Engine이 BUSY인 상태에서 다시 START를 쓰면 Job은 수락하지 않고 Error Code 1을 기록한다.</p>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Error Code</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Error Code · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Code</th><th scope="col" role="columnheader">원인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Code" role="cell">0</td><td data-label="원인" role="cell">None</td></tr>
+<tr role="row"><td data-label="Code" role="cell">1</td><td data-label="원인" role="cell">BUSY</td></tr>
+<tr role="row"><td data-label="Code" role="cell">2</td><td data-label="원인" role="cell">INPUT alignment</td></tr>
+<tr role="row"><td data-label="Code" role="cell">3</td><td data-label="원인" role="cell">OUTPUT alignment</td></tr>
+<tr role="row"><td data-label="Code" role="cell">4</td><td data-label="원인" role="cell">Length unsupported</td></tr>
+<tr role="row"><td data-label="Code" role="cell">5</td><td data-label="원인" role="cell">Input range</td></tr>
+<tr role="row"><td data-label="Code" role="cell">6</td><td data-label="원인" role="cell">Output range</td></tr>
+<tr role="row"><td data-label="Code" role="cell">7</td><td data-label="원인" role="cell">Buffer overlap</td></tr>
+<tr role="row"><td data-label="Code" role="cell">8</td><td data-label="원인" role="cell">Engine error</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>JOB_ID</h2>
+<p>정상 수락된 START마다 JOB_ID가 1 증가한다. Descriptor 오류나 BUSY 거부 Job은 증가시키지 않는다.</p>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>START 의미의 변화</h2>
+<p>SoC 31의 START는 단순 Hardware Pulse였다. SoC 34부터 START는 “현재 Shadow Descriptor를 검증하고 하나의 Job으로 수락해 실행한다”는 의미를 가진다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Descriptor Controller RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Descriptor Controller RTL · 소스 코드"><code>module npu_job_descriptor_controller (
+    input  wire               clk,
+    input  wire               resetn,
+
+    // Software-visible register interface.
+    input  wire               wr_en_i,
+    input  wire [7:0]         wr_addr_i,
+    input  wire [31:0]        wr_data_i,
+    input  wire [3:0]         wr_strb_i,
+
+    input  wire [7:0]         rd_addr_i,
+    output reg  [31:0]        rd_data_o,
+
+    // Job engine handshake/status.
+    output reg                job_start_o,
+
+    output reg  [11:0]        active_input_base_o,
+    output reg  [11:0]        active_output_base_o,
+    output reg  [15:0]        active_length_words_o,
+
+    output reg signed [31:0]  active_bias_ch0_o,
+    output reg signed [31:0]  active_bias_ch1_o,
+
+    output reg signed [15:0]  active_mult_ch0_o,
+    output reg signed [15:0]  active_mult_ch1_o,
+
+    output reg        [5:0]   active_shift_ch0_o,
+    output reg        [5:0]   active_shift_ch1_o,
+
+    output reg signed [15:0]  active_zp_ch0_o,
+    output reg signed [15:0]  active_zp_ch1_o,
+
+    input  wire               engine_busy_i,
+    input  wire               engine_done_i,
+    input  wire               engine_error_i,
+
+    input  wire [15:0]        read_word_count_i,
+    input  wire [15:0]        write_word_count_i,
+
+    output wire               busy_o,
+    output reg                done_sticky_o,
+    output reg                error_sticky_o,
+    output reg  [7:0]         error_code_o,
+    output reg  [31:0]        job_id_o
+);
+
+// ------------------------------------------------------------
+// SoC 34 · Job Descriptor / Command Controller
+// ------------------------------------------------------------
+//
+// Register map:
+//
+// 0x00 CONTROL          W1P
+//      bit0 START
+//      bit1 CLEAR_DONE
+//      bit2 CLEAR_ERROR
+//
+// 0x04 STATUS           RO
+//      bit0 BUSY
+//      bit1 DONE_STICKY
+//      bit2 ERROR_STICKY
+//      bit3 DESCRIPTOR_VALID
+//
+// 0x08 VERSION          RO = 0x0001_0000
+// 0x0C JOB_ID           RO
+//
+// Shadow descriptor:
+// 0x10 INPUT_BASE       RW byte address, 4-byte aligned
+// 0x14 OUTPUT_BASE      RW byte address, 4-byte aligned
+// 0x18 LENGTH_WORDS     RW
+// 0x1C ERROR_CODE       RO
+//
+// Kernel parameters:
+// 0x20 BIAS_CH0         RW
+// 0x24 BIAS_CH1         RW
+// 0x28 SCALE_CH0        RW [15:0] multiplier, [21:16] shift
+// 0x2C SCALE_CH1        RW
+// 0x30 ZERO_POINT       RW [15:0] CH0, [31:16] CH1
+//
+// Active descriptor snapshot:
+// 0x34 ACTIVE_INPUT     RO
+// 0x38 ACTIVE_OUTPUT    RO
+// 0x3C ACTIVE_LENGTH    RO
+//
+// Engine counters:
+// 0x40 READ_WORD_COUNT  RO
+// 0x44 WRITE_WORD_COUNT RO
+//
+// Current teaching kernel still consumes exactly 8 int32 input words
+// and produces two packed 32-bit output words.
+// LENGTH_WORDS therefore must be 8 in SoC 34.
+//
+// SoC 35 will integrate this controller with the full accelerator
+// system while retaining the descriptor concept.
+
+localparam [31:0] VERSION_VALUE = 32'h0001_0000;
+
+localparam [7:0] ERR_NONE               = 8'd0;
+localparam [7:0] ERR_BUSY               = 8'd1;
+localparam [7:0] ERR_INPUT_ALIGN        = 8'd2;
+localparam [7:0] ERR_OUTPUT_ALIGN       = 8'd3;
+localparam [7:0] ERR_LENGTH_UNSUPPORTED = 8'd4;
+localparam [7:0] ERR_INPUT_RANGE        = 8'd5;
+localparam [7:0] ERR_OUTPUT_RANGE       = 8'd6;
+localparam [7:0] ERR_BUFFER_OVERLAP     = 8'd7;
+localparam [7:0] ERR_ENGINE             = 8'd8;
+
+function [31:0] apply_wstrb32;
+    input [31:0] old_value;
+    input [31:0] new_value;
+    input [3:0]  strb;
+
+    integer byte_index;
+
+    begin
+        apply_wstrb32 = old_value;
+
+        for (
+            byte_index = 0;
+            byte_index &lt; 4;
+            byte_index = byte_index + 1
+        ) begin
+            if (strb[byte_index]) begin
+                apply_wstrb32[
+                    (byte_index * 8) +: 8
+                ] =
+                    new_value[
+                        (byte_index * 8) +: 8
+                    ];
+            end
+        end
+    end
+endfunction
+
+// ------------------------------------------------------------
+// Shadow descriptor.
+// ------------------------------------------------------------
+reg [11:0] shadow_input_base_q;
+reg [11:0] shadow_output_base_q;
+reg [15:0] shadow_length_words_q;
+
+reg signed [31:0] shadow_bias_ch0_q;
+reg signed [31:0] shadow_bias_ch1_q;
+
+reg signed [15:0] shadow_mult_ch0_q;
+reg signed [15:0] shadow_mult_ch1_q;
+
+reg [5:0] shadow_shift_ch0_q;
+reg [5:0] shadow_shift_ch1_q;
+
+reg signed [15:0] shadow_zp_ch0_q;
+reg signed [15:0] shadow_zp_ch1_q;
+
+wire control_write_w;
+
+assign control_write_w =
+    wr_en_i &amp;&amp;
+    (wr_addr_i[7:2] == 6'h00);
+
+wire start_request_w;
+wire clear_done_request_w;
+wire clear_error_request_w;
+
+assign start_request_w =
+    control_write_w &amp;&amp;
+    wr_strb_i[0] &amp;&amp;
+    wr_data_i[0];
+
+assign clear_done_request_w =
+    control_write_w &amp;&amp;
+    wr_strb_i[0] &amp;&amp;
+    wr_data_i[1];
+
+assign clear_error_request_w =
+    control_write_w &amp;&amp;
+    wr_strb_i[0] &amp;&amp;
+    wr_data_i[2];
+
+assign busy_o =
+    engine_busy_i;
+
+// ------------------------------------------------------------
+// Descriptor validation.
+//
+// BRAM byte-address range: 0x000..0xFFF.
+// Current input span: LENGTH_WORDS * 4 bytes.
+// Current output span: 8 bytes.
+// ------------------------------------------------------------
+wire input_aligned_w;
+wire output_aligned_w;
+wire length_supported_w;
+
+wire [16:0] input_end_exclusive_w;
+wire [12:0] output_end_exclusive_w;
+
+wire input_range_ok_w;
+wire output_range_ok_w;
+
+wire no_overlap_w;
+wire descriptor_valid_w;
+
+assign input_aligned_w =
+    (shadow_input_base_q[1:0] == 2'b00);
+
+assign output_aligned_w =
+    (shadow_output_base_q[1:0] == 2'b00);
+
+assign length_supported_w =
+    (shadow_length_words_q == 16'd8);
+
+assign input_end_exclusive_w =
+    {5'd0, shadow_input_base_q} +
+    ({1'b0, shadow_length_words_q} &lt;&lt; 2);
+
+assign output_end_exclusive_w =
+    {1'b0, shadow_output_base_q} +
+    13'd8;
+
+assign input_range_ok_w =
+    (input_end_exclusive_w &lt;= 17'h01000);
+
+assign output_range_ok_w =
+    (output_end_exclusive_w &lt;= 13'h1000);
+
+assign no_overlap_w =
+    (
+        output_end_exclusive_w &lt;=
+        {1'b0, shadow_input_base_q}
+    ) ||
+    (
+        input_end_exclusive_w &lt;=
+        {5'd0, shadow_output_base_q}
+    );
+
+assign descriptor_valid_w =
+    input_aligned_w &amp;&amp;
+    output_aligned_w &amp;&amp;
+    length_supported_w &amp;&amp;
+    input_range_ok_w &amp;&amp;
+    output_range_ok_w &amp;&amp;
+    no_overlap_w;
+
+function [7:0] descriptor_error_code;
+    input dummy;
+
+    begin
+        if (!input_aligned_w)
+            descriptor_error_code = ERR_INPUT_ALIGN;
+        else if (!output_aligned_w)
+            descriptor_error_code = ERR_OUTPUT_ALIGN;
+        else if (!length_supported_w)
+            descriptor_error_code = ERR_LENGTH_UNSUPPORTED;
+        else if (!input_range_ok_w)
+            descriptor_error_code = ERR_INPUT_RANGE;
+        else if (!output_range_ok_w)
+            descriptor_error_code = ERR_OUTPUT_RANGE;
+        else if (!no_overlap_w)
+            descriptor_error_code = ERR_BUFFER_OVERLAP;
+        else
+            descriptor_error_code = ERR_NONE;
+    end
+endfunction
+
+reg [31:0] merged_w;
+
+// ------------------------------------------------------------
+// Register / command process.
+// ------------------------------------------------------------
+always @(posedge clk) begin
+    if (!resetn) begin
+        shadow_input_base_q &lt;= 12'h000;
+        shadow_output_base_q &lt;= 12'h100;
+        shadow_length_words_q &lt;= 16'd8;
+
+        shadow_bias_ch0_q &lt;= 32'sd0;
+        shadow_bias_ch1_q &lt;= 32'sd4;
+
+        shadow_mult_ch0_q &lt;= 16'sd1;
+        shadow_mult_ch1_q &lt;= 16'sd3;
+
+        shadow_shift_ch0_q &lt;= 6'd1;
+        shadow_shift_ch1_q &lt;= 6'd1;
+
+        shadow_zp_ch0_q &lt;= 16'sd0;
+        shadow_zp_ch1_q &lt;= -16'sd3;
+
+        active_input_base_o &lt;= 12'h000;
+        active_output_base_o &lt;= 12'h100;
+        active_length_words_o &lt;= 16'd8;
+
+        active_bias_ch0_o &lt;= 32'sd0;
+        active_bias_ch1_o &lt;= 32'sd4;
+
+        active_mult_ch0_o &lt;= 16'sd1;
+        active_mult_ch1_o &lt;= 16'sd3;
+
+        active_shift_ch0_o &lt;= 6'd1;
+        active_shift_ch1_o &lt;= 6'd1;
+
+        active_zp_ch0_o &lt;= 16'sd0;
+        active_zp_ch1_o &lt;= -16'sd3;
+
+        job_start_o &lt;= 1'b0;
+
+        done_sticky_o &lt;= 1'b0;
+        error_sticky_o &lt;= 1'b0;
+        error_code_o &lt;= ERR_NONE;
+
+        job_id_o &lt;= 32'd0;
+    end else begin
+        job_start_o &lt;= 1'b0;
+
+        if (clear_done_request_w) begin
+            done_sticky_o &lt;= 1'b0;
+        end
+
+        if (clear_error_request_w) begin
+            error_sticky_o &lt;= 1'b0;
+            error_code_o &lt;= ERR_NONE;
+        end
+
+        if (engine_done_i) begin
+            done_sticky_o &lt;= 1'b1;
+        end
+
+        if (engine_error_i) begin
+            error_sticky_o &lt;= 1'b1;
+            error_code_o &lt;= ERR_ENGINE;
+        end
+
+        // START snapshots the descriptor only when valid and idle.
+        if (start_request_w) begin
+            if (engine_busy_i) begin
+                error_sticky_o &lt;= 1'b1;
+                error_code_o &lt;= ERR_BUSY;
+            end else if (!descriptor_valid_w) begin
+                error_sticky_o &lt;= 1'b1;
+                error_code_o &lt;= descriptor_error_code(1'b0);
+            end else begin
+                active_input_base_o &lt;= shadow_input_base_q;
+                active_output_base_o &lt;= shadow_output_base_q;
+                active_length_words_o &lt;= shadow_length_words_q;
+
+                active_bias_ch0_o &lt;= shadow_bias_ch0_q;
+                active_bias_ch1_o &lt;= shadow_bias_ch1_q;
+
+                active_mult_ch0_o &lt;= shadow_mult_ch0_q;
+                active_mult_ch1_o &lt;= shadow_mult_ch1_q;
+
+                active_shift_ch0_o &lt;= shadow_shift_ch0_q;
+                active_shift_ch1_o &lt;= shadow_shift_ch1_q;
+
+                active_zp_ch0_o &lt;= shadow_zp_ch0_q;
+                active_zp_ch1_o &lt;= shadow_zp_ch1_q;
+
+                job_start_o &lt;= 1'b1;
+
+                done_sticky_o &lt;= 1'b0;
+                error_sticky_o &lt;= 1'b0;
+                error_code_o &lt;= ERR_NONE;
+
+                job_id_o &lt;= job_id_o + 32'd1;
+            end
+        end
+
+        // Shadow descriptor/register writes are legal while a job runs.
+        // They do not affect the current active snapshot.
+        if (wr_en_i) begin
+            case (wr_addr_i[7:2])
+                6'h04: begin
+                    merged_w = apply_wstrb32(
+                        {20'd0, shadow_input_base_q},
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    shadow_input_base_q &lt;= merged_w[11:0];
+                end
+
+                6'h05: begin
+                    merged_w = apply_wstrb32(
+                        {20'd0, shadow_output_base_q},
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    shadow_output_base_q &lt;= merged_w[11:0];
+                end
+
+                6'h06: begin
+                    merged_w = apply_wstrb32(
+                        {16'd0, shadow_length_words_q},
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    shadow_length_words_q &lt;= merged_w[15:0];
+                end
+
+                6'h08: begin
+                    merged_w = apply_wstrb32(
+                        shadow_bias_ch0_q,
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    shadow_bias_ch0_q &lt;= $signed(merged_w);
+                end
+
+                6'h09: begin
+                    merged_w = apply_wstrb32(
+                        shadow_bias_ch1_q,
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    shadow_bias_ch1_q &lt;= $signed(merged_w);
+                end
+
+                6'h0A: begin
+                    merged_w = apply_wstrb32(
+                        {
+                            10'd0,
+                            shadow_shift_ch0_q,
+                            shadow_mult_ch0_q
+                        },
+                        wr_data_i,
+                        wr_strb_i
+                    );
+
+                    shadow_mult_ch0_q &lt;=
+                        $signed(merged_w[15:0]);
+
+                    shadow_shift_ch0_q &lt;=
+                        merged_w[21:16];
+                end
+
+                6'h0B: begin
+                    merged_w = apply_wstrb32(
+                        {
+                            10'd0,
+                            shadow_shift_ch1_q,
+                            shadow_mult_ch1_q
+                        },
+                        wr_data_i,
+                        wr_strb_i
+                    );
+
+                    shadow_mult_ch1_q &lt;=
+                        $signed(merged_w[15:0]);
+
+                    shadow_shift_ch1_q &lt;=
+                        merged_w[21:16];
+                end
+
+                6'h0C: begin
+                    merged_w = apply_wstrb32(
+                        {
+                            shadow_zp_ch1_q,
+                            shadow_zp_ch0_q
+                        },
+                        wr_data_i,
+                        wr_strb_i
+                    );
+
+                    shadow_zp_ch0_q &lt;=
+                        $signed(merged_w[15:0]);
+
+                    shadow_zp_ch1_q &lt;=
+                        $signed(merged_w[31:16]);
+                end
+
+                default: begin
+                end
+            endcase
+        end
+    end
+end
+
+// ------------------------------------------------------------
+// Read mux.
+// ------------------------------------------------------------
+always @(*) begin
+    case (rd_addr_i[7:2])
+        6'h00: rd_data_o = 32'h0000_0000;
+
+        6'h01: rd_data_o = {
+            28'd0,
+            descriptor_valid_w,
+            error_sticky_o,
+            done_sticky_o,
+            engine_busy_i
+        };
+
+        6'h02: rd_data_o = VERSION_VALUE;
+        6'h03: rd_data_o = job_id_o;
+
+        6'h04: rd_data_o = {20'd0, shadow_input_base_q};
+        6'h05: rd_data_o = {20'd0, shadow_output_base_q};
+        6'h06: rd_data_o = {16'd0, shadow_length_words_q};
+        6'h07: rd_data_o = {24'd0, error_code_o};
+
+        6'h08: rd_data_o = shadow_bias_ch0_q;
+        6'h09: rd_data_o = shadow_bias_ch1_q;
+
+        6'h0A: rd_data_o = {
+            10'd0,
+            shadow_shift_ch0_q,
+            shadow_mult_ch0_q
+        };
+
+        6'h0B: rd_data_o = {
+            10'd0,
+            shadow_shift_ch1_q,
+            shadow_mult_ch1_q
+        };
+
+        6'h0C: rd_data_o = {
+            shadow_zp_ch1_q,
+            shadow_zp_ch0_q
+        };
+
+        6'h0D: rd_data_o = {20'd0, active_input_base_o};
+        6'h0E: rd_data_o = {20'd0, active_output_base_o};
+        6'h0F: rd_data_o = {16'd0, active_length_words_o};
+
+        6'h10: rd_data_o = {16'd0, read_word_count_i};
+        6'h11: rd_data_o = {16'd0, write_word_count_i};
+
+        default: rd_data_o = 32'h0000_0000;
+    endcase
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Programmable Tensor Engine</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Programmable Tensor Engine · 소스 코드"><code>module tensor_job_engine (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    input  wire [11:0]          input_base_i,
+    input  wire [11:0]          output_base_i,
+    input  wire [15:0]          length_words_i,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output reg                  done_o,
+    output reg                  error_o,
+
+    output reg                  bram_en_o,
+    output reg  [3:0]           bram_we_o,
+    output reg  [11:0]          bram_addr_o,
+    output reg  [31:0]          bram_wdata_o,
+    input  wire [31:0]          bram_rdata_i,
+
+    output reg  [15:0]          read_word_count_o,
+    output reg  [15:0]          write_word_count_o
+);
+
+// Current SoC 34 teaching kernel accepts exactly 8 input words.
+// Descriptor validation is performed by the controller before START.
+
+localparam [3:0] ST_IDLE          = 4'd0;
+localparam [3:0] ST_READ_REQ      = 4'd1;
+localparam [3:0] ST_READ_CAPTURE  = 4'd2;
+localparam [3:0] ST_START_REQUANT = 4'd3;
+localparam [3:0] ST_WAIT_RESULT   = 4'd4;
+localparam [3:0] ST_WRITE_CH0     = 4'd5;
+localparam [3:0] ST_WRITE_CH1     = 4'd6;
+localparam [3:0] ST_DONE          = 4'd7;
+
+reg [3:0] state_q;
+reg [3:0] read_index_q;
+
+reg [127:0] acc_ch0_batch_q;
+reg [127:0] acc_ch1_batch_q;
+
+reg requant_start_q;
+
+wire requant_busy_w;
+wire requant_done_w;
+wire requant_result_valid_w;
+
+wire [31:0] q_ch0_batch_w;
+wire [31:0] q_ch1_batch_w;
+
+wire [7:0] saturation_count_w;
+
+assign busy_o =
+    (state_q != ST_IDLE) &amp;&amp;
+    (state_q != ST_DONE);
+
+requantize_batch2x4_serial u_requant_batch (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(requant_start_q),
+
+    .acc_ch0_batch_i(acc_ch0_batch_q),
+    .acc_ch1_batch_i(acc_ch1_batch_q),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(requant_busy_w),
+    .done_o(requant_done_w),
+    .result_valid_o(requant_result_valid_w),
+
+    .q_ch0_batch_o(q_ch0_batch_w),
+    .q_ch1_batch_o(q_ch1_batch_w),
+
+    .saturation_count_o(saturation_count_w)
+);
+
+always @(*) begin
+    bram_en_o    = 1'b0;
+    bram_we_o    = 4'b0000;
+    bram_addr_o  = 12'h000;
+    bram_wdata_o = 32'h0000_0000;
+
+    case (state_q)
+        ST_READ_REQ: begin
+            bram_en_o = 1'b1;
+            bram_we_o = 4'b0000;
+
+            bram_addr_o =
+                input_base_i +
+                {read_index_q, 2'b00};
+        end
+
+        ST_WRITE_CH0: begin
+            bram_en_o    = 1'b1;
+            bram_we_o    = 4'b1111;
+            bram_addr_o  = output_base_i;
+            bram_wdata_o = q_ch0_batch_w;
+        end
+
+        ST_WRITE_CH1: begin
+            bram_en_o    = 1'b1;
+            bram_we_o    = 4'b1111;
+            bram_addr_o  = output_base_i + 12'd4;
+            bram_wdata_o = q_ch1_batch_w;
+        end
+
+        default: begin
+        end
+    endcase
+end
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q &lt;= ST_IDLE;
+        read_index_q &lt;= 4'd0;
+
+        acc_ch0_batch_q &lt;= 128'd0;
+        acc_ch1_batch_q &lt;= 128'd0;
+
+        requant_start_q &lt;= 1'b0;
+
+        done_o &lt;= 1'b0;
+        error_o &lt;= 1'b0;
+
+        read_word_count_o &lt;= 16'd0;
+        write_word_count_o &lt;= 16'd0;
+    end else begin
+        requant_start_q &lt;= 1'b0;
+        done_o &lt;= 1'b0;
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    if (length_words_i != 16'd8) begin
+                        error_o &lt;= 1'b1;
+                        done_o &lt;= 1'b1;
+                    end else begin
+                        error_o &lt;= 1'b0;
+
+                        read_index_q &lt;= 4'd0;
+                        acc_ch0_batch_q &lt;= 128'd0;
+                        acc_ch1_batch_q &lt;= 128'd0;
+
+                        read_word_count_o &lt;= 16'd0;
+                        write_word_count_o &lt;= 16'd0;
+
+                        state_q &lt;= ST_READ_REQ;
+                    end
+                end
+            end
+
+            ST_READ_REQ: begin
+                state_q &lt;= ST_READ_CAPTURE;
+            end
+
+            ST_READ_CAPTURE: begin
+                read_word_count_o &lt;=
+                    read_word_count_o + 16'd1;
+
+                case (read_index_q)
+                    4'd0: acc_ch0_batch_q[31:0]    &lt;= bram_rdata_i;
+                    4'd1: acc_ch0_batch_q[63:32]   &lt;= bram_rdata_i;
+                    4'd2: acc_ch0_batch_q[95:64]   &lt;= bram_rdata_i;
+                    4'd3: acc_ch0_batch_q[127:96]  &lt;= bram_rdata_i;
+
+                    4'd4: acc_ch1_batch_q[31:0]    &lt;= bram_rdata_i;
+                    4'd5: acc_ch1_batch_q[63:32]   &lt;= bram_rdata_i;
+                    4'd6: acc_ch1_batch_q[95:64]   &lt;= bram_rdata_i;
+
+                    default:
+                        acc_ch1_batch_q[127:96] &lt;= bram_rdata_i;
+                endcase
+
+                if (read_index_q == 4'd7) begin
+                    state_q &lt;= ST_START_REQUANT;
+                end else begin
+                    read_index_q &lt;=
+                        read_index_q + 4'd1;
+
+                    state_q &lt;= ST_READ_REQ;
+                end
+            end
+
+            ST_START_REQUANT: begin
+                if (!requant_busy_w) begin
+                    requant_start_q &lt;= 1'b1;
+                    state_q &lt;= ST_WAIT_RESULT;
+                end
+            end
+
+            ST_WAIT_RESULT: begin
+                if (requant_result_valid_w) begin
+                    state_q &lt;= ST_WRITE_CH0;
+                end
+            end
+
+            ST_WRITE_CH0: begin
+                write_word_count_o &lt;=
+                    write_word_count_o + 16'd1;
+
+                state_q &lt;= ST_WRITE_CH1;
+            end
+
+            ST_WRITE_CH1: begin
+                write_word_count_o &lt;=
+                    write_word_count_o + 16'd1;
+
+                state_q &lt;= ST_DONE;
+            end
+
+            ST_DONE: begin
+                done_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+
+            default: begin
+                error_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Demo Top</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Demo Top · 소스 코드"><code>module npu_job_descriptor_demo_top (
+    input  wire               clk,
+    input  wire               resetn,
+
+    // CPU register interface.
+    input  wire               reg_wr_en_i,
+    input  wire [7:0]         reg_wr_addr_i,
+    input  wire [31:0]        reg_wr_data_i,
+    input  wire [3:0]         reg_wr_strb_i,
+
+    input  wire [7:0]         reg_rd_addr_i,
+    output wire [31:0]        reg_rd_data_o,
+
+    // CPU tensor-memory interface.
+    input  wire               mem_en_i,
+    input  wire [3:0]         mem_we_i,
+    input  wire [11:0]        mem_addr_i,
+    input  wire [31:0]        mem_wdata_i,
+    output wire [31:0]        mem_rdata_o,
+
+    output wire               busy_o,
+    output wire               done_sticky_o,
+    output wire               error_sticky_o,
+    output wire [7:0]         error_code_o,
+    output wire [31:0]        job_id_o
+);
+
+// Pure Shell / Wrapper.
+//
+// SoC 34 separates:
+//   Descriptor/control registers
+//   Tensor BRAM data plane
+//   Job engine
+//
+// Actual AXI shells are added around these interfaces in the
+// integrated SoC path. This chapter focuses on Job semantics.
+
+wire job_start;
+
+wire [11:0] active_input_base;
+wire [11:0] active_output_base;
+wire [15:0] active_length_words;
+
+wire signed [31:0] active_bias_ch0;
+wire signed [31:0] active_bias_ch1;
+
+wire signed [15:0] active_mult_ch0;
+wire signed [15:0] active_mult_ch1;
+
+wire [5:0] active_shift_ch0;
+wire [5:0] active_shift_ch1;
+
+wire signed [15:0] active_zp_ch0;
+wire signed [15:0] active_zp_ch1;
+
+wire engine_busy;
+wire engine_done;
+wire engine_error;
+
+wire [15:0] read_word_count;
+wire [15:0] write_word_count;
+
+wire        npu_bram_en;
+wire [3:0]  npu_bram_we;
+wire [11:0] npu_bram_addr;
+wire [31:0] npu_bram_wdata;
+wire [31:0] npu_bram_rdata;
+
+npu_job_descriptor_controller u_descriptor (
+    .clk(clk),
+    .resetn(resetn),
+
+    .wr_en_i(reg_wr_en_i),
+    .wr_addr_i(reg_wr_addr_i),
+    .wr_data_i(reg_wr_data_i),
+    .wr_strb_i(reg_wr_strb_i),
+
+    .rd_addr_i(reg_rd_addr_i),
+    .rd_data_o(reg_rd_data_o),
+
+    .job_start_o(job_start),
+
+    .active_input_base_o(active_input_base),
+    .active_output_base_o(active_output_base),
+    .active_length_words_o(active_length_words),
+
+    .active_bias_ch0_o(active_bias_ch0),
+    .active_bias_ch1_o(active_bias_ch1),
+
+    .active_mult_ch0_o(active_mult_ch0),
+    .active_mult_ch1_o(active_mult_ch1),
+
+    .active_shift_ch0_o(active_shift_ch0),
+    .active_shift_ch1_o(active_shift_ch1),
+
+    .active_zp_ch0_o(active_zp_ch0),
+    .active_zp_ch1_o(active_zp_ch1),
+
+    .engine_busy_i(engine_busy),
+    .engine_done_i(engine_done),
+    .engine_error_i(engine_error),
+
+    .read_word_count_i(read_word_count),
+    .write_word_count_i(write_word_count),
+
+    .busy_o(busy_o),
+    .done_sticky_o(done_sticky_o),
+    .error_sticky_o(error_sticky_o),
+    .error_code_o(error_code_o),
+    .job_id_o(job_id_o)
+);
+
+tensor_job_engine u_engine (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(job_start),
+
+    .input_base_i(active_input_base),
+    .output_base_i(active_output_base),
+    .length_words_i(active_length_words),
+
+    .bias_ch0_i(active_bias_ch0),
+    .bias_ch1_i(active_bias_ch1),
+
+    .mult_ch0_i(active_mult_ch0),
+    .mult_ch1_i(active_mult_ch1),
+
+    .shift_ch0_i(active_shift_ch0),
+    .shift_ch1_i(active_shift_ch1),
+
+    .zp_ch0_i(active_zp_ch0),
+    .zp_ch1_i(active_zp_ch1),
+
+    .busy_o(engine_busy),
+    .done_o(engine_done),
+    .error_o(engine_error),
+
+    .bram_en_o(npu_bram_en),
+    .bram_we_o(npu_bram_we),
+    .bram_addr_o(npu_bram_addr),
+    .bram_wdata_o(npu_bram_wdata),
+    .bram_rdata_i(npu_bram_rdata),
+
+    .read_word_count_o(read_word_count),
+    .write_word_count_o(write_word_count)
+);
+
+tensor_bram_tdp_4k_model u_tensor_bram (
+    .clk(clk),
+
+    .a_en_i(mem_en_i),
+    .a_we_i(mem_we_i),
+    .a_addr_i(mem_addr_i),
+    .a_wdata_i(mem_wdata_i),
+    .a_rdata_o(mem_rdata_o),
+
+    .b_en_i(npu_bram_en),
+    .b_we_i(npu_bram_we),
+    .b_addr_i(npu_bram_addr),
+    .b_wdata_i(npu_bram_wdata),
+    .b_rdata_o(npu_bram_rdata)
+);
+
+endmodule
+</code></pre>
+<p>Top은 Descriptor Controller, Job Engine, Tensor BRAM을 연결하는 Shell/Wrapper 역할만 한다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Software Descriptor Struct</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Software Descriptor Struct · 소스 코드"><code>#ifndef NPU_JOB_H
+#define NPU_JOB_H
+
+#include "xil_io.h"
+#include "xil_types.h"
+
+#define NPU_JOB_CONTROL_OFFSET          0x00U
+#define NPU_JOB_STATUS_OFFSET           0x04U
+#define NPU_JOB_VERSION_OFFSET          0x08U
+#define NPU_JOB_ID_OFFSET               0x0CU
+
+#define NPU_JOB_INPUT_BASE_OFFSET       0x10U
+#define NPU_JOB_OUTPUT_BASE_OFFSET      0x14U
+#define NPU_JOB_LENGTH_WORDS_OFFSET     0x18U
+#define NPU_JOB_ERROR_CODE_OFFSET       0x1CU
+
+#define NPU_JOB_BIAS_CH0_OFFSET         0x20U
+#define NPU_JOB_BIAS_CH1_OFFSET         0x24U
+#define NPU_JOB_SCALE_CH0_OFFSET        0x28U
+#define NPU_JOB_SCALE_CH1_OFFSET        0x2CU
+#define NPU_JOB_ZERO_POINT_OFFSET       0x30U
+
+#define NPU_JOB_ACTIVE_INPUT_OFFSET     0x34U
+#define NPU_JOB_ACTIVE_OUTPUT_OFFSET    0x38U
+#define NPU_JOB_ACTIVE_LENGTH_OFFSET    0x3CU
+
+#define NPU_JOB_READ_COUNT_OFFSET       0x40U
+#define NPU_JOB_WRITE_COUNT_OFFSET      0x44U
+
+#define NPU_JOB_CONTROL_START_MASK      0x00000001U
+#define NPU_JOB_CONTROL_CLR_DONE_MASK   0x00000002U
+#define NPU_JOB_CONTROL_CLR_ERROR_MASK  0x00000004U
+
+#define NPU_JOB_STATUS_BUSY_MASK        0x00000001U
+#define NPU_JOB_STATUS_DONE_MASK        0x00000002U
+#define NPU_JOB_STATUS_ERROR_MASK       0x00000004U
+#define NPU_JOB_STATUS_DESC_VALID_MASK  0x00000008U
+
+typedef struct {
+    u32 InputBase;
+    u32 OutputBase;
+    u32 LengthWords;
+    s32 BiasCh0;
+    s32 BiasCh1;
+    s16 MultCh0;
+    s16 MultCh1;
+    u8 ShiftCh0;
+    u8 ShiftCh1;
+    s16 ZpCh0;
+    s16 ZpCh1;
+} NpuJobDescriptor;
+
+static inline void NpuJob_WriteReg(
+    UINTPTR BaseAddress,
+    u32 Offset,
+    u32 Value
+)
+{
+    Xil_Out32(BaseAddress + (UINTPTR)Offset, Value);
+}
+
+static inline u32 NpuJob_ReadReg(
+    UINTPTR BaseAddress,
+    u32 Offset
+)
+{
+    return Xil_In32(BaseAddress + (UINTPTR)Offset);
+}
+
+static inline u32 NpuJob_PackScale(
+    s16 Multiplier,
+    u8 Shift
+)
+{
+    return
+        ((u32)Multiplier &amp; 0x0000FFFFU) |
+        (((u32)Shift &amp; 0x3FU) &lt;&lt; 16U);
+}
+
+static inline u32 NpuJob_PackZeroPoint(
+    s16 ZpCh0,
+    s16 ZpCh1
+)
+{
+    return
+        ((u32)ZpCh0 &amp; 0x0000FFFFU) |
+        (((u32)ZpCh1 &amp; 0x0000FFFFU) &lt;&lt; 16U);
+}
+
+static inline void NpuJob_Program(
+    UINTPTR BaseAddress,
+    const NpuJobDescriptor *Job
+)
+{
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_INPUT_BASE_OFFSET,
+        Job-&gt;InputBase
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_OUTPUT_BASE_OFFSET,
+        Job-&gt;OutputBase
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_LENGTH_WORDS_OFFSET,
+        Job-&gt;LengthWords
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_BIAS_CH0_OFFSET,
+        (u32)Job-&gt;BiasCh0
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_BIAS_CH1_OFFSET,
+        (u32)Job-&gt;BiasCh1
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_SCALE_CH0_OFFSET,
+        NpuJob_PackScale(
+            Job-&gt;MultCh0,
+            Job-&gt;ShiftCh0
+        )
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_SCALE_CH1_OFFSET,
+        NpuJob_PackScale(
+            Job-&gt;MultCh1,
+            Job-&gt;ShiftCh1
+        )
+    );
+
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_ZERO_POINT_OFFSET,
+        NpuJob_PackZeroPoint(
+            Job-&gt;ZpCh0,
+            Job-&gt;ZpCh1
+        )
+    );
+}
+
+static inline void NpuJob_Start(UINTPTR BaseAddress)
+{
+    NpuJob_WriteReg(
+        BaseAddress,
+        NPU_JOB_CONTROL_OFFSET,
+        NPU_JOB_CONTROL_START_MASK
+    );
+}
+
+#endif
+</code></pre>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Descriptor Programming</h2>
+<div class="flow">NpuJobDescriptor 작성 → NpuJob_Program() → STATUS.DESC_VALID 확인 → NpuJob_Start()</div>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Software Demo</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Software Demo · 소스 코드"><code>#include "xil_printf.h"
+#include "xparameters.h"
+
+#include "npu_job.h"
+
+// Actual Base Address comes from Vivado Address Editor / xparameters.h.
+#ifndef NPU_JOB_BASEADDR
+#error "Define NPU_JOB_BASEADDR from generated xparameters.h."
+#endif
+
+int main(void)
+{
+    const UINTPTR base = (UINTPTR)NPU_JOB_BASEADDR;
+
+    const NpuJobDescriptor job = {
+        .InputBase = 0x200U,
+        .OutputBase = 0x300U,
+        .LengthWords = 8U,
+
+        .BiasCh0 = 0,
+        .BiasCh1 = 4,
+
+        .MultCh0 = 1,
+        .MultCh1 = 3,
+
+        .ShiftCh0 = 1U,
+        .ShiftCh1 = 1U,
+
+        .ZpCh0 = 0,
+        .ZpCh1 = -3
+    };
+
+    u32 status;
+    u32 timeout;
+    u32 error_code;
+    u32 job_id;
+
+    xil_printf("\r\nSoC34 NPU Job Descriptor demo\r\n");
+
+    NpuJob_Program(base, &amp;job);
+
+    status = NpuJob_ReadReg(
+        base,
+        NPU_JOB_STATUS_OFFSET
+    );
+
+    if (
+        (status &amp; NPU_JOB_STATUS_DESC_VALID_MASK) == 0U
+    ) {
+        xil_printf("ERROR: descriptor invalid before START\r\n");
+        return 1;
+    }
+
+    NpuJob_Start(base);
+
+    timeout = 1000000U;
+
+    do {
+        status = NpuJob_ReadReg(
+            base,
+            NPU_JOB_STATUS_OFFSET
+        );
+
+        timeout--;
+    } while (
+        ((status &amp; NPU_JOB_STATUS_DONE_MASK) == 0U) &amp;&amp;
+        ((status &amp; NPU_JOB_STATUS_ERROR_MASK) == 0U) &amp;&amp;
+        (timeout != 0U)
+    );
+
+    if (timeout == 0U) {
+        xil_printf("ERROR: job timeout\r\n");
+        return 1;
+    }
+
+    if ((status &amp; NPU_JOB_STATUS_ERROR_MASK) != 0U) {
+        error_code = NpuJob_ReadReg(
+            base,
+            NPU_JOB_ERROR_CODE_OFFSET
+        );
+
+        xil_printf(
+            "ERROR: descriptor/job error code = %u\r\n",
+            (unsigned int)error_code
+        );
+
+        return 1;
+    }
+
+    job_id = NpuJob_ReadReg(
+        base,
+        NPU_JOB_ID_OFFSET
+    );
+
+    xil_printf(
+        "JOB_ID = %u\r\n",
+        (unsigned int)job_id
+    );
+
+    xil_printf(
+        "READ_WORD_COUNT = %u\r\n",
+        (unsigned int)NpuJob_ReadReg(
+            base,
+            NPU_JOB_READ_COUNT_OFFSET
+        )
+    );
+
+    xil_printf(
+        "WRITE_WORD_COUNT = %u\r\n",
+        (unsigned int)NpuJob_ReadReg(
+            base,
+            NPU_JOB_WRITE_COUNT_OFFSET
+        )
+    );
+
+    xil_printf("SOC34 JOB CONTROL: PASS\r\n");
+
+    return 0;
+}
+</code></pre>
+<p>실제 Base Address는 Address Editor와 <code>xparameters.h</code>에서 얻으며 자료에서 절대 주소를 임의로 고정하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Shadow 변경 중 Active 고정</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="28절 신호 및 실행 흐름">START 시점:
+Shadow INPUT 0x200 → Active INPUT 0x200
+Shadow OUTPUT 0x300 → Active OUTPUT 0x300
+
+Job 실행 중:
+Shadow INPUT → 0x400
+Shadow OUTPUT → 0x500
+
+현재 Active:
+여전히 0x200 / 0x300</div>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Rejected Job</h2>
+<p>Descriptor Validation을 통과하지 못하면 Engine START를 발생시키지 않는다. JOB_ID도 증가하지 않으며 ERROR_CODE만 기록한다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>Self-Checking Testbench</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_npu_job_descriptor;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic reg_wr_en_i = 1'b0;
+logic [7:0] reg_wr_addr_i = 8'h00;
+logic [31:0] reg_wr_data_i = 32'h0000_0000;
+logic [3:0] reg_wr_strb_i = 4'h0;
+
+logic [7:0] reg_rd_addr_i = 8'h00;
+wire [31:0] reg_rd_data_o;
+
+logic mem_en_i = 1'b0;
+logic [3:0] mem_we_i = 4'b0000;
+logic [11:0] mem_addr_i = 12'h000;
+logic [31:0] mem_wdata_i = 32'h0000_0000;
+wire [31:0] mem_rdata_o;
+
+wire busy_o;
+wire done_sticky_o;
+wire error_sticky_o;
+wire [7:0] error_code_o;
+wire [31:0] job_id_o;
+
+integer check_count = 0;
+integer error_count = 0;
+
+always #5 clk = ~clk;
+
+npu_job_descriptor_demo_top dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .reg_wr_en_i(reg_wr_en_i),
+    .reg_wr_addr_i(reg_wr_addr_i),
+    .reg_wr_data_i(reg_wr_data_i),
+    .reg_wr_strb_i(reg_wr_strb_i),
+
+    .reg_rd_addr_i(reg_rd_addr_i),
+    .reg_rd_data_o(reg_rd_data_o),
+
+    .mem_en_i(mem_en_i),
+    .mem_we_i(mem_we_i),
+    .mem_addr_i(mem_addr_i),
+    .mem_wdata_i(mem_wdata_i),
+    .mem_rdata_o(mem_rdata_o),
+
+    .busy_o(busy_o),
+    .done_sticky_o(done_sticky_o),
+    .error_sticky_o(error_sticky_o),
+    .error_code_o(error_code_o),
+    .job_id_o(job_id_o)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        check_count = check_count + 1;
+
+        if (actual !== expected) begin
+            error_count = error_count + 1;
+            $error(
+                "CHECK FAIL: %s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic reg_write(
+    input [7:0] address,
+    input [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        reg_wr_en_i = 1'b1;
+        reg_wr_addr_i = address;
+        reg_wr_data_i = data;
+        reg_wr_strb_i = 4'hF;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        reg_wr_en_i = 1'b0;
+        reg_wr_addr_i = 8'h00;
+        reg_wr_data_i = 32'h0000_0000;
+        reg_wr_strb_i = 4'h0;
+    end
+endtask
+
+task automatic reg_read(
+    input [7:0] address,
+    output [31:0] data
+);
+    begin
+        reg_rd_addr_i = address;
+        #1;
+        data = reg_rd_data_o;
+    end
+endtask
+
+task automatic mem_write32(
+    input [11:0] address,
+    input [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        mem_en_i = 1'b1;
+        mem_we_i = 4'hF;
+        mem_addr_i = address;
+        mem_wdata_i = data;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        mem_en_i = 1'b0;
+        mem_we_i = 4'h0;
+        mem_addr_i = 12'h000;
+        mem_wdata_i = 32'h0000_0000;
+    end
+endtask
+
+task automatic mem_read32(
+    input [11:0] address,
+    output [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        mem_en_i = 1'b1;
+        mem_we_i = 4'h0;
+        mem_addr_i = address;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        mem_en_i = 1'b0;
+        mem_addr_i = 12'h000;
+
+        data = mem_rdata_o;
+    end
+endtask
+
+task automatic wait_busy;
+    integer timeout;
+    begin
+        timeout = 0;
+
+        while (busy_o !== 1'b1) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 30) begin
+                $fatal(1, "BUSY did not assert");
+            end
+        end
+    end
+endtask
+
+task automatic wait_done;
+    integer timeout;
+    begin
+        timeout = 0;
+
+        while (done_sticky_o !== 1'b1) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 250) begin
+                $fatal(1, "DONE did not assert");
+            end
+        end
+    end
+endtask
+
+initial begin
+    reg [31:0] rd;
+    reg [31:0] job_id_before;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. Prepare input tensor at programmable INPUT_BASE=0x200.
+    // --------------------------------------------------------
+    mem_write32(12'h200, 32'd16);
+    mem_write32(12'h204, 32'd32);
+    mem_write32(12'h208, 32'd48);
+    mem_write32(12'h20C, 32'd64);
+
+    mem_write32(12'h210, 32'd32);
+    mem_write32(12'h214, 32'd64);
+    mem_write32(12'h218, 32'd96);
+    mem_write32(12'h21C, 32'd128);
+
+    // Shadow descriptor.
+    reg_write(8'h10, 32'h0000_0200);
+    reg_write(8'h14, 32'h0000_0300);
+    reg_write(8'h18, 32'd8);
+
+    reg_read(8'h04, rd);
+    check_true(
+        "descriptor valid before START",
+        (rd &amp; 32'h8) != 0
+    );
+
+    // --------------------------------------------------------
+    // 2. START -&gt; active snapshot.
+    // --------------------------------------------------------
+    reg_write(8'h00, 32'h0000_0001);
+    wait_busy();
+
+    reg_read(8'h0C, rd);
+    check_eq32(
+        "JOB_ID first accepted job",
+        rd,
+        32'd1
+    );
+
+    reg_read(8'h34, rd);
+    check_eq32(
+        "ACTIVE_INPUT snapshot",
+        rd,
+        32'h0000_0200
+    );
+
+    reg_read(8'h38, rd);
+    check_eq32(
+        "ACTIVE_OUTPUT snapshot",
+        rd,
+        32'h0000_0300
+    );
+
+    // Change shadow while current job is running.
+    // Current active addresses must remain unchanged.
+    reg_write(8'h10, 32'h0000_0400);
+    reg_write(8'h14, 32'h0000_0500);
+
+    reg_read(8'h34, rd);
+    check_eq32(
+        "ACTIVE_INPUT stable while shadow changes",
+        rd,
+        32'h0000_0200
+    );
+
+    reg_read(8'h38, rd);
+    check_eq32(
+        "ACTIVE_OUTPUT stable while shadow changes",
+        rd,
+        32'h0000_0300
+    );
+
+    wait_done();
+
+    check_true(
+        "first job no error",
+        error_sticky_o === 1'b0
+    );
+
+    reg_read(8'h40, rd);
+    check_eq32(
+        "READ_WORD_COUNT",
+        rd,
+        32'd8
+    );
+
+    reg_read(8'h44, rd);
+    check_eq32(
+        "WRITE_WORD_COUNT",
+        rd,
+        32'd2
+    );
+
+    mem_read32(12'h300, rd);
+    check_eq32(
+        "descriptor output CH0",
+        rd,
+        32'h2018_1008
+    );
+
+    mem_read32(12'h304, rd);
+    check_eq32(
+        "descriptor output CH1",
+        rd,
+        32'h7F7F_6333
+    );
+
+    // --------------------------------------------------------
+    // 3. Invalid descriptor: unaligned INPUT_BASE.
+    // --------------------------------------------------------
+    reg_write(8'h00, 32'h0000_0006);
+
+    reg_read(8'h0C, job_id_before);
+
+    reg_write(8'h10, 32'h0000_0202);
+    reg_write(8'h14, 32'h0000_0600);
+    reg_write(8'h18, 32'd8);
+
+    reg_write(8'h00, 32'h0000_0001);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "unaligned descriptor rejected",
+        error_sticky_o === 1'b1
+    );
+
+    check_true(
+        "unaligned error code = 2",
+        error_code_o == 8'd2
+    );
+
+    check_eq32(
+        "rejected job does not increment JOB_ID",
+        job_id_o,
+        job_id_before
+    );
+
+    // --------------------------------------------------------
+    // 4. Invalid descriptor: unsupported length.
+    // --------------------------------------------------------
+    reg_write(8'h00, 32'h0000_0004);
+
+    reg_write(8'h10, 32'h0000_0200);
+    reg_write(8'h14, 32'h0000_0600);
+    reg_write(8'h18, 32'd7);
+
+    reg_write(8'h00, 32'h0000_0001);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "length 7 rejected",
+        error_sticky_o === 1'b1
+    );
+
+    check_true(
+        "length error code = 4",
+        error_code_o == 8'd4
+    );
+
+    // --------------------------------------------------------
+    // 5. Invalid descriptor: input/output overlap.
+    // --------------------------------------------------------
+    reg_write(8'h00, 32'h0000_0004);
+
+    reg_write(8'h10, 32'h0000_0200);
+    reg_write(8'h14, 32'h0000_0210);
+    reg_write(8'h18, 32'd8);
+
+    reg_write(8'h00, 32'h0000_0001);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "overlap descriptor rejected",
+        error_sticky_o === 1'b1
+    );
+
+    check_true(
+        "overlap error code = 7",
+        error_code_o == 8'd7
+    );
+
+    // --------------------------------------------------------
+    // 6. Invalid descriptor: input out of 4KB range.
+    // --------------------------------------------------------
+    reg_write(8'h00, 32'h0000_0004);
+
+    reg_write(8'h10, 32'h0000_0FF0);
+    reg_write(8'h14, 32'h0000_0100);
+    reg_write(8'h18, 32'd8);
+
+    reg_write(8'h00, 32'h0000_0001);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "input range descriptor rejected",
+        error_sticky_o === 1'b1
+    );
+
+    check_true(
+        "input range error code = 5",
+        error_code_o == 8'd5
+    );
+
+    $display("");
+    $display("SOC34 CHECK COUNT : %0d", check_count);
+    $display("SOC34 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC34 JOB DESCRIPTOR TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC34 JOB DESCRIPTOR TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>Valid Job Test</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="31절 신호 및 실행 흐름">INPUT_BASE  → 0x200
+OUTPUT_BASE → 0x300
+LENGTH      → 8
+
+Expected:
+0x300 → 0x20181008
+0x304 → 0x7F7F6333
+JOB_ID → 1</div>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Invalid Alignment Test</h2>
+<div class="flow">INPUT_BASE=0x202 → Reject → ERROR_CODE=2</div>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>Invalid Length Test</h2>
+<div class="flow">LENGTH_WORDS=7 → Descriptor 표현은 가능 → 현재 Kernel 미지원 → ERROR_CODE=4</div>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>Overlap / Range Test</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="34절 신호 및 실행 흐름">INPUT 0x200~0x21F + OUTPUT 0x210~0x217
+→ overlap → ERROR_CODE=7
+
+INPUT_BASE=0xFF0, LENGTH=8
+→ 4 KB boundary 초과 → ERROR_CODE=5</div>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>Python Reference</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Reference · 소스 코드"><code>valid descriptor 0x200 -&gt; 0x300, length=8: PASS
+unaligned input -&gt; error 2
+unaligned output -&gt; error 3
+unsupported length -&gt; error 4
+input range -&gt; error 5
+output range -&gt; error 6
+buffer overlap -&gt; error 7
+shadow changes do not modify active snapshot: PASS
+accepted job increments JOB_ID; rejected job does not
+SOC34 PYTHON JOB-DESCRIPTOR REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=&lt;seconds&gt; to increase the limit.
+</code></pre>
+</section>
+
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>OOC Synthesis</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="OOC Synthesis · 소스 코드"><code># SoC 34 · Job Descriptor / Data Plane OOC synthesis
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set out_dir    [file normalize [file join $root_dir "reports" "generic_ooc"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "requantize_s32_to_s8.v"]
+read_verilog [file join $rtl_dir "requantize_batch2x4_serial.v"]
+read_verilog [file join $rtl_dir "tensor_bram_tdp_4k_model.v"]
+read_verilog [file join $rtl_dir "npu_job_descriptor_controller.v"]
+read_verilog [file join $rtl_dir "tensor_job_engine.v"]
+read_verilog [file join $rtl_dir "npu_job_descriptor_demo_top.v"]
+
+synth_design \
+    -mode out_of_context \
+    -top npu_job_descriptor_demo_top \
+    -part xc7a35tcpg236-1
+
+create_clock \
+    -name clk \
+    -period 10.000 \
+    [get_ports clk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_ooc.rpt"]
+
+redirect -file [file join $out_dir "02_ramb_cells_ooc.rpt"] {
+    set ramb_cells [get_cells -hier -filter {REF_NAME =~ RAMB*}]
+    puts "RAMB primitive count: [llength $ramb_cells]"
+    foreach cell $ramb_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+redirect -file [file join $out_dir "03_dsp48_cells_ooc.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count: [llength $dsp_cells]"
+    foreach cell $dsp_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "04_timing_summary_ooc.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "05_design_analysis_ooc.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "06_methodology_ooc.rpt"]
+
+puts ""
+puts "SoC 34 OOC synthesis complete."
+puts "Check descriptor controller, RAMB, DSP, and timing reports."
+</code></pre>
+</section>
+
+<section class="step-card" id="s37"><span class="step">SECTION 37</span><h2>RAMB / DSP / Timing</h2>
+<p>SoC 33과 동일한 BRAM/Requantizer를 재사용하지만 Descriptor Controller와 Address Arithmetic이 추가된다. 실제 RAMB, DSP48, LUT/FF, WNS/TNS 변화는 Vivado Report로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s38"><span class="step">SECTION 38</span><h2>SoC35 통합 위치</h2>
+<div class="flow">SoC32 IRQ Control<br>+ SoC33 Tensor BRAM Data Plane<br>+ SoC34 Job Descriptor<br>→ SoC35 Full NPU Accelerator</div>
+</section>
+
+<section class="step-card" id="s39"><span class="step">SECTION 39</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">실행 중 주소가 바뀜</td><td data-label="원인" role="cell">Shadow를 직접 Engine에 연결</td><td data-label="확인" role="cell">Active Snapshot</td></tr>
+<tr role="row"><td data-label="증상" role="cell">잘못된 주소로 BRAM 접근</td><td data-label="원인" role="cell">Alignment 미검증</td><td data-label="확인" role="cell">BASE[1:0]</td></tr>
+<tr role="row"><td data-label="증상" role="cell">BRAM 끝을 넘어감</td><td data-label="원인" role="cell">Range Check 누락</td><td data-label="확인" role="cell">base + length</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Output이 Input을 덮음</td><td data-label="원인" role="cell">Overlap 허용</td><td data-label="확인" role="cell">Buffer Range 비교</td></tr>
+<tr role="row"><td data-label="증상" role="cell">LENGTH=7인데 실행됨</td><td data-label="원인" role="cell">Kernel Capability와 Descriptor 분리 실패</td><td data-label="확인" role="cell">Unsupported Length Error</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Reject된 Job인데 ID 증가</td><td data-label="원인" role="cell">START와 Accept 구분 안 됨</td><td data-label="확인" role="cell">JOB_ID는 Accept에서만 증가</td></tr>
+<tr role="row"><td data-label="증상" role="cell">BUSY 중 새 Job이 현재 Job을 바꿈</td><td data-label="원인" role="cell">Active Snapshot 없음</td><td data-label="확인" role="cell">BUSY Reject + Shadow/Active 분리</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 34 완료 체크리스트</h2>
+<ul>
+<li>[ ] 고정 Tensor 주소의 한계를 설명한다.</li>
+<li>[ ] Direct Job Descriptor와 Scatter-Gather를 구분한다.</li>
+<li>[ ] INPUT_BASE / OUTPUT_BASE / LENGTH를 Register로 표현한다.</li>
+<li>[ ] Shadow Descriptor와 Active Snapshot을 구분한다.</li>
+<li>[ ] START 수락 시 Snapshot을 만든다.</li>
+<li>[ ] Alignment / Range / Overlap을 검증한다.</li>
+<li>[ ] 현재 Kernel은 LENGTH=8만 지원한다고 구분한다.</li>
+<li>[ ] 잘못된 Descriptor는 Engine을 시작하지 않는다.</li>
+<li>[ ] Error Code로 Reject 원인을 구분한다.</li>
+<li>[ ] JOB_ID는 정상 수락된 Job만 증가한다.</li>
+<li>[ ] 실행 중 Shadow 변경이 현재 Active Job에 영향을 주지 않는다.</li>
+<li>[ ] SoC35에서 IRQ + BRAM + Descriptor를 통합할 준비를 한다.</li>
+</ul>
+<div class="flow">SoC 34 완료 → SoC 35 Full NPU Datapath / Control / Memory Integration</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">자료</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/pg021_axi_dma/Direct-Register-Mode-Register-Address-Map" target="_blank" rel="noopener">AMD PG021 · AXI DMA Direct Register Mode</a></td><td data-label="확인 항목" role="cell">Address와 Length를 Control Register로 분리하는 구조 참고</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/pg021_axi_dma/Scatter-Gather-Descriptor" target="_blank" rel="noopener">AMD PG021 · Scatter Gather Descriptor</a></td><td data-label="확인 항목" role="cell">Buffer Address / Control / Status Descriptor 개념 참고</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Memory-Inference-Capabilities" target="_blank" rel="noopener">AMD UG901 · Memory Inference Capabilities · 2026.1</a></td><td data-label="확인 항목" role="cell">True Dual-Port RAM / Byte Write / RAM Enable 지원</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="33_axi_bram_tensor_buffer_control_data_plane.html">← SoC 33</a><a href="../../index.html">전체 목차</a><a href="35_full_npu_accelerator_integration.html">SoC 35 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

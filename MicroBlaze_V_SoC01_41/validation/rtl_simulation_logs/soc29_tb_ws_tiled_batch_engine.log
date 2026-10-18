@@ -1,0 +1,56 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_ws_tiled_batch_engine -o validation-tools/rtl_runs/soc29_tb_ws_tiled_batch_engine.vvp code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv code/soc29/weight_stationary_tiling_lab/rtl/ws_result_sink.v code/soc29/weight_stationary_tiling_lab/rtl/reset_active_high_to_active_low.v code/soc29/weight_stationary_tiling_lab/rtl/ws_tiled_batch_basys3_top.v code/soc29/weight_stationary_tiling_lab/rtl/ws_board_demo_controller.v code/soc29/weight_stationary_tiling_lab/rtl/ws_dual_pe4_datapath.v code/soc29/weight_stationary_tiling_lab/rtl/ws_tiled_batch_engine.v code/soc29/weight_stationary_tiling_lab/rtl/mul_s8_dsp.v
+code/soc29/weight_stationary_tiling_lab/rtl/ws_result_sink.v:1: warning: timescale for ws_result_sink inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+code/soc29/weight_stationary_tiling_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+code/soc29/weight_stationary_tiling_lab/rtl/ws_tiled_batch_basys3_top.v:1: warning: timescale for ws_tiled_batch_basys3_top inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+code/soc29/weight_stationary_tiling_lab/rtl/ws_board_demo_controller.v:1: warning: timescale for ws_board_demo_controller inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+code/soc29/weight_stationary_tiling_lab/rtl/ws_dual_pe4_datapath.v:1: warning: timescale for ws_dual_pe4_datapath inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+code/soc29/weight_stationary_tiling_lab/rtl/ws_tiled_batch_engine.v:1: warning: timescale for ws_tiled_batch_engine inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+code/soc29/weight_stationary_tiling_lab/rtl/mul_s8_dsp.v:2: warning: timescale for mul_s8_dsp inherited from another file.
+code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: tile_done arrived
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: tile_done arrived
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: tile_done arrived
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: activation presented only in FEED
+CHECK PASS: tile_done arrived
+CHECK PASS: job_done with final result
+CHECK PASS: CH0 sample0 = 495
+CHECK PASS: CH1 sample0 = 119
+CHECK PASS: CH0 sample1 = -153
+CHECK PASS: CH1 sample1 = 54
+CHECK PASS: CH0 sample2 = -226
+CHECK PASS: CH1 sample2 = -149
+CHECK PASS: CH0 sample3 = 138
+CHECK PASS: CH1 sample3 = 108
+CHECK PASS: weight tile load count = 4
+CHECK PASS: activation group count = 16
+CHECK PASS: dot result count = 32
+
+SOC29 WEIGHT LOADS      : 4
+SOC29 ACTIVATION GROUPS : 16
+SOC29 DOT RESULTS       : 32
+SOC29 CHECK COUNT       : 32
+SOC29 ERROR COUNT       : 0
+SOC29 WEIGHT-STATIONARY/TILING TEST: PASS

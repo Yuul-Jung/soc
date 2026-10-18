@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 MicroBlaze V SoC에서 AXI Clock과 Functional Clock 사이의 CDC, XPM_CDC, Reset Synchronizer, Handshake, Async FIFO 선택 및 report_cdc 검증을 다루는 자료." name="description">
+<title>SoC 20 · CDC / Reset 안전 설계</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 20</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 20</p><h1>CDC / Reset 안전 설계</h1>
+<p class="hero-desc">AXI Clock과 Functional RTL Clock이 달라지면 단순 Wire 연결은 더 이상 안전하지 않다. 1-bit Level, Pulse, Coherent Multi-bit Bus, 연속 Data, Reset을 각각 올바른 CDC 기법으로 분리하고, SoC 19 Control/Status Bridge를 Dual-Clock 구조로 확장한다.</p>
+<div class="hero-meta"><span class="chip">CDC</span><span class="chip">Metastability</span><span class="chip">XPM_CDC</span><span class="chip">Handshake</span><span class="chip">Async FIFO</span><span class="chip">Reset Synchronizer</span><span class="chip">report_cdc</span></div>
+</div></header>
+
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html" selected>SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc20_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc20">이 장 검증</a></div></div><p class="nav-title">SOC 20 · LEARNING FLOW</p><p class="nav-help">Signal Type → CDC Circuit → Reset → report_cdc</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>CDC가 필요한 경우와 필요하지 않은 경우</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Metastability</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>CDC 기법 선택표</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>1-bit Level · 2-FF</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>AMD XPM_CDC_SINGLE</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>왜 Multi-bit에 Bit별 2-FF가 안 되는가</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Pulse CDC</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>XPM_CDC_PULSE의 간격 조건</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Coherent Multi-bit Bus</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>XPM_CDC_HANDSHAKE</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>READY/VALID CDC Wrapper</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Continuous Data와 Async FIFO</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Reset도 CDC다</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Async Assert / Sync Deassert</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Domain별 Reset 분리</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Post-Reset Settle Guard</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>SoC 19 Dual-Clock 확장</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>CONTROL + DATA 64-bit Packet</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Result 32-bit Return</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Status Flag CDC</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>CDC Adapter Module</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>순수 Top Wrapper</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Functional Core</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Dual-Clock Testbench</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Vivado report_cdc</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>CDC Report에서 볼 항목</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Constraint와 CDC 구조의 관계</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Clock Enable과 Divided Clock</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>NPU/FFT 확장</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">32</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">33</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside><main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 18 UART/PWM IP</span><span class="arrow">→</span><span class="stage">SoC 19 Control/Status Bridge</span><span class="arrow">→</span><span class="stage"><strong>SoC 20 CDC / Reset</strong></span><span class="arrow">→</span><span class="stage">SoC 21 Self-Checking TB / Assertion</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<div class="flow">CDC 대상 분류 → 올바른 Synchronizer 선택 → Reset Domain 분리 → Dual-Clock 통합 → report_cdc 구조 검증</div>
+<p>CDC 문제를 “Timing Constraint 하나 추가”로 처리하지 않고, 먼저 Hardware 구조를 안전하게 만든 뒤 Vivado 구조 분석으로 확인한다.</p></section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>CDC가 필요한 경우와 필요하지 않은 경우</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="CDC가 필요한 경우와 필요하지 않은 경우 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">상황</th><th scope="col" role="columnheader">판단</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="상황" role="cell">서로 무관한 두 Oscillator</td><td data-label="판단" role="cell">Asynchronous CDC 필요</td></tr>
+<tr role="row"><td data-label="상황" role="cell">외부 Sensor/Recovered Clock</td><td data-label="판단" role="cell">Asynchronous CDC 필요</td></tr>
+<tr role="row"><td data-label="상황" role="cell">PLL/MMCM Generated Clock이며 관계를 Timing Engine이 정확히 앎</td><td data-label="판단" role="cell">항상 CDC라고 단정하지 않고 Timing 관계를 먼저 확인</td></tr>
+<tr role="row"><td data-label="상황" role="cell">같은 Clock + Clock Enable</td><td data-label="판단" role="cell">Clock Domain이 하나이므로 CDC 없음</td></tr>
+<tr role="row"><td data-label="상황" role="cell">Logic으로 만든 분주 Clock</td><td data-label="판단" role="cell">새 Clock Domain과 Routing 문제를 만들 수 있어 지양</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Metastability</h2>
+<p>Asynchronous Signal이 Destination Flip-Flop의 Setup/Hold Window 근처에서 바뀌면 출력이 즉시 0 또는 1로 결정되지 않는 Metastability(메타안정성) 상태가 발생할 수 있다.</p>
+<div class="flow">Async Input → 첫 Synchronizer FF가 Metastability 가능 → 추가 FF Stage에서 안정화 확률 증가</div>
+<p>2-FF는 Metastability 자체를 없애는 것이 아니라 다음 Logic까지 전파될 확률을 매우 낮추는 구조다.</p></section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>CDC 기법 선택표</h2>
+<figure class="manual-figure"><a href="../../images/soc20/soc20_cdc_selection.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="CDC method selection · 원본 보기 (새 탭)"><img src="../../images/soc20/soc20_cdc_selection.svg" alt="CDC method selection"></a><figcaption>신호 폭이 아니라 신호의 의미와 변화 방식에 따라 CDC 구조를 선택한다.<br><a href="../../images/soc20/soc20_cdc_selection.svg" target="_blank" rel="noopener" class="figure-original" aria-label="CDC method selection · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>1-bit Level · 2-FF</h2>
+<p>Enable, Busy, Alarm처럼 충분히 오래 유지되는 단일 Level Signal은 Destination Clock의 2단 이상 Synchronizer가 기본이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="1-bit Level · 2-FF · 소스 코드"><code>module cdc_level_sync_educational #(
+    parameter integer STAGES = 2
+)(
+    input  wire dest_clk,
+    input  wire async_level_i,
+    output wire sync_level_o
+);
+
+// Educational implementation of a single-bit level synchronizer.
+// For AMD FPGA production designs, prefer XPM_CDC_SINGLE.
+//
+// Do not use this structure independently on each bit of a coherent bus.
+
+(* ASYNC_REG = "TRUE" *)
+(* SHREG_EXTRACT = "NO" *)
+reg [STAGES-1:0] sync_ff = {STAGES{1'b0}};
+
+integer i;
+
+always @(posedge dest_clk) begin
+    sync_ff[0] &lt;= async_level_i;
+
+    for (i = 1; i &lt; STAGES; i = i + 1) begin
+        sync_ff[i] &lt;= sync_ff[i-1];
+    end
+end
+
+assign sync_level_o = sync_ff[STAGES-1];
+
+endmodule
+</code></pre>
+<div class="note">교육용 구조다. AMD FPGA 실제 설계에서는 XPM_CDC_SINGLE을 우선 사용한다.</div></section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>AMD XPM_CDC_SINGLE</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="AMD XPM_CDC_SINGLE · 소스 코드"><code>module xpm_single_bit_sync #(
+    parameter integer DEST_SYNC_FF = 4
+)(
+    input  wire src_clk,
+    input  wire src_level_i,
+
+    input  wire dest_clk,
+    output wire dest_level_o
+);
+
+// Use only for a single level signal or for independent status bits.
+// Do not synchronize a coherent binary bus by instantiating one per bit.
+
+xpm_cdc_single #(
+    .DEST_SYNC_FF(DEST_SYNC_FF),
+    .INIT_SYNC_FF(0),
+    .SIM_ASSERT_CHK(1),
+    .SRC_INPUT_REG(1)
+) u_xpm_cdc_single (
+    .src_clk(src_clk),
+    .src_in(src_level_i),
+    .dest_clk(dest_clk),
+    .dest_out(dest_level_o)
+);
+
+endmodule
+</code></pre>
+<p><code>DEST_SYNC_FF</code>는 2~10 Stage를 지원하며, Source Input Register와 Simulation Misuse Check를 설정할 수 있다.</p></section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>왜 Multi-bit에 Bit별 2-FF가 안 되는가</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="07절 신호 및 실행 흐름">Source Binary = 0111
+Next Binary   = 1000
+
+각 Bit가 독립 Synchronizer를 통과
+        ↓
+Destination에서 순간적으로
+0000 / 1111 / 0100 ... 같은
+Source에 없던 조합을 볼 수 있음</div>
+<p>따라서 서로 관계가 있는 Binary Bus는 Bit별 Synchronizer로 Coherency를 보장할 수 없다. 독립 Flag 배열만 예외다.</p></section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Pulse CDC</h2>
+<p>Source Clock의 1-Clock Pulse는 Destination Clock이 느리면 아예 보지 못할 수 있다. 교육용 Toggle 방식은 Pulse를 상태 변화로 바꾸고 Destination에서 XOR로 다시 1-Clock Pulse를 만든다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Pulse CDC · 소스 코드"><code>module cdc_pulse_toggle_educational (
+    input  wire src_clk,
+    input  wire src_resetn,
+    input  wire src_pulse_i,
+
+    input  wire dest_clk,
+    input  wire dest_resetn,
+    output wire dest_pulse_o
+);
+
+// Educational pulse CDC using a toggle synchronizer.
+// The source pulse rate must be slow enough that each toggle can be observed
+// by the destination domain.
+//
+// For AMD FPGA production designs, prefer XPM_CDC_PULSE.
+
+reg src_toggle;
+
+(* ASYNC_REG = "TRUE" *)
+(* SHREG_EXTRACT = "NO" *)
+reg [1:0] dest_toggle_sync;
+
+reg dest_toggle_d;
+
+always @(posedge src_clk) begin
+    if (!src_resetn) begin
+        src_toggle &lt;= 1'b0;
+    end else if (src_pulse_i) begin
+        src_toggle &lt;= ~src_toggle;
+    end
+end
+
+always @(posedge dest_clk) begin
+    if (!dest_resetn) begin
+        dest_toggle_sync &lt;= 2'b00;
+        dest_toggle_d    &lt;= 1'b0;
+    end else begin
+        dest_toggle_sync[0] &lt;= src_toggle;
+        dest_toggle_sync[1] &lt;= dest_toggle_sync[0];
+        dest_toggle_d       &lt;= dest_toggle_sync[1];
+    end
+end
+
+assign dest_pulse_o =
+    dest_toggle_sync[1] ^ dest_toggle_d;
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>XPM_CDC_PULSE의 간격 조건</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="XPM_CDC_PULSE의 간격 조건 · 소스 코드"><code>module xpm_pulse_sync (
+    input  wire src_clk,
+    input  wire src_reset,
+    input  wire src_pulse_i,
+
+    input  wire dest_clk,
+    input  wire dest_reset,
+    output wire dest_pulse_o
+);
+
+// XPM_CDC_PULSE converts a source-domain pulse to one destination-clock pulse.
+// The source must obey AMD's minimum pulse-gap requirement.
+
+xpm_cdc_pulse #(
+    .DEST_SYNC_FF(4),
+    .INIT_SYNC_FF(0),
+    .REG_OUTPUT(1),
+    .RST_USED(1),
+    .SIM_ASSERT_CHK(1)
+) u_xpm_cdc_pulse (
+    .src_clk(src_clk),
+    .src_pulse(src_pulse_i),
+    .src_rst(src_reset),
+
+    .dest_clk(dest_clk),
+    .dest_pulse(dest_pulse_o),
+    .dest_rst(dest_reset)
+);
+
+endmodule
+</code></pre>
+<p>AMD XPM_CDC_PULSE는 Destination에서 1 Clock Pulse를 생성하지만 Source Pulse 사이에는 최소 간격 조건이 있다. Event Rate가 그보다 빠르면 Pulse CDC가 아니라 Handshake/FIFO 구조를 사용한다.</p></section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Coherent Multi-bit Bus</h2>
+<p>Control Word와 Data Word처럼 서로 같은 Transaction에 속하는 값은 하나의 Snapshot으로 전달해야 한다.</p>
+<div class="flow">Control 32 bit + Data 32 bit → 64-bit Packet → Handshake CDC → Destination에서 함께 Capture</div></section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>XPM_CDC_HANDSHAKE</h2>
+<p>Full Handshake는 Source가 Data를 안정적으로 유지하고, Destination의 수신 확인이 Source로 돌아온 뒤 다음 Transfer를 허용한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="11절 신호 및 실행 흐름">src_send ↑
+   ↓
+dest_req ↑ + dest_out valid
+   ↓
+Destination capture
+   ↓
+dest_ack ↑
+   ↓
+src_rcv ↑
+   ↓
+src_send ↓ → dest_req ↓ → dest_ack ↓ → src_rcv ↓
+   ↓
+다음 Transfer 허용</div></section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>READY/VALID CDC Wrapper</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="READY/VALID CDC Wrapper · 소스 코드"><code>module xpm_ready_valid_bus_bridge #(
+    parameter integer WIDTH = 32,
+    parameter integer SETTLE_CYCLES = 8
+)(
+    // Source clock domain
+    input  wire                 src_clk,
+    input  wire                 src_resetn,
+    input  wire [WIDTH-1:0]     src_data_i,
+    input  wire                 src_valid_i,
+    output wire                 src_ready_o,
+
+    // Destination clock domain
+    input  wire                 dest_clk,
+    input  wire                 dest_resetn,
+    output wire [WIDTH-1:0]     dest_data_o,
+    output wire                 dest_valid_o,
+    input  wire                 dest_ready_i
+);
+
+// Ready/Valid wrapper around XPM_CDC_HANDSHAKE.
+//
+// One transfer can be outstanding.
+// A new source word is accepted only after the full previous handshake
+// returns to idle.
+
+localparam [1:0] SRC_IDLE          = 2'd0;
+localparam [1:0] SRC_WAIT_RCV_HIGH = 2'd1;
+localparam [1:0] SRC_WAIT_RCV_LOW  = 2'd2;
+
+reg [1:0] src_state;
+reg [WIDTH-1:0] src_data_hold;
+reg src_send;
+
+wire src_rcv;
+wire [WIDTH-1:0] dest_out;
+wire dest_req;
+reg  dest_ack;
+
+// Post-reset guard lets the unreset XPM handshake synchronizers
+// observe stable zero values before new traffic is accepted.
+reg [7:0] src_settle_count;
+reg [7:0] dest_settle_count;
+
+wire src_active;
+wire dest_active;
+
+assign src_active =
+    (src_settle_count &gt;= SETTLE_CYCLES);
+
+assign dest_active =
+    (dest_settle_count &gt;= SETTLE_CYCLES);
+
+assign src_ready_o =
+    src_active &amp;&amp;
+    (src_state == SRC_IDLE);
+
+assign dest_data_o  = dest_out;
+assign dest_valid_o =
+    dest_active &amp;&amp;
+    dest_req &amp;&amp;
+    !dest_ack;
+
+always @(posedge src_clk) begin
+    if (!src_resetn) begin
+        src_state        &lt;= SRC_IDLE;
+        src_data_hold    &lt;= {WIDTH{1'b0}};
+        src_send         &lt;= 1'b0;
+        src_settle_count &lt;= 8'd0;
+    end else begin
+        if (!src_active) begin
+            src_settle_count &lt;= src_settle_count + 1'b1;
+        end
+
+        case (src_state)
+            SRC_IDLE: begin
+                src_send &lt;= 1'b0;
+
+                if (src_active &amp;&amp; src_valid_i) begin
+                    src_data_hold &lt;= src_data_i;
+                    src_send      &lt;= 1'b1;
+                    src_state     &lt;= SRC_WAIT_RCV_HIGH;
+                end
+            end
+
+            SRC_WAIT_RCV_HIGH: begin
+                if (src_rcv) begin
+                    src_send  &lt;= 1'b0;
+                    src_state &lt;= SRC_WAIT_RCV_LOW;
+                end
+            end
+
+            SRC_WAIT_RCV_LOW: begin
+                if (!src_rcv) begin
+                    src_state &lt;= SRC_IDLE;
+                end
+            end
+
+            default: begin
+                src_state &lt;= SRC_IDLE;
+                src_send  &lt;= 1'b0;
+            end
+        endcase
+    end
+end
+
+always @(posedge dest_clk) begin
+    if (!dest_resetn) begin
+        dest_ack          &lt;= 1'b0;
+        dest_settle_count &lt;= 8'd0;
+    end else begin
+        if (!dest_active) begin
+            dest_settle_count &lt;= dest_settle_count + 1'b1;
+            dest_ack &lt;= 1'b0;
+        end else if (!dest_ack &amp;&amp; dest_req &amp;&amp; dest_ready_i) begin
+            dest_ack &lt;= 1'b1;
+        end else if (dest_ack &amp;&amp; !dest_req) begin
+            dest_ack &lt;= 1'b0;
+        end
+    end
+end
+
+xpm_cdc_handshake #(
+    .DEST_EXT_HSK(1),
+    .DEST_SYNC_FF(4),
+    .INIT_SYNC_FF(0),
+    .SIM_ASSERT_CHK(1),
+    .SRC_SYNC_FF(4),
+    .WIDTH(WIDTH)
+) u_xpm_cdc_handshake (
+    .src_clk(src_clk),
+    .src_in(src_data_hold),
+    .src_send(src_send),
+    .src_rcv(src_rcv),
+
+    .dest_clk(dest_clk),
+    .dest_out(dest_out),
+    .dest_req(dest_req),
+    .dest_ack(dest_ack)
+);
+
+endmodule
+</code></pre>
+<p>SoC 19의 READY/VALID Interface와 XPM_CDC_HANDSHAKE의 Full Handshake Sequence를 연결한다. 한 번에 한 Transfer만 Outstanding 상태로 유지한다.</p></section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Continuous Data와 Async FIFO</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Continuous Data와 Async FIFO · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Data 특성</th><th scope="col" role="columnheader">권장</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Data 특성" role="cell">간헐적 1 Word Command/Result</td><td data-label="권장" role="cell">XPM_CDC_HANDSHAKE</td></tr>
+<tr role="row"><td data-label="Data 특성" role="cell">몇 Word를 낮은 빈도로 전송</td><td data-label="권장" role="cell">Handshake 또는 작은 Mailbox</td></tr>
+<tr role="row"><td data-label="Data 특성" role="cell">연속 Sample/Tensor/Packet</td><td data-label="권장" role="cell">XPM_FIFO_ASYNC / XPM_FIFO_AXIS</td></tr>
+<tr role="row"><td data-label="Data 특성" role="cell">FIFO Pointer</td><td data-label="권장" role="cell">Gray Encoding</td></tr>
+</tbody></table></div>
+<p>NPU Tensor나 FFT Sample을 1 Word Handshake로 계속 보내는 것은 Throughput을 크게 떨어뜨린다.</p></section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Reset도 CDC다</h2>
+<p>Reset의 Assertion은 즉시 필요할 수 있지만 Deassertion이 Clock Edge와 무관하게 발생하면 Recovery/Removal 문제를 만들 수 있다. 따라서 Clock Domain마다 Reset 해제를 Synchronize한다.</p></section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Async Assert / Sync Deassert</h2>
+<figure class="manual-figure"><a href="../../images/soc20/soc20_reset_domains.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Reset synchronization by clock domain · 원본 보기 (새 탭)"><img src="../../images/soc20/soc20_reset_domains.svg" alt="Reset synchronization by clock domain"></a><figcaption>공통 비동기 Reset을 각 Clock Domain에서 별도로 동기 해제한다.<br><a href="../../images/soc20/soc20_reset_domains.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Reset synchronization by clock domain · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<h3>교육용 RTL</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Async Assert / Sync Deassert · 소스 코드"><code>module reset_sync_async_assert_educational #(
+    parameter integer STAGES = 2
+)(
+    input  wire clk,
+    input  wire arstn_i,
+    output wire srstn_o
+);
+
+// Active-Low reset synchronizer.
+// Assertion: asynchronous
+// Deassertion: synchronous to clk
+//
+// For AMD FPGA production designs, prefer XPM_CDC_ASYNC_RST.
+
+(* ASYNC_REG = "TRUE" *)
+(* SHREG_EXTRACT = "NO" *)
+reg [STAGES-1:0] reset_ff;
+
+integer i;
+
+always @(posedge clk or negedge arstn_i) begin
+    if (!arstn_i) begin
+        reset_ff &lt;= {STAGES{1'b0}};
+    end else begin
+        reset_ff[0] &lt;= 1'b1;
+
+        for (i = 1; i &lt; STAGES; i = i + 1) begin
+            reset_ff[i] &lt;= reset_ff[i-1];
+        end
+    end
+end
+
+assign srstn_o = reset_ff[STAGES-1];
+
+endmodule
+</code></pre>
+<h3>AMD XPM</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Async Assert / Sync Deassert · 소스 코드"><code>module xpm_reset_sync_active_low #(
+    parameter integer DEST_SYNC_FF = 4
+)(
+    input  wire dest_clk,
+    input  wire global_resetn_i,
+    output wire dest_resetn_o
+);
+
+// AMD XPM implementation.
+// Active-Low reset asserts asynchronously and deasserts synchronously
+// to the destination clock.
+
+xpm_cdc_async_rst #(
+    .DEST_SYNC_FF(DEST_SYNC_FF),
+    .INIT_SYNC_FF(0),
+    .RST_ACTIVE_HIGH(0)
+) u_xpm_cdc_async_rst (
+    .src_arst(global_resetn_i),
+    .dest_clk(dest_clk),
+    .dest_arst(dest_resetn_o)
+);
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Domain별 Reset 분리</h2>
+<div class="flow">global_resetn → AXI Reset Synchronizer → axi_resetn<br>global_resetn → Functional Reset Synchronizer → func_resetn</div>
+<p>AXI Logic과 Functional Logic이 같은 Global Reset Input을 받더라도 Reset Release Clock은 서로 다르다.</p></section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Post-Reset Settle Guard</h2>
+<p>XPM_CDC_HANDSHAKE 내부 Synchronizer에는 별도의 Runtime Reset Port가 없으므로 Wrapper는 양 Domain Reset 해제 직후 즉시 Transfer를 받지 않고 <code>SETTLE_CYCLES</code> 동안 0 상태가 전파되도록 기다린다.</p>
+<div class="flow">Reset release → 8 Clock Guard → CDC READY 활성화 → 새 Transfer 허용</div></section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>SoC 19 Dual-Clock 확장</h2>
+<figure class="manual-figure"><a href="../../images/soc20/soc20_dual_clock_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Dual clock control status bridge architecture · 원본 보기 (새 탭)"><img src="../../images/soc20/soc20_dual_clock_architecture.svg" alt="Dual clock control status bridge architecture"></a><figcaption>SoC 19 Bridge를 AXI Domain에 유지하고 CDC Adapter를 통해 Functional Domain과 연결한다.<br><a href="../../images/soc20/soc20_dual_clock_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Dual clock control status bridge architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>CONTROL + DATA 64-bit Packet</h2>
+<p>CONTROL과 IN_DATA를 따로 Crossing하지 않는다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="19절 신호 및 실행 흐름">AXI Domain
+CONTROL[31:0]
+IN_DATA[31:0]
+     ↓ Concatenate
+Packet[63:0]
+     ↓ XPM_CDC_HANDSHAKE
+Functional Domain
+CONTROL Snapshot + DATA Snapshot</div>
+<p>이 구조로 같은 Transaction의 설정값과 Data가 서로 다른 시점으로 섞이는 것을 방지한다.</p></section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Result 32-bit Return</h2>
+<p>Functional Core의 32-bit 결과도 READY/VALID → XPM Full Handshake → AXI Domain READY/VALID로 되돌린다. AXI Domain의 SoC 19 Output Buffer가 결과를 Capture한 뒤 Software POP까지 유지한다.</p></section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Status Flag CDC</h2>
+<p><code>idle</code>, <code>busy</code>처럼 각각 독립적인 1-bit Flag는 개별 XPM_CDC_SINGLE로 AXI Domain에 넘긴다.</p>
+<div class="warn">32-bit Counter, Address, Binary State Value를 이런 방식으로 Bit별 Synchronize하면 안 된다. Coherent Snapshot이 필요하면 Handshake/Gray/FIFO를 사용한다.</div></section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>CDC Adapter Module</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="CDC Adapter Module · 소스 코드"><code>module dual_clock_bridge_cdc_adapter (
+    // AXI/register clock domain
+    input  wire        axi_clk,
+    input  wire        axi_resetn,
+
+    input  wire [31:0] control_axi_i,
+    input  wire [31:0] in_data_axi_i,
+    input  wire        in_valid_axi_i,
+    output wire        in_ready_axi_o,
+
+    output wire [31:0] out_data_axi_o,
+    output wire        out_valid_axi_o,
+    input  wire        out_ready_axi_i,
+
+    output wire [31:0] status_axi_o,
+
+    // Functional clock domain
+    input  wire        func_clk,
+    input  wire        func_resetn,
+
+    output wire [63:0] packet_func_o,
+    output wire        packet_valid_func_o,
+    input  wire        packet_ready_func_i,
+
+    input  wire [31:0] result_func_i,
+    input  wire        result_valid_func_i,
+    output wire        result_ready_func_o,
+
+    input  wire        func_idle_i,
+    input  wire        func_busy_i
+);
+
+// This module owns all CDC policy between the AXI and functional domains.
+// Related CONTROL + IN_DATA values are packed and transferred coherently.
+
+wire [63:0] packet_axi;
+
+assign packet_axi = {
+    control_axi_i,
+    in_data_axi_i
+};
+
+xpm_ready_valid_bus_bridge #(
+    .WIDTH(64)
+) u_input_packet_cdc (
+    .src_clk(axi_clk),
+    .src_resetn(axi_resetn),
+    .src_data_i(packet_axi),
+    .src_valid_i(in_valid_axi_i),
+    .src_ready_o(in_ready_axi_o),
+
+    .dest_clk(func_clk),
+    .dest_resetn(func_resetn),
+    .dest_data_o(packet_func_o),
+    .dest_valid_o(packet_valid_func_o),
+    .dest_ready_i(packet_ready_func_i)
+);
+
+xpm_ready_valid_bus_bridge #(
+    .WIDTH(32)
+) u_output_result_cdc (
+    .src_clk(func_clk),
+    .src_resetn(func_resetn),
+    .src_data_i(result_func_i),
+    .src_valid_i(result_valid_func_i),
+    .src_ready_o(result_ready_func_o),
+
+    .dest_clk(axi_clk),
+    .dest_resetn(axi_resetn),
+    .dest_data_o(out_data_axi_o),
+    .dest_valid_o(out_valid_axi_o),
+    .dest_ready_i(out_ready_axi_i)
+);
+
+// These are independent one-bit status flags.
+// They are intentionally not treated as a coherent binary bus.
+wire func_idle_axi;
+wire func_busy_axi;
+
+xpm_single_bit_sync u_idle_status_cdc (
+    .src_clk(func_clk),
+    .src_level_i(func_idle_i),
+    .dest_clk(axi_clk),
+    .dest_level_o(func_idle_axi)
+);
+
+xpm_single_bit_sync u_busy_status_cdc (
+    .src_clk(func_clk),
+    .src_level_i(func_busy_i),
+    .dest_clk(axi_clk),
+    .dest_level_o(func_busy_axi)
+);
+
+assign status_axi_o = {
+    30'h0,
+    func_busy_axi,
+    func_idle_axi
+};
+
+endmodule
+</code></pre>
+<p>CDC Policy는 Top이 아니라 별도 Adapter Module에 집중시켰다.</p></section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>순수 Top Wrapper</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="순수 Top Wrapper · 소스 코드"><code>module dual_clock_control_status_bridge_demo #(
+    parameter integer C_S_AXI_ADDR_WIDTH = 32,
+    parameter integer PROCESS_CYCLES     = 6
+)(
+    input  wire                          s_axi_aclk,
+    input  wire                          func_clk,
+    input  wire                          global_resetn,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_awaddr,
+    input  wire [2:0]                    s_axi_awprot,
+    input  wire                          s_axi_awvalid,
+    output wire                          s_axi_awready,
+
+    input  wire [31:0]                   s_axi_wdata,
+    input  wire [3:0]                    s_axi_wstrb,
+    input  wire                          s_axi_wvalid,
+    output wire                          s_axi_wready,
+
+    output wire [1:0]                    s_axi_bresp,
+    output wire                          s_axi_bvalid,
+    input  wire                          s_axi_bready,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_araddr,
+    input  wire [2:0]                    s_axi_arprot,
+    input  wire                          s_axi_arvalid,
+    output wire                          s_axi_arready,
+
+    output wire [31:0]                   s_axi_rdata,
+    output wire [1:0]                    s_axi_rresp,
+    output wire                          s_axi_rvalid,
+    input  wire                          s_axi_rready,
+
+    output wire                          irq_o
+);
+
+// Pure Shell / Wrapper:
+// - reset synchronization is delegated
+// - CDC policy is delegated
+// - functional processing is delegated
+// - AXI/Register behavior is delegated
+
+wire axi_resetn;
+wire func_resetn;
+
+wire [31:0] control_axi;
+wire [31:0] status_axi;
+
+wire [31:0] in_data_axi;
+wire        in_valid_axi;
+wire        in_ready_axi;
+
+wire [31:0] out_data_axi;
+wire        out_valid_axi;
+wire        out_ready_axi;
+
+wire [63:0] packet_func;
+wire        packet_valid_func;
+wire        packet_ready_func;
+
+wire [31:0] result_func;
+wire        result_valid_func;
+wire        result_ready_func;
+
+wire func_idle;
+wire func_busy;
+
+xpm_reset_sync_active_low u_axi_reset_sync (
+    .dest_clk(s_axi_aclk),
+    .global_resetn_i(global_resetn),
+    .dest_resetn_o(axi_resetn)
+);
+
+xpm_reset_sync_active_low u_func_reset_sync (
+    .dest_clk(func_clk),
+    .global_resetn_i(global_resetn),
+    .dest_resetn_o(func_resetn)
+);
+
+axi_control_status_bridge_ip #(
+    .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
+) u_axi_control_status_bridge_ip (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(axi_resetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awprot(s_axi_awprot),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arprot(s_axi_arprot),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .control_o(control_axi),
+    .status_i(status_axi),
+
+    .in_data_o(in_data_axi),
+    .in_valid_o(in_valid_axi),
+    .in_ready_i(in_ready_axi),
+
+    .out_data_i(out_data_axi),
+    .out_valid_i(out_valid_axi),
+    .out_ready_o(out_ready_axi),
+
+    .irq_o(irq_o)
+);
+
+dual_clock_bridge_cdc_adapter u_dual_clock_bridge_cdc_adapter (
+    .axi_clk(s_axi_aclk),
+    .axi_resetn(axi_resetn),
+
+    .control_axi_i(control_axi),
+    .in_data_axi_i(in_data_axi),
+    .in_valid_axi_i(in_valid_axi),
+    .in_ready_axi_o(in_ready_axi),
+
+    .out_data_axi_o(out_data_axi),
+    .out_valid_axi_o(out_valid_axi),
+    .out_ready_axi_i(out_ready_axi),
+
+    .status_axi_o(status_axi),
+
+    .func_clk(func_clk),
+    .func_resetn(func_resetn),
+
+    .packet_func_o(packet_func),
+    .packet_valid_func_o(packet_valid_func),
+    .packet_ready_func_i(packet_ready_func),
+
+    .result_func_i(result_func),
+    .result_valid_func_i(result_valid_func),
+    .result_ready_func_o(result_ready_func),
+
+    .func_idle_i(func_idle),
+    .func_busy_i(func_busy)
+);
+
+dual_clock_example_core #(
+    .PROCESS_CYCLES(PROCESS_CYCLES)
+) u_dual_clock_example_core (
+    .clk(func_clk),
+    .resetn(func_resetn),
+
+    .packet_i(packet_func),
+    .packet_valid_i(packet_valid_func),
+    .packet_ready_o(packet_ready_func),
+
+    .result_o(result_func),
+    .result_valid_o(result_valid_func),
+    .result_ready_i(result_ready_func),
+
+    .idle_o(func_idle),
+    .busy_o(func_busy)
+);
+
+endmodule
+</code></pre>
+<p>Top은 Reset Synchronizer, AXI Bridge, CDC Adapter, Functional Core를 연결할 뿐 CDC 정책이나 기능 연산을 직접 수행하지 않는다.</p></section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Functional Core</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Functional Core · 소스 코드"><code>module dual_clock_example_core #(
+    parameter integer PROCESS_CYCLES = 6
+)(
+    input  wire        clk,
+    input  wire        resetn,
+
+    // Coherent input packet: control + data
+    input  wire [63:0] packet_i,
+    input  wire        packet_valid_i,
+    output wire        packet_ready_o,
+
+    output reg  [31:0] result_o,
+    output reg         result_valid_o,
+    input  wire        result_ready_i,
+
+    output wire        idle_o,
+    output wire        busy_o
+);
+
+localparam [1:0] ST_IDLE = 2'd0;
+localparam [1:0] ST_RUN  = 2'd1;
+localparam [1:0] ST_OUT  = 2'd2;
+
+reg [1:0] state;
+reg [7:0] cycles_left;
+reg [31:0] data_latched;
+reg [1:0] mode_latched;
+
+wire [31:0] control_word;
+wire [31:0] input_word;
+
+assign control_word = packet_i[63:32];
+assign input_word   = packet_i[31:0];
+
+assign packet_ready_o = (state == ST_IDLE);
+assign idle_o = (state == ST_IDLE);
+assign busy_o = (state == ST_RUN);
+
+function [31:0] process_value;
+    input [31:0] value;
+    input [1:0] mode;
+    begin
+        case (mode)
+            2'b00: process_value = value;
+            2'b01: process_value = value + 32'd1;
+            2'b10: process_value = value &lt;&lt; 1;
+            2'b11: process_value = ~value;
+            default: process_value = value;
+        endcase
+    end
+endfunction
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state          &lt;= ST_IDLE;
+        cycles_left    &lt;= 8'd0;
+        data_latched   &lt;= 32'h0000_0000;
+        mode_latched   &lt;= 2'b00;
+        result_o       &lt;= 32'h0000_0000;
+        result_valid_o &lt;= 1'b0;
+    end else begin
+        case (state)
+            ST_IDLE: begin
+                result_valid_o &lt;= 1'b0;
+
+                if (packet_valid_i &amp;&amp; packet_ready_o) begin
+                    data_latched &lt;= input_word;
+                    mode_latched &lt;= control_word[1:0];
+
+                    if (PROCESS_CYCLES &lt;= 1) begin
+                        cycles_left &lt;= 8'd0;
+                    end else begin
+                        cycles_left &lt;= PROCESS_CYCLES - 1;
+                    end
+
+                    state &lt;= ST_RUN;
+                end
+            end
+
+            ST_RUN: begin
+                if (cycles_left != 0) begin
+                    cycles_left &lt;= cycles_left - 1'b1;
+                end else begin
+                    result_o &lt;= process_value(
+                        data_latched,
+                        mode_latched
+                    );
+                    result_valid_o &lt;= 1'b1;
+                    state &lt;= ST_OUT;
+                end
+            end
+
+            ST_OUT: begin
+                if (result_valid_o &amp;&amp; result_ready_i) begin
+                    result_valid_o &lt;= 1'b0;
+                    state &lt;= ST_IDLE;
+                end
+            end
+
+            default: begin
+                state &lt;= ST_IDLE;
+                result_valid_o &lt;= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+<p>Functional Core는 AXI를 모르며 64-bit Packet과 READY/VALID Result만 사용한다.</p></section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Dual-Clock Testbench</h2>
+<p>AXI Clock은 100 MHz, Functional Clock은 약 71.4 MHz로 두어 서로 일정 배수 관계가 아닌 Clock을 사용한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Dual-Clock Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_dual_clock_control_status_bridge_demo;
+
+localparam integer ADDR_W = 32;
+
+reg axi_clk = 1'b0;
+reg func_clk = 1'b0;
+reg global_resetn = 1'b0;
+
+always #5 axi_clk = ~axi_clk;   // 100 MHz
+always #7 func_clk = ~func_clk; // ~71.4 MHz
+
+reg  [ADDR_W-1:0] awaddr = 0;
+reg  [2:0]        awprot = 0;
+reg               awvalid = 0;
+wire              awready;
+
+reg  [31:0]       wdata = 0;
+reg  [3:0]        wstrb = 0;
+reg               wvalid = 0;
+wire              wready;
+
+wire [1:0]        bresp;
+wire              bvalid;
+reg               bready = 0;
+
+reg  [ADDR_W-1:0] araddr = 0;
+reg  [2:0]        arprot = 0;
+reg               arvalid = 0;
+wire              arready;
+
+wire [31:0]       rdata;
+wire [1:0]        rresp;
+wire              rvalid;
+reg               rready = 0;
+
+wire irq_o;
+
+integer errors = 0;
+integer k;
+reg [31:0] rd;
+
+dual_clock_control_status_bridge_demo #(
+    .C_S_AXI_ADDR_WIDTH(ADDR_W),
+    .PROCESS_CYCLES(6)
+) dut (
+    .s_axi_aclk(axi_clk),
+    .func_clk(func_clk),
+    .global_resetn(global_resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awprot(awprot),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arprot(arprot),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready),
+
+    .irq_o(irq_o)
+);
+
+task automatic axi_write;
+    input [31:0] addr;
+    input [31:0] data;
+    begin
+        @(negedge axi_clk);
+        awaddr = addr;
+        awvalid = 1'b1;
+
+        wait (awready === 1'b1);
+        @(negedge axi_clk);
+        awvalid = 1'b0;
+
+        @(negedge axi_clk);
+        wdata = data;
+        wstrb = 4'b1111;
+        wvalid = 1'b1;
+
+        wait (wready === 1'b1);
+        @(negedge axi_clk);
+        wvalid = 1'b0;
+
+        bready = 1'b1;
+        wait (bvalid === 1'b1);
+        @(posedge axi_clk);
+        @(negedge axi_clk);
+        bready = 1'b0;
+    end
+endtask
+
+task automatic axi_read;
+    input [31:0] addr;
+    output [31:0] data;
+    begin
+        @(negedge axi_clk);
+        araddr = addr;
+        arvalid = 1'b1;
+
+        wait (arready === 1'b1);
+        @(negedge axi_clk);
+        arvalid = 1'b0;
+
+        rready = 1'b1;
+        wait (rvalid === 1'b1);
+        data = rdata;
+
+        @(posedge axi_clk);
+        @(negedge axi_clk);
+        rready = 1'b0;
+    end
+endtask
+
+task automatic wait_output;
+    begin
+        rd = 32'h0;
+
+        for (k = 0; k &lt; 200; k = k + 1) begin
+            axi_read(32'h00000008, rd);
+
+            if (rd[2]) begin
+                k = 200;
+            end
+        end
+
+        if (!rd[2]) begin
+            $display("FAIL: timeout waiting for OUT_PENDING");
+            errors = errors + 1;
+        end
+    end
+endtask
+
+initial begin
+    #80;
+    global_resetn = 1'b1;
+
+    // Allow both domain reset synchronizers to release.
+    repeat (12) @(posedge axi_clk);
+
+    // Mode 1, input 9 =&gt; result 10.
+    axi_write(32'h00000000, 32'h00000001);
+    axi_write(32'h0000000C, 32'h00000009);
+    axi_write(32'h00000010, 32'h00000001);
+
+    wait_output();
+
+    axi_read(32'h00000014, rd);
+
+    if (rd !== 32'h0000000A) begin
+        $display("FAIL: dual-clock result=%08h expected=0000000A", rd);
+        errors = errors + 1;
+    end else begin
+        $display("PASS: dual-clock result 9 -&gt; 10");
+    end
+
+    axi_write(32'h00000010, 32'h00000002);
+
+    if (errors == 0) begin
+        $display("SOC20 DUAL-CLOCK BRIDGE TEST: PASS");
+    end else begin
+        $display("SOC20 DUAL-CLOCK BRIDGE TEST: FAIL (%0d)", errors);
+    end
+
+    #100;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Vivado report_cdc</h2>
+<figure class="manual-figure"><a href="../../images/soc20/soc20_report_cdc_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="CDC verification flow · 원본 보기 (새 탭)"><img src="../../images/soc20/soc20_report_cdc_flow.svg" alt="CDC verification flow"></a><figcaption>CDC는 Synthesis 이후 구조 분석까지 완료해야 한다.<br><a href="../../images/soc20/soc20_report_cdc_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="CDC verification flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Vivado report_cdc · 소스 코드"><code>report_cdc -details -file soc20_report_cdc.rpt
+report_clock_interaction -file soc20_clock_interaction.rpt</code></pre></section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>CDC Report에서 볼 항목</h2>
+<ul>
+<li>Single-bit Synchronizer가 올바른 Topology로 인식되는가</li>
+<li>Asynchronous Reset Synchronizer가 인식되는가</li>
+<li>Combinational Logic before Synchronizer가 없는가</li>
+<li>Multi-clock Fanin이 없는가</li>
+<li>Unknown/Unsafe CDC가 남아 있지 않은가</li>
+<li>XPM_CDC_HANDSHAKE 경로의 Warning 의미를 이해하고 검토했는가</li>
+</ul></section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Constraint와 CDC 구조의 관계</h2>
+<div class="warn">CDC Path에 False Path를 설정하는 것은 Metastability와 Data Coherency 문제를 해결하지 않는다.</div>
+<div class="flow">안전한 CDC Circuit 설계 → report_cdc 확인 → 실제 Clock 관계에 맞는 Timing Constraint 적용</div></section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Clock Enable과 Divided Clock</h2>
+<p>단순히 Logic을 느리게 동작시키기 위해 Counter Bit를 새 Clock으로 사용하면 새 Clock Domain과 Clock Routing 문제를 만든다.</p>
+<div class="flow">지양: counter_bit → always @(posedge counter_bit)<br>권장: 하나의 Clock + clock_enable</div>
+<p>실제 독립 Clock Domain이 필요한 경우에는 Clocking Resource와 CDC 구조를 명확히 설계한다.</p></section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>NPU/FFT 확장</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="NPU/FFT 확장 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">경로</th><th scope="col" role="columnheader">권장 Interface</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="경로" role="cell">Mode / Start / Threshold</td><td data-label="권장 Interface" role="cell">AXI4-Lite Control Register</td></tr>
+<tr role="row"><td data-label="경로" role="cell">Done / Error / Status</td><td data-label="권장 Interface" role="cell">Single-bit CDC + Status Register 또는 Event</td></tr>
+<tr role="row"><td data-label="경로" role="cell">짧은 Command / Result</td><td data-label="권장 Interface" role="cell">Handshake CDC</td></tr>
+<tr role="row"><td data-label="경로" role="cell">ADC Sample / FFT Stream</td><td data-label="권장 Interface" role="cell">Async FIFO / AXI4-Stream</td></tr>
+<tr role="row"><td data-label="경로" role="cell">NPU Tensor</td><td data-label="권장 Interface" role="cell">AXI4-Stream + FIFO / DMA 방향</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">가끔 Flag가 이상함</td><td data-label="원인" role="cell">Single-bit CDC 누락</td><td data-label="확인" role="cell">XPM_CDC_SINGLE</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Binary 값이 간헐적으로 깨짐</td><td data-label="원인" role="cell">Bit별 2-FF</td><td data-label="확인" role="cell">Handshake/Gray/FIFO</td></tr>
+<tr role="row"><td data-label="증상" role="cell">짧은 Pulse가 사라짐</td><td data-label="원인" role="cell">Level Synchronizer 사용</td><td data-label="확인" role="cell">XPM_CDC_PULSE</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Reset 해제 후 이상 동작</td><td data-label="원인" role="cell">비동기 Deassert</td><td data-label="확인" role="cell">Domain별 Reset Sync</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Runtime Reset 직후 Handshake 꼬임</td><td data-label="원인" role="cell">Protocol 정착시간 없음</td><td data-label="확인" role="cell">Post-Reset Guard</td></tr>
+<tr role="row"><td data-label="증상" role="cell">report_cdc Critical Warning</td><td data-label="원인" role="cell">구조적으로 Unsafe CDC</td><td data-label="확인" role="cell">Constraint보다 RTL 구조 먼저 수정</td></tr>
+<tr role="row"><td data-label="증상" role="cell">FFT/NPU 속도가 너무 느림</td><td data-label="원인" role="cell">Word Handshake 남용</td><td data-label="확인" role="cell">Async FIFO / AXI4-Stream</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 20 완료 체크리스트</h2><ul>
+<li>[ ] 1-bit Level, Pulse, Multi-bit Bus, Stream, Reset을 구분한다.</li>
+<li>[ ] 단일 Level에는 2-FF/XPM_CDC_SINGLE을 사용한다.</li>
+<li>[ ] Binary Multi-bit Bus에 Bit별 2-FF를 사용하지 않는다.</li>
+<li>[ ] Pulse에는 XPM_CDC_PULSE 또는 적절한 Event Handshake를 사용한다.</li>
+<li>[ ] 관련 Control/Data를 하나의 Handshake Packet으로 묶는다.</li>
+<li>[ ] 연속 고속 Data에는 Async FIFO/AXI4-Stream을 고려한다.</li>
+<li>[ ] Reset Assert와 Deassert 특성을 구분한다.</li>
+<li>[ ] 각 Clock Domain에 별도 Reset Synchronizer를 둔다.</li>
+<li>[ ] Runtime Reset 후 Protocol Settle Guard를 둔다.</li>
+<li>[ ] SoC 19 Bridge와 Functional Core 사이에 CDC Adapter를 분리했다.</li>
+<li>[ ] Top Wrapper에 기능/CDC 정책을 직접 넣지 않았다.</li>
+<li>[ ] 합성 후 report_cdc를 반드시 실행한다.</li>
+<li>[ ] False Path를 CDC 해결책으로 오해하지 않는다.</li>
+</ul><div class="flow">SoC 20 완료 → SoC 21 Self-Checking Testbench / Assertion / Functional Coverage</div></section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_SINGLE" target="_blank" rel="noopener">AMD UG953 · XPM_CDC_SINGLE · 2026.1</a></td><td data-label="확인 항목" role="cell">1-bit Synchronizer, DEST_SYNC_FF</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_ARRAY_SINGLE" target="_blank" rel="noopener">AMD UG953 · XPM_CDC_ARRAY_SINGLE · 2026.1</a></td><td data-label="확인 항목" role="cell">서로 독립적인 Bit Array와 Coherent Bus의 차이</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_PULSE" target="_blank" rel="noopener">AMD UG953 · XPM_CDC_PULSE · 2026.1</a></td><td data-label="확인 항목" role="cell">Pulse Transfer와 Minimum Gap</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_ASYNC_RST" target="_blank" rel="noopener">AMD UG953 · XPM_CDC_ASYNC_RST · 2026.1</a></td><td data-label="확인 항목" role="cell">Async Assert / Sync Deassert Reset</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Clock-Domain-Crossing" target="_blank" rel="noopener">AMD UG949 · Clock Domain Crossing · 2026.1</a></td><td data-label="확인 항목" role="cell">XPM 사용, ASYNC_REG, CDC Methodology</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Clock-Domain-Crossings" target="_blank" rel="noopener">AMD UG906 · Report Clock Domain Crossings · 2026.1</a></td><td data-label="확인 항목" role="cell">report_cdc 구조 분석</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug903-vivado-using-constraints/Completing-the-CDC-Analysis-and-Constraints" target="_blank" rel="noopener">AMD UG903 · CDC Analysis and Constraints · 2026.1</a></td><td data-label="확인 항목" role="cell">CDC 구조 분석과 Timing Constraint 관계</td></tr>
+<tr role="row"><td role="cell" data-label="문서"><a href="https://docs.amd.com/r/2022.2-English/ug953-vivado-7series-libraries/XPM_CDC_HANDSHAKE" target="_blank" rel="noopener">AMD UG953 · XPM_CDC_HANDSHAKE · 2022.2</a></td><td role="cell" data-label="확인 항목">다비트 데이터의 요청·응답 핸드셰이크 매크로</td></tr></tbody></table></div></section>
+
+<nav class="chapter-nav"><a href="19_axi_control_status_bridge.html">← SoC 19</a><a href="../../index.html">전체 목차</a><a href="21_self_checking_assertion_coverage.html">SoC 21 →</a></nav>
+</main></div><footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+</body></html>

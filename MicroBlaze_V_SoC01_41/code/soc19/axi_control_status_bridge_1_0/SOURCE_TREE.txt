@@ -1,0 +1,19 @@
+axi_control_status_bridge_1_0/
+├── hdl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── control_status_bridge_core.v
+│   ├── axi_control_status_bridge_ip.v
+│   ├── example_ready_valid_core.v
+│   └── axi_control_status_bridge_demo_top.v
+├── testbench/
+│   └── tb_axi_control_status_bridge_demo_top.v
+├── drivers/axi_control_status_bridge_v1_0/src/
+│   ├── axi_control_status_bridge_regmap.h
+│   ├── axi_control_status_bridge_driver.h
+│   └── axi_control_status_bridge_driver.c
+├── examples/
+│   └── test_axi_control_status_bridge_driver_mock.c
+├── doc/
+│   └── README_PACKAGE.md
+└── tcl/
+    └── prepare_packaging_project.tcl

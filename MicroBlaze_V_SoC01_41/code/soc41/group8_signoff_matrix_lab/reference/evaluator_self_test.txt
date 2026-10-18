@@ -1,0 +1,21 @@
+SYNTHETIC INPUT ONLY - NOT HARDWARE MEASUREMENT
+
+PASS CASE
+SoC41 SIGN-OFF EVALUATION
+functional  : PASS
+timing      : PASS
+methodology : PASS
+resources   : PASS
+power       : PASS
+runtime     : RECORDED
+overall     : PASS
+
+FAIL CASE
+SoC41 SIGN-OFF EVALUATION
+functional  : PASS
+timing      : FAIL
+methodology : PASS
+resources   : PASS
+power       : PASS
+runtime     : RECORDED
+overall     : FAIL

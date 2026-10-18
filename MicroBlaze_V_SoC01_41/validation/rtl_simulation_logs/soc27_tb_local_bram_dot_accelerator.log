@@ -1,0 +1,142 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_local_bram_dot_accelerator -o validation-tools/rtl_runs/soc27_tb_local_bram_dot_accelerator.vvp code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv code/soc27/local_bram_feeding_lab/rtl/local_bram_dot_accelerator.v code/soc27/local_bram_feeding_lab/rtl/vector_dot_controller_pe4.v code/soc27/local_bram_feeding_lab/rtl/pe4_dot_accum_pipelined.v code/soc27/local_bram_feeding_lab/rtl/local_bram_demo_loader_len10.v code/soc27/local_bram_feeding_lab/rtl/reset_active_high_to_active_low.v code/soc27/local_bram_feeding_lab/rtl/vector_bram_sdp.v code/soc27/local_bram_feeding_lab/rtl/local_bram_dot_basys3_top.v code/soc27/local_bram_feeding_lab/rtl/bram_vector_feeder.v code/soc27/local_bram_feeding_lab/rtl/mul_s8_dsp.v code/soc27/local_bram_feeding_lab/rtl/local_bram_result_sink.v
+code/soc27/local_bram_feeding_lab/rtl/local_bram_dot_accelerator.v:1: warning: timescale for local_bram_dot_accelerator inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/vector_dot_controller_pe4.v:1: warning: timescale for vector_dot_controller_pe4 inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/pe4_dot_accum_pipelined.v:1: warning: timescale for pe4_dot_accum_pipelined inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/local_bram_demo_loader_len10.v:1: warning: timescale for local_bram_demo_loader_len10 inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/vector_bram_sdp.v:1: warning: timescale for vector_bram_sdp inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/local_bram_dot_basys3_top.v:1: warning: timescale for local_bram_dot_basys3_top inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/bram_vector_feeder.v:1: warning: timescale for bram_vector_feeder inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/mul_s8_dsp.v:2: warning: timescale for mul_s8_dsp inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc27/local_bram_feeding_lab/rtl/local_bram_result_sink.v:1: warning: timescale for local_bram_result_sink inherited from another file.
+code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+
+RUN length=0 groups=0
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = 0
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=1 groups=1
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = 1547
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=2 groups=1
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -3881
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=3 groups=1
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -9206
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=4 groups=1
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -11702
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=5 groups=2
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -14531
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=10 groups=3
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -25045
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=16 groups=4
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -19384
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=17 groups=5
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -21709
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=31 groups=8
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -19552
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN length=64 groups=16
+CHECK PASS: result_valid arrived
+CHECK PASS: done with result
+CHECK PASS: local BRAM vector result = -35552
+CHECK PASS: requested group count
+CHECK PASS: delivered group count
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: busy low at completion
+
+RUN out-of-range length=1025
+CHECK PASS: range error asserted
+CHECK PASS: invalid command did not start busy
+CHECK PASS: invalid command did not produce result
+
+SOC27 CHECK COUNT : 91
+SOC27 ERROR COUNT : 0
+SOC27 LOCAL BRAM FEEDING TEST: PASS

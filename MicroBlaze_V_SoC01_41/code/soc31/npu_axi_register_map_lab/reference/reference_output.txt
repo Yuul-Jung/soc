@@ -1,0 +1,40 @@
+Register map:
+CONTROL      0x00
+STATUS       0x04
+VERSION      0x08
+SAT_COUNT    0x0C
+BIAS_CH0     0x10
+BIAS_CH1     0x14
+SCALE_CH0    0x18
+SCALE_CH1    0x1C
+ZERO_POINT   0x20
+ACC_IN0      0x40
+ACC_IN1      0x44
+ACC_IN2      0x48
+ACC_IN3      0x4C
+ACC_IN4      0x50
+ACC_IN5      0x54
+ACC_IN6      0x58
+ACC_IN7      0x5C
+OUT_CH0      0x60
+OUT_CH1      0x64
+CYCLE_COUNT  0x68
+
+WSTRB partial-write model: PASS
+scale CH0 demo = 0x00010001
+scale CH1 demo = 0x00010003
+zero-point demo = 0xFFFD0000
+expected OUT_CH0 = 0x20181008
+expected OUT_CH1 = 0x7F7F6333
+expected SAT_COUNT = 2
+SOC31 PYTHON REGISTER-MAP REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.

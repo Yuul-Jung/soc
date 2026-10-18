@@ -1,0 +1,19 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_mac_s8_acc32_compare -o validation-tools/rtl_runs/soc24_tb_mac_s8_acc32_compare.vvp code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv code/soc24/npu_mac_lab/rtl/reset_active_high_to_active_low.v code/soc24/npu_mac_lab/rtl/mac_pattern_source.v code/soc24/npu_mac_lab/rtl/mac_s8_acc32_basic.v code/soc24/npu_mac_lab/rtl/mac_s8_acc32_pipelined.v code/soc24/npu_mac_lab/rtl/mac_result_sink.v code/soc24/npu_mac_lab/rtl/mac_basic_basys3_top.v code/soc24/npu_mac_lab/rtl/mac_pipelined_basys3_top.v
+code/soc24/npu_mac_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/rtl/mac_pattern_source.v:1: warning: timescale for mac_pattern_source inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/rtl/mac_s8_acc32_basic.v:2: warning: timescale for mac_s8_acc32_basic inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/rtl/mac_s8_acc32_pipelined.v:2: warning: timescale for mac_s8_acc32_pipelined inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/rtl/mac_result_sink.v:1: warning: timescale for mac_result_sink inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/rtl/mac_basic_basys3_top.v:1: warning: timescale for mac_basic_basys3_top inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/rtl/mac_pipelined_basys3_top.v:1: warning: timescale for mac_pipelined_basys3_top inherited from another file.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:1: ...: The inherited timescale is here.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:137: error: Cannot "return" from tasks.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:174: error: Enable of unknown task ``expected_basic_q.pop_front''.
+code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv:199: error: Enable of unknown task ``expected_pipe_q.pop_front''.
+3 error(s) during elaboration.

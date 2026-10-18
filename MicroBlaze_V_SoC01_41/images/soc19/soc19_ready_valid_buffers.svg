@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="620" viewBox="0 0 1280 620">
+<rect width="1280" height="620" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">1-Word Buffer + READY/VALID Handshake</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<text x="315" y="100" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">Software → Functional RTL</text>
+<rect x="70" y="135" width="220" height="115" rx="12" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="180" y="180" text-anchor="middle" font-family="sans-serif" font-size="17">IN_DATA Shadow</text>
+<text x="180" y="215" text-anchor="middle" font-family="sans-serif" font-size="16">Software Write</text>
+<rect x="365" y="135" width="220" height="115" rx="12" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="475" y="180" text-anchor="middle" font-family="sans-serif" font-size="17">Pending Buffer</text>
+<text x="475" y="215" text-anchor="middle" font-family="sans-serif" font-size="16">SUBMIT → valid=1</text>
+<rect x="660" y="135" width="220" height="115" rx="12" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="770" y="180" text-anchor="middle" font-family="sans-serif" font-size="17">Functional RTL</text>
+<text x="770" y="215" text-anchor="middle" font-family="sans-serif" font-size="16">ready</text>
+<line x1="290" y1="193" x2="365" y2="193" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="585" y1="193" x2="660" y2="193" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<text x="475" y="290" text-anchor="middle" font-family="sans-serif" font-size="16">valid &amp;&amp; ready → transfer, pending valid clear</text>
+
+<text x="930" y="350" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">Functional RTL → Software</text>
+<rect x="400" y="390" width="220" height="115" rx="12" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="510" y="435" text-anchor="middle" font-family="sans-serif" font-size="17">Functional RTL</text>
+<text x="510" y="470" text-anchor="middle" font-family="sans-serif" font-size="16">out_valid + data</text>
+<rect x="695" y="390" width="220" height="115" rx="12" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="805" y="435" text-anchor="middle" font-family="sans-serif" font-size="17">Output Buffer</text>
+<text x="805" y="470" text-anchor="middle" font-family="sans-serif" font-size="16">Capture + pending</text>
+<rect x="990" y="390" width="220" height="115" rx="12" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="1100" y="435" text-anchor="middle" font-family="sans-serif" font-size="17">Software</text>
+<text x="1100" y="470" text-anchor="middle" font-family="sans-serif" font-size="16">Read + POP</text>
+<line x1="620" y1="448" x2="695" y2="448" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="915" y1="448" x2="990" y2="448" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<text x="805" y="550" text-anchor="middle" font-family="sans-serif" font-size="16">Buffer full → out_ready=0 → Functional RTL backpressure</text>
+</svg>

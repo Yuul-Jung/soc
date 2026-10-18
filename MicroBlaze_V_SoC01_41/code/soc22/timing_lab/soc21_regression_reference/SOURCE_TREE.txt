@@ -1,0 +1,16 @@
+verification_harness/
+├── rtl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── control_status_bridge_core.v
+│   ├── axi_control_status_bridge_ip.v
+│   ├── example_ready_valid_core.v
+│   └── axi_control_status_bridge_demo_top.v
+├── verification/
+│   └── csb_assertions.sv
+├── testbench/
+│   └── tb_soc21_csb_verification.sv
+├── scripts/
+├── doc/
+│   ├── TEST_PLAN.md
+│   └── UVM_EXPANSION_MAP.md
+└── SOURCE_TREE.txt

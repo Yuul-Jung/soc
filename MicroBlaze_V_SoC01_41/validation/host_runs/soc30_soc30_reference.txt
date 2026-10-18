@@ -1,0 +1,13 @@
+rounding midpoint checks:
++3 / 2 -> 2
+-3 / 2 -> -2
++1 / 2 -> 1
+-1 / 2 -> -1
+
+CH0 int32 -> int8 = [8, 16, 24, 32]
+CH1 int32 -> int8 = [51, 99, 127, 127]
+saturation count = 2
+selected LED = 0x207F
+
+formula: saturate_int8(round_away_from_zero((acc+bias)*mult / 2^shift) + zero_point)
+SOC30 PYTHON REQUANTIZATION REFERENCE: PASS

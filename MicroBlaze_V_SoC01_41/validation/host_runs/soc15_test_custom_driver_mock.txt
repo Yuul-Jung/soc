@@ -1,0 +1,26 @@
+PASS: Initialize
+PASS: SelfTest
+PASS: RunBlocking ADD1
+PASS: ADD1 result
+PASS: GetStatus
+PASS: DONE retained
+PASS: No HW error
+PASS: GetIrqStatus
+PASS: DONE IRQ retained
+PASS: ClearStatus
+PASS: ClearAllIrq
+PASS: STATUS cleared
+PASS: IRQ_STATUS cleared
+PASS: Invalid mode
+PASS: Unaligned BaseAddress
+PASS: ID mismatch
+PASS: VERSION mismatch
+PASS: Initialize before busy test
+PASS: Start while busy
+PASS: Initialize before HW error
+PASS: Configure disabled
+PASS: Start disabled reaches hardware
+PASS: Hardware error
+PASS: Initialize before timeout
+PASS: Timeout
+SOC15 CUSTOM DRIVER MOCK TEST: PASS

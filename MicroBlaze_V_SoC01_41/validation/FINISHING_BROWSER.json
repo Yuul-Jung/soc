@@ -1,0 +1,2484 @@
+{
+  "results": [
+    {
+      "file": "01_microblaze_bram_minimal_soc.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "01_microblaze_bram_minimal_soc.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "01_microblaze_bram_minimal_soc.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "01_microblaze_bram_minimal_soc.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "01_microblaze_bram_minimal_soc.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "02_clock_reset_processor_system_reset.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "02_clock_reset_processor_system_reset.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "02_clock_reset_processor_system_reset.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "02_clock_reset_processor_system_reset.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "02_clock_reset_processor_system_reset.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "03_microblaze_bram_program_execution.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "03_microblaze_bram_program_execution.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "03_microblaze_bram_program_execution.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "03_microblaze_bram_program_execution.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "03_microblaze_bram_program_execution.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "04_memory_map_memory_mapped_io.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "04_memory_map_memory_mapped_io.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "04_memory_map_memory_mapped_io.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "04_memory_map_memory_mapped_io.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "04_memory_map_memory_mapped_io.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "05_axi4_axi4lite_axi4stream.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "05_axi4_axi4lite_axi4stream.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "05_axi4_axi4lite_axi4stream.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "05_axi4_axi4lite_axi4stream.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 1,
+      "pre": 1,
+      "options": 41
+    },
+    {
+      "file": "05_axi4_axi4lite_axi4stream.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "06_axi_gpio.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "06_axi_gpio.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "06_axi_gpio.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "06_axi_gpio.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "06_axi_gpio.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "07_axi_uart_lite.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "07_axi_uart_lite.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "07_axi_uart_lite.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "07_axi_uart_lite.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "07_axi_uart_lite.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "08_axi_timer.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "08_axi_timer.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "08_axi_timer.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "08_axi_timer.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "08_axi_timer.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "09_axi_interrupt_controller.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "09_axi_interrupt_controller.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "09_axi_interrupt_controller.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "09_axi_interrupt_controller.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "09_axi_interrupt_controller.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "10_microblaze_gpio_uart_timer_integration.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "10_microblaze_gpio_uart_timer_integration.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "10_microblaze_gpio_uart_timer_integration.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "10_microblaze_gpio_uart_timer_integration.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "10_microblaze_gpio_uart_timer_integration.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "11_register_map_design_principles.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 3,
+      "pre": 3,
+      "options": 41
+    },
+    {
+      "file": "11_register_map_design_principles.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 3,
+      "pre": 3,
+      "options": 41
+    },
+    {
+      "file": "11_register_map_design_principles.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 3,
+      "pre": 3,
+      "options": 41
+    },
+    {
+      "file": "11_register_map_design_principles.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 3,
+      "pre": 3,
+      "options": 41
+    },
+    {
+      "file": "11_register_map_design_principles.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "12_custom_axi4lite_slave_basics.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "12_custom_axi4lite_slave_basics.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "12_custom_axi4lite_slave_basics.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "12_custom_axi4lite_slave_basics.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "12_custom_axi4lite_slave_basics.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "13_axi_register_read_write_path.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "13_axi_register_read_write_path.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "13_axi_register_read_write_path.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "13_axi_register_read_write_path.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "13_axi_register_read_write_path.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "14_register_bank_rtl_controller.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 6,
+      "pre": 6,
+      "options": 41
+    },
+    {
+      "file": "14_register_bank_rtl_controller.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 6,
+      "pre": 6,
+      "options": 41
+    },
+    {
+      "file": "14_register_bank_rtl_controller.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 6,
+      "pre": 6,
+      "options": 41
+    },
+    {
+      "file": "14_register_bank_rtl_controller.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 6,
+      "pre": 6,
+      "options": 41
+    },
+    {
+      "file": "14_register_bank_rtl_controller.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "15_microblaze_software_driver.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 13,
+      "pre": 13,
+      "options": 41
+    },
+    {
+      "file": "15_microblaze_software_driver.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 13,
+      "pre": 13,
+      "options": 41
+    },
+    {
+      "file": "15_microblaze_software_driver.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 13,
+      "pre": 13,
+      "options": 41
+    },
+    {
+      "file": "15_microblaze_software_driver.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 13,
+      "pre": 13,
+      "options": 41
+    },
+    {
+      "file": "15_microblaze_software_driver.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "16_vivado_ip_packaging_reuse.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "16_vivado_ip_packaging_reuse.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "16_vivado_ip_packaging_reuse.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "16_vivado_ip_packaging_reuse.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "16_vivado_ip_packaging_reuse.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "17_existing_verilog_rtl_to_ip.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "17_existing_verilog_rtl_to_ip.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "17_existing_verilog_rtl_to_ip.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "17_existing_verilog_rtl_to_ip.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "17_existing_verilog_rtl_to_ip.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "18_uart_pwm_controller_ip.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 14,
+      "pre": 14,
+      "options": 41
+    },
+    {
+      "file": "18_uart_pwm_controller_ip.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 14,
+      "pre": 14,
+      "options": 41
+    },
+    {
+      "file": "18_uart_pwm_controller_ip.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 14,
+      "pre": 14,
+      "options": 41
+    },
+    {
+      "file": "18_uart_pwm_controller_ip.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 14,
+      "pre": 14,
+      "options": 41
+    },
+    {
+      "file": "18_uart_pwm_controller_ip.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "19_axi_control_status_bridge.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "19_axi_control_status_bridge.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "19_axi_control_status_bridge.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "19_axi_control_status_bridge.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "19_axi_control_status_bridge.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "20_cdc_reset_safe_design.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "20_cdc_reset_safe_design.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "20_cdc_reset_safe_design.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "20_cdc_reset_safe_design.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 12,
+      "pre": 12,
+      "options": 41
+    },
+    {
+      "file": "20_cdc_reset_safe_design.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "21_self_checking_assertion_coverage.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 15,
+      "pre": 15,
+      "options": 41
+    },
+    {
+      "file": "21_self_checking_assertion_coverage.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 15,
+      "pre": 15,
+      "options": 41
+    },
+    {
+      "file": "21_self_checking_assertion_coverage.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 15,
+      "pre": 15,
+      "options": 41
+    },
+    {
+      "file": "21_self_checking_assertion_coverage.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 15,
+      "pre": 15,
+      "options": 41
+    },
+    {
+      "file": "21_self_checking_assertion_coverage.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "22_timing_critical_path_wns_tns.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "22_timing_critical_path_wns_tns.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "22_timing_critical_path_wns_tns.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "22_timing_critical_path_wns_tns.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "22_timing_critical_path_wns_tns.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "23_resource_power_thermal.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "23_resource_power_thermal.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "23_resource_power_thermal.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "23_resource_power_thermal.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 2,
+      "pre": 2,
+      "options": 41
+    },
+    {
+      "file": "23_resource_power_thermal.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "24_npu_mac_datapath.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "24_npu_mac_datapath.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "24_npu_mac_datapath.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "24_npu_mac_datapath.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "24_npu_mac_datapath.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "25_pe_parallel_mac_vector_dot_product.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "25_pe_parallel_mac_vector_dot_product.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "25_pe_parallel_mac_vector_dot_product.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "25_pe_parallel_mac_vector_dot_product.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "25_pe_parallel_mac_vector_dot_product.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "26_vector_dot_product_controller.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "26_vector_dot_product_controller.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "26_vector_dot_product_controller.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "26_vector_dot_product_controller.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "26_vector_dot_product_controller.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "27_local_bram_address_generator_data_feeding.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "27_local_bram_address_generator_data_feeding.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "27_local_bram_address_generator_data_feeding.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "27_local_bram_address_generator_data_feeding.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "27_local_bram_address_generator_data_feeding.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "29_data_reuse_weight_stationary_tiling.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "29_data_reuse_weight_stationary_tiling.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "29_data_reuse_weight_stationary_tiling.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "29_data_reuse_weight_stationary_tiling.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "29_data_reuse_weight_stationary_tiling.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "30_bias_requantization_rounding_saturation_int8.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "30_bias_requantization_rounding_saturation_int8.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "30_bias_requantization_rounding_saturation_int8.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "30_bias_requantization_rounding_saturation_int8.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "30_bias_requantization_rounding_saturation_int8.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "31_npu_register_map_microblaze_axi_integration.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "31_npu_register_map_microblaze_axi_integration.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "31_npu_register_map_microblaze_axi_integration.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "31_npu_register_map_microblaze_axi_integration.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "31_npu_register_map_microblaze_axi_integration.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "32_npu_done_interrupt_axi_intc_isr.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 11,
+      "pre": 11,
+      "options": 41
+    },
+    {
+      "file": "32_npu_done_interrupt_axi_intc_isr.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 11,
+      "pre": 11,
+      "options": 41
+    },
+    {
+      "file": "32_npu_done_interrupt_axi_intc_isr.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 11,
+      "pre": 11,
+      "options": 41
+    },
+    {
+      "file": "32_npu_done_interrupt_axi_intc_isr.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 11,
+      "pre": 11,
+      "options": 41
+    },
+    {
+      "file": "32_npu_done_interrupt_axi_intc_isr.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "34_command_descriptor_job_control.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "34_command_descriptor_job_control.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "34_command_descriptor_job_control.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "34_command_descriptor_job_control.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "34_command_descriptor_job_control.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "35_full_npu_accelerator_integration.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "35_full_npu_accelerator_integration.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "35_full_npu_accelerator_integration.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "35_full_npu_accelerator_integration.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "35_full_npu_accelerator_integration.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "36_cpu_npu_end_to_end_software_inference.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "36_cpu_npu_end_to_end_software_inference.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "36_cpu_npu_end_to_end_software_inference.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "36_cpu_npu_end_to_end_software_inference.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 10,
+      "pre": 10,
+      "options": 41
+    },
+    {
+      "file": "36_cpu_npu_end_to_end_software_inference.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "37_performance_baseline_timing_resource_power_throughput.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "37_performance_baseline_timing_resource_power_throughput.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "37_performance_baseline_timing_resource_power_throughput.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "37_performance_baseline_timing_resource_power_throughput.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 4,
+      "pre": 4,
+      "options": 41
+    },
+    {
+      "file": "37_performance_baseline_timing_resource_power_throughput.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 7,
+      "pre": 7,
+      "options": 41
+    },
+    {
+      "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "39_parallel4_requantization_optimization.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "39_parallel4_requantization_optimization.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "39_parallel4_requantization_optimization.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "39_parallel4_requantization_optimization.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 9,
+      "pre": 9,
+      "options": 41
+    },
+    {
+      "file": "39_parallel4_requantization_optimization.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "40_prefetch_pingpong_data_compute_overlap.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "40_prefetch_pingpong_data_compute_overlap.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "40_prefetch_pingpong_data_compute_overlap.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "40_prefetch_pingpong_data_compute_overlap.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 8,
+      "pre": 8,
+      "options": 41
+    },
+    {
+      "file": "40_prefetch_pingpong_data_compute_overlap.html",
+      "zoom": "200% text",
+      "overflow": false
+    },
+    {
+      "file": "41_group8_cumulative_signoff_matrix.html",
+      "width": 1440,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "41_group8_cumulative_signoff_matrix.html",
+      "width": 1024,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "41_group8_cumulative_signoff_matrix.html",
+      "width": 390,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "41_group8_cumulative_signoff_matrix.html",
+      "width": 320,
+      "overflow": false,
+      "images": 0,
+      "copy": 5,
+      "pre": 5,
+      "options": 41
+    },
+    {
+      "file": "41_group8_cumulative_signoff_matrix.html",
+      "zoom": "200% text",
+      "overflow": false
+    }
+  ],
+  "extra": [
+    {
+      "file": "index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "00_overview/START_HERE.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "00_overview/START_HERE.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "00_overview/START_HERE.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "validation/verification.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "validation/verification.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "validation/verification.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group01_microblaze_minimal_soc/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group01_microblaze_minimal_soc/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group01_microblaze_minimal_soc/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group02_amd_ip_peripheral_soc/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group02_amd_ip_peripheral_soc/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group02_amd_ip_peripheral_soc/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group03_register_map_custom_axi_ip/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group03_register_map_custom_axi_ip/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group03_register_map_custom_axi_ip/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group04_rtl_ip_verification_qor/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group04_rtl_ip_verification_qor/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group04_rtl_ip_verification_qor/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group05_npu_compute_datapath/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group05_npu_compute_datapath/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group05_npu_compute_datapath/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group06_npu_memory_dataflow_quantization/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group06_npu_memory_dataflow_quantization/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group06_npu_memory_dataflow_quantization/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group07_npu_soc_integration/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group07_npu_soc_integration/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group07_npu_soc_integration/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "groups/group08_performance_optimization_signoff/index.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "groups/group08_performance_optimization_signoff/index.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "groups/group08_performance_optimization_signoff/index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc01_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc01_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc01_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc02_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc02_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc02_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc03_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc03_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc03_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc04_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc04_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc04_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc05_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc05_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc05_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc06_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc06_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc06_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc07_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc07_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc07_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc08_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc08_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc08_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc09_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc09_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc09_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc10_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc10_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc10_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc11_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc11_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc11_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc12_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc12_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc12_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc13_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc13_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc13_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc14_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc14_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc14_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc15_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc15_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc15_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc16_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc16_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc16_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc17_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc17_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc17_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc18_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc18_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc18_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc19_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc19_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc19_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc20_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc20_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc20_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc21_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc21_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc21_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc22_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc22_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc22_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc23_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc23_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc23_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc24_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc24_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc24_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc25_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc25_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc25_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc26_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc26_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc26_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc27_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc27_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc27_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc28_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc28_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc28_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc29_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc29_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc29_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc30_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc30_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc30_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc31_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc31_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc31_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc32_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc32_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc32_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc33_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc33_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc33_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc34_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc34_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc34_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc35_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc35_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc35_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc36_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc36_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc36_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc37_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc37_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc37_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc38_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc38_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc38_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc39_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc39_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc39_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc40_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc40_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc40_manifest.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc41_manifest.html",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc41_manifest.html",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "file": "manifests/soc41_manifest.html",
+      "width": 320,
+      "overflow": false
+    }
+  ],
+  "functional": {
+    "emptySearch": true,
+    "bodyPreserved": true,
+    "clearSearch": true,
+    "bodySearch": true,
+    "anchorFocus": true,
+    "copyExact": true,
+    "chapterJump": true,
+    "catalogFilter": true,
+    "catalogEmpty": true,
+    "catalogReset": true,
+    "printNavHidden": true,
+    "printToolsHidden": true,
+    "printCodeWrap": true,
+    "noJsContent": true
+  },
+  "errors": []
+}

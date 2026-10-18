@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650">
+<rect width="1400" height="650" fill="white"/>
+<text x="700" y="44" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 38 · BRAM Read Bottleneck Optimization</text>
+
+<rect x="70" y="105" width="570" height="430" rx="16" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="355" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Baseline · 16 cycles</text>
+<text x="355" y="215" text-anchor="middle" font-family="sans-serif" font-size="17">word0: REQ → CAP</text>
+<text x="355" y="255" text-anchor="middle" font-family="sans-serif" font-size="17">word1: REQ → CAP</text>
+<text x="355" y="295" text-anchor="middle" font-family="sans-serif" font-size="17">word2: REQ → CAP</text>
+<text x="355" y="335" text-anchor="middle" font-family="sans-serif" font-size="17">...</text>
+<text x="355" y="375" text-anchor="middle" font-family="sans-serif" font-size="17">word7: REQ → CAP</text>
+<text x="355" y="445" text-anchor="middle" font-family="sans-serif" font-size="18">8 × 2 → 16 cycles</text>
+
+<rect x="760" y="105" width="570" height="430" rx="16" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1045" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Pipelined · 9 cycles</text>
+<text x="1045" y="215" text-anchor="middle" font-family="sans-serif" font-size="17">C1 issue0</text>
+<text x="1045" y="255" text-anchor="middle" font-family="sans-serif" font-size="17">C2 issue1</text>
+<text x="1045" y="295" text-anchor="middle" font-family="sans-serif" font-size="17">C3 issue2 + capture0</text>
+<text x="1045" y="335" text-anchor="middle" font-family="sans-serif" font-size="17">...</text>
+<text x="1045" y="375" text-anchor="middle" font-family="sans-serif" font-size="17">C8 issue7 + capture6</text>
+<text x="1045" y="415" text-anchor="middle" font-family="sans-serif" font-size="17">C9 capture7</text>
+<text x="1045" y="465" text-anchor="middle" font-family="sans-serif" font-size="18">8 + 1 drain → 9 cycles</text>
+
+<text x="700" y="595" text-anchor="middle" font-family="sans-serif" font-size="18">동기식 BRAM은 유지하고 Read Request를 연속 발행해 Latency를 숨긴다.</text>
+</svg>

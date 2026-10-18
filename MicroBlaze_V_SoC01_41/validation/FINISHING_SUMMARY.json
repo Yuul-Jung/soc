@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-19",
+  "baseline_library_version": 5,
+  "chapters": 41,
+  "original_sections_preserved": 1348,
+  "image_slots_preserved": 148,
+  "preformatted_code_blocks_unchanged": 284,
+  "source_files_byte_identical": 586,
+  "chapter_viewport_cases": 164,
+  "text_zoom_cases": 41,
+  "catalog_manifest_viewport_cases": 156,
+  "browser_console_errors": 0,
+  "clipboard_exact": true,
+  "functional_checks": {
+    "emptySearch": true,
+    "bodyPreserved": true,
+    "clearSearch": true,
+    "bodySearch": true,
+    "anchorFocus": true,
+    "copyExact": true,
+    "chapterJump": true,
+    "catalogFilter": true,
+    "catalogEmpty": true,
+    "catalogReset": true,
+    "printNavHidden": true,
+    "printToolsHidden": true,
+    "printCodeWrap": true,
+    "noJsContent": true
+  },
+  "new_hardware_execution": false,
+  "technical_references": [
+    {
+      "url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Specifying-Debug-and-Optimization-Compiler-Flags",
+      "checked": "2026-10-18 UTC",
+      "edition": "2026.1",
+      "scope": "Debug / Optimization flags UI"
+    }
+  ]
+}

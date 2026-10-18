@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="700" viewBox="0 0 1440 700">
+<rect width="1440" height="700" fill="white"/>
+<text x="720" y="45" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="bold">SoC 41 · Sign-off Gates</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="55" y="170" width="190" height="150" rx="14" fill="#eef6ff" stroke="#111827"/><text x="150" y="220" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">Function</text><text x="150" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">Regression</text>
+<rect x="285" y="170" width="190" height="150" rx="14" fill="#f0fdf4" stroke="#111827"/><text x="380" y="220" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">Timing</text><text x="380" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">WNS/TNS/WHS/THS</text>
+<rect x="515" y="170" width="190" height="150" rx="14" fill="#fff7ed" stroke="#111827"/><text x="610" y="220" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">Methodology</text><text x="610" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">DRC / CDC</text>
+<rect x="745" y="170" width="190" height="150" rx="14" fill="#faf5ff" stroke="#111827"/><text x="840" y="220" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">Resource</text><text x="840" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">LUT/FF/BRAM/DSP</text>
+<rect x="975" y="170" width="190" height="150" rx="14" fill="#fef2f2" stroke="#111827"/><text x="1070" y="220" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">Power</text><text x="1070" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">Budget / Thermal</text>
+<rect x="1205" y="170" width="180" height="150" rx="14" fill="#f8fafc" stroke="#111827"/><text x="1295" y="220" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">Runtime</text><text x="1295" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">START→ISR / E2E</text>
+
+<g stroke="#111827" stroke-width="3" marker-end="url(#a)">
+<line x1="245" y1="245" x2="285" y2="245"/><line x1="475" y1="245" x2="515" y2="245"/><line x1="705" y1="245" x2="745" y2="245"/><line x1="935" y1="245" x2="975" y2="245"/><line x1="1165" y1="245" x2="1205" y2="245"/>
+</g>
+
+<rect x="500" y="435" width="440" height="120" rx="18" fill="#ecfeff" stroke="#111827" stroke-width="2"/>
+<text x="720" y="485" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Overall Sign-off</text>
+<text x="720" y="525" text-anchor="middle" font-family="sans-serif" font-size="17">PASS · FAIL · INCOMPLETE</text>
+<text x="720" y="625" text-anchor="middle" font-family="sans-serif" font-size="16">Missing evidence never becomes PASS.</text>
+</svg>

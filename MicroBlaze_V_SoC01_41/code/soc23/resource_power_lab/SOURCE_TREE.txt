@@ -1,0 +1,20 @@
+resource_power_lab/
+├── rtl/
+│   ├── timing_chain_unpipelined.v
+│   ├── timing_chain_pipelined.v
+│   ├── timing_pattern_source.v
+│   ├── timing_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   ├── timing_lab_unpipelined_impl_top.v
+│   ├── timing_lab_pipelined_impl_top.v
+│   ├── timing_lab_unpipelined_basys3_top.v
+│   └── timing_lab_pipelined_basys3_top.v
+├── constraints/
+│   └── basys3_resource_power_pins.xdc
+├── scripts/
+│   ├── run_resource_power_lab.tcl
+│   ├── run_all_resource_power_cases.sh
+│   └── OPTIONAL_power_optimization_notes.tcl
+├── doc/
+│   └── README_RESOURCE_POWER_LAB.md
+└── SOURCE_TREE.txt

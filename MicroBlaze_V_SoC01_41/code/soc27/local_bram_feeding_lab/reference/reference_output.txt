@@ -1,0 +1,30 @@
+length,groups,result_raw
+0,0,0
+1,1,1547
+2,1,-3881
+3,1,-9206
+4,1,-11702
+5,2,-14531
+10,3,-25045
+16,4,-19384
+17,5,-21709
+31,8,-19552
+64,16,-35552
+
+buffer depth = 256 x 32 bit per BRAM array
+maximum scalar elements = 1024
+length 1025 -> range error
+demo length 10 -> expected raw result 55 -> LED 0x0037
+100 MHz local read payload = 6.400 Gbit/s = 800.0 MB/s
+Bandwidth number is an interface payload rate, not measured external-memory performance.
+SOC27 PYTHON LOCAL BRAM REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.

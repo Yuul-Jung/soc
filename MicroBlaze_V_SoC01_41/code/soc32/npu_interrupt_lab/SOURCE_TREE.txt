@@ -1,0 +1,23 @@
+npu_interrupt_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── npu_register_bank_irq.v
+│   ├── npu_axi4lite_irq_slave.v
+│   └── npu_axi_irq_accel_ip.v
+├── software/
+│   ├── npu_accel.h
+│   └── main_interrupt.c
+├── testbench/
+│   └── tb_npu_axi4lite_irq_slave.sv
+├── scripts/
+│   ├── run_soc32_irq_ooc.tcl
+│   ├── prepare_soc32_simulation.tcl
+│   └── run_soc32_analysis.sh
+├── reference/
+│   ├── soc32_interrupt_reference.py
+│   └── reference_output.txt
+├── doc/
+│   ├── README_SOC32.md
+│   └── VIVADO_INTERRUPT_GUIDE.md
+└── SOURCE_TREE.txt

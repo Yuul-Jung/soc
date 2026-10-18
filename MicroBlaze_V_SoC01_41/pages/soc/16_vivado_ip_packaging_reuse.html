@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="SoC 12~15의 AXI4-Lite RTL, Register Bank, Controller, Testbench, Software Driver를 Vivado 2026.1 Custom IP로 Packaging하고 IP Catalog에서 재사용하는 학습 자료." name="description">
+<title>SoC 16 · Vivado IP Packaging과 재사용</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style>
+<style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 16</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 16</p>
+<h1>Vivado IP Packaging과 재사용</h1>
+<p class="hero-desc">SoC 12~15에서 만든 AXI4-Lite Adapter, Register Bank, RTL Controller, Testbench, MicroBlaze V Driver를 하나의 재사용 가능한 Custom IP 자산으로 묶는다. IP Packager가 생성한 component.xml을 기반으로 새 Vivado Project의 IP Catalog에 등록하고 Block Design에서 다시 사용하는 흐름까지 연결한다.</p>
+<div class="hero-meta">
+<span class="chip">Vivado IP Packager</span><span class="chip">VLNV</span><span class="chip">S_AXI</span><span class="chip">File Groups</span><span class="chip">Software Drivers</span><span class="chip">IP Repository</span>
+</div>
+<div class="hero-brief">
+<article><h2>입력</h2><p>검증된 RTL·Testbench·Driver 소스를 Packaging Source로 정리한다.</p></article>
+<article><h2>Packager</h2><p>Interface, File Group, Compatibility, Identification을 정의한다.</p></article>
+<article><h2>재사용</h2><p>IP Repository에 등록하고 새 Block Design에서 동일 IP를 다시 사용한다.</p></article>
+</div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html" selected>SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc16_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc16">이 장 검증</a></div></div>
+<p class="nav-title">SOC 16 · LEARNING FLOW</p>
+<p class="nav-help">Sources → IP Packager → IP Catalog → Reuse</p>
+<ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>왜 Packaging 하는가</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Packaging 대상</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>새 AXI Peripheral 생성과 차이</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>권장 Source Directory</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Top Module</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>AXI Interface 자동 추론</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Clock · Reset Interface</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Identification · VLNV</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Compatibility</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>File Groups</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Synthesis File Group</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Simulation · Testbench</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Software Drivers</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Driver 자동연동 범위</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Package a Specified Directory</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Package Current Project 대안</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Ports and Interfaces 확인</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Review and Package</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>component.xml · XGUI</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>IP Repository 등록</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>IP Catalog 재사용</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Block Design 연결</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Address Editor · Vitis</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Driver 재사용</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Tcl 보조 스크립트</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>소스 패키지 구성</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>재사용 검증 절차</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">30</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">31</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol>
+</aside>
+
+<main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 14 RTL Controller</span><span class="arrow">→</span><span class="stage">SoC 15 Software Driver</span><span class="arrow">→</span><span class="stage"><strong>SoC 16 IP Packaging</strong></span><span class="arrow">→</span><span class="stage">SoC 17 기존 RTL IP화</span></div>
+</div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<div class="flow">검증된 Source → Vivado IP Packager → Packaged Custom IP → IP Repository → 새 Project 재사용</div>
+<p>이번 장은 RTL 기능을 변경하는 장이 아니다. 지금까지 검증한 Hardware/Software 자산에 <strong>재사용 가능한 IP 메타데이터와 배포 구조</strong>를 부여한다.</p>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>왜 Packaging 하는가</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="왜 Packaging 하는가 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">RTL Source 직접 사용</th><th scope="col" role="columnheader">Packaged IP 사용</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="RTL Source 직접 사용" role="cell">Project마다 Source를 다시 추가</td><td data-label="Packaged IP 사용" role="cell">IP Catalog에서 검색해 추가</td></tr>
+<tr role="row"><td data-label="RTL Source 직접 사용" role="cell">AXI Port 연결을 매번 확인</td><td data-label="Packaged IP 사용" role="cell">Bus Interface로 표시</td></tr>
+<tr role="row"><td data-label="RTL Source 직접 사용" role="cell">File 용도 구분을 사용자가 관리</td><td data-label="Packaged IP 사용" role="cell">Synthesis/Simulation/Driver File Group으로 관리</td></tr>
+<tr role="row"><td data-label="RTL Source 직접 사용" role="cell">Version 식별이 약함</td><td data-label="Packaged IP 사용" role="cell">Vendor:Library:Name:Version으로 식별</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Packaging 대상</h2>
+<figure class="manual-figure"><a href="../../images/soc16/soc16_packaging_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Vivado custom IP packaging flow · 원본 보기 (새 탭)"><img src="../../images/soc16/soc16_packaging_flow.svg" alt="Vivado custom IP packaging flow">
+</a><figcaption>SoC 12~15 자산을 Vivado IP Packager를 통해 하나의 재사용 IP로 묶는다.<br><a href="../../images/soc16/soc16_packaging_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Vivado custom IP packaging flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Packaging 대상 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">자산</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="자산" role="cell">AXI Adapter</td><td data-label="역할" role="cell">AW/W/B/AR/R Protocol 처리</td></tr>
+<tr role="row"><td data-label="자산" role="cell">Register Bank</td><td data-label="역할" role="cell">Register Map과 W1P/W1C 정책</td></tr>
+<tr role="row"><td data-label="자산" role="cell">RTL Controller</td><td data-label="역할" role="cell">실제 Hardware 기능</td></tr>
+<tr role="row"><td data-label="자산" role="cell">Top Wrapper</td><td data-label="역할" role="cell">AXI/Register/Controller 연결</td></tr>
+<tr role="row"><td data-label="자산" role="cell">Testbench</td><td data-label="역할" role="cell">Function 검증</td></tr>
+<tr role="row"><td data-label="자산" role="cell">Software Driver</td><td data-label="역할" role="cell">MicroBlaze V Application API</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>새 AXI Peripheral 생성과 차이</h2>
+<p>Vivado의 <strong>Create a new AXI4 peripheral</strong>은 AXI Peripheral의 새 Template을 생성하는 기능이다. 현재 설계는 이미 SoC 12~15에서 AXI Slave와 Driver까지 만들었으므로 다시 Template을 생성하지 않는다.</p>
+<div class="flow">현재 선택: 기존 Source Packaging<br>사용하지 않음: 새 AXI4 Peripheral Template 재생성</div>
+<p>이번 장에서는 <strong>Package a specified directory</strong>를 기본 흐름으로 사용하고, 기존 Vivado Project가 있는 경우 <strong>Package your current project</strong>를 대안으로 제시한다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>권장 Source Directory</h2>
+<p>UG1118의 Directory Inference 규칙에 맞춰 Synthesis, Testbench, Example, Documentation을 분리한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="권장 Source Directory · 소스 코드"><code>custom_processing_ip_1_0/
+├── hdl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── custom_register_bank.v
+│   ├── custom_axi4lite_ip.v
+│   ├── example_processing_controller.v
+│   └── custom_axi4lite_controller_ip.v
+├── testbench/
+│   └── tb_custom_axi4lite_controller_ip.v
+├── drivers/
+│   └── custom_processing_v1_0/
+│       └── src/
+│           ├── custom_driver.c
+│           ├── custom_driver.h
+│           └── custom_regmap.h
+├── examples/
+│   ├── custom_driver_example.c
+│   └── test_custom_driver_mock.c
+├── doc/
+│   └── README_PACKAGE.md
+└── tcl/
+    ├── prepare_packaging_project.tcl
+    └── add_ip_repo.tcl
+</code></pre>
+<p><code>drivers/</code>는 Software Drivers File Group에 Package 화면에서 명시적으로 추가한다.</p>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Top Module</h2>
+<p>Packaging Top은 기존 <code>custom_axi4lite_controller_ip</code>이다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="06절 신호 및 실행 흐름">custom_axi4lite_controller_ip
+   ├─ custom_axi4lite_ip
+   │    ├─ axi4lite_slave_adapter
+   │    └─ custom_register_bank
+   └─ example_processing_controller</div>
+<p>Top은 SoC 14에서 확정한 것처럼 Wire/Instance/Port Connection만 담당한다.</p>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>AXI Interface 자동 추론</h2>
+<p>Vivado IP Packager는 <code>&lt;interface_name&gt;_&lt;AXI signal&gt;</code> 형식의 Port 이름을 이용해 AXI Bus Interface를 자동 추론할 수 있다.</p>
+<figure class="manual-figure"><a href="../../images/soc16/soc16_ports_interfaces.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI clock reset interfaces · 원본 보기 (새 탭)"><img src="../../images/soc16/soc16_ports_interfaces.svg" alt="AXI clock reset interfaces">
+</a><figcaption>현재 Top Port는 <code>s_axi_*</code> 규칙으로 작성되어 AXI4-Lite Slave Interface 추론에 적합하다.<br><a href="../../images/soc16/soc16_ports_interfaces.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI clock reset interfaces · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>Package 화면에서 반드시 <code>S_AXI</code> 또는 동등한 AXI4-Lite Slave Interface로 올바르게 묶였는지 확인한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Clock · Reset Interface</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Clock · Reset Interface · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Port</th><th scope="col" role="columnheader">Interface</th><th scope="col" role="columnheader">확인값</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Port" role="cell"><code>s_axi_aclk</code></td><td data-label="Interface" role="cell">Clock</td><td data-label="확인값" role="cell">Associated Bus Interface → S_AXI</td></tr>
+<tr role="row"><td data-label="Port" role="cell"><code>s_axi_aclk</code></td><td data-label="Interface" role="cell">Clock</td><td data-label="확인값" role="cell">Associated Reset → s_axi_aresetn</td></tr>
+<tr role="row"><td data-label="Port" role="cell"><code>s_axi_aresetn</code></td><td data-label="Interface" role="cell">Reset</td><td data-label="확인값" role="cell">Polarity → Active-Low</td></tr>
+</tbody></table></div>
+<p>Clock와 AXI Bus의 Association이 빠지면 IP Integrator에서 Clock/Reset 검증 Warning의 원인이 될 수 있다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Identification · VLNV</h2>
+<p>교육용 기본값은 다음처럼 사용한다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Identification · VLNV · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">값</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="항목" role="cell">Vendor</td><td data-label="값" role="cell"><code>user.org</code></td></tr>
+<tr role="row"><td data-label="항목" role="cell">Library</td><td data-label="값" role="cell"><code>user</code></td></tr>
+<tr role="row"><td data-label="항목" role="cell">Name</td><td data-label="값" role="cell"><code>custom_processing_ip</code></td></tr>
+<tr role="row"><td data-label="항목" role="cell">Version</td><td data-label="값" role="cell"><code>1.0</code></td></tr>
+<tr role="row"><td data-label="항목" role="cell">Display Name</td><td data-label="값" role="cell">Custom Processing AXI4-Lite IP</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Taxonomy</td><td data-label="값" role="cell"><code>/UserIP</code></td></tr>
+</tbody></table></div>
+<div class="flow">VLNV → user.org:user:custom_processing_ip:1.0</div>
+<p>실제 외부 배포 시 Vendor는 소유한 조직명/도메인 정책에 맞게 변경한다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Compatibility</h2>
+<p>현재 학습의 주 Target은 Basys3의 Artix-7이지만 IP 자체는 Board Pin을 포함하지 않는다. Package 화면에서 현재 Target Part가 Compatible인지 먼저 확인하고, 다른 Family까지 확장할 때 별도로 Compatibility를 검증한다.</p>
+<div class="note">Compatibility를 넓힌다는 것은 단순 체크박스 문제가 아니라 실제 Synthesis/Timing/Resource 검증 범위를 넓히는 의미로 본다.</div>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>File Groups</h2>
+<p>UG1118은 HDL Synthesis, HDL Simulation, Documentation, Test Bench, Drivers 등 여러 File Group을 지원한다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="File Groups · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">File Group</th><th scope="col" role="columnheader">SoC 16</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="File Group" role="cell">HDL Synthesis</td><td data-label="SoC 16" role="cell"><code>hdl/*.v</code></td></tr>
+<tr role="row"><td data-label="File Group" role="cell">Simulation / Test Bench</td><td data-label="SoC 16" role="cell"><code>testbench/tb_custom_axi4lite_controller_ip.v</code></td></tr>
+<tr role="row"><td data-label="File Group" role="cell">Software Drivers</td><td data-label="SoC 16" role="cell"><code>drivers/custom_processing_v1_0/src/*</code></td></tr>
+<tr role="row"><td data-label="File Group" role="cell">Examples</td><td data-label="SoC 16" role="cell"><code>examples/*</code></td></tr>
+<tr role="row"><td data-label="File Group" role="cell">Documentation</td><td data-label="SoC 16" role="cell"><code>doc/README_PACKAGE.md</code></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Synthesis File Group</h2>
+<p>다음 5개 RTL 파일이 Synthesis Source이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Synthesis File Group · 소스 코드"><code>axi4lite_slave_adapter.v
+custom_register_bank.v
+custom_axi4lite_ip.v
+example_processing_controller.v
+custom_axi4lite_controller_ip.v</code></pre>
+<p>Packaging 때문에 RTL을 하나의 거대한 파일로 합치지 않는다. 기존 재사용 모듈 구조를 그대로 유지한다.</p>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Simulation · Testbench</h2>
+<p><code>tb_custom_axi4lite_controller_ip.v</code>를 Test Bench File Group에 포함한다.</p>
+<div class="flow">Packaged IP 사용자 → 제공 Testbench 확인 → AXI Register Transaction + Controller 동작 재검증</div>
+<p>현재 실행 환경에는 Vivado Simulator가 없으므로 이 장에서도 xsim 실행 결과를 실제 결과로 표시하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Software Drivers</h2>
+<p>Driver 자산은 다음 세 파일이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Software Drivers · 소스 코드"><code>custom_driver.c
+custom_driver.h
+custom_regmap.h</code></pre>
+<p>IP Packager의 Software Drivers File Group에 이 파일들을 추가해 Hardware IP와 함께 배포할 수 있도록 한다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Driver 자동연동 범위</h2>
+<div class="warn">Software Drivers File Group에 파일을 넣는 것과 Vitis BSP가 Driver를 자동으로 선택하고 Config Table을 자동 생성하는 것은 동일한 기능이 아니다.</div>
+<p>SoC 16에서는 <strong>Driver를 Package에 포함하여 함께 배포</strong>하는 것까지 완료한다. Driver Metadata, Config Table 자동 생성, BSP 자동연동은 이후 필요 시 별도 확장한다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Package a Specified Directory</h2>
+<ol class="step-seq">
+<li><h3>Vivado 열기</h3><p>아무 RTL Project를 열거나 Packaging 작업용 Project를 연다.</p></li>
+<li><h3>Tools</h3><p><strong>Create and Package New IP</strong>를 실행한다.</p></li>
+<li><h3>선택</h3><p><strong>Package a specified directory</strong>를 선택한다.</p></li>
+<li><h3>Directory</h3><p><code>custom_processing_ip_1_0</code> 폴더를 지정한다.</p></li>
+<li><h3>Library Core</h3><p>Standalone IP로 사용할 것이므로 <strong>Package as a library core는 선택하지 않는다.</strong></p></li>
+<li><h3>Edit IP Project</h3><p>Wizard 완료 후 Package IP Window에서 세부 설정을 확인한다.</p></li>
+</ol>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Package Current Project 대안</h2>
+<p>이미 현재 RTL을 Source로 등록한 Vivado Project가 있다면 <strong>Package your current project</strong>도 사용할 수 있다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Package Current Project 대안 · 소스 코드"><code># SoC 16 - Create a Vivado project for reviewing/packaging the Custom IP
+#
+# This script prepares the RTL and simulation files.
+# It does NOT hand-create component.xml.
+# After it finishes:
+#   Tools &gt; Create and Package New IP
+#   -&gt; Package your current project
+#
+# Vivado 2026.1 target: Basys3 XC7A35T
+
+set script_dir [file dirname [file normalize [info script]]]
+set ip_root    [file normalize [file join $script_dir ".."]]
+set work_dir   [file normalize [file join $ip_root "_vivado_packaging_work"]]
+
+file delete -force $work_dir
+
+create_project -force soc16_custom_ip_packaging \
+    $work_dir \
+    -part xc7a35tcpg236-1
+
+set hdl_dir [file join $ip_root "hdl"]
+set tb_dir  [file join $ip_root "testbench"]
+
+add_files -norecurse [list \
+    [file join $hdl_dir "axi4lite_slave_adapter.v"] \
+    [file join $hdl_dir "custom_register_bank.v"] \
+    [file join $hdl_dir "custom_axi4lite_ip.v"] \
+    [file join $hdl_dir "example_processing_controller.v"] \
+    [file join $hdl_dir "custom_axi4lite_controller_ip.v"] \
+]
+
+set_property top custom_axi4lite_controller_ip [current_fileset]
+update_compile_order -fileset sources_1
+
+add_files -fileset sim_1 -norecurse [list \
+    [file join $tb_dir "tb_custom_axi4lite_controller_ip.v"] \
+]
+
+set_property top tb_custom_axi4lite_controller_ip [get_filesets sim_1]
+update_compile_order -fileset sim_1
+
+puts ""
+puts "SoC 16 packaging review project created."
+puts "Top: custom_axi4lite_controller_ip"
+puts ""
+puts "Next GUI step:"
+puts "  Tools &gt; Create and Package New IP"
+puts "  Package your current project"
+puts ""
+puts "Do not manually create component.xml."
+</code></pre>
+<p>제공 Tcl은 Basys3 Part로 Packaging 검토 Project를 만드는 보조 스크립트이다. 실제 Package 단계는 GUI에서 수행한다.</p>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Ports and Interfaces 확인</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Ports and Interfaces 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">확인</th><th scope="col" role="columnheader">정상 기준</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="확인" role="cell">AXI Bus</td><td data-label="정상 기준" role="cell"><code>S_AXI</code> AXI4-Lite Slave</td></tr>
+<tr role="row"><td data-label="확인" role="cell">Clock</td><td data-label="정상 기준" role="cell"><code>s_axi_aclk</code></td></tr>
+<tr role="row"><td data-label="확인" role="cell">Reset</td><td data-label="정상 기준" role="cell"><code>s_axi_aresetn</code> Active-Low</td></tr>
+<tr role="row"><td data-label="확인" role="cell">Address Width</td><td data-label="정상 기준" role="cell">Top Parameter <code>C_S_AXI_ADDR_WIDTH</code> 연결</td></tr>
+<tr role="row"><td data-label="확인" role="cell">Data Width</td><td data-label="정상 기준" role="cell">32-bit</td></tr>
+</tbody></table></div>
+<p>자동 추론이 틀리면 Auto Infer Interface 또는 수동 Bus Interface Mapping으로 수정한다.</p>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Review and Package</h2>
+<ol class="step-seq">
+<li><h3>Identification</h3><p>VLNV와 Display Name 확인</p></li>
+<li><h3>Compatibility</h3><p>Target Part/Family 확인</p></li>
+<li><h3>File Groups</h3><p>Synthesis, Testbench, Driver, Documentation 확인</p></li>
+<li><h3>Ports and Interfaces</h3><p>S_AXI, Clock, Reset Association 확인</p></li>
+<li><h3>Review</h3><p>Critical Warning과 Packager DRC 확인</p></li>
+<li><h3>Package IP</h3><p>문제가 없을 때 최종 Packaging 실행</p></li>
+</ol>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>component.xml · XGUI</h2>
+<p>Packaging이 완료되면 Vivado가 IP root에 IP-XACT 기반 <code>component.xml</code>을 생성하고 <code>xgui/</code>에 Customization GUI Tcl을 생성한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="20절 신호 및 실행 흐름">custom_processing_ip_1_0/
+   ├─ component.xml      ← Vivado 생성
+   ├─ xgui/              ← Vivado 생성
+   ├─ hdl / src / sim ...
+   └─ driver / doc ...</div>
+<div class="warn"><code>component.xml</code>과 XGUI 파일을 교육자료에서 임의로 손 작성하거나 수동 수정하는 것을 기본 흐름으로 삼지 않는다.</div>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>IP Repository 등록</h2>
+<figure class="manual-figure"><a href="../../images/soc16/soc16_reuse_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Packaged IP reuse flow · 원본 보기 (새 탭)"><img src="../../images/soc16/soc16_reuse_flow.svg" alt="Packaged IP reuse flow">
+</a><figcaption>Packaging된 IP를 Repository에 등록한 뒤 새 Project에서 재사용하는 흐름.<br><a href="../../images/soc16/soc16_reuse_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Packaged IP reuse flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>GUI에서는 <strong>Project Settings → IP → Repository → Add</strong>에서 Repository Parent Path를 추가한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="IP Repository 등록 · 소스 코드"><code>set_property IP_REPO_PATHS {/absolute/path/to/ip_repo} [current_fileset]
+update_ip_catalog -rebuild</code></pre>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>IP Catalog 재사용</h2>
+<ol class="step-seq">
+<li><h3>Repository 추가</h3><p><code>component.xml</code>이 있는 하위 폴더를 포함하는 Parent Repository를 등록한다.</p></li>
+<li><h3>IP Catalog</h3><p><strong>Custom Processing AXI4-Lite IP</strong>를 검색한다.</p></li>
+<li><h3>Add IP</h3><p>새 Block Design에 추가한다.</p></li>
+<li><h3>Version</h3><p>VLNV가 의도한 <code>1.0</code>인지 확인한다.</p></li>
+</ol>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Block Design 연결</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="23절 신호 및 실행 흐름">MicroBlaze V M_AXI
+      ↓
+SmartConnect
+      ↓
+Custom Processing IP / S_AXI
+
+System Clock ─────────────▶ s_axi_aclk
+Peripheral ResetN ────────▶ s_axi_aresetn</div>
+<p>Packaged IP가 정상이라면 개별 AW/W/B/AR/R Port가 아니라 하나의 AXI Bus Interface로 Block Design에 나타나는 것이 핵심이다.</p>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Address Editor · Vitis</h2>
+<div class="flow">Add IP → AXI Connect → Address Editor Base 할당 → Validate → Bitstream → XSA → Vitis</div>
+<p>Register Offset은 기존 SoC 11과 동일하고, Base Address만 새 Project의 Address Editor에서 결정된다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Driver 재사용</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="25절 신호 및 실행 흐름">새 Project의 실제 BaseAddress
+      ↓
+CustomDrv_Initialize(&amp;custom, BaseAddress)
+      ↓
+CustomDrv_SelfTest()
+      ↓
+CustomDrv_RunBlocking()</div>
+<p>SoC 15 Driver는 Base Address를 외부에서 받도록 설계했으므로 새 Project에 IP를 다시 배치해 Base Address가 바뀌어도 Driver Source를 고칠 필요가 없다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Tcl 보조 스크립트</h2>
+<h3>Packaging Project 준비</h3>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Tcl 보조 스크립트 · 소스 코드"><code># SoC 16 - Create a Vivado project for reviewing/packaging the Custom IP
+#
+# This script prepares the RTL and simulation files.
+# It does NOT hand-create component.xml.
+# After it finishes:
+#   Tools &gt; Create and Package New IP
+#   -&gt; Package your current project
+#
+# Vivado 2026.1 target: Basys3 XC7A35T
+
+set script_dir [file dirname [file normalize [info script]]]
+set ip_root    [file normalize [file join $script_dir ".."]]
+set work_dir   [file normalize [file join $ip_root "_vivado_packaging_work"]]
+
+file delete -force $work_dir
+
+create_project -force soc16_custom_ip_packaging \
+    $work_dir \
+    -part xc7a35tcpg236-1
+
+set hdl_dir [file join $ip_root "hdl"]
+set tb_dir  [file join $ip_root "testbench"]
+
+add_files -norecurse [list \
+    [file join $hdl_dir "axi4lite_slave_adapter.v"] \
+    [file join $hdl_dir "custom_register_bank.v"] \
+    [file join $hdl_dir "custom_axi4lite_ip.v"] \
+    [file join $hdl_dir "example_processing_controller.v"] \
+    [file join $hdl_dir "custom_axi4lite_controller_ip.v"] \
+]
+
+set_property top custom_axi4lite_controller_ip [current_fileset]
+update_compile_order -fileset sources_1
+
+add_files -fileset sim_1 -norecurse [list \
+    [file join $tb_dir "tb_custom_axi4lite_controller_ip.v"] \
+]
+
+set_property top tb_custom_axi4lite_controller_ip [get_filesets sim_1]
+update_compile_order -fileset sim_1
+
+puts ""
+puts "SoC 16 packaging review project created."
+puts "Top: custom_axi4lite_controller_ip"
+puts ""
+puts "Next GUI step:"
+puts "  Tools &gt; Create and Package New IP"
+puts "  Package your current project"
+puts ""
+puts "Do not manually create component.xml."
+</code></pre>
+<h3>Packaged Repository 등록</h3>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Tcl 보조 스크립트 · 소스 코드"><code># SoC 16 - Add packaged IP repository to the current Vivado project
+#
+# Usage:
+#   1. Edit repo_path if needed.
+#   2. Source this file in the Vivado Tcl Console:
+#        source add_ip_repo.tcl
+#
+# The path must point to the repository parent that contains
+# packaged IP directories with component.xml files.
+
+set script_dir [file dirname [file normalize [info script]]]
+set repo_path [file normalize [file join $script_dir ".." ".."]]
+
+puts "Adding IP repository:"
+puts "  $repo_path"
+
+set_property IP_REPO_PATHS $repo_path [current_fileset]
+update_ip_catalog -rebuild
+
+puts "IP catalog rebuild requested."
+puts "Search the IP Catalog for: Custom Processing AXI4-Lite IP"
+</code></pre>
+<p>두 스크립트 모두 <code>component.xml</code>을 손으로 생성하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>소스 패키지 구성</h2>
+<p>이번 장에서 제공하는 Source Package는 <strong>Packaging 전 원본 자산</strong>이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="소스 패키지 구성 · 소스 코드"><code>custom_processing_ip_1_0/
+├── hdl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── custom_register_bank.v
+│   ├── custom_axi4lite_ip.v
+│   ├── example_processing_controller.v
+│   └── custom_axi4lite_controller_ip.v
+├── testbench/
+│   └── tb_custom_axi4lite_controller_ip.v
+├── drivers/
+│   └── custom_processing_v1_0/
+│       └── src/
+│           ├── custom_driver.c
+│           ├── custom_driver.h
+│           └── custom_regmap.h
+├── examples/
+│   ├── custom_driver_example.c
+│   └── test_custom_driver_mock.c
+├── doc/
+│   └── README_PACKAGE.md
+└── tcl/
+    ├── prepare_packaging_project.tcl
+    └── add_ip_repo.tcl
+</code></pre>
+<div class="note">Vivado에서 실제 Package를 실행하기 전이므로 이 ZIP 자체를 이미 완성된 Vivado Packaged IP라고 부르지 않는다.</div>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>재사용 검증 절차</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="재사용 검증 절차 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Gate</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Gate" role="cell">1</td><td data-label="확인" role="cell">Package IP DRC 통과</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">2</td><td data-label="확인" role="cell">새 Project의 IP Catalog에서 검색</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">3</td><td data-label="확인" role="cell">Block Design에 S_AXI Interface로 추가</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">4</td><td data-label="확인" role="cell">Clock/Reset Connection 정상</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">5</td><td data-label="확인" role="cell">Address Editor Base 할당</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">6</td><td data-label="확인" role="cell">Validate Design</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">7</td><td data-label="확인" role="cell">Synthesis / Implementation</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">8</td><td data-label="확인" role="cell">Vitis에서 Driver SelfTest</td></tr>
+<tr role="row"><td data-label="Gate" role="cell">9</td><td data-label="확인" role="cell">RunBlocking 결과 확인</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">IP Catalog에 안 보임</td><td data-label="원인 후보" role="cell">component.xml 미생성 / Repository 경로 오류</td><td data-label="확인" role="cell">Packaging 완료, IP_REPO_PATHS</td></tr>
+<tr role="row"><td data-label="증상" role="cell">AW/W/R Port가 개별 Pin으로 보임</td><td data-label="원인 후보" role="cell">AXI Interface 추론 실패</td><td data-label="확인" role="cell">Ports and Interfaces에서 S_AXI Mapping</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Clock Warning</td><td data-label="원인 후보" role="cell">ASSOCIATED_BUSIF 누락</td><td data-label="확인" role="cell">s_axi_aclk ↔ S_AXI</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Reset Warning</td><td data-label="원인 후보" role="cell">Polarity/Association 오류</td><td data-label="확인" role="cell">s_axi_aresetn Active-Low</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Driver 파일이 Package에 없음</td><td data-label="원인 후보" role="cell">Software Drivers File Group 미등록</td><td data-label="확인" role="cell">File Groups</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Vitis가 Driver를 자동 선택하지 않음</td><td data-label="원인 후보" role="cell">Driver File 포함과 BSP 자동연동 혼동</td><td data-label="확인" role="cell">Metadata 통합은 별도 단계</td></tr>
+<tr role="row"><td data-label="증상" role="cell">새 Project에서 Register가 안 맞음</td><td data-label="원인 후보" role="cell">Base Address를 고정값으로 사용</td><td data-label="확인" role="cell">새 Address Editor 값 전달</td></tr>
+<tr role="row"><td data-label="증상" role="cell">component.xml을 직접 수정함</td><td data-label="원인 후보" role="cell">Packager 관리파일 수동 변경</td><td data-label="확인" role="cell">Package IP Window에서 수정 후 Repackage</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 16 완료 체크리스트</h2>
+<ul>
+<li>[ ] SoC 12~15의 RTL/Driver 자산을 수정하지 않고 Packaging Source로 정리했다.</li>
+<li>[ ] Top Module은 <code>custom_axi4lite_controller_ip</code>이다.</li>
+<li>[ ] <code>s_axi_*</code> Port가 AXI4-Lite Slave Interface로 추론되는지 확인한다.</li>
+<li>[ ] <code>s_axi_aclk</code>가 S_AXI와 연관되어 있다.</li>
+<li>[ ] <code>s_axi_aresetn</code>이 Active-Low Reset으로 정의되어 있다.</li>
+<li>[ ] Identification/VLNV를 정의했다.</li>
+<li>[ ] HDL Synthesis, Testbench, Software Drivers, Documentation File Group을 확인했다.</li>
+<li>[ ] Create a new AXI4 Peripheral로 기존 RTL을 다시 생성하지 않는다.</li>
+<li>[ ] Package a specified directory 또는 Package current project를 사용한다.</li>
+<li>[ ] component.xml과 XGUI는 Vivado가 생성하게 한다.</li>
+<li>[ ] 새 Project에 IP Repository를 등록했다.</li>
+<li>[ ] IP Catalog에서 Custom IP를 검색해 Block Design에 추가한다.</li>
+<li>[ ] 새 Project의 Base Address를 Driver에 전달한다.</li>
+<li>[ ] Driver SelfTest로 Hardware ID/VERSION을 다시 확인한다.</li>
+<li>[ ] Driver File 포함과 Vitis BSP 자동연동을 구분한다.</li>
+</ul>
+<div class="flow">SoC 16 완료 → SoC 17 기존 Verilog RTL을 IP로 변환</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip" target="_blank" rel="noopener">AMD UG1118 · Creating and Packaging Custom IP · 2026.1</a></td><td data-label="확인 항목" role="cell">Custom IP Packaging 전체 절차</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Supported-IP-Packager-Inputs" target="_blank" rel="noopener">UG1118 · Supported IP Packager Inputs</a></td><td data-label="확인 항목" role="cell">HDL, Simulation, Testbench, Drivers, Documentation File Group</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Using-the-Create-and-Package-New-IP-Wizard" target="_blank" rel="noopener">UG1118 · Create and Package New IP Wizard</a></td><td data-label="확인 항목" role="cell">Package Project / Directory / Create New AXI4 Peripheral 구분</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Using-a-New-Interface-Definition" target="_blank" rel="noopener">UG1118 · Interface Inference</a></td><td data-label="확인 항목" role="cell"><code>&lt;interface&gt;_&lt;AXI signal&gt;</code> Name Matching</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Inferring-Clock-and-Reset-Interfaces" target="_blank" rel="noopener">UG1118 · Clock/Reset Interface Inference</a></td><td data-label="확인 항목" role="cell">Clock Association, Active-Low Reset 추론</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Outputs-from-IP-Packager" target="_blank" rel="noopener">UG1118 · Outputs from IP Packager</a></td><td data-label="확인 항목" role="cell">component.xml, xgui Tcl 생성</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug896-vivado-ip/Managing-IP-Repositories" target="_blank" rel="noopener">AMD UG896 · Managing IP Repositories · 2026.1</a></td><td data-label="확인 항목" role="cell">Project Settings → IP → Repository</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug835-vivado-tcl-commands/update_ip_catalog" target="_blank" rel="noopener">AMD UG835 · update_ip_catalog · 2026.1</a></td><td data-label="확인 항목" role="cell">IP_REPO_PATHS와 IP Catalog rebuild Tcl</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="15_microblaze_software_driver.html">← SoC 15</a><a href="../../index.html">전체 목차</a><a href="17_existing_verilog_rtl_to_ip.html">SoC 17 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

@@ -1,0 +1,33 @@
+SoC39 STATIC PARALLEL-REQUANT COMPARISON
+clock = 100 MHz
+
+SoC38 read/requant/finish = 9/14/5
+SoC39 read/requant/finish = 9/8/5
+
+SoC38 total = 28 cycles (280.0 ns)
+SoC39 total = 22 cycles (220.0 ns)
+saved = 6 cycles
+static latency reduction vs SoC38 = 21.4%
+SoC38 upper jobs/s = 3,571,428.571
+SoC39 upper jobs/s = 4,545,454.545
+static upper throughput gain vs SoC38 = 27.3%
+
+SPATIAL TRADE-OFF:
+- requant core instances: 1 -> 4
+- actual DSP48 count is NOT assumed
+- 33x16 multiply is wider than one 25x18 DSP48E1 multiplier input
+- synthesis must report the actual DSP/LUT mapping
+
+NOT MEASURED:
+- WNS/TNS/WHS/THS
+- DSP48/LUT/FF delta
+- power delta
+- Basys3 runtime
+SOC39 STATIC PARALLEL4 REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=<seconds> to increase the limit.

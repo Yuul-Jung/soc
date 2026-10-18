@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Custom AXI4-Lite Register Bank를 독립 RTL Controller와 연결하여 CONTROL/COMMAND/DATA_IN과 STATUS/DATA_OUT/IRQ_STATUS 경로를 구현하는 SoC 학습 자료." name="description">
+<title>SoC 14 · Register Bank + RTL Controller 연결</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style>
+<style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 14</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 14</p>
+<h1>Register Bank + RTL Controller 연결</h1>
+<p class="hero-desc">SoC 11~13에서 만든 AXI4-Lite Register 구조를 실제 RTL Controller에 연결한다. Software가 CONTROL, COMMAND, DATA_IN을 쓰면 Controller가 동작하고, Controller의 BUSY, DONE, ERROR, DATA_OUT, IRQ Event가 다시 STATUS와 IRQ_STATUS Register로 돌아오는 Hardware/Software 제어 루프를 완성한다.</p>
+<div class="hero-meta">
+<span class="chip">Register Bank</span><span class="chip">RTL Controller</span><span class="chip">FSM</span><span class="chip">W1P</span><span class="chip">W1C</span><span class="chip">HW/SW Interface</span>
+</div>
+<div class="hero-brief">
+<article><h2>Software → Hardware</h2><p>ENABLE, MODE, START, CLEAR, DATA_IN을 Controller 입력으로 전달한다.</p></article>
+<article><h2>Hardware → Software</h2><p>BUSY, DONE, ERROR, DATA_OUT과 Event를 Register로 되돌린다.</p></article>
+<article><h2>분리</h2><p>AXI, Register Bank, Controller를 독립 모듈로 유지한다.</p></article>
+</div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html" selected>SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc14_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc14">이 장 검증</a></div></div>
+<p class="nav-title">SOC 14 · LEARNING FLOW</p>
+<p class="nav-help">AXI → Register Bank ↔ Controller → Software</p>
+<ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>전체 구조</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Register Bank의 경계 역할</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Controller 입출력</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>교육용 처리 Mode</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Controller FSM</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>START 시 Capture</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>BUSY · DONE · ERROR</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Disabled START Error</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Busy 중 START Error</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>COMMAND.CLEAR</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>IRQ Event와 IRQ_STATUS</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>STATUS와 IRQ_STATUS 차이</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>DATA_IN → Controller</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Controller → DATA_OUT</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>최상위 Wrapper</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Wrapper 순수 연결 원칙</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Controller RTL</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Software 실행 순서</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Software Demo</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Mode 0 · Pass-through</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Mode 1 · Add 1</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Mode 2 · Shift Left</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Mode 3 · Bitwise NOT</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>검증 시나리오</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>파형에서 볼 신호</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">29</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">30</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol>
+</aside>
+
+<main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 12 AXI Slave</span><span class="arrow">→</span><span class="stage">SoC 13 R/W Path</span><span class="arrow">→</span><span class="stage"><strong>SoC 14 Register + Controller</strong></span><span class="arrow">→</span><span class="stage">SoC 15 MicroBlaze V Software Driver</span></div>
+</div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<p>이번 장에서 처음으로 Custom AXI IP의 Register가 실제 기능 RTL을 제어한다. AXI Protocol 자체나 Register Map은 바꾸지 않고, Hardware-side Interface에 Controller를 연결한다.</p>
+<div class="flow">CPU Register Write → Register Bank → RTL Controller → Status/Event → Register Bank → CPU Register Read</div>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>전체 구조</h2>
+<figure class="manual-figure">
+<a href="../../images/soc14/soc14_register_controller_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Register bank and RTL controller architecture · 원본 보기 (새 탭)"><img src="../../images/soc14/soc14_register_controller_architecture.svg" alt="Register bank and RTL controller architecture">
+</a><figcaption>AXI Adapter, Register Bank, RTL Controller를 역할별로 분리한 구조.<br><a href="../../images/soc14/soc14_register_controller_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Register bank and RTL controller architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
+</figure>
+<p>Controller는 AXI의 AW/W/B/AR/R Signal을 전혀 알지 못하고, Register Bank가 제공하는 일반 Control/Status Signal만 사용한다.</p>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Register Bank의 경계 역할</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Register Bank의 경계 역할 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Software Register</th><th scope="col" role="columnheader">Hardware Signal</th><th scope="col" role="columnheader">방향</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Software Register" role="cell">CONTROL.ENABLE</td><td data-label="Hardware Signal" role="cell"><code>enable_o</code></td><td data-label="방향" role="cell">SW → HW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">CONTROL.MODE</td><td data-label="Hardware Signal" role="cell"><code>mode_o[1:0]</code></td><td data-label="방향" role="cell">SW → HW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">COMMAND.START</td><td data-label="Hardware Signal" role="cell"><code>start_pulse_o</code></td><td data-label="방향" role="cell">SW → HW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">COMMAND.CLEAR</td><td data-label="Hardware Signal" role="cell"><code>clear_pulse_o</code></td><td data-label="방향" role="cell">SW → HW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">DATA_IN</td><td data-label="Hardware Signal" role="cell"><code>data_in_o[31:0]</code></td><td data-label="방향" role="cell">SW → HW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">STATUS.BUSY</td><td data-label="Hardware Signal" role="cell"><code>busy_i</code></td><td data-label="방향" role="cell">HW → SW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">STATUS.DONE</td><td data-label="Hardware Signal" role="cell"><code>done_i</code></td><td data-label="방향" role="cell">HW → SW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">STATUS.ERROR</td><td data-label="Hardware Signal" role="cell"><code>error_i</code></td><td data-label="방향" role="cell">HW → SW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">DATA_OUT</td><td data-label="Hardware Signal" role="cell"><code>data_out_i[31:0]</code></td><td data-label="방향" role="cell">HW → SW</td></tr>
+<tr role="row"><td data-label="Software Register" role="cell">IRQ_STATUS</td><td data-label="Hardware Signal" role="cell"><code>irq_*_event_i</code></td><td data-label="방향" role="cell">HW Event → SW Latched</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Controller 입출력</h2>
+<div class="signal-map signal-table" role="region" aria-label="Register Bank와 Controller 신호 연결" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">출발 신호</th><th scope="col" role="columnheader">도착 신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="출발 신호">Register Bank / enable_o</td><td role="cell" data-label="도착 신호">Controller / enable_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Register Bank / mode_o[1:0]</td><td role="cell" data-label="도착 신호">Controller / mode_i[1:0]</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Register Bank / start_pulse_o</td><td role="cell" data-label="도착 신호">Controller / start_pulse_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Register Bank / clear_pulse_o</td><td role="cell" data-label="도착 신호">Controller / clear_pulse_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Register Bank / data_in_o</td><td role="cell" data-label="도착 신호">Controller / data_in_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Controller / busy_o</td><td role="cell" data-label="도착 신호">Register Bank / busy_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Controller / done_o</td><td role="cell" data-label="도착 신호">Register Bank / done_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Controller / error_o</td><td role="cell" data-label="도착 신호">Register Bank / error_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Controller / data_out_o</td><td role="cell" data-label="도착 신호">Register Bank / data_out_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Controller / irq_done_event_o</td><td role="cell" data-label="도착 신호">Register Bank / irq_done_event_i</td></tr><tr role="row"><td role="cell" data-label="출발 신호">Controller / irq_error_event_o</td><td role="cell" data-label="도착 신호">Register Bank / irq_error_event_i</td></tr></tbody></table></div>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>교육용 처리 Mode</h2>
+<p><code>example_processing_controller</code>는 Register/Controller 연결을 눈으로 확인하기 위한 교육용 기능이다. 특정 응용에 종속되지 않는다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="교육용 처리 Mode · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">MODE</th><th scope="col" role="columnheader">처리</th><th scope="col" role="columnheader">예</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="MODE" role="cell"><code>00</code></td><td data-label="처리" role="cell">Pass-through</td><td data-label="예" role="cell"><code>0x1234 → 0x1234</code></td></tr>
+<tr role="row"><td data-label="MODE" role="cell"><code>01</code></td><td data-label="처리" role="cell">Input + 1</td><td data-label="예" role="cell"><code>0x00000009 → 0x0000000A</code></td></tr>
+<tr role="row"><td data-label="MODE" role="cell"><code>10</code></td><td data-label="처리" role="cell">Left Shift 1</td><td data-label="예" role="cell"><code>0x00000003 → 0x00000006</code></td></tr>
+<tr role="row"><td data-label="MODE" role="cell"><code>11</code></td><td data-label="처리" role="cell">Bitwise NOT</td><td data-label="예" role="cell"><code>0xA5A55A5A → 0x5A5AA5A5</code></td></tr>
+</tbody></table></div>
+<div class="note">Add 1과 Left Shift는 32-bit 결과만 유지한다. Overflow나 Shift로 사라지는 상위 Bit는 별도 Error로 처리하지 않는다.</div>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Controller FSM</h2>
+<figure class="manual-figure">
+<a href="../../images/soc14/soc14_controller_fsm.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Controller FSM · 원본 보기 (새 탭)"><img src="../../images/soc14/soc14_controller_fsm.svg" alt="Controller FSM">
+</a><figcaption>IDLE과 RUN 두 상태로 구성한 교육용 Controller FSM.<br><a href="../../images/soc14/soc14_controller_fsm.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Controller FSM · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
+</figure>
+<p>START를 받으면 MODE와 DATA_IN을 Capture하고 RUN으로 이동한다. 고정 처리 Cycle 후 결과를 DATA_OUT에 저장하고 DONE Event를 발생시킨다.</p>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>START 시 Capture</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="START 시 Capture · 소스 코드"><code>mode_latched &lt;= mode_i;
+data_latched &lt;= data_in_i;
+
+busy_o &lt;= 1'b1;
+state  &lt;= STATE_RUN;</code></pre>
+<p>작업이 시작된 이후 Software가 CONTROL 또는 DATA_IN Register를 바꾸더라도 현재 작업은 START 시점에 Capture한 값으로 계속 진행한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>BUSY · DONE · ERROR</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="BUSY · DONE · ERROR · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Status</th><th scope="col" role="columnheader">의미</th><th scope="col" role="columnheader">유지 방식</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Status" role="cell"><code>busy_o</code></td><td data-label="의미" role="cell">현재 처리 중</td><td data-label="유지 방식" role="cell">RUN 동안 1</td></tr>
+<tr role="row"><td data-label="Status" role="cell"><code>done_o</code></td><td data-label="의미" role="cell">마지막 작업 완료</td><td data-label="유지 방식" role="cell">완료 후 1, CLEAR까지 유지</td></tr>
+<tr role="row"><td data-label="Status" role="cell"><code>error_o</code></td><td data-label="의미" role="cell">잘못된 START 발생</td><td data-label="유지 방식" role="cell">Error 발생 후 1, CLEAR까지 유지</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Disabled START Error</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">CONTROL.ENABLE = 0
+        ↓
+COMMAND.START = 1
+        ↓
+start_pulse_i = 1
+        ↓
+Controller does NOT enter RUN
+        ↓
+error_o = 1
+irq_error_event_o = 1 clock</div>
+<p>Software가 Controller를 Enable하지 않고 START를 실행한 경우를 잘못된 명령으로 처리한다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Busy 중 START Error</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="10절 신호 및 실행 흐름">Controller RUN / busy=1
+        ↓
+Second START pulse
+        ↓
+error_o = 1
+irq_error_event_o = 1 clock
+        ↓
+Original operation continues
+        ↓
+Normal DONE may occur later</div>
+<p>새 START가 기존 작업을 강제로 취소하지 않는다. Error는 기록하지만 원래 작업은 끝까지 수행한다.</p>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>COMMAND.CLEAR</h2>
+<p><code>COMMAND[1]</code>은 W1P(Write 1 to Pulse, 1을 쓰면 1 Clock Pulse)이며 Controller의 retained Status를 지운다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="COMMAND.CLEAR · 소스 코드"><code>if (clear_pulse_i) begin
+    done_o  &lt;= 1'b0;
+    error_o &lt;= 1'b0;
+end</code></pre>
+<p>CLEAR는 진행 중인 RUN을 Abort하지 않는다. BUSY 상태는 현재 작업이 끝날 때까지 유지된다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>IRQ Event와 IRQ_STATUS</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="12절 신호 및 실행 흐름">Controller completion
+      ↓
+irq_done_event_o = 1 clock
+      ↓
+Register Bank irq_done_event_i
+      ↓
+IRQ_STATUS[0] = 1
+      ↓
+Software reads event history
+      ↓
+W1C bit0 = 1
+      ↓
+IRQ_STATUS[0] = 0</div>
+<p>Controller의 Event는 1 Clock Pulse지만 Register Bank가 IRQ_STATUS에 저장하므로 Software가 나중에 읽어도 Event를 확인할 수 있다.</p>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>STATUS와 IRQ_STATUS 차이</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="STATUS와 IRQ_STATUS 차이 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구분</th><th scope="col" role="columnheader">STATUS</th><th scope="col" role="columnheader">IRQ_STATUS</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구분" role="cell">의미</td><td data-label="STATUS" role="cell">Controller의 현재/최근 상태</td><td data-label="IRQ_STATUS" role="cell">발생한 Event 기록</td></tr>
+<tr role="row"><td data-label="구분" role="cell">Source</td><td data-label="STATUS" role="cell">busy/done/error Level</td><td data-label="IRQ_STATUS" role="cell">done/error Event Pulse</td></tr>
+<tr role="row"><td data-label="구분" role="cell">Clear</td><td data-label="STATUS" role="cell">COMMAND.CLEAR</td><td data-label="IRQ_STATUS" role="cell">W1C Write</td></tr>
+<tr role="row"><td data-label="구분" role="cell">목적</td><td data-label="STATUS" role="cell">현재 작업 상태 확인</td><td data-label="IRQ_STATUS" role="cell">Event 놓치지 않기</td></tr>
+</tbody></table></div>
+<div class="note">STATUS를 Clear해도 IRQ_STATUS는 자동으로 지워지지 않는다. 두 Register의 의미를 의도적으로 분리한다.</div>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>DATA_IN → Controller</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="14절 신호 및 실행 흐름">Software
+Custom_WriteReg(DATA_IN, 0x12345678)
+        ↓
+Register Bank
+data_in_o = 0x12345678
+        ↓
+START
+        ↓
+Controller captures
+data_latched = 0x12345678</div>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Controller → DATA_OUT</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="15절 신호 및 실행 흐름">Controller operation completes
+        ↓
+data_out_o = processed result
+        ↓
+Register Bank data_out_i
+        ↓
+DATA_OUT Register
+        ↓
+AXI Read
+        ↓
+Software result</div>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>최상위 Wrapper</h2>
+<p><code>custom_axi4lite_controller_ip.v</code>는 AXI/Register Module과 Controller Module을 연결하는 최상위 Wrapper이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="최상위 Wrapper · 소스 코드"><code>module custom_axi4lite_controller_ip #(
+    parameter integer C_S_AXI_ADDR_WIDTH = 32,
+    parameter integer PROCESS_CYCLES     = 4
+)(
+    input  wire                          s_axi_aclk,
+    input  wire                          s_axi_aresetn,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_awaddr,
+    input  wire [2:0]                    s_axi_awprot,
+    input  wire                          s_axi_awvalid,
+    output wire                          s_axi_awready,
+
+    input  wire [31:0]                   s_axi_wdata,
+    input  wire [3:0]                    s_axi_wstrb,
+    input  wire                          s_axi_wvalid,
+    output wire                          s_axi_wready,
+
+    output wire [1:0]                    s_axi_bresp,
+    output wire                          s_axi_bvalid,
+    input  wire                          s_axi_bready,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_araddr,
+    input  wire [2:0]                    s_axi_arprot,
+    input  wire                          s_axi_arvalid,
+    output wire                          s_axi_arready,
+
+    output wire [31:0]                   s_axi_rdata,
+    output wire [1:0]                    s_axi_rresp,
+    output wire                          s_axi_rvalid,
+    input  wire                          s_axi_rready
+);
+
+// Shell / Wrapper principle:
+// - AXI/Register behavior stays in custom_axi4lite_ip.
+// - Functional processing stays in example_processing_controller.
+// - This module contains only wires and module connections.
+
+wire        enable;
+wire [1:0]  mode;
+wire        start_pulse;
+wire        clear_pulse;
+wire [31:0] data_in;
+wire [1:0]  irq_status;
+
+wire        busy;
+wire        done;
+wire        error;
+wire        irq_done_event;
+wire        irq_error_event;
+wire [31:0] data_out;
+
+custom_axi4lite_ip #(
+    .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
+) u_custom_axi4lite_ip (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(s_axi_aresetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awprot(s_axi_awprot),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arprot(s_axi_arprot),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .busy_i(busy),
+    .done_i(done),
+    .error_i(error),
+    .irq_done_event_i(irq_done_event),
+    .irq_error_event_i(irq_error_event),
+    .data_out_i(data_out),
+
+    .enable_o(enable),
+    .mode_o(mode),
+    .start_pulse_o(start_pulse),
+    .clear_pulse_o(clear_pulse),
+    .data_in_o(data_in),
+    .irq_status_o(irq_status)
+);
+
+example_processing_controller #(
+    .PROCESS_CYCLES(PROCESS_CYCLES)
+) u_example_processing_controller (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .enable_i(enable),
+    .mode_i(mode),
+    .start_pulse_i(start_pulse),
+    .clear_pulse_i(clear_pulse),
+    .data_in_i(data_in),
+
+    .busy_o(busy),
+    .done_o(done),
+    .error_o(error),
+    .irq_done_event_o(irq_done_event),
+    .irq_error_event_o(irq_error_event),
+    .data_out_o(data_out)
+);
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Wrapper 순수 연결 원칙</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Wrapper 순수 연결 원칙 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">허용</th><th scope="col" role="columnheader">배치하지 않음</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="허용" role="cell">Wire 선언</td><td data-label="배치하지 않음" role="cell">always Block</td></tr>
+<tr role="row"><td data-label="허용" role="cell">Module Instance</td><td data-label="배치하지 않음" role="cell">FSM</td></tr>
+<tr role="row"><td data-label="허용" role="cell">Port Connection</td><td data-label="배치하지 않음" role="cell">산술 연산</td></tr>
+<tr role="row"><td data-label="허용" role="cell">Parameter 전달</td><td data-label="배치하지 않음" role="cell">Register 정책</td></tr>
+</tbody></table></div>
+<p>기능은 Controller, Bus/Register 동작은 기존 AXI/Register Module에 남긴다.</p>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Controller RTL</h2>
+<p>다음 Controller는 AXI Signal이나 Register Address를 전혀 사용하지 않는다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Controller RTL · 소스 코드"><code>module example_processing_controller #(
+    parameter integer PROCESS_CYCLES = 4
+)(
+    input  wire        clk,
+    input  wire        resetn,
+
+    // Register-bank control inputs
+    input  wire        enable_i,
+    input  wire [1:0]  mode_i,
+    input  wire        start_pulse_i,
+    input  wire        clear_pulse_i,
+    input  wire [31:0] data_in_i,
+
+    // Register-bank status / event outputs
+    output reg         busy_o,
+    output reg         done_o,
+    output reg         error_o,
+    output reg         irq_done_event_o,
+    output reg         irq_error_event_o,
+    output reg  [31:0] data_out_o
+);
+
+localparam STATE_IDLE = 1'b0;
+localparam STATE_RUN  = 1'b1;
+
+reg        state;
+reg [7:0]  cycles_left;
+reg [1:0]  mode_latched;
+reg [31:0] data_latched;
+
+function [31:0] process_value;
+    input [31:0] value;
+    input [1:0]  mode;
+    begin
+        case (mode)
+            2'b00: process_value = value;          // Pass-through
+            2'b01: process_value = value + 32'd1; // Add 1
+            2'b10: process_value = value &lt;&lt; 1;     // Shift left 1
+            2'b11: process_value = ~value;         // Bitwise NOT
+            default: process_value = value;
+        endcase
+    end
+endfunction
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state             &lt;= STATE_IDLE;
+        cycles_left       &lt;= 8'd0;
+        mode_latched      &lt;= 2'b00;
+        data_latched      &lt;= 32'h0000_0000;
+
+        busy_o            &lt;= 1'b0;
+        done_o            &lt;= 1'b0;
+        error_o           &lt;= 1'b0;
+        irq_done_event_o  &lt;= 1'b0;
+        irq_error_event_o &lt;= 1'b0;
+        data_out_o        &lt;= 32'h0000_0000;
+    end else begin
+        // Event outputs are one-clock pulses by default.
+        irq_done_event_o  &lt;= 1'b0;
+        irq_error_event_o &lt;= 1'b0;
+
+        // Software CLEAR removes retained status only.
+        // A new hardware event later in this clock may set status again.
+        if (clear_pulse_i) begin
+            done_o  &lt;= 1'b0;
+            error_o &lt;= 1'b0;
+        end
+
+        case (state)
+            STATE_IDLE: begin
+                busy_o &lt;= 1'b0;
+
+                if (start_pulse_i) begin
+                    done_o &lt;= 1'b0;
+
+                    if (!enable_i) begin
+                        // Start requested while the controller is disabled.
+                        error_o           &lt;= 1'b1;
+                        irq_error_event_o &lt;= 1'b1;
+                    end else begin
+                        // Capture software-controlled values only at START.
+                        mode_latched &lt;= mode_i;
+                        data_latched &lt;= data_in_i;
+
+                        busy_o  &lt;= 1'b1;
+                        error_o &lt;= 1'b0;
+
+                        if (PROCESS_CYCLES &lt;= 1) begin
+                            cycles_left &lt;= 8'd0;
+                        end else begin
+                            cycles_left &lt;= PROCESS_CYCLES - 1;
+                        end
+
+                        state &lt;= STATE_RUN;
+                    end
+                end
+            end
+
+            STATE_RUN: begin
+                busy_o &lt;= 1'b1;
+
+                // A second START while busy is an error event.
+                // The original operation continues.
+                if (start_pulse_i) begin
+                    error_o           &lt;= 1'b1;
+                    irq_error_event_o &lt;= 1'b1;
+                end
+
+                if (cycles_left != 0) begin
+                    cycles_left &lt;= cycles_left - 1'b1;
+                end else begin
+                    data_out_o       &lt;= process_value(data_latched, mode_latched);
+                    busy_o           &lt;= 1'b0;
+                    done_o           &lt;= 1'b1;
+                    irq_done_event_o &lt;= 1'b1;
+                    state            &lt;= STATE_IDLE;
+                end
+            end
+
+            default: begin
+                state  &lt;= STATE_IDLE;
+                busy_o &lt;= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Software 실행 순서</h2>
+<figure class="manual-figure">
+<a href="../../images/soc14/soc14_software_hardware_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Software hardware operation flow · 원본 보기 (새 탭)"><img src="../../images/soc14/soc14_software_hardware_flow.svg" alt="Software hardware operation flow">
+</a><figcaption>Software가 Register를 통해 Controller를 실행하고 결과를 다시 읽는 기본 순서.<br><a href="../../images/soc14/soc14_software_hardware_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Software hardware operation flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
+</figure>
+<div class="flow">CLEAR → ENABLE/MODE → DATA_IN → START → STATUS Poll → DATA_OUT Read → STATUS/IRQ Clear</div>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Software Demo</h2>
+<p>다음 함수는 실제 Base Address를 호출자가 전달받아 Controller를 실행한다. Base Address를 소스에 임의로 고정하지 않는다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Software Demo · 소스 코드"><code>#include "custom_regmap.h"
+#include "xstatus.h"
+#include "xil_types.h"
+
+/*
+ * SoC 14 - Register Bank + RTL Controller software demo
+ *
+ * Hardware operation modes:
+ *   mode 0 : pass-through
+ *   mode 1 : input + 1
+ *   mode 2 : input &lt;&lt; 1
+ *   mode 3 : bitwise NOT
+ *
+ * BaseAddress is supplied by the caller.
+ */
+
+#define CUSTOM_POLL_LIMIT  1000000U
+
+static void Custom_ClearStatusAndIrq(UINTPTR BaseAddress)
+{
+    /* COMMAND.CLEAR clears controller done/error status. */
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_COMMAND_OFFSET,
+        CUSTOM_COMMAND_CLEAR_MASK
+    );
+
+    /* IRQ_STATUS is independent and must be cleared by W1C. */
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_IRQ_STATUS_OFFSET,
+        CUSTOM_IRQ_DONE_MASK | CUSTOM_IRQ_ERROR_MASK
+    );
+}
+
+int Custom_RunOperation(
+    UINTPTR BaseAddress,
+    u32 Mode,
+    u32 InputValue,
+    u32 *OutputValue
+)
+{
+    u32 poll_count;
+    u32 status;
+
+    if (OutputValue == 0) {
+        return XST_FAILURE;
+    }
+
+    Custom_ClearStatusAndIrq(BaseAddress);
+
+    Custom_SetEnable(BaseAddress, 1U);
+    Custom_SetMode(BaseAddress, Mode);
+
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_DATA_IN_OFFSET,
+        InputValue
+    );
+
+    Custom_Start(BaseAddress);
+
+    for (poll_count = 0U;
+         poll_count &lt; CUSTOM_POLL_LIMIT;
+         poll_count++) {
+
+        status = Custom_ReadReg(
+            BaseAddress,
+            CUSTOM_STATUS_OFFSET
+        );
+
+        if ((status &amp; CUSTOM_STATUS_ERROR_MASK) != 0U) {
+            return XST_FAILURE;
+        }
+
+        if ((status &amp; CUSTOM_STATUS_DONE_MASK) != 0U) {
+            *OutputValue = Custom_ReadReg(
+                BaseAddress,
+                CUSTOM_DATA_OUT_OFFSET
+            );
+
+            /* Clear retained controller status and DONE IRQ. */
+            Custom_WriteReg(
+                BaseAddress,
+                CUSTOM_COMMAND_OFFSET,
+                CUSTOM_COMMAND_CLEAR_MASK
+            );
+
+            Custom_ClearDoneIrq(BaseAddress);
+
+            return XST_SUCCESS;
+        }
+    }
+
+    return XST_FAILURE;
+}
+</code></pre>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Mode 0 · Pass-through</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="21절 신호 및 실행 흐름">MODE = 00
+DATA_IN = 0x12345678
+START
+   ↓
+BUSY = 1
+   ↓ fixed cycles
+DONE = 1
+DATA_OUT = 0x12345678</div>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Mode 1 · Add 1</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="22절 신호 및 실행 흐름">MODE = 01
+DATA_IN = 0xFFFFFFFF
+   ↓
+32-bit + 1
+   ↓
+DATA_OUT = 0x00000000</div>
+<p>32-bit 결과만 유지하므로 Overflow는 Wrap-around 된다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Mode 2 · Shift Left</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="23절 신호 및 실행 흐름">MODE = 10
+DATA_IN = 0x80000001
+   ↓
+value &lt;&lt; 1
+   ↓
+DATA_OUT = 0x00000002</div>
+<p>왼쪽으로 밀려 나간 최상위 Bit는 저장하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Mode 3 · Bitwise NOT</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="24절 신호 및 실행 흐름">MODE = 11
+DATA_IN = 0xA5A55A5A
+   ↓
+bitwise NOT
+   ↓
+DATA_OUT = 0x5A5AA5A5</div>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Self-Checking Testbench</h2>
+<p>Testbench는 AXI Register Transaction을 통해 Controller를 구동한다. Controller Port를 Testbench에서 직접 찌르지 않는다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_custom_axi4lite_controller_ip;
+
+localparam integer ADDR_W = 32;
+localparam integer PROCESS_CYCLES_TB = 12;
+
+reg clk = 1'b0;
+reg resetn = 1'b0;
+
+always #5 clk = ~clk;
+
+reg  [ADDR_W-1:0] awaddr;
+reg  [2:0]        awprot;
+reg               awvalid;
+wire              awready;
+
+reg  [31:0]       wdata;
+reg  [3:0]        wstrb;
+reg               wvalid;
+wire              wready;
+
+wire [1:0]        bresp;
+wire              bvalid;
+reg               bready;
+
+reg  [ADDR_W-1:0] araddr;
+reg  [2:0]        arprot;
+reg               arvalid;
+wire              arready;
+
+wire [31:0]       rdata;
+wire [1:0]        rresp;
+wire              rvalid;
+reg               rready;
+
+integer error_count = 0;
+reg [31:0] rd;
+
+custom_axi4lite_controller_ip #(
+    .C_S_AXI_ADDR_WIDTH(ADDR_W),
+    .PROCESS_CYCLES(PROCESS_CYCLES_TB)
+) dut (
+    .s_axi_aclk(clk),
+    .s_axi_aresetn(resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awprot(awprot),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arprot(arprot),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready)
+);
+
+task automatic expect32;
+    input [31:0] actual;
+    input [31:0] expected;
+    input [8*48-1:0] label;
+    begin
+        if (actual !== expected) begin
+            $display("FAIL: %0s actual=%08h expected=%08h",
+                     label, actual, expected);
+            error_count = error_count + 1;
+        end else begin
+            $display("PASS: %0s = %08h", label, actual);
+        end
+    end
+endtask
+
+task automatic axi_write;
+    input [31:0] addr;
+    input [31:0] data;
+    input [3:0]  strb;
+    begin
+        @(negedge clk);
+        awaddr  = addr;
+        awvalid = 1'b1;
+
+        wait (awready === 1'b1);
+        @(negedge clk);
+        awvalid = 1'b0;
+
+        @(negedge clk);
+        wdata  = data;
+        wstrb  = strb;
+        wvalid = 1'b1;
+
+        wait (wready === 1'b1);
+        @(negedge clk);
+        wvalid = 1'b0;
+
+        bready = 1'b1;
+        wait (bvalid === 1'b1);
+        @(posedge clk);
+        @(negedge clk);
+        bready = 1'b0;
+    end
+endtask
+
+task automatic axi_read;
+    input  [31:0] addr;
+    output [31:0] data;
+    begin
+        @(negedge clk);
+        araddr  = addr;
+        arvalid = 1'b1;
+
+        wait (arready === 1'b1);
+        @(negedge clk);
+        arvalid = 1'b0;
+
+        rready = 1'b1;
+        wait (rvalid === 1'b1);
+        data = rdata;
+
+        @(posedge clk);
+        @(negedge clk);
+        rready = 1'b0;
+    end
+endtask
+
+task automatic clear_status_and_irq;
+    begin
+        axi_write(32'h00000008, 32'h00000002, 4'b0001);
+        axi_write(32'h0000000C, 32'h00000003, 4'b0001);
+    end
+endtask
+
+task automatic wait_done;
+    output [31:0] status_value;
+    integer k;
+    reg found;
+    begin
+        status_value = 32'h0;
+        found = 1'b0;
+
+        for (k = 0; k &lt; 100; k = k + 1) begin
+            axi_read(32'h00000004, status_value);
+
+            if (status_value[1]) begin
+                found = 1'b1;
+                k = 100;
+            end
+        end
+
+        if (!found) begin
+            $display("FAIL: timeout waiting for DONE");
+            error_count = error_count + 1;
+        end
+    end
+endtask
+
+task automatic run_mode_test;
+    input [1:0]  mode;
+    input [31:0] input_value;
+    input [31:0] expected_value;
+    reg [31:0] status_value;
+    reg [31:0] control_value;
+    begin
+        clear_status_and_irq();
+
+        control_value = 32'h00000001 | ({30'h0, mode} &lt;&lt; 1);
+        axi_write(32'h00000000, control_value, 4'b1111);
+        axi_write(32'h00000010, input_value, 4'b1111);
+        axi_write(32'h00000008, 32'h00000001, 4'b0001);
+
+        wait_done(status_value);
+
+        if (!status_value[1] || status_value[0]) begin
+            $display("FAIL: final STATUS expected DONE=1 BUSY=0");
+            error_count = error_count + 1;
+        end
+
+        axi_read(32'h00000014, rd);
+        expect32(rd, expected_value, "DATA_OUT result");
+
+        axi_read(32'h0000000C, rd);
+        if ((rd &amp; 32'h00000001) == 0) begin
+            $display("FAIL: DONE IRQ status not latched");
+            error_count = error_count + 1;
+        end else begin
+            $display("PASS: DONE IRQ status latched");
+        end
+    end
+endtask
+
+initial begin
+    awaddr = 0;
+    awprot = 0;
+    awvalid = 0;
+    wdata = 0;
+    wstrb = 0;
+    wvalid = 0;
+    bready = 0;
+
+    araddr = 0;
+    arprot = 0;
+    arvalid = 0;
+    rready = 0;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+    repeat (3) @(posedge clk);
+
+    $display("---- FIXED REGISTERS ----");
+    axi_read(32'h00000018, rd);
+    expect32(rd, 32'h00010000, "VERSION");
+
+    axi_read(32'h0000001C, rd);
+    expect32(rd, 32'h524D4150, "ID");
+
+    $display("---- DISABLED START -&gt; ERROR ----");
+    axi_write(32'h00000008, 32'h00000001, 4'b0001);
+    repeat (3) @(posedge clk);
+
+    axi_read(32'h00000004, rd);
+    if ((rd &amp; 32'h00000004) == 0) begin
+        $display("FAIL: STATUS.ERROR not set");
+        error_count = error_count + 1;
+    end else begin
+        $display("PASS: STATUS.ERROR set");
+    end
+
+    axi_read(32'h0000000C, rd);
+    if ((rd &amp; 32'h00000002) == 0) begin
+        $display("FAIL: IRQ_STATUS.ERROR not set");
+        error_count = error_count + 1;
+    end else begin
+        $display("PASS: IRQ_STATUS.ERROR set");
+    end
+
+    $display("---- CLEAR STATUS ONLY ----");
+    axi_write(32'h00000008, 32'h00000002, 4'b0001);
+    axi_read(32'h00000004, rd);
+    expect32(rd, 32'h00000000, "STATUS after COMMAND.CLEAR");
+
+    axi_read(32'h0000000C, rd);
+    expect32(rd, 32'h00000002, "IRQ_STATUS remains latched");
+
+    axi_write(32'h0000000C, 32'h00000002, 4'b0001);
+    axi_read(32'h0000000C, rd);
+    expect32(rd, 32'h00000000, "IRQ_STATUS W1C clear");
+
+    $display("---- MODE 0 PASS-THROUGH ----");
+    run_mode_test(2'b00, 32'h12345678, 32'h12345678);
+
+    $display("---- MODE 1 ADD 1 ----");
+    run_mode_test(2'b01, 32'hFFFFFFFF, 32'h00000000);
+
+    $display("---- MODE 2 SHIFT LEFT ----");
+    run_mode_test(2'b10, 32'h80000001, 32'h00000002);
+
+    $display("---- MODE 3 BITWISE NOT ----");
+    run_mode_test(2'b11, 32'hA5A55A5A, 32'h5A5AA5A5);
+
+    $display("---- START WHILE BUSY -&gt; ERROR ----");
+    clear_status_and_irq();
+
+    // Enable, mode 0, data input.
+    axi_write(32'h00000000, 32'h00000001, 4'b1111);
+    axi_write(32'h00000010, 32'hCAFEBABE, 4'b1111);
+
+    // First START launches the operation.
+    axi_write(32'h00000008, 32'h00000001, 4'b0001);
+
+    // Second START arrives before PROCESS_CYCLES_TB expires.
+    axi_write(32'h00000008, 32'h00000001, 4'b0001);
+
+    wait_done(rd);
+
+    axi_read(32'h00000004, rd);
+    if ((rd &amp; 32'h00000004) == 0) begin
+        $display("FAIL: busy restart ERROR not retained");
+        error_count = error_count + 1;
+    end else begin
+        $display("PASS: busy restart ERROR retained");
+    end
+
+    axi_read(32'h00000014, rd);
+    expect32(rd, 32'hCAFEBABE, "original operation still completed");
+
+    axi_read(32'h0000000C, rd);
+    if ((rd &amp; 32'h00000003) != 32'h00000003) begin
+        $display("FAIL: DONE+ERROR IRQ status expected");
+        error_count = error_count + 1;
+    end else begin
+        $display("PASS: DONE+ERROR IRQ status latched");
+    end
+
+    if (error_count == 0) begin
+        $display("SOC14 REGISTER BANK + CONTROLLER TEST: PASS");
+    end else begin
+        $display("SOC14 REGISTER BANK + CONTROLLER TEST: FAIL (%0d errors)",
+                 error_count);
+    end
+
+    #50;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>검증 시나리오</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="검증 시나리오 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">시험</th><th scope="col" role="columnheader">기대 결과</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="시험" role="cell">VERSION / ID Read</td><td data-label="기대 결과" role="cell">고정 RO 값</td></tr>
+<tr role="row"><td data-label="시험" role="cell">Disabled START</td><td data-label="기대 결과" role="cell">STATUS.ERROR + IRQ_STATUS.ERROR</td></tr>
+<tr role="row"><td data-label="시험" role="cell">COMMAND.CLEAR</td><td data-label="기대 결과" role="cell">STATUS만 Clear</td></tr>
+<tr role="row"><td data-label="시험" role="cell">IRQ_STATUS W1C</td><td data-label="기대 결과" role="cell">Latched IRQ 별도 Clear</td></tr>
+<tr role="row"><td data-label="시험" role="cell">Mode 0</td><td data-label="기대 결과" role="cell">Pass-through</td></tr>
+<tr role="row"><td data-label="시험" role="cell">Mode 1</td><td data-label="기대 결과" role="cell">+1, 32-bit Wrap</td></tr>
+<tr role="row"><td data-label="시험" role="cell">Mode 2</td><td data-label="기대 결과" role="cell">Left Shift 1</td></tr>
+<tr role="row"><td data-label="시험" role="cell">Mode 3</td><td data-label="기대 결과" role="cell">Bitwise NOT</td></tr>
+<tr role="row"><td data-label="시험" role="cell">Busy 중 START</td><td data-label="기대 결과" role="cell">Error 기록 + 원 작업 정상 완료</td></tr>
+<tr role="row"><td data-label="시험" role="cell">DONE Event</td><td data-label="기대 결과" role="cell">IRQ_STATUS.DONE Latched</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>파형에서 볼 신호</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="파형에서 볼 신호 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구간</th><th scope="col" role="columnheader">신호</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구간" role="cell">설정</td><td data-label="신호" role="cell"><code>enable, mode, data_in</code></td><td data-label="확인" role="cell">Register Write 값 유지</td></tr>
+<tr role="row"><td data-label="구간" role="cell">시작</td><td data-label="신호" role="cell"><code>start_pulse</code></td><td data-label="확인" role="cell">정확히 1 Clock</td></tr>
+<tr role="row"><td data-label="구간" role="cell">처리</td><td data-label="신호" role="cell"><code>busy</code></td><td data-label="확인" role="cell">RUN 동안 1</td></tr>
+<tr role="row"><td data-label="구간" role="cell">완료</td><td data-label="신호" role="cell"><code>done</code></td><td data-label="확인" role="cell">완료 후 CLEAR까지 유지</td></tr>
+<tr role="row"><td data-label="구간" role="cell">Event</td><td data-label="신호" role="cell"><code>irq_done_event</code></td><td data-label="확인" role="cell">완료 시 1 Clock</td></tr>
+<tr role="row"><td data-label="구간" role="cell">결과</td><td data-label="신호" role="cell"><code>data_out</code></td><td data-label="확인" role="cell">MODE별 예상값</td></tr>
+<tr role="row"><td data-label="구간" role="cell">오류</td><td data-label="신호" role="cell"><code>error</code></td><td data-label="확인" role="cell">Disabled/Busy START에서 1</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">START 후 아무 변화 없음</td><td data-label="원인 후보" role="cell">ENABLE=0</td><td data-label="확인" role="cell">CONTROL.ENABLE 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">START가 여러 Cycle 유지</td><td data-label="원인 후보" role="cell">COMMAND를 일반 RW로 구현</td><td data-label="확인" role="cell">W1P Pulse 구조 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">DATA_IN 변경이 작업 중 결과를 바꿈</td><td data-label="원인 후보" role="cell">START 시 Capture하지 않음</td><td data-label="확인" role="cell"><code>data_latched</code> 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">DONE이 즉시 사라짐</td><td data-label="원인 후보" role="cell">Pulse로만 구현</td><td data-label="확인" role="cell">DONE은 CLEAR까지 retained</td></tr>
+<tr role="row"><td data-label="증상" role="cell">STATUS Clear 후 IRQ도 사라짐</td><td data-label="원인 후보" role="cell">상태와 Event History를 혼합</td><td data-label="확인" role="cell">IRQ_STATUS는 별도 W1C</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Busy 중 두 번째 START가 원 작업을 취소</td><td data-label="원인 후보" role="cell">정책 오류</td><td data-label="확인" role="cell">Error만 기록, RUN 계속</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Wrapper에 FSM/연산이 있음</td><td data-label="원인 후보" role="cell">모듈 역할 혼합</td><td data-label="확인" role="cell">Wrapper는 Connection만 유지</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 14 완료 체크리스트</h2>
+<ul>
+<li>[ ] AXI Adapter, Register Bank, RTL Controller의 역할을 구분한다.</li>
+<li>[ ] Controller가 AXI Signal과 Register Address에 종속되지 않는다.</li>
+<li>[ ] CONTROL.ENABLE/MODE가 Controller 입력으로 연결된다.</li>
+<li>[ ] COMMAND.START/CLEAR가 1-Clock Pulse로 Controller에 전달된다.</li>
+<li>[ ] DATA_IN을 START 시점에 Capture한다.</li>
+<li>[ ] BUSY는 처리 중 Level로 유지된다.</li>
+<li>[ ] DONE/ERROR는 COMMAND.CLEAR까지 유지된다.</li>
+<li>[ ] DONE/ERROR Event는 1-Clock IRQ Event Pulse를 만든다.</li>
+<li>[ ] IRQ_STATUS는 STATUS와 별도로 W1C Clear한다.</li>
+<li>[ ] Mode 0~3 결과를 DATA_OUT에서 읽을 수 있다.</li>
+<li>[ ] Disabled START가 Error를 발생시킨다.</li>
+<li>[ ] Busy 중 재START가 Error를 기록하지만 원 작업은 계속된다.</li>
+<li>[ ] 최상위 Wrapper에는 기능 로직을 넣지 않았다.</li>
+<li>[ ] SoC 13 AXI/Register RTL을 수정하지 않고 그대로 재사용했다.</li>
+</ul>
+<div class="flow">SoC 14 완료 → SoC 15 MicroBlaze V Software Driver</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Creating-a-New-AXI4-Peripheral" target="_blank" rel="noopener">AMD UG1118 · Creating a New AXI4 Peripheral · 2026.1</a></td><td data-label="확인 항목" role="cell">AXI4 Peripheral 생성 후 Custom Logic 추가와 Register Read/Write 검증 흐름</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Supported-IP-Packager-Inputs" target="_blank" rel="noopener">AMD UG1118 · Supported IP Packager Inputs · 2026.1</a></td><td data-label="확인 항목" role="cell">HDL Synthesis, Simulation, Testbench, Driver 등 Custom IP File Group 지원</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_io.h" target="_blank" rel="noopener">AMD/Xilinx embeddedsw · xil_io.h</a></td><td data-label="확인 항목" role="cell">Software Memory-Mapped Register Access 기반</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="13_axi_register_read_write_path.html">← SoC 13</a><a href="../../index.html">전체 목차</a><a href="15_microblaze_software_driver.html">SoC 15 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

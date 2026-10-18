@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="590" viewBox="0 0 1280 590">
+<rect width="1280" height="590" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">PE4를 매 Clock 공급하려면?</text>
+<rect x="85" y="145" width="280" height="260" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="225" y="190" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Activation</text>
+<text x="225" y="245" text-anchor="middle" font-family="sans-serif" font-size="17">4 × int8</text>
+<text x="225" y="290" text-anchor="middle" font-family="sans-serif" font-size="17">32 bit / cycle</text>
+<text x="225" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">100 MHz → 3.2 Gbit/s</text>
+
+<rect x="500" y="145" width="280" height="260" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="640" y="190" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Weight</text>
+<text x="640" y="245" text-anchor="middle" font-family="sans-serif" font-size="17">4 × int8</text>
+<text x="640" y="290" text-anchor="middle" font-family="sans-serif" font-size="17">32 bit / cycle</text>
+<text x="640" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">100 MHz → 3.2 Gbit/s</text>
+
+<rect x="915" y="145" width="280" height="260" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1055" y="190" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Total Local Payload</text>
+<text x="1055" y="245" text-anchor="middle" font-family="sans-serif" font-size="17">64 bit / cycle</text>
+<text x="1055" y="290" text-anchor="middle" font-family="sans-serif" font-size="17">6.4 Gbit/s</text>
+<text x="1055" y="345" text-anchor="middle" font-family="sans-serif" font-size="17">800 MB/s</text>
+
+<text x="640" y="485" text-anchor="middle" font-family="sans-serif" font-size="17">이 값은 Local Interface가 Stall 없이 매 Clock 64 bit를 전달할 때의 이론 Payload Rate이다.</text>
+<text x="640" y="525" text-anchor="middle" font-family="sans-serif" font-size="15">External DDR/PCIe/UART 등의 실제 Bandwidth 측정값이 아니다.</text>
+</svg>

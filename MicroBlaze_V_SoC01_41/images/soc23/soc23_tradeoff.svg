@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="590" viewBox="0 0 1260 590">
+<rect width="1260" height="590" fill="white"/>
+<text x="630" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Timing · Resource · Power는 함께 본다</text>
+
+<circle cx="400" cy="260" r="150" fill="#eef6ff" fill-opacity="0.85" stroke="#111827" stroke-width="2"/>
+<circle cx="630" cy="260" r="150" fill="#fff7ed" fill-opacity="0.80" stroke="#111827" stroke-width="2"/>
+<circle cx="515" cy="410" r="150" fill="#f0fdf4" fill-opacity="0.80" stroke="#111827" stroke-width="2"/>
+
+<text x="330" y="210" font-family="sans-serif" font-size="22" font-weight="bold">Timing</text>
+<text x="275" y="250" font-family="sans-serif" font-size="16">WNS/TNS</text>
+<text x="275" y="285" font-family="sans-serif" font-size="16">Clock Period</text>
+
+<text x="675" y="210" font-family="sans-serif" font-size="22" font-weight="bold">Resource</text>
+<text x="690" y="250" font-family="sans-serif" font-size="16">LUT / FF</text>
+<text x="690" y="285" font-family="sans-serif" font-size="16">BRAM / DSP</text>
+
+<text x="460" y="470" font-family="sans-serif" font-size="22" font-weight="bold">Power</text>
+<text x="430" y="505" font-family="sans-serif" font-size="16">Static / Dynamic / Tj</text>
+
+<text x="515" y="315" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold">Architecture</text>
+<text x="515" y="345" text-anchor="middle" font-family="sans-serif" font-size="15">Pipeline / Clock / Dataflow</text>
+
+<text x="980" y="200" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">예: Pipeline</text>
+<text x="980" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">FF/Clock Load ↑ 가능</text>
+<text x="980" y="280" text-anchor="middle" font-family="sans-serif" font-size="16">Critical Path ↓ 가능</text>
+<text x="980" y="315" text-anchor="middle" font-family="sans-serif" font-size="16">Glitch/Route 변화 가능</text>
+<text x="980" y="350" text-anchor="middle" font-family="sans-serif" font-size="16">Power 방향은 측정 필요</text>
+</svg>

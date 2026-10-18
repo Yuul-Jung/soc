@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1380" height="590" viewBox="0 0 1380 590">
+<rect width="1380" height="590" fill="white"/>
+<text x="690" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Static Job Schedule · Baseline vs Optimized</text>
+
+<text x="95" y="145" font-family="sans-serif" font-size="18" font-weight="bold">Baseline</text>
+<rect x="240" y="105" width="560" height="85" rx="10" fill="#eef6ff" stroke="#111827"/>
+<text x="520" y="157" text-anchor="middle" font-family="sans-serif" font-size="18">BRAM Read · 16</text>
+<rect x="800" y="105" width="350" height="85" rx="10" fill="#fff7ed" stroke="#111827"/>
+<text x="975" y="157" text-anchor="middle" font-family="sans-serif" font-size="18">Requant · 14</text>
+<rect x="1150" y="105" width="125" height="85" rx="10" fill="#f0fdf4" stroke="#111827"/>
+<text x="1212" y="157" text-anchor="middle" font-family="sans-serif" font-size="17">5</text>
+
+<text x="95" y="315" font-family="sans-serif" font-size="18" font-weight="bold">Optimized</text>
+<rect x="240" y="275" width="315" height="85" rx="10" fill="#eef6ff" stroke="#111827"/>
+<text x="397" y="327" text-anchor="middle" font-family="sans-serif" font-size="18">Read · 9</text>
+<rect x="555" y="275" width="490" height="85" rx="10" fill="#fff7ed" stroke="#111827"/>
+<text x="800" y="327" text-anchor="middle" font-family="sans-serif" font-size="18">Requant · 14</text>
+<rect x="1045" y="275" width="175" height="85" rx="10" fill="#f0fdf4" stroke="#111827"/>
+<text x="1132" y="327" text-anchor="middle" font-family="sans-serif" font-size="18">Finish/IRQ · 5</text>
+
+<text x="690" y="440" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">35 → 28 cycles · -20% static latency</text>
+<text x="690" y="490" text-anchor="middle" font-family="sans-serif" font-size="17">100 MHz: 350 ns → 280 ns · 실제 보드 성능 측정값 아님</text>
+</svg>

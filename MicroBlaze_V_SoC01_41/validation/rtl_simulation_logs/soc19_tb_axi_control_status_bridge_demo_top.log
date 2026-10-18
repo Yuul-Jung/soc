@@ -1,0 +1,23 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_axi_control_status_bridge_demo_top -o validation-tools/rtl_runs/soc19_tb_axi_control_status_bridge_demo_top.vvp code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v code/soc19/axi_control_status_bridge_1_0/hdl/axi4lite_slave_adapter.v code/soc19/axi_control_status_bridge_1_0/hdl/axi_control_status_bridge_ip.v code/soc19/axi_control_status_bridge_1_0/hdl/control_status_bridge_core.v code/soc19/axi_control_status_bridge_1_0/hdl/example_ready_valid_core.v code/soc19/axi_control_status_bridge_1_0/hdl/axi_control_status_bridge_demo_top.v
+code/soc19/axi_control_status_bridge_1_0/hdl/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v:1: ...: The inherited timescale is here.
+code/soc19/axi_control_status_bridge_1_0/hdl/axi_control_status_bridge_ip.v:1: warning: timescale for axi_control_status_bridge_ip inherited from another file.
+code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v:1: ...: The inherited timescale is here.
+code/soc19/axi_control_status_bridge_1_0/hdl/control_status_bridge_core.v:1: warning: timescale for control_status_bridge_core inherited from another file.
+code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v:1: ...: The inherited timescale is here.
+code/soc19/axi_control_status_bridge_1_0/hdl/example_ready_valid_core.v:1: warning: timescale for example_ready_valid_core inherited from another file.
+code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v:1: ...: The inherited timescale is here.
+code/soc19/axi_control_status_bridge_1_0/hdl/axi_control_status_bridge_demo_top.v:1: warning: timescale for axi_control_status_bridge_demo_top inherited from another file.
+code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+PASS: CSB ID = 43534231
+PASS: CSB VERSION = 00010000
+PASS: First output = 0000000a
+PASS: input/output events latched
+PASS: submit while pending sets bridge error
+PASS: Queued second output = 00000004
+PASS: Queued third output = 00000008
+PASS: OUT_PENDING cleared
+PASS: empty POP sets ERROR
+SOC19 AXI CONTROL/STATUS BRIDGE TEST: PASS

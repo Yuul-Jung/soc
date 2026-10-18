@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SoC 25 · File Manifest</title>
+<link rel="stylesheet" href="../00_overview/overview.css"><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../assets/reader.css"></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><header class="hero"><div class="inner"><div class="num">SOC 25 · GROUP 5</div>
+<h1>PE / Parallel MAC / Vector Dot Product</h1>
+<p>NPU Compute Datapath · 장별 HTML, 코드, 이미지, 검증자료, 실습 패키지 위치를 정리한 Manifest입니다.</p></div></header>
+<main class="container" id="main-content" tabindex="-1">
+<div class="links">
+<a class="linkbtn" href="../pages/soc/25_pe_parallel_mac_vector_dot_product.html">본문 HTML</a>
+<a class="linkbtn" href="../index.html">전체 목차</a>
+<a class="linkbtn" href="../validation/SOC25_VALIDATION.txt">검증 기록</a>
+<a class="linkbtn" href="../packages/chapter_updates/Technical_Learning_SoC25_update.zip">장별 업데이트 ZIP</a>
+</div>
+
+<section class="group"><h2>코드 / 소스</h2><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">파일</th><th scope="col" role="columnheader">크기</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/SOURCE_TREE.txt">code/soc25/npu_pe4_lab/SOURCE_TREE.txt</a></td><td data-label="크기" role="cell">728 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/constraints/basys3_pe4_lab.xdc">code/soc25/npu_pe4_lab/constraints/basys3_pe4_lab.xdc</a></td><td data-label="크기" role="cell">1,564 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/doc/README_PE4_LAB.md">code/soc25/npu_pe4_lab/doc/README_PE4_LAB.md</a></td><td data-label="크기" role="cell">2,536 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/reference/pe4_reference_model.py">code/soc25/npu_pe4_lab/reference/pe4_reference_model.py</a></td><td data-label="크기" role="cell">3,031 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/reference/reference_output.txt">code/soc25/npu_pe4_lab/reference/reference_output.txt</a></td><td data-label="크기" role="cell">1,821 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/mul_s8_dsp.v">code/soc25/npu_pe4_lab/rtl/mul_s8_dsp.v</a></td><td data-label="크기" role="cell">378 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/pe4_basic_basys3_top.v">code/soc25/npu_pe4_lab/rtl/pe4_basic_basys3_top.v</a></td><td data-label="크기" role="cell">878 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_basic.v">code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_basic.v</a></td><td data-label="크기" role="cell">2,261 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_pipelined.v">code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_pipelined.v</a></td><td data-label="크기" role="cell">3,621 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/pe4_pattern_source.v">code/soc25/npu_pe4_lab/rtl/pe4_pattern_source.v</a></td><td data-label="크기" role="cell">925 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/pe4_pipelined_basys3_top.v">code/soc25/npu_pe4_lab/rtl/pe4_pipelined_basys3_top.v</a></td><td data-label="크기" role="cell">886 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/pe4_result_sink.v">code/soc25/npu_pe4_lab/rtl/pe4_result_sink.v</a></td><td data-label="크기" role="cell">377 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/rtl/reset_active_high_to_active_low.v">code/soc25/npu_pe4_lab/rtl/reset_active_high_to_active_low.v</a></td><td data-label="크기" role="cell">185 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/scripts/run_all_pe4_cases.sh">code/soc25/npu_pe4_lab/scripts/run_all_pe4_cases.sh</a></td><td data-label="크기" role="cell">571 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/scripts/run_pe4_analysis.tcl">code/soc25/npu_pe4_lab/scripts/run_pe4_analysis.tcl</a></td><td data-label="크기" role="cell">3,407 bytes</td></tr>
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv">code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv</a></td><td data-label="크기" role="cell">7,429 bytes</td></tr>
+</tbody></table></section>
+
+<section class="group"><h2>그림 / 도식</h2><table><thead><tr><th scope="col">파일</th><th scope="col">크기</th></tr></thead><tbody><tr><td data-label="파일"><a href="../images/soc25/soc25_scaling.svg">images/soc25/soc25_scaling.svg</a><br>1 MAC to 4 lane PE and NPU array</td><td data-label="크기">2,914 bytes</td></tr><tr><td data-label="파일"><a href="../images/soc25/soc25_pe4_architecture.svg">images/soc25/soc25_pe4_architecture.svg</a><br>4 lane processing element architecture</td><td data-label="크기">3,650 bytes</td></tr><tr><td data-label="파일"><a href="../images/soc25/soc25_balanced_adder_tree.svg">images/soc25/soc25_balanced_adder_tree.svg</a><br>Balanced adder tree versus serial sum</td><td data-label="크기">2,987 bytes</td></tr><tr><td data-label="파일"><a href="../images/soc25/soc25_pe4_pipeline.svg">images/soc25/soc25_pe4_pipeline.svg</a><br>Pipelined 4 lane PE</td><td data-label="크기">2,896 bytes</td></tr></tbody></table></section>
+
+<section class="group"><h2>독립 Lab / Source Package</h2><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">파일</th><th scope="col" role="columnheader">크기</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td class="path" data-label="파일" role="cell"><a href="../packages/source_labs/soc25/soc25_npu_pe4_lab.zip">packages/source_labs/soc25/soc25_npu_pe4_lab.zip</a></td><td data-label="크기" role="cell">12,807 bytes</td></tr>
+</tbody></table></section>
+</main><footer class="footer">Basys3 SoC + NPU · SoC 25 File Manifest</footer>
+</body></html>

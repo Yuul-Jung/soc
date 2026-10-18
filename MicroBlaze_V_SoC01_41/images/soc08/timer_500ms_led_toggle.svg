@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="470" viewBox="0 0 1120 470">
+<rect width="1120" height="470" fill="white"/>
+<text x="560" y="40" text-anchor="middle" font-family="sans-serif" font-size="27" font-weight="bold">0.5초 Timer 만료와 LED0 Toggle</text>
+<line x1="110" y1="120" x2="1020" y2="120" stroke="#111827" stroke-width="2"/>
+<g stroke="#111827" stroke-width="2">
+<line x1="110" y1="105" x2="110" y2="135"/><line x1="410" y1="105" x2="410" y2="135"/>
+<line x1="710" y1="105" x2="710" y2="135"/><line x1="1010" y1="105" x2="1010" y2="135"/>
+</g>
+<g font-family="sans-serif" font-size="17">
+<text x="110" y="90" text-anchor="middle">0.0 s</text><text x="410" y="90" text-anchor="middle">0.5 s</text>
+<text x="710" y="90" text-anchor="middle">1.0 s</text><text x="1010" y="90" text-anchor="middle">1.5 s</text>
+</g>
+<text x="75" y="190" text-anchor="middle" font-family="sans-serif" font-size="18">Timer</text>
+<path d="M110 210 L400 210 L410 250 L700 250 L710 290 L1000 290 L1010 330" fill="none" stroke="#2563eb" stroke-width="5"/>
+<text x="260" y="200" text-anchor="middle" font-family="sans-serif" font-size="16">49,999,998 → 0</text>
+<text x="560" y="240" text-anchor="middle" font-family="sans-serif" font-size="16">Auto Reload</text>
+<text x="860" y="280" text-anchor="middle" font-family="sans-serif" font-size="16">Auto Reload</text>
+<text x="75" y="370" text-anchor="middle" font-family="sans-serif" font-size="18">LED0</text>
+<path d="M110 395 L410 395 L410 345 L710 345 L710 395 L1010 395 L1010 345" fill="none" stroke="#111827" stroke-width="5"/>
+<text x="260" y="425" text-anchor="middle" font-family="sans-serif" font-size="16">OFF</text>
+<text x="560" y="330" text-anchor="middle" font-family="sans-serif" font-size="16">ON</text>
+<text x="860" y="425" text-anchor="middle" font-family="sans-serif" font-size="16">OFF</text>
+</svg>

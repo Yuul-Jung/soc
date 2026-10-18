@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="SoC 11 Register Bank 앞에 AXI4-Lite Slave Adapter를 추가하여 AW/W/B/AR/R 채널, VALID/READY handshake, WSTRB, backpressure를 구현하는 Basys3 MicroBlaze V Custom IP 실습 자료." name="description">
+<title>SoC 12 · Custom AXI4-Lite Slave 기초</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 12</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 12</p><h1>Custom AXI4-Lite Slave 기초</h1>
+<p class="hero-desc">SoC 11에서 만든 Bus-independent Register Bank 앞에 AXI4-Lite Slave Adapter를 연결한다. AW와 W를 독립적으로 수신하고, 두 정보가 모두 확보되면 Register Write Pulse를 만들며, BVALID/RVALID는 Master의 READY가 들어올 때까지 유지하도록 구현한다.</p>
+<div class="hero-meta"><span class="chip">AW / W / B</span><span class="chip">AR / R</span><span class="chip">VALID / READY</span><span class="chip">WSTRB</span><span class="chip">Backpressure</span><span class="chip">Single Outstanding</span></div>
+<div class="hero-brief"><article><h2>AXI Adapter</h2><p>AXI Protocol 신호를 내부 Register Access 신호로 변환한다.</p></article><article><h2>Register Bank</h2><p>SoC 11 코드를 수정하지 않고 그대로 재사용한다.</p></article><article><h2>Wrapper</h2><p>두 모듈의 Wire 연결만 담당한다.</p></article></div>
+</div></header>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html" selected>SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc12_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc12">이 장 검증</a></div></div><p class="nav-title">SOC 12 · LEARNING FLOW</p><p class="nav-help">AXI Channel → Adapter → Register Bank</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>SoC 11에서 이어지는 구조</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>AXI4-Lite 5개 Channel</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Slave Adapter와 Register Bank 분리</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Write Address Channel</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Write Data Channel</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>AW와 W 독립성</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Write Commit</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Write Response Channel</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Read Address Channel</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Read Data Channel</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Backpressure</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>WSTRB 전달</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Address Offset 처리</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>정렬 기준</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Adapter 전체 코드</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Register Bank 재사용</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Wrapper 구조</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Wrapper 전체 코드</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Software Header 재사용</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Read/Write 동작 예</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>AW-first / W-first 검증</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>BREADY / RREADY 지연 검증</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>W1P / W1C 검증</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Vivado 연결 방향</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>현재 구현 범위와 제한</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">29</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">30</span><span>공식 문서 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 11 Register Map</span><span class="arrow">→</span><span class="stage"><strong>SoC 12 AXI4-Lite Slave</strong></span><span class="arrow">→</span><span class="stage">SoC 13 AXI Register Read / Write 경로</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<p>이번 장은 Register 기능을 새로 만드는 장이 아니다. SoC 11의 <code>custom_register_bank</code>가 이미 CONTROL, STATUS, COMMAND, IRQ_STATUS, DATA Register를 처리한다. 여기에 AXI4-Lite Protocol을 해석하는 Adapter만 추가한다.</p>
+<div class="flow">MicroBlaze V AXI4-Lite → axi4lite_slave_adapter → custom_register_bank</div></section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>SoC 11에서 이어지는 구조</h2>
+<figure class="manual-figure"><a href="../../images/soc12/axi4lite_adapter_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI4-Lite adapter and register bank architecture · 원본 보기 (새 탭)"><img src="../../images/soc12/axi4lite_adapter_architecture.svg" alt="AXI4-Lite adapter and register bank architecture"></a><figcaption>AXI Protocol 처리와 Register 동작을 분리한 SoC 12 구조.<br><a href="../../images/soc12/axi4lite_adapter_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI4-Lite adapter and register bank architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>Register Bank 인터페이스는 그대로 <code>wr_en / wr_offset / wr_data / wr_strb / rd_offset / rd_data</code>를 사용한다.</p></section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI4-Lite 5개 Channel</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="AXI4-Lite 5개 Channel · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Channel</th><th scope="col" role="columnheader">주요 신호</th><th scope="col" role="columnheader">Slave 역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Channel" role="cell">AW</td><td data-label="주요 신호" role="cell"><code>AWADDR, AWVALID, AWREADY</code></td><td data-label="Slave 역할" role="cell">Write Address 수신</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">W</td><td data-label="주요 신호" role="cell"><code>WDATA, WSTRB, WVALID, WREADY</code></td><td data-label="Slave 역할" role="cell">Write Data 수신</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">B</td><td data-label="주요 신호" role="cell"><code>BRESP, BVALID, BREADY</code></td><td data-label="Slave 역할" role="cell">Write 결과 응답</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">AR</td><td data-label="주요 신호" role="cell"><code>ARADDR, ARVALID, ARREADY</code></td><td data-label="Slave 역할" role="cell">Read Address 수신</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">R</td><td data-label="주요 신호" role="cell"><code>RDATA, RRESP, RVALID, RREADY</code></td><td data-label="Slave 역할" role="cell">Read Data 응답</td></tr>
+</tbody></table></div>
+<p>AMD의 현재 AXI4-Lite Interface 문서도 Write Address와 Write Data를 별도 Channel로 정의하고, <code>WSTRB</code>를 Byte Lane 유효 신호로 정의한다.</p></section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Slave Adapter와 Register Bank 분리</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Slave Adapter와 Register Bank 분리 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">모듈</th><th scope="col" role="columnheader">책임</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="모듈" role="cell"><code>axi4lite_slave_adapter</code></td><td data-label="책임" role="cell">AXI Handshake, Channel Buffer, Response 유지</td></tr>
+<tr role="row"><td data-label="모듈" role="cell"><code>custom_register_bank</code></td><td data-label="책임" role="cell">Register Access Type, Bit Field, Reset, W1P/W1C, Hardware Event</td></tr>
+<tr role="row"><td data-label="모듈" role="cell"><code>custom_axi4lite_ip</code></td><td data-label="책임" role="cell">두 모듈 Port 연결만 수행</td></tr>
+</tbody></table></div>
+<div class="note">AXI Protocol과 Register 정책을 분리하면 SoC 11 Register Bank를 다른 Bus Adapter에도 재사용할 수 있다.</div></section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Write Address Channel</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Write Address Channel · 소스 코드"><code>assign s_axi_awready =
+    s_axi_aresetn &amp;&amp; !aw_stored &amp;&amp; !s_axi_bvalid;</code></pre>
+<p>Adapter에 아직 저장된 Write Address가 없고 이전 Write Response도 끝난 경우에만 새로운 Address를 받는다. Handshake 후 <code>AWADDR</code>를 <code>awaddr_stored</code>에 저장한다.</p></section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Write Data Channel</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Write Data Channel · 소스 코드"><code>assign s_axi_wready =
+    s_axi_aresetn &amp;&amp; !w_stored &amp;&amp; !s_axi_bvalid;</code></pre>
+<p><code>WDATA</code>와 <code>WSTRB</code>도 AW Channel과 별도로 저장한다. 따라서 Write Address보다 Data가 먼저 도착해도 정상적으로 처리할 수 있다.</p></section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>AW와 W 독립성</h2>
+<figure class="manual-figure"><a href="../../images/soc12/axi4lite_write_independent.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Independent AXI write address and data channels · 원본 보기 (새 탭)"><img src="../../images/soc12/axi4lite_write_independent.svg" alt="Independent AXI write address and data channels"></a><figcaption>AW와 W가 어느 순서로 들어와도 각각 Buffer한 뒤 두 정보가 모두 존재할 때 Write를 수행한다.<br><a href="../../images/soc12/axi4lite_write_independent.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Independent AXI write address and data channels · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<div class="warn"><strong>잘못된 단순 구현:</strong> <code>AWVALID &amp;&amp; WVALID</code>이 같은 Cycle에 동시에 High일 때만 Write하는 구조. 두 Channel의 도착 순서가 달라지면 Transaction을 잃을 수 있다.</div></section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Write Commit</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Write Commit · 소스 코드"><code>assign write_commit =
+    aw_stored &amp;&amp; w_stored &amp;&amp; !s_axi_bvalid;
+
+assign wr_en     = write_commit;
+assign wr_offset = awaddr_stored[7:0];
+assign wr_data   = wdata_stored;
+assign wr_strb   = wstrb_stored;</code></pre>
+<p><code>wr_en</code>은 Address와 Data가 모두 확보된 뒤 한 Clock 구간 동안 활성화된다. Register Bank는 이 신호를 기준으로 실제 Register를 갱신한다.</p></section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Write Response Channel</h2>
+<p>Register Write가 Commit되면 <code>BVALID=1</code>, <code>BRESP=OKAY(2'b00)</code>를 만든다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">Register Write 완료
+        ↓
+BVALID = 1
+BRESP  = OKAY
+        ↓
+BREADY = 0 → BVALID 계속 유지
+BREADY = 1 → 다음 Clock에서 Response 완료</div></section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Read Address Channel</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Read Address Channel · 소스 코드"><code>assign s_axi_arready =
+    s_axi_aresetn &amp;&amp; !s_axi_rvalid;
+
+assign rd_offset = s_axi_araddr[7:0];</code></pre>
+<p>이 기본 Slave는 이전 Read Response가 남아 있지 않을 때 Read Address 하나를 받는다. Register Bank의 Read Path가 Combinational이므로 AR Handshake 시 선택된 <code>rd_data</code>를 AXI R Channel Register에 저장한다.</p></section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Read Data Channel</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Read Data Channel · 소스 코드"><code>if (s_axi_arready &amp;&amp; s_axi_arvalid) begin
+    s_axi_rdata  &lt;= rd_data;
+    s_axi_rresp  &lt;= AXI_RESP_OKAY;
+    s_axi_rvalid &lt;= 1'b1;
+end</code></pre>
+<p>Master가 바로 받을 준비가 되어 있지 않더라도 R Channel의 Data와 Response는 바뀌지 않아야 한다.</p></section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Backpressure</h2>
+<figure class="manual-figure"><a href="../../images/soc12/axi4lite_read_response.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI read response backpressure · 원본 보기 (새 탭)"><img src="../../images/soc12/axi4lite_read_response.svg" alt="AXI read response backpressure"></a><figcaption>Master가 <code>RREADY</code>를 늦게 Assert해도 Slave는 <code>RVALID/RDATA/RRESP</code>를 유지한다.<br><a href="../../images/soc12/axi4lite_read_response.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI read response backpressure · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>같은 원칙으로 Write Response도 <code>BREADY</code>가 들어올 때까지 <code>BVALID/BRESP</code>를 유지한다. Testbench에서는 이 상황을 의도적으로 여러 Clock 지연시켜 확인한다.</p></section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>WSTRB 전달</h2>
+<p><code>WSTRB[3:0]</code>를 Adapter에서 해석해 없애지 않고 Register Bank까지 그대로 전달한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="13절 신호 및 실행 흐름">WSTRB[0] → WDATA[7:0]
+WSTRB[1] → WDATA[15:8]
+WSTRB[2] → WDATA[23:16]
+WSTRB[3] → WDATA[31:24]</div>
+<p>SoC 11의 <code>DATA_IN</code> Register는 이 Strobe를 사용하여 선택된 Byte만 갱신한다.</p></section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Address Offset 처리</h2>
+<p>Vivado Address Editor는 Custom IP의 Base Address를 정하고, Adapter는 AXI Address의 하위 8 bit를 Register Offset으로 넘긴다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="14절 신호 및 실행 흐름">CPU Address = Custom IP Base + 0x10
+                         ↓
+AXI AWADDR
+                         ↓
+wr_offset = AWADDR[7:0]
+                         ↓
+REG_DATA_IN = 8'h10</div></section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>정렬 기준</h2>
+<p>현재 Register Map은 32-bit Register를 4 Byte 간격으로 배치하므로 정상 Software Access는 <code>0x00, 0x04, 0x08 ...</code>처럼 하위 2 bit가 <code>00</code>인 Word-Aligned Address를 사용한다.</p>
+<div class="note">이번 기본 Adapter는 Misaligned/Unmapped Access에 별도 SLVERR/DECERR를 만들지 않고, SoC 11 Register Bank의 정책대로 Unmapped Read는 0, Write는 No Effect, AXI Response는 OKAY로 단순화한다. Error Response 강화는 이후 확장 항목이다.</div></section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Adapter 전체 코드</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Adapter 전체 코드 · 소스 코드"><code>module axi4lite_slave_adapter #(
+    parameter integer C_S_AXI_ADDR_WIDTH = 32
+)(
+    input  wire                          s_axi_aclk,
+    input  wire                          s_axi_aresetn,
+
+    // AXI4-Lite Write Address Channel
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_awaddr,
+    input  wire [2:0]                    s_axi_awprot,
+    input  wire                          s_axi_awvalid,
+    output wire                          s_axi_awready,
+
+    // AXI4-Lite Write Data Channel
+    input  wire [31:0]                   s_axi_wdata,
+    input  wire [3:0]                    s_axi_wstrb,
+    input  wire                          s_axi_wvalid,
+    output wire                          s_axi_wready,
+
+    // AXI4-Lite Write Response Channel
+    output reg  [1:0]                    s_axi_bresp,
+    output reg                           s_axi_bvalid,
+    input  wire                          s_axi_bready,
+
+    // AXI4-Lite Read Address Channel
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_araddr,
+    input  wire [2:0]                    s_axi_arprot,
+    input  wire                          s_axi_arvalid,
+    output wire                          s_axi_arready,
+
+    // AXI4-Lite Read Data Channel
+    output reg  [31:0]                   s_axi_rdata,
+    output reg  [1:0]                    s_axi_rresp,
+    output reg                           s_axi_rvalid,
+    input  wire                          s_axi_rready,
+
+    // Bus-independent register access interface
+    output wire                          wr_en,
+    output wire [7:0]                    wr_offset,
+    output wire [31:0]                   wr_data,
+    output wire [3:0]                    wr_strb,
+
+    output wire [7:0]                    rd_offset,
+    input  wire [31:0]                   rd_data
+);
+
+// AXI response code used by this basic slave.
+localparam [1:0] AXI_RESP_OKAY = 2'b00;
+
+// Write Address and Write Data are independent AXI channels.
+// Each channel is buffered separately until both are available.
+reg                          aw_stored;
+reg [C_S_AXI_ADDR_WIDTH-1:0] awaddr_stored;
+reg                          w_stored;
+reg [31:0]                   wdata_stored;
+reg [3:0]                    wstrb_stored;
+
+wire write_commit;
+
+// Single-outstanding-write policy:
+// Do not accept a new write while a response is pending.
+assign s_axi_awready =
+    s_axi_aresetn &amp;&amp; !aw_stored &amp;&amp; !s_axi_bvalid;
+
+assign s_axi_wready =
+    s_axi_aresetn &amp;&amp; !w_stored &amp;&amp; !s_axi_bvalid;
+
+// Register-bank write occurs only after BOTH address and data
+// channels have completed their independent handshakes.
+assign write_commit =
+    aw_stored &amp;&amp; w_stored &amp;&amp; !s_axi_bvalid;
+
+assign wr_en     = write_commit;
+assign wr_offset = awaddr_stored[7:0];
+assign wr_data   = wdata_stored;
+assign wr_strb   = wstrb_stored;
+
+// Read side accepts one address only when no previous R response
+// is waiting for the master.
+assign s_axi_arready =
+    s_axi_aresetn &amp;&amp; !s_axi_rvalid;
+
+// custom_register_bank read path is combinational.
+// The address presented during AR handshake selects rd_data.
+assign rd_offset = s_axi_araddr[7:0];
+
+// AWPROT / ARPROT are not used by this educational register slave.
+wire unused_prot;
+assign unused_prot = ^{s_axi_awprot, s_axi_arprot};
+
+always @(posedge s_axi_aclk) begin
+    if (!s_axi_aresetn) begin
+        aw_stored     &lt;= 1'b0;
+        awaddr_stored &lt;= {C_S_AXI_ADDR_WIDTH{1'b0}};
+        w_stored      &lt;= 1'b0;
+        wdata_stored  &lt;= 32'h0000_0000;
+        wstrb_stored  &lt;= 4'b0000;
+        s_axi_bresp   &lt;= AXI_RESP_OKAY;
+        s_axi_bvalid  &lt;= 1'b0;
+    end else begin
+        // Capture Write Address independently.
+        if (s_axi_awready &amp;&amp; s_axi_awvalid) begin
+            aw_stored     &lt;= 1'b1;
+            awaddr_stored &lt;= s_axi_awaddr;
+        end
+
+        // Capture Write Data independently.
+        if (s_axi_wready &amp;&amp; s_axi_wvalid) begin
+            w_stored     &lt;= 1'b1;
+            wdata_stored &lt;= s_axi_wdata;
+            wstrb_stored &lt;= s_axi_wstrb;
+        end
+
+        // Once both parts exist, pulse wr_en through write_commit
+        // and create the AXI B response.
+        if (write_commit) begin
+            aw_stored    &lt;= 1'b0;
+            w_stored     &lt;= 1'b0;
+            s_axi_bresp  &lt;= AXI_RESP_OKAY;
+            s_axi_bvalid &lt;= 1'b1;
+        end else if (s_axi_bvalid &amp;&amp; s_axi_bready) begin
+            s_axi_bvalid &lt;= 1'b0;
+        end
+    end
+end
+
+always @(posedge s_axi_aclk) begin
+    if (!s_axi_aresetn) begin
+        s_axi_rdata  &lt;= 32'h0000_0000;
+        s_axi_rresp  &lt;= AXI_RESP_OKAY;
+        s_axi_rvalid &lt;= 1'b0;
+    end else begin
+        // Capture the selected register value at AR handshake.
+        if (s_axi_arready &amp;&amp; s_axi_arvalid) begin
+            s_axi_rdata  &lt;= rd_data;
+            s_axi_rresp  &lt;= AXI_RESP_OKAY;
+            s_axi_rvalid &lt;= 1'b1;
+        end else if (s_axi_rvalid &amp;&amp; s_axi_rready) begin
+            s_axi_rvalid &lt;= 1'b0;
+        end
+    end
+end
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Register Bank 재사용</h2>
+<p>SoC 11의 Register Bank 코드는 변경하지 않았다. AXI를 몰라도 동작하는 내부 Interface를 유지한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Register Bank 재사용 · 소스 코드"><code>module custom_register_bank (
+    input  wire        clk,
+    input  wire        resetn,
+
+    // Bus-independent register access interface.
+    // SoC 12 will connect this interface to AXI4-Lite.
+    input  wire        wr_en,
+    input  wire [7:0]  wr_offset,
+    input  wire [31:0] wr_data,
+    input  wire [3:0]  wr_strb,
+
+    input  wire [7:0]  rd_offset,
+    output reg  [31:0] rd_data,
+
+    // Hardware status / event inputs
+    input  wire        busy_i,
+    input  wire        done_i,
+    input  wire        error_i,
+    input  wire        irq_done_event_i,
+    input  wire        irq_error_event_i,
+    input  wire [31:0] data_out_i,
+
+    // Control outputs
+    output reg         enable_o,
+    output reg  [1:0]  mode_o,
+    output reg         start_pulse_o,
+    output reg         clear_pulse_o,
+    output reg  [31:0] data_in_o,
+    output reg  [1:0]  irq_status_o
+);
+
+localparam [7:0] REG_CONTROL    = 8'h00;
+localparam [7:0] REG_STATUS     = 8'h04;
+localparam [7:0] REG_COMMAND    = 8'h08;
+localparam [7:0] REG_IRQ_STATUS = 8'h0C;
+localparam [7:0] REG_DATA_IN    = 8'h10;
+localparam [7:0] REG_DATA_OUT   = 8'h14;
+localparam [7:0] REG_VERSION    = 8'h18;
+localparam [7:0] REG_ID         = 8'h1C;
+
+localparam [31:0] VERSION_VALUE = 32'h0001_0000;
+localparam [31:0] ID_VALUE      = 32'h524D_4150; // ASCII "RMAP"
+
+integer byte_index;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        enable_o      &lt;= 1'b0;
+        mode_o        &lt;= 2'b00;
+        start_pulse_o &lt;= 1'b0;
+        clear_pulse_o &lt;= 1'b0;
+        data_in_o     &lt;= 32'h0000_0000;
+        irq_status_o  &lt;= 2'b00;
+    end else begin
+        // W1P pulses are one clock wide by default.
+        start_pulse_o &lt;= 1'b0;
+        clear_pulse_o &lt;= 1'b0;
+
+        // Hardware events set IRQ status.
+        // Event set has priority over software clear in the same cycle.
+        if (irq_done_event_i) begin
+            irq_status_o[0] &lt;= 1'b1;
+        end else if (
+            wr_en &amp;&amp;
+            (wr_offset == REG_IRQ_STATUS) &amp;&amp;
+            wr_strb[0] &amp;&amp;
+            wr_data[0]
+        ) begin
+            irq_status_o[0] &lt;= 1'b0;
+        end
+
+        if (irq_error_event_i) begin
+            irq_status_o[1] &lt;= 1'b1;
+        end else if (
+            wr_en &amp;&amp;
+            (wr_offset == REG_IRQ_STATUS) &amp;&amp;
+            wr_strb[0] &amp;&amp;
+            wr_data[1]
+        ) begin
+            irq_status_o[1] &lt;= 1'b0;
+        end
+
+        if (wr_en) begin
+            case (wr_offset)
+                REG_CONTROL: begin
+                    if (wr_strb[0]) begin
+                        enable_o &lt;= wr_data[0];
+                        mode_o   &lt;= wr_data[2:1];
+                    end
+                end
+
+                REG_COMMAND: begin
+                    if (wr_strb[0]) begin
+                        start_pulse_o &lt;= wr_data[0];
+                        clear_pulse_o &lt;= wr_data[1];
+                    end
+                end
+
+                REG_DATA_IN: begin
+                    // Byte-enable write using WSTRB-equivalent strobes.
+                    for (byte_index = 0; byte_index &lt; 4; byte_index = byte_index + 1) begin
+                        if (wr_strb[byte_index]) begin
+                            data_in_o[byte_index*8 +: 8] &lt;=
+                                wr_data[byte_index*8 +: 8];
+                        end
+                    end
+                end
+
+                default: begin
+                    // RO / reserved / unmapped writes have no effect.
+                end
+            endcase
+        end
+    end
+end
+
+always @(*) begin
+    case (rd_offset)
+        REG_CONTROL: begin
+            rd_data = {29'h0, mode_o, enable_o};
+        end
+
+        REG_STATUS: begin
+            rd_data = {29'h0, error_i, done_i, busy_i};
+        end
+
+        REG_COMMAND: begin
+            // W1P command register has no retained state.
+            rd_data = 32'h0000_0000;
+        end
+
+        REG_IRQ_STATUS: begin
+            rd_data = {30'h0, irq_status_o};
+        end
+
+        REG_DATA_IN: begin
+            rd_data = data_in_o;
+        end
+
+        REG_DATA_OUT: begin
+            rd_data = data_out_i;
+        end
+
+        REG_VERSION: begin
+            rd_data = VERSION_VALUE;
+        end
+
+        REG_ID: begin
+            rd_data = ID_VALUE;
+        end
+
+        default: begin
+            rd_data = 32'h0000_0000;
+        end
+    endcase
+end
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Wrapper 구조</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="18절 신호 및 실행 흐름">custom_axi4lite_ip
+│
+├─ axi4lite_slave_adapter
+│    ├─ AXI AW/W/B
+│    ├─ AXI AR/R
+│    └─ wr_* / rd_* 변환
+│
+└─ custom_register_bank
+     ├─ CONTROL / STATUS
+     ├─ COMMAND / IRQ_STATUS
+     └─ DATA / VERSION / ID</div>
+<p>Wrapper에는 <code>always</code>, 비교, 산술, Register 정책을 넣지 않는다.</p></section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Wrapper 전체 코드</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Wrapper 전체 코드 · 소스 코드"><code>module custom_axi4lite_ip #(
+    parameter integer C_S_AXI_ADDR_WIDTH = 32
+)(
+    input  wire                          s_axi_aclk,
+    input  wire                          s_axi_aresetn,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_awaddr,
+    input  wire [2:0]                    s_axi_awprot,
+    input  wire                          s_axi_awvalid,
+    output wire                          s_axi_awready,
+
+    input  wire [31:0]                   s_axi_wdata,
+    input  wire [3:0]                    s_axi_wstrb,
+    input  wire                          s_axi_wvalid,
+    output wire                          s_axi_wready,
+
+    output wire [1:0]                    s_axi_bresp,
+    output wire                          s_axi_bvalid,
+    input  wire                          s_axi_bready,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_araddr,
+    input  wire [2:0]                    s_axi_arprot,
+    input  wire                          s_axi_arvalid,
+    output wire                          s_axi_arready,
+
+    output wire [31:0]                   s_axi_rdata,
+    output wire [1:0]                    s_axi_rresp,
+    output wire                          s_axi_rvalid,
+    input  wire                          s_axi_rready,
+
+    // Hardware-side status / events
+    input  wire                          busy_i,
+    input  wire                          done_i,
+    input  wire                          error_i,
+    input  wire                          irq_done_event_i,
+    input  wire                          irq_error_event_i,
+    input  wire [31:0]                   data_out_i,
+
+    // Hardware-side controls
+    output wire                          enable_o,
+    output wire [1:0]                    mode_o,
+    output wire                          start_pulse_o,
+    output wire                          clear_pulse_o,
+    output wire [31:0]                   data_in_o,
+    output wire [1:0]                    irq_status_o
+);
+
+// Wrapper principle:
+// This module only connects the AXI adapter and the register bank.
+// No functional policy, arithmetic or register behavior is added here.
+wire        wr_en;
+wire [7:0]  wr_offset;
+wire [31:0] wr_data;
+wire [3:0]  wr_strb;
+wire [7:0]  rd_offset;
+wire [31:0] rd_data;
+
+axi4lite_slave_adapter #(
+    .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
+) u_axi4lite_slave_adapter (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(s_axi_aresetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awprot(s_axi_awprot),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arprot(s_axi_arprot),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .wr_en(wr_en),
+    .wr_offset(wr_offset),
+    .wr_data(wr_data),
+    .wr_strb(wr_strb),
+    .rd_offset(rd_offset),
+    .rd_data(rd_data)
+);
+
+custom_register_bank u_custom_register_bank (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .wr_en(wr_en),
+    .wr_offset(wr_offset),
+    .wr_data(wr_data),
+    .wr_strb(wr_strb),
+
+    .rd_offset(rd_offset),
+    .rd_data(rd_data),
+
+    .busy_i(busy_i),
+    .done_i(done_i),
+    .error_i(error_i),
+    .irq_done_event_i(irq_done_event_i),
+    .irq_error_event_i(irq_error_event_i),
+    .data_out_i(data_out_i),
+
+    .enable_o(enable_o),
+    .mode_o(mode_o),
+    .start_pulse_o(start_pulse_o),
+    .clear_pulse_o(clear_pulse_o),
+    .data_in_o(data_in_o),
+    .irq_status_o(irq_status_o)
+);
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Software Header 재사용</h2>
+<p>CPU Software가 보는 Register Map도 SoC 11과 동일하므로 <code>custom_regmap.h</code>를 그대로 사용한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Software Header 재사용 · 소스 코드"><code>#ifndef CUSTOM_REGMAP_H
+#define CUSTOM_REGMAP_H
+
+#include "xil_io.h"
+#include "xil_types.h"
+
+/*
+ * SoC 11 - Custom Register Map example
+ *
+ * Base address is assigned by Vivado Address Editor.
+ * This file defines only offsets, fields and access helpers.
+ */
+
+/* Register offsets */
+#define CUSTOM_CONTROL_OFFSET        0x00U
+#define CUSTOM_STATUS_OFFSET         0x04U
+#define CUSTOM_COMMAND_OFFSET        0x08U
+#define CUSTOM_IRQ_STATUS_OFFSET     0x0CU
+#define CUSTOM_DATA_IN_OFFSET        0x10U
+#define CUSTOM_DATA_OUT_OFFSET       0x14U
+#define CUSTOM_VERSION_OFFSET        0x18U
+#define CUSTOM_ID_OFFSET             0x1CU
+
+/* CONTROL register fields: RW */
+#define CUSTOM_CONTROL_ENABLE_MASK   0x00000001U
+#define CUSTOM_CONTROL_MODE_MASK     0x00000006U
+#define CUSTOM_CONTROL_MODE_SHIFT    1U
+
+/* STATUS register fields: RO */
+#define CUSTOM_STATUS_BUSY_MASK      0x00000001U
+#define CUSTOM_STATUS_DONE_MASK      0x00000002U
+#define CUSTOM_STATUS_ERROR_MASK     0x00000004U
+
+/* COMMAND register fields: W1P */
+#define CUSTOM_COMMAND_START_MASK    0x00000001U
+#define CUSTOM_COMMAND_CLEAR_MASK    0x00000002U
+
+/* IRQ_STATUS register fields: W1C */
+#define CUSTOM_IRQ_DONE_MASK         0x00000001U
+#define CUSTOM_IRQ_ERROR_MASK        0x00000002U
+
+/* Fixed read-only values */
+#define CUSTOM_VERSION_VALUE         0x00010000U  /* v1.0 */
+#define CUSTOM_ID_VALUE              0x524D4150U  /* ASCII "RMAP" */
+
+#define Custom_ReadReg(BaseAddress, RegOffset) \
+    Xil_In32((BaseAddress) + (RegOffset))
+
+#define Custom_WriteReg(BaseAddress, RegOffset, Data) \
+    Xil_Out32((BaseAddress) + (RegOffset), (Data))
+
+static inline void Custom_SetEnable(UINTPTR BaseAddress, u32 Enable)
+{
+    u32 value;
+
+    value = Custom_ReadReg(BaseAddress, CUSTOM_CONTROL_OFFSET);
+
+    if (Enable != 0U) {
+        value |= CUSTOM_CONTROL_ENABLE_MASK;
+    } else {
+        value &amp;= ~CUSTOM_CONTROL_ENABLE_MASK;
+    }
+
+    Custom_WriteReg(BaseAddress, CUSTOM_CONTROL_OFFSET, value);
+}
+
+static inline void Custom_SetMode(UINTPTR BaseAddress, u32 Mode)
+{
+    u32 value;
+
+    value = Custom_ReadReg(BaseAddress, CUSTOM_CONTROL_OFFSET);
+    value &amp;= ~CUSTOM_CONTROL_MODE_MASK;
+    value |= (Mode &lt;&lt; CUSTOM_CONTROL_MODE_SHIFT) &amp; CUSTOM_CONTROL_MODE_MASK;
+
+    Custom_WriteReg(BaseAddress, CUSTOM_CONTROL_OFFSET, value);
+}
+
+static inline void Custom_Start(UINTPTR BaseAddress)
+{
+    /* W1P: write 1 to generate one-cycle start pulse */
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_COMMAND_OFFSET,
+        CUSTOM_COMMAND_START_MASK
+    );
+}
+
+static inline void Custom_ClearDoneIrq(UINTPTR BaseAddress)
+{
+    /* W1C: writing 1 clears only DONE IRQ */
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_IRQ_STATUS_OFFSET,
+        CUSTOM_IRQ_DONE_MASK
+    );
+}
+
+#endif
+</code></pre></section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Read/Write 동작 예</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Read/Write 동작 예 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Software</th><th scope="col" role="columnheader">AXI Transaction</th><th scope="col" role="columnheader">Register Bank</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Software" role="cell"><code>Custom_SetEnable()</code></td><td data-label="AXI Transaction" role="cell">AW + W → B</td><td data-label="Register Bank" role="cell">CONTROL RW</td></tr>
+<tr role="row"><td data-label="Software" role="cell"><code>Custom_Start()</code></td><td data-label="AXI Transaction" role="cell">AW + W → B</td><td data-label="Register Bank" role="cell">COMMAND W1P</td></tr>
+<tr role="row"><td data-label="Software" role="cell"><code>Custom_ReadReg(...STATUS...)</code></td><td data-label="AXI Transaction" role="cell">AR → R</td><td data-label="Register Bank" role="cell">STATUS RO</td></tr>
+<tr role="row"><td data-label="Software" role="cell"><code>Custom_ClearDoneIrq()</code></td><td data-label="AXI Transaction" role="cell">AW + W → B</td><td data-label="Register Bank" role="cell">IRQ_STATUS W1C</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Self-Checking Testbench</h2>
+<p>Testbench는 단순 Waveform 관찰용이 아니라 정상 여부를 직접 비교해 <code>PASS/FAIL</code>을 출력하도록 작성했다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_custom_axi4lite_ip;
+
+reg clk = 1'b0;
+reg resetn = 1'b0;
+
+reg  [31:0] s_axi_awaddr = 32'h0;
+reg  [2:0]  s_axi_awprot = 3'b000;
+reg         s_axi_awvalid = 1'b0;
+wire        s_axi_awready;
+
+reg  [31:0] s_axi_wdata = 32'h0;
+reg  [3:0]  s_axi_wstrb = 4'b0000;
+reg         s_axi_wvalid = 1'b0;
+wire        s_axi_wready;
+
+wire [1:0]  s_axi_bresp;
+wire        s_axi_bvalid;
+reg         s_axi_bready = 1'b0;
+
+reg  [31:0] s_axi_araddr = 32'h0;
+reg  [2:0]  s_axi_arprot = 3'b000;
+reg         s_axi_arvalid = 1'b0;
+wire        s_axi_arready;
+
+wire [31:0] s_axi_rdata;
+wire [1:0]  s_axi_rresp;
+wire        s_axi_rvalid;
+reg         s_axi_rready = 1'b0;
+
+reg         busy_i = 1'b0;
+reg         done_i = 1'b0;
+reg         error_i = 1'b0;
+reg         irq_done_event_i = 1'b0;
+reg         irq_error_event_i = 1'b0;
+reg  [31:0] data_out_i = 32'h1234_5678;
+
+wire        enable_o;
+wire [1:0]  mode_o;
+wire        start_pulse_o;
+wire        clear_pulse_o;
+wire [31:0] data_in_o;
+wire [1:0]  irq_status_o;
+
+integer errors = 0;
+integer start_pulse_count = 0;
+reg [31:0] read_value;
+reg [31:0] held_rdata;
+
+custom_axi4lite_ip dut (
+    .s_axi_aclk(clk),
+    .s_axi_aresetn(resetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awprot(s_axi_awprot),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arprot(s_axi_arprot),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .busy_i(busy_i),
+    .done_i(done_i),
+    .error_i(error_i),
+    .irq_done_event_i(irq_done_event_i),
+    .irq_error_event_i(irq_error_event_i),
+    .data_out_i(data_out_i),
+
+    .enable_o(enable_o),
+    .mode_o(mode_o),
+    .start_pulse_o(start_pulse_o),
+    .clear_pulse_o(clear_pulse_o),
+    .data_in_o(data_in_o),
+    .irq_status_o(irq_status_o)
+);
+
+always #5 clk = ~clk;
+
+always @(posedge clk) begin
+    if (start_pulse_o) begin
+        start_pulse_count = start_pulse_count + 1;
+    end
+end
+
+task check32;
+    input [31:0] actual;
+    input [31:0] expected;
+    input [8*48-1:0] name;
+    begin
+        if (actual !== expected) begin
+            $display("FAIL: %0s actual=%08X expected=%08X", name, actual, expected);
+            errors = errors + 1;
+        end else begin
+            $display("PASS: %0s = %08X", name, actual);
+        end
+    end
+endtask
+
+task send_aw;
+    input [31:0] addr;
+    begin
+        @(negedge clk);
+        s_axi_awaddr  = addr;
+        s_axi_awvalid = 1'b1;
+
+        while (s_axi_awready !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        @(posedge clk);
+        @(negedge clk);
+        s_axi_awvalid = 1'b0;
+    end
+endtask
+
+task send_w;
+    input [31:0] data;
+    input [3:0] strb;
+    begin
+        @(negedge clk);
+        s_axi_wdata  = data;
+        s_axi_wstrb  = strb;
+        s_axi_wvalid = 1'b1;
+
+        while (s_axi_wready !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        @(posedge clk);
+        @(negedge clk);
+        s_axi_wvalid = 1'b0;
+        s_axi_wstrb  = 4'b0000;
+    end
+endtask
+
+task wait_bresp;
+    input integer hold_cycles;
+    integer i;
+    begin
+        s_axi_bready = 1'b0;
+
+        while (s_axi_bvalid !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        if (s_axi_bresp !== 2'b00) begin
+            $display("FAIL: BRESP is not OKAY");
+            errors = errors + 1;
+        end
+
+        // BVALID must remain asserted while BREADY is low.
+        for (i = 0; i &lt; hold_cycles; i = i + 1) begin
+            @(negedge clk);
+            if (s_axi_bvalid !== 1'b1) begin
+                $display("FAIL: BVALID dropped before BREADY");
+                errors = errors + 1;
+            end
+            if ((s_axi_awready !== 1'b0) || (s_axi_wready !== 1'b0)) begin
+                $display("FAIL: New write accepted while B response pending");
+                errors = errors + 1;
+            end
+        end
+
+        s_axi_bready = 1'b1;
+        @(posedge clk);
+        @(negedge clk);
+        s_axi_bready = 1'b0;
+
+        if (s_axi_bvalid !== 1'b0) begin
+            $display("FAIL: BVALID did not clear after handshake");
+            errors = errors + 1;
+        end
+    end
+endtask
+
+task axi_write_aw_first;
+    input [31:0] addr;
+    input [31:0] data;
+    input [3:0] strb;
+    begin
+        send_aw(addr);
+        repeat (2) @(negedge clk);
+        send_w(data, strb);
+        wait_bresp(2);
+    end
+endtask
+
+task axi_write_w_first;
+    input [31:0] addr;
+    input [31:0] data;
+    input [3:0] strb;
+    begin
+        send_w(data, strb);
+        repeat (2) @(negedge clk);
+        send_aw(addr);
+        wait_bresp(1);
+    end
+endtask
+
+task axi_write_same_cycle;
+    input [31:0] addr;
+    input [31:0] data;
+    input [3:0] strb;
+    begin
+        @(negedge clk);
+        s_axi_awaddr  = addr;
+        s_axi_awvalid = 1'b1;
+        s_axi_wdata   = data;
+        s_axi_wstrb   = strb;
+        s_axi_wvalid  = 1'b1;
+
+        while ((s_axi_awready !== 1'b1) || (s_axi_wready !== 1'b1)) begin
+            @(negedge clk);
+        end
+
+        @(posedge clk);
+        @(negedge clk);
+        s_axi_awvalid = 1'b0;
+        s_axi_wvalid  = 1'b0;
+        s_axi_wstrb   = 4'b0000;
+
+        wait_bresp(0);
+    end
+endtask
+
+task axi_read;
+    input [31:0] addr;
+    input integer hold_cycles;
+    output [31:0] data;
+    integer i;
+    begin
+        @(negedge clk);
+        s_axi_araddr  = addr;
+        s_axi_arvalid = 1'b1;
+        s_axi_rready  = 1'b0;
+
+        while (s_axi_arready !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        @(posedge clk);
+        @(negedge clk);
+        s_axi_arvalid = 1'b0;
+
+        while (s_axi_rvalid !== 1'b1) begin
+            @(negedge clk);
+        end
+
+        held_rdata = s_axi_rdata;
+        data = s_axi_rdata;
+
+        if (s_axi_rresp !== 2'b00) begin
+            $display("FAIL: RRESP is not OKAY");
+            errors = errors + 1;
+        end
+
+        // RVALID and RDATA must remain stable while RREADY is low.
+        for (i = 0; i &lt; hold_cycles; i = i + 1) begin
+            @(negedge clk);
+            if (s_axi_rvalid !== 1'b1) begin
+                $display("FAIL: RVALID dropped before RREADY");
+                errors = errors + 1;
+            end
+            if (s_axi_rdata !== held_rdata) begin
+                $display("FAIL: RDATA changed while waiting for RREADY");
+                errors = errors + 1;
+            end
+            if (s_axi_arready !== 1'b0) begin
+                $display("FAIL: New read accepted while R response pending");
+                errors = errors + 1;
+            end
+        end
+
+        s_axi_rready = 1'b1;
+        @(posedge clk);
+        @(negedge clk);
+        s_axi_rready = 1'b0;
+
+        if (s_axi_rvalid !== 1'b0) begin
+            $display("FAIL: RVALID did not clear after handshake");
+            errors = errors + 1;
+        end
+    end
+endtask
+
+initial begin
+    $display("=== SoC 12 AXI4-Lite self-checking test start ===");
+
+    repeat (3) @(negedge clk);
+    resetn = 1'b1;
+    repeat (2) @(negedge clk);
+
+    // Reset / fixed-value reads.
+    axi_read(32'h0000_0000, 2, read_value);
+    check32(read_value, 32'h0000_0000, "CONTROL reset");
+
+    axi_read(32'h0000_0018, 0, read_value);
+    check32(read_value, 32'h0001_0000, "VERSION");
+
+    axi_read(32'h0000_001C, 0, read_value);
+    check32(read_value, 32'h524D_4150, "ID");
+
+    // AW arrives first: CONTROL = enable 1, mode 2'b10 -&gt; 0x5.
+    axi_write_aw_first(32'h0000_0000, 32'h0000_0005, 4'b0001);
+    axi_read(32'h0000_0000, 1, read_value);
+    check32(read_value, 32'h0000_0005, "AW-first CONTROL write");
+
+    // W arrives first: full DATA_IN write.
+    axi_write_w_first(32'h0000_0010, 32'h1122_3344, 4'b1111);
+    axi_read(32'h0000_0010, 0, read_value);
+    check32(read_value, 32'h1122_3344, "W-first DATA_IN write");
+
+    // Partial-byte write proves WSTRB reaches the existing register bank.
+    axi_write_same_cycle(32'h0000_0010, 32'h0000_00AA, 4'b0001);
+    axi_read(32'h0000_0010, 0, read_value);
+    check32(read_value, 32'h1122_33AA, "WSTRB low-byte update");
+
+    // W1P command: exactly one start pulse.
+    start_pulse_count = 0;
+    axi_write_same_cycle(32'h0000_0008, 32'h0000_0001, 4'b0001);
+    repeat (3) @(negedge clk);
+    check32(start_pulse_count, 32'h0000_0001, "COMMAND start pulse count");
+
+    // Hardware status read.
+    busy_i  = 1'b1;
+    done_i  = 1'b0;
+    error_i = 1'b1;
+    axi_read(32'h0000_0004, 0, read_value);
+    check32(read_value, 32'h0000_0005, "STATUS read");
+
+    // Hardware event sets IRQ_STATUS bit0.
+    @(negedge clk);
+    irq_done_event_i = 1'b1;
+    @(negedge clk);
+    irq_done_event_i = 1'b0;
+    axi_read(32'h0000_000C, 0, read_value);
+    check32(read_value, 32'h0000_0001, "IRQ event set");
+
+    // W1C clears IRQ_STATUS bit0.
+    axi_write_same_cycle(32'h0000_000C, 32'h0000_0001, 4'b0001);
+    axi_read(32'h0000_000C, 0, read_value);
+    check32(read_value, 32'h0000_0000, "IRQ W1C clear");
+
+    // Read-only hardware data.
+    axi_read(32'h0000_0014, 2, read_value);
+    check32(read_value, 32'h1234_5678, "DATA_OUT read");
+
+    if (errors == 0) begin
+        $display("=== PASS: SoC 12 AXI4-Lite self-checking test ===");
+    end else begin
+        $display("=== FAIL: %0d error(s) ===", errors);
+    end
+
+    $finish;
+end
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>AW-first / W-first 검증</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="AW-first / W-first 검증 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">검증</th><th scope="col" role="columnheader">목적</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="검증" role="cell">AW 먼저 → 2 Clock 후 W</td><td data-label="목적" role="cell">Address Buffer가 Data를 기다리는지 확인</td></tr>
+<tr role="row"><td data-label="검증" role="cell">W 먼저 → 2 Clock 후 AW</td><td data-label="목적" role="cell">Data Buffer가 Address를 기다리는지 확인</td></tr>
+<tr role="row"><td data-label="검증" role="cell">AW/W 동시</td><td data-label="목적" role="cell">일반적인 동일 Cycle 요청도 정상 처리</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>BREADY / RREADY 지연 검증</h2>
+<p>Testbench에서 Master의 READY를 일부러 늦춘다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="24절 신호 및 실행 흐름">BVALID = 1, BREADY = 0
+→ BVALID 유지
+→ 새 Write Ready 차단
+
+RVALID = 1, RREADY = 0
+→ RVALID/RDATA 유지
+→ 새 Read Address 차단</div></section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>W1P / W1C 검증</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="W1P / W1C 검증 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Test</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Register" role="cell">COMMAND W1P</td><td data-label="Test" role="cell">AXI Write 1회 → <code>start_pulse_o</code>가 정확히 1 Clock</td></tr>
+<tr role="row"><td data-label="Register" role="cell">IRQ_STATUS W1C</td><td data-label="Test" role="cell">Hardware Event Set → Read 1 → AXI Write 1 → Read 0</td></tr>
+<tr role="row"><td data-label="Register" role="cell">DATA_IN RW</td><td data-label="Test" role="cell">Full Write 후 <code>WSTRB=0001</code>로 Low Byte만 변경</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Vivado 연결 방향</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="26절 신호 및 실행 흐름">MicroBlaze V M_AXI
+      ↓
+SmartConnect
+      ↓
+custom_axi4lite_ip/S_AXI
+      ↓
+axi4lite_slave_adapter
+      ↓
+custom_register_bank
+      ↓
+Controller / Datapath</div>
+<p>이번 장은 RTL Interface 이해가 목적이므로 Vivado IP Packaging은 아직 수행하지 않는다. Packaging은 SoC 16에서 정식으로 다룬다.</p></section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>현재 구현 범위와 제한</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="현재 구현 범위와 제한 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">현재 구현</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="항목" role="cell">Data Width</td><td data-label="현재 구현" role="cell">32 bit</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Write Outstanding</td><td data-label="현재 구현" role="cell">1개</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Read Outstanding</td><td data-label="현재 구현" role="cell">1개</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Burst</td><td data-label="현재 구현" role="cell">AXI4-Lite이므로 없음</td></tr>
+<tr role="row"><td data-label="항목" role="cell">WSTRB</td><td data-label="현재 구현" role="cell">지원</td></tr>
+<tr role="row"><td data-label="항목" role="cell">AW / W 순서</td><td data-label="현재 구현" role="cell">독립 수신 지원</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Backpressure</td><td data-label="현재 구현" role="cell">B/R Response 유지 지원</td></tr>
+<tr role="row"><td data-label="항목" role="cell">PROT</td><td data-label="현재 구현" role="cell">입력은 받지만 이번 Register IP에서 사용하지 않음</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Error Response</td><td data-label="현재 구현" role="cell">현재 OKAY 고정 · 향후 강화 가능</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문제</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문제" role="cell">AW와 W가 따로 오면 Write가 안 됨</td><td data-label="원인" role="cell">두 VALID 동시 조건으로 구현</td><td data-label="확인" role="cell">AW/W 별도 Buffer 확인</td></tr>
+<tr role="row"><td data-label="문제" role="cell">CPU가 멈춤</td><td data-label="원인" role="cell">BVALID 또는 RVALID가 READY 전에 사라짐</td><td data-label="확인" role="cell">Response 유지 로직</td></tr>
+<tr role="row"><td data-label="문제" role="cell">부분 Write가 전체 Register를 덮음</td><td data-label="원인" role="cell">WSTRB 전달 누락</td><td data-label="확인" role="cell"><code>wr_strb</code> 연결</td></tr>
+<tr role="row"><td data-label="문제" role="cell">Read 값이 바뀜</td><td data-label="원인" role="cell">RVALID 대기 중 RDATA를 계속 Combinational 출력</td><td data-label="확인" role="cell">AR Handshake 시 RDATA Latch</td></tr>
+<tr role="row"><td data-label="문제" role="cell">다음 Write가 이전 응답과 겹침</td><td data-label="원인" role="cell">Outstanding 제어 없음</td><td data-label="확인" role="cell">BVALID 중 AWREADY/WREADY Low</td></tr>
+<tr role="row"><td data-label="문제" role="cell">Register Map 불일치</td><td data-label="원인" role="cell">Offset을 AXI Adapter와 Bank에서 중복 정의</td><td data-label="확인" role="cell">Adapter는 하위 Offset 전달만 수행</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 12 완료 체크리스트</h2>
+<ul>
+<li>[ ] AXI4-Lite의 AW/W/B/AR/R 5개 Channel을 구분한다.</li>
+<li>[ ] AW와 W가 독립 Channel이라는 것을 코드 구조로 설명할 수 있다.</li>
+<li>[ ] AW Address와 W Data를 각각 Buffer한다.</li>
+<li>[ ] 두 정보가 모두 존재할 때만 <code>wr_en</code>을 생성한다.</li>
+<li>[ ] WSTRB를 Register Bank까지 전달한다.</li>
+<li>[ ] BVALID는 BREADY까지 유지한다.</li>
+<li>[ ] AR Handshake에서 Read Data를 Latch한다.</li>
+<li>[ ] RVALID/RDATA는 RREADY까지 유지한다.</li>
+<li>[ ] SoC 11 Register Bank를 수정하지 않고 재사용했다.</li>
+<li>[ ] Wrapper는 연결만 담당한다.</li>
+<li>[ ] Testbench에 AW-first, W-first, 동시 Write가 포함되어 있다.</li>
+<li>[ ] Testbench에 B/R Backpressure 검증이 포함되어 있다.</li>
+<li>[ ] W1P, W1C, WSTRB를 AXI Transaction으로 검증한다.</li>
+<li>[ ] 현재 구조가 Single-Outstanding 기본 Slave임을 이해한다.</li>
+</ul>
+<div class="flow">SoC 12 완료 → SoC 13 AXI Register Read / Write 경로</div></section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg292-ethernet-1-10-25g/AXI4-Lite-Interface-Ports" target="_blank" rel="noopener">AMD PG292 · AXI4-Lite Interface Ports · 2026-07-08</a></td><td data-label="확인 항목" role="cell">AW/W/B/AR/R 신호, WSTRB, Response Code</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg016_v_tc/AXI4-Lite-Interface-Signals" target="_blank" rel="noopener">AMD PG016 · AXI4-Lite Interface Signals</a></td><td data-label="확인 항목" role="cell">Write Address Channel과 Write Data Channel 신호 정의</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Creating-a-New-AXI4-Peripheral" target="_blank" rel="noopener">AMD UG1118 · Creating a New AXI4 Peripheral · 2026.1</a></td><td data-label="확인 항목" role="cell">Vivado가 AXI4 Peripheral Template, Driver, Test Application, VIP 예제를 생성할 수 있음</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug892-vivado-design-flows-overview/Packaging-Custom-IP-and-IP-Subsystems" target="_blank" rel="noopener">AMD UG892 · Packaging Custom IP · 2026.1</a></td><td data-label="확인 항목" role="cell">Packaging 전 Simulation/Synthesis 검증 권장</td></tr>
+</tbody></table></div></section>
+
+<nav class="chapter-nav"><a href="11_register_map_design_principles.html">← SoC 11</a><a href="../../index.html">전체 목차</a><a href="13_axi_register_read_write_path.html">SoC 13 →</a></nav>
+</main></div>
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+</body></html>

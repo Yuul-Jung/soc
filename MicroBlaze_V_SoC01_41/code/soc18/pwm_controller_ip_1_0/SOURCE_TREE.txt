@@ -1,0 +1,17 @@
+pwm_controller_ip_1_0/
+├── hdl/
+│   ├── legacy_pwm_core.v
+│   ├── pwm_controller_adapter.v
+│   ├── pwm_register_bank.v
+│   ├── axi4lite_slave_adapter.v
+│   └── pwm_axi4lite_ip.v
+├── testbench/
+│   └── tb_legacy_pwm_core.v
+├── drivers/pwm_controller_v1_0/src/
+│   ├── pwm_driver.c
+│   ├── pwm_driver.h
+│   └── pwm_regmap.h
+├── examples/
+│   └── test_pwm_driver_mock.c
+├── doc/
+└── tcl/

@@ -1,0 +1,26 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_timing_lab_compare -o validation-tools/rtl_runs/soc22_tb_timing_lab_compare.vvp code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv code/soc22/timing_lab/rtl/timing_chain_pipelined.v code/soc22/timing_lab/rtl/reset_active_high_to_active_low.v code/soc22/timing_lab/rtl/timing_lab_compare_top.v code/soc22/timing_lab/rtl/timing_pattern_source.v code/soc22/timing_lab/rtl/timing_lab_pipelined_basys3_top.v code/soc22/timing_lab/rtl/timing_lab_unpipelined_basys3_top.v code/soc22/timing_lab/rtl/timing_lab_unpipelined_impl_top.v code/soc22/timing_lab/rtl/timing_lab_pipelined_impl_top.v code/soc22/timing_lab/rtl/timing_chain_unpipelined.v code/soc22/timing_lab/rtl/timing_result_sink.v
+code/soc22/timing_lab/rtl/timing_chain_pipelined.v:1: warning: timescale for timing_chain_pipelined inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_lab_compare_top.v:1: warning: timescale for timing_lab_compare_top inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_pattern_source.v:1: warning: timescale for timing_pattern_source inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_lab_pipelined_basys3_top.v:1: warning: timescale for timing_lab_pipelined_basys3_top inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_lab_unpipelined_basys3_top.v:1: warning: timescale for timing_lab_unpipelined_basys3_top inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_lab_unpipelined_impl_top.v:1: warning: timescale for timing_lab_unpipelined_impl_top inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_lab_pipelined_impl_top.v:1: warning: timescale for timing_lab_pipelined_impl_top inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_chain_unpipelined.v:1: warning: timescale for timing_chain_unpipelined inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/rtl/timing_result_sink.v:1: warning: timescale for timing_result_sink inherited from another file.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:1: ...: The inherited timescale is here.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:142: error: Enable of unknown task ``expected_unpipelined_q.pop_front''.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:148: error: Enable of unknown task ``expected_unpipelined_q.pop_front''.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:167: error: Enable of unknown task ``expected_pipelined_q.pop_front''.
+code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:173: error: Enable of unknown task ``expected_pipelined_q.pop_front''.
+4 error(s) during elaboration.

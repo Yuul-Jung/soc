@@ -1,0 +1,11 @@
+Control Plane: AXI4-Lite descriptor + IRQ
+Data Plane: Tensor BRAM native Port B
+active INPUT_BASE = 0x200
+active OUTPUT_BASE = 0x300
+shadow change during BUSY does not affect active snapshot: PASS
+OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+DONE pending + enable -> level IRQ: PASS
+W1C DONE -> IRQ deassert: PASS
+descriptor reject -> ERROR IRQ path: required by RTL/TB
+SOC35 PYTHON FULL-INTEGRATION REFERENCE: PASS

@@ -1,0 +1,155 @@
+[
+  {
+    "source": "code/soc25/npu_pe4_lab/reference/pe4_reference_model.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc39/parallel4_requant_optimization_lab/reference/soc39_static_comparison.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc40/prefetch_double_buffer_overlap_lab/reference/soc40_overlap_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc37/performance_signoff_baseline_lab/reference/soc37_cycle_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc24/npu_mac_lab/reference/mac_reference_model.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc41/group8_signoff_matrix_lab/reference/soc41_group8_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc31/npu_axi_register_map_lab/reference/soc31_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc36/cpu_npu_end_to_end_lab/reference/soc36_e2e_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc33/tensor_bram_data_plane_lab/reference/soc33_tensor_bram_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc35/full_npu_accelerator_lab/reference/soc35_full_integration_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc27/local_bram_feeding_lab/reference/local_bram_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc32/npu_interrupt_lab/reference/soc32_interrupt_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc28/prefetch_fifo_double_buffer_lab/reference/soc28_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc34/npu_job_descriptor_lab/reference/soc34_descriptor_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc38/pipelined_bram_read_optimization_lab/reference/soc38_static_comparison.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc29/weight_stationary_tiling_lab/reference/soc29_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc26/vector_dot_controller_lab/reference/vector_controller_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc30/requantization_int8_lab/reference/soc30_reference.py",
+    "kind": "host Python reference",
+    "status": "PASS",
+    "exit": 0
+  },
+  {
+    "source": "code/soc36/cpu_npu_end_to_end_lab/reference/soc36_host_reference.c",
+    "kind": "host C reference",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc32/npu_interrupt_lab/software/main_interrupt.c",
+    "kind": "host syntax with stub, SDT=False",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc32/npu_interrupt_lab/software/main_interrupt.c",
+    "kind": "host syntax with stub, SDT=True",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc35/full_npu_accelerator_lab/software/main_full_npu.c",
+    "kind": "host syntax with stub, SDT=False",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc35/full_npu_accelerator_lab/software/main_full_npu.c",
+    "kind": "host syntax with stub, SDT=True",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc15/test_custom_driver_mock.c",
+    "kind": "host driver mock, not hardware",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc18/uart_tx_ip_1_0/examples/test_uart_tx_driver_mock.c",
+    "kind": "host driver mock, not hardware",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc18/pwm_controller_ip_1_0/examples/test_pwm_driver_mock.c",
+    "kind": "host driver mock, not hardware",
+    "status": "PASS"
+  },
+  {
+    "source": "code/soc19/axi_control_status_bridge_1_0/examples/test_axi_control_status_bridge_driver_mock.c",
+    "kind": "host driver mock, not hardware",
+    "status": "PASS"
+  }
+]

@@ -1,0 +1,1477 @@
+[
+  {
+    "file": "code/soc11/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc11/tb_custom_register_bank.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc11/working_files/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc11/working_files/tb_custom_register_bank.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc12/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc12/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc12/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc12/tb_custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc12/working_files/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc12/working_files/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc12/working_files/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc12/working_files/tb_custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc13/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc13/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc13/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc13/tb_axi_register_rw_path.v",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc13/working_files/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc13/working_files/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc13/working_files/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc13/working_files/tb_axi_register_rw_path.v",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc14/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/example_processing_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/tb_custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc14/working_files/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/working_files/custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/working_files/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/working_files/example_processing_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc14/working_files/tb_custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc15/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc15/custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc15/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc15/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc15/example_processing_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/hdl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/hdl/example_processing_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_axi4lite_legacy_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/legacy_core_controller_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/legacy_processing_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_custom_axi4lite_legacy_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc17/original_rtl/legacy_processing_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/hdl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/hdl/legacy_pwm_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/hdl/pwm_axi4lite_ip.v",
+    "logic_identical": false,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/hdl/pwm_controller_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/hdl/pwm_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/testbench/tb_pwm_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/hdl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/hdl/legacy_uart_tx_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/hdl/uart_tx_axi4lite_ip.v",
+    "logic_identical": false,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/hdl/uart_tx_controller_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/hdl/uart_tx_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/testbench/tb_legacy_uart_tx_core.v",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/testbench/tb_uart_tx_axi4lite_ip.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/hdl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/hdl/axi_control_status_bridge_demo_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/hdl/axi_control_status_bridge_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/hdl/control_status_bridge_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/hdl/example_ready_valid_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/axi_control_status_bridge_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/cdc_level_sync_educational.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/cdc_pulse_toggle_educational.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/control_status_bridge_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_bridge_cdc_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_control_status_bridge_demo.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_example_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/reset_sync_async_assert_educational.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_pulse_sync.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_ready_valid_bus_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_reset_sync_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_single_bit_sync.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_dual_clock_control_status_bridge_demo.v",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc21/verification_harness/rtl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc21/verification_harness/rtl/axi_control_status_bridge_demo_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc21/verification_harness/rtl/axi_control_status_bridge_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc21/verification_harness/rtl/control_status_bridge_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc21/verification_harness/rtl/example_ready_valid_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc21/verification_harness/verification/csb_assertions.sv",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_chain_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_chain_unpipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_lab_compare_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_lab_pipelined_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_lab_pipelined_impl_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_lab_unpipelined_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_lab_unpipelined_impl_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_pattern_source.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/rtl/timing_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/rtl/axi4lite_slave_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/rtl/axi_control_status_bridge_demo_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/rtl/axi_control_status_bridge_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/rtl/control_status_bridge_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/rtl/example_ready_valid_core.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/testbench/tb_soc21_csb_verification.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/verification/csb_assertions.sv",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_chain_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_chain_unpipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_lab_pipelined_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_lab_pipelined_impl_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_lab_unpipelined_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_lab_unpipelined_impl_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_pattern_source.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/rtl/timing_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/mac_basic_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/mac_pattern_source.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/mac_pipelined_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/mac_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/mac_s8_acc32_basic.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/mac_s8_acc32_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/testbench/tb_mac_s8_acc32_compare.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/mul_s8_dsp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/pe4_basic_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_basic.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/pe4_pattern_source.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/pe4_pipelined_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/pe4_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/mul_s8_dsp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/pe4_dot_accum_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/vector_demo_source_len10.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_pe4.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/rtl/vector_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/bram_vector_feeder.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/local_bram_demo_loader_len10.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/local_bram_dot_accelerator.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/local_bram_dot_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/local_bram_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/mul_s8_dsp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/pe4_dot_accum_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/vector_bram_sdp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/rtl/vector_dot_controller_pe4.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/testbench/tb_local_bram_dot_accelerator.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/bram_prefetch_fifo_feeder.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/double_buffer_demo_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/double_buffer_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/mul_s8_dsp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/pe4_dot_accum_pipelined.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/pingpong_vector_memory.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/prefetch_double_buffer_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/prefetch_double_buffer_dot_accelerator.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/stream_fifo_64x4.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/vector_bram_sdp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/rtl/vector_dot_controller_pe4.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/mul_s8_dsp.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/ws_board_demo_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/ws_dual_pe4_datapath.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/ws_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/ws_tiled_batch_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/rtl/ws_tiled_batch_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/rtl/requant_result_sink.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/rtl/requantization_basys3_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/rtl/reset_active_high_to_active_low.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/rtl/soc29_result_demo_source.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/testbench/tb_requantize_s32_to_s8.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/rtl/npu_axi4lite_slave.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/rtl/npu_axi_accel_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/rtl/npu_axi4lite_irq_slave.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/rtl/npu_axi_irq_accel_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/rtl/npu_register_bank_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_data_plane_demo_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_data_plane_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/rtl/npu_job_descriptor_controller.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/rtl/npu_job_descriptor_demo_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/rtl/tensor_job_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/npu_full_accelerator_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/npu_full_accelerator_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/rtl/tensor_job_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/testbench/tb_npu_full_accelerator.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_accelerator_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_accelerator_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/rtl/tensor_job_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/npu_full_accelerator_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/npu_full_accelerator_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/rtl/tensor_job_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/testbench/tb_soc37_cycle_baseline.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/npu_full_accelerator_fastread_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/npu_full_accelerator_fastread_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/npu_full_accelerator_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/npu_full_accelerator_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/tensor_job_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/rtl/tensor_job_engine_pipelined_read.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/testbench/tb_soc38_fastread_regression.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_fastread_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_fastread_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_parallel4_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_parallel4_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/requantize_batch2x4_parallel4.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/requantize_batch2x4_serial.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine_parallel4_requant.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine_pipelined_read.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/testbench/tb_soc39_parallel4_regression.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_overlap_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_overlap_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_parallel4_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_parallel4_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_batch2x4_parallel4.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_group4_parallel.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_job_engine_overlap.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_job_engine_parallel4_requant.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv",
+    "logic_identical": true,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_soc40_overlap_regression.sv",
+    "logic_identical": false,
+    "role": "testbench"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/axi4lite_reg_bridge.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/bram_clock_reset_adapter.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/npu_full_accelerator_overlap_ip.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/npu_full_accelerator_overlap_sim_top.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/npu_full_control_irq.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/requantize_group4_parallel.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/requantize_s32_to_s8.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/tensor_bram_tdp_4k_model.v",
+    "logic_identical": true,
+    "role": "RTL"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/rtl/tensor_job_engine_overlap.v",
+    "logic_identical": true,
+    "role": "RTL"
+  }
+]

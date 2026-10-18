@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="570" viewBox="0 0 1280 570">
+<rect width="1280" height="570" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">IRQ_STATUS / IRQ_ENABLE</text>
+<rect x="90" y="140" width="440" height="280" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="310" y="190" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">IRQ_STATUS · 0x70</text>
+<text x="310" y="245" text-anchor="middle" font-family="sans-serif" font-size="17">bit0 DONE pending</text>
+<text x="310" y="290" text-anchor="middle" font-family="sans-serif" font-size="17">bit1 ERROR pending</text>
+<text x="310" y="345" text-anchor="middle" font-family="sans-serif" font-size="17">RO / W1C</text>
+<rect x="750" y="140" width="440" height="280" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="970" y="190" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">IRQ_ENABLE · 0x6C</text>
+<text x="970" y="245" text-anchor="middle" font-family="sans-serif" font-size="17">bit0 DONE enable</text>
+<text x="970" y="290" text-anchor="middle" font-family="sans-serif" font-size="17">bit1 ERROR enable</text>
+<text x="970" y="345" text-anchor="middle" font-family="sans-serif" font-size="17">RW</text>
+<text x="640" y="485" text-anchor="middle" font-family="sans-serif" font-size="20">irq_o → OR(IRQ_STATUS AND IRQ_ENABLE)</text>
+<text x="640" y="525" text-anchor="middle" font-family="sans-serif" font-size="15">pending은 enable=0이어도 저장되며, 나중에 enable하면 즉시 irq가 올라갈 수 있다.</text>
+</svg>

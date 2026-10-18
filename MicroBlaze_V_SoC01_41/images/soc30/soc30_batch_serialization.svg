@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="620" viewBox="0 0 1360 620">
+<rect width="1360" height="620" fill="white"/>
+<text x="680" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">SoC 29 Result → One Requantizer → int8 Batch</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<rect x="70" y="150" width="310" height="280" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="225" y="195" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">SoC 29 int32 Result</text>
+<text x="225" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">CH0 sample0..3</text>
+<text x="225" y="285" text-anchor="middle" font-family="sans-serif" font-size="16">CH1 sample0..3</text>
+<text x="225" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">총 8 values</text>
+
+<rect x="525" y="150" width="310" height="280" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="680" y="195" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Pipelined Requantizer ×1</text>
+<text x="680" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">1 value / clock feed</text>
+<text x="680" y="285" text-anchor="middle" font-family="sans-serif" font-size="16">Tag 0..7 pipeline</text>
+<text x="680" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">Resource reuse</text>
+
+<rect x="980" y="150" width="310" height="280" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1135" y="195" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Packed int8 Output</text>
+<text x="1135" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">CH0 → 32 bit</text>
+<text x="1135" y="285" text-anchor="middle" font-family="sans-serif" font-size="16">CH1 → 32 bit</text>
+<text x="1135" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">다음 Layer 입력 가능</text>
+
+<line x1="380" y1="290" x2="525" y2="290" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="835" y1="290" x2="980" y2="290" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<text x="680" y="520" text-anchor="middle" font-family="sans-serif" font-size="16">병렬 코어 8개 대신 파이프라인 코어 1개를 시분할하여 DSP 사용량을 줄이는 교육용 선택</text>
+</svg>

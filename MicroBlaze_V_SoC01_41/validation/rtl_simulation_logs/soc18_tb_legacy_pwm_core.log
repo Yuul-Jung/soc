@@ -1,0 +1,14 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_legacy_pwm_core -o validation-tools/rtl_runs/soc18_tb_legacy_pwm_core.vvp code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v code/soc18/pwm_controller_ip_1_0/hdl/axi4lite_slave_adapter.v code/soc18/pwm_controller_ip_1_0/hdl/pwm_register_bank.v code/soc18/pwm_controller_ip_1_0/hdl/legacy_pwm_core.v code/soc18/pwm_controller_ip_1_0/hdl/pwm_axi4lite_ip.v code/soc18/pwm_controller_ip_1_0/hdl/pwm_controller_adapter.v
+code/soc18/pwm_controller_ip_1_0/hdl/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v:1: ...: The inherited timescale is here.
+code/soc18/pwm_controller_ip_1_0/hdl/pwm_register_bank.v:1: warning: timescale for pwm_register_bank inherited from another file.
+code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v:1: ...: The inherited timescale is here.
+code/soc18/pwm_controller_ip_1_0/hdl/legacy_pwm_core.v:1: warning: timescale for legacy_pwm_core inherited from another file.
+code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v:1: ...: The inherited timescale is here.
+code/soc18/pwm_controller_ip_1_0/hdl/pwm_axi4lite_ip.v:1: warning: timescale for pwm_axi4lite_ip inherited from another file.
+code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v:1: ...: The inherited timescale is here.
+code/soc18/pwm_controller_ip_1_0/hdl/pwm_controller_adapter.v:1: warning: timescale for pwm_controller_adapter inherited from another file.
+code/soc18/pwm_controller_ip_1_0/testbench/tb_legacy_pwm_core.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+SOC18 LEGACY PWM CORE TEST: PASS

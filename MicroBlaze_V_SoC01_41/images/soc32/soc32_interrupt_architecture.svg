@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="640" viewBox="0 0 1400 640">
+<rect width="1400" height="640" fill="white"/>
+<text x="700" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 32 · NPU Interrupt Integration</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<rect x="55" y="160" width="240" height="210" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="175" y="210" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">NPU Core</text>
+<text x="175" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">DONE / ERROR</text>
+<text x="175" y="310" text-anchor="middle" font-family="sans-serif" font-size="15">event pulse</text>
+<rect x="365" y="120" width="300" height="290" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="515" y="170" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">NPU IRQ Register</text>
+<text x="515" y="225" text-anchor="middle" font-family="sans-serif" font-size="16">IRQ_STATUS · W1C</text>
+<text x="515" y="270" text-anchor="middle" font-family="sans-serif" font-size="16">IRQ_ENABLE</text>
+<text x="515" y="320" text-anchor="middle" font-family="sans-serif" font-size="16">level irq</text>
+<rect x="745" y="160" width="260" height="210" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="875" y="210" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">AXI INTC</text>
+<text x="875" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">Interrupt Controller</text>
+<text x="875" y="310" text-anchor="middle" font-family="sans-serif" font-size="15">priority / routing</text>
+<rect x="1080" y="160" width="265" height="210" rx="14" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1212" y="210" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">MicroBlaze V</text>
+<text x="1212" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">XIntc Handler</text>
+<text x="1212" y="310" text-anchor="middle" font-family="sans-serif" font-size="16">NPU ISR</text>
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="295" y1="265" x2="365" y2="265"/>
+<line x1="665" y1="265" x2="745" y2="265"/>
+<line x1="1005" y1="265" x2="1080" y2="265"/>
+</g>
+<text x="700" y="495" text-anchor="middle" font-family="sans-serif" font-size="18">짧은 DONE Pulse를 IRQ_STATUS에 저장하여 CPU가 처리할 때까지 Level Interrupt를 유지</text>
+<text x="700" y="545" text-anchor="middle" font-family="sans-serif" font-size="15">ISR이 IRQ_STATUS를 W1C로 clear하면 irq가 내려간다.</text>
+</svg>

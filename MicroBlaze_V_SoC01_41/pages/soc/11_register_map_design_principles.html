@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport"><meta content="Custom AXI IP 제작 전에 Register Map의 Offset, Access Type, Bit Field, Reset, W1C/W1P, C Header와 RTL Register Bank를 설계하는 학습 자료." name="description"><title>SoC 11 · Register Map 설계 원칙</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 11</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner"><p class="hero-kicker">Basys3 SoC + NPU · SoC 11</p><h1>Register Map 설계 원칙</h1><p class="hero-desc">Custom AXI IP를 만들기 전에 Software와 RTL이 공유할 Register 계약을 먼저 설계한다. 주소 Offset, Access Type, Bit Field, Reset Value, Reserved Bit, W1C/W1P 동작을 확정하고 C Header와 Bus-independent Register Bank RTL을 같은 정의로 맞춘다.</p><div class="hero-meta"><span class="chip">Register Map</span><span class="chip">RW / RO</span><span class="chip">W1C</span><span class="chip">W1P</span><span class="chip">Mask / Shift</span><span class="chip">HW/SW Contract</span></div><div class="hero-brief"><article><h2>주소</h2><p>32-bit Register를 4-byte Offset으로 배치한다.</p></article><article><h2>의미</h2><p>각 Bit의 권한과 Side Effect를 명확히 정의한다.</p></article><article><h2>재사용</h2><p>Register Bank는 AXI Protocol과 분리하여 독립 Module로 만든다.</p></article></div></div></header>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html" selected>SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc11_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc11">이 장 검증</a></div></div><p class="nav-title">SOC 11 · LEARNING FLOW</p><p class="nav-help">Function → Offset → Access → Bit Field → HW/SW</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>Register Map이 필요한 이유</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>SoC 10에서 Custom IP로</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>설계 순서</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Register Map 예제</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>4-byte 정렬</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Access Type</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>RW Register</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>RO Register</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>W1P Command</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>W1C Status</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Reserved Bit</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Reset Value</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Bit Field · Mask · Shift</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>CONTROL 설계</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>STATUS 설계</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>COMMAND 설계</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>IRQ_STATUS 설계</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>DATA_IN · DATA_OUT</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>VERSION · ID</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>WSTRB와 Byte Write</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Read-Modify-Write 주의</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Hardware / Software Contract</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>C Header</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>RTL Register Bank</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>AXI와 Register Bank 분리</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>검증 포인트</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>확장 규칙</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">29</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">30</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside><main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 10 AMD IP 통합</span><span class="arrow">→</span><span class="stage"><strong>SoC 11 Register Map</strong></span><span class="arrow">→</span><span class="stage">SoC 12 Custom AXI4-Lite Slave</span><span class="arrow">→</span><span class="stage">SoC 13 AXI Read/Write 경로</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>Register Map이 필요한 이유</h2><p>Custom IP에서 Software가 Hardware 기능을 제어하려면 CPU가 읽고 쓸 수 있는 주소와 각 Bit의 의미가 필요하다. Register Map은 이 관계를 하나의 계약으로 만든다.</p><div class="flow">CPU Address → Register Offset → Bit Field → Hardware 동작</div></section>
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>SoC 10에서 Custom IP로</h2><p>SoC 10까지는 AMD가 Register Map을 이미 정의한 GPIO, UART, Timer, INTC를 사용했다. 앞으로는 사용자가 직접 Register를 정의한다.</p><div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">완성 IP 사용
+PG144/PG142/PG079/PG099가 Register Map 제공
+          ↓
+Custom IP 설계
+사용자가 Offset / Access / Bit 의미를 직접 정의</div></section>
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>설계 순서</h2><figure class="manual-figure"><a href="../../images/soc11/soc11_register_design_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Register map design flow · 원본 보기 (새 탭)"><img src="../../images/soc11/soc11_register_design_flow.svg" alt="Register map design flow"></a><figcaption>Register Map은 RTL부터 코딩하지 않고 기능과 Software 계약부터 확정한다.<br><a href="../../images/soc11/soc11_register_design_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Register map design flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Register Map 예제</h2><figure class="manual-figure"><a href="../../images/soc11/soc11_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Custom register map example · 원본 보기 (새 탭)"><img src="../../images/soc11/soc11_register_map.svg" alt="Custom register map example"></a><figcaption>이후 SoC 12~14에서 그대로 사용할 교육용 Custom Register Map.<br><a href="../../images/soc11/soc11_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Custom register map example · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>4-byte 정렬</h2><p>32-bit Register는 <code>0x00, 0x04, 0x08, 0x0C...</code>처럼 4 Byte 간격으로 배치한다.</p><div class="signal-map" tabindex="0" role="region" aria-label="05절 신호 및 실행 흐름">32 bit = 4 Byte
+Reg0 : Base + 0x00
+Reg1 : Base + 0x04
+Reg2 : Base + 0x08
+Reg3 : Base + 0x0C</div><p>AMD AXI GPIO도 32-bit Register를 0x00, 0x04, 0x08, 0x0C Offset으로 배치한다.</p></section>
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Access Type</h2><div class="table-wrap" tabindex="0" role="region" aria-label="Access Type · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">표기</th><th scope="col" role="columnheader">의미</th><th scope="col" role="columnheader">예제</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="표기" role="cell">RW</td><td data-label="의미" role="cell">Software Read / Write</td><td data-label="예제" role="cell">CONTROL, DATA_IN</td></tr><tr role="row"><td data-label="표기" role="cell">RO</td><td data-label="의미" role="cell">Software Read Only</td><td data-label="예제" role="cell">STATUS, DATA_OUT, VERSION</td></tr><tr role="row"><td data-label="표기" role="cell">WO</td><td data-label="의미" role="cell">Software Write Only</td><td data-label="예제" role="cell">Command 계열</td></tr><tr role="row"><td data-label="표기" role="cell">W1C</td><td data-label="의미" role="cell">1을 쓰면 해당 상태 Clear</td><td data-label="예제" role="cell">IRQ_STATUS</td></tr><tr role="row"><td data-label="표기" role="cell">W1P</td><td data-label="의미" role="cell">1을 쓰면 1 Clock Pulse 생성</td><td data-label="예제" role="cell">COMMAND</td></tr></tbody></table></div></section>
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>RW Register</h2><p><code>CONTROL</code>처럼 Software 설정값을 Hardware가 계속 유지해야 하는 Register에 사용한다.</p><div class="flow">Software Write → Register 저장 → Hardware Control Signal 유지</div></section>
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>RO Register</h2><p><code>STATUS</code>는 Hardware 상태를 Software가 읽기만 한다. Software Write는 무시한다.</p><div class="signal-map" tabindex="0" role="region" aria-label="08절 신호 및 실행 흐름">busy_i ──▶ STATUS[0]
+done_i ──▶ STATUS[1]
+error_i ─▶ STATUS[2]
+
+Software Read 가능
+Software Write 효과 없음</div></section>
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>W1P Command</h2><p><code>COMMAND.START</code>에 1을 쓰면 Register에 1이 계속 저장되는 것이 아니라 <code>start_pulse_o</code>가 1 Clock 동안만 High가 된다.</p><div class="flow">Write 1 → start_pulse_o = 1 for one clock → 자동 0</div><p>Start, Clear, Trigger처럼 Event를 전달하는 Command에 적합하다.</p></section>
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>W1C Status</h2><p><code>IRQ_STATUS</code>는 Hardware Event가 발생하면 1로 Set되고 Software가 해당 Bit에 1을 쓰면 Clear된다.</p><div class="flow">Hardware Event → IRQ_STATUS=1 → Software Read → Write 1 → Clear</div><p>AMD AXI Timer의 T0INT도 동일하게 1을 써야 Clear된다.</p></section>
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Reserved Bit</h2><p>사용하지 않는 Bit는 Reserved로 정의하고 Read 시 0을 반환하도록 한다. Software는 Reserved Bit에 의미 있는 값을 의존하지 않는다.</p></section>
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Reset Value</h2><p>모든 저장 Register는 Reset 직후 값을 문서에 명시한다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Reset Value · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Reset</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Register" role="cell">CONTROL</td><td data-label="Reset" role="cell">0x00000000</td></tr><tr role="row"><td data-label="Register" role="cell">IRQ_STATUS</td><td data-label="Reset" role="cell">0x00000000</td></tr><tr role="row"><td data-label="Register" role="cell">DATA_IN</td><td data-label="Reset" role="cell">0x00000000</td></tr><tr role="row"><td data-label="Register" role="cell">VERSION</td><td data-label="Reset" role="cell">0x00010000</td></tr><tr role="row"><td data-label="Register" role="cell">ID</td><td data-label="Reset" role="cell">0x524D4150</td></tr></tbody></table></div></section>
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Bit Field · Mask · Shift</h2><p><code>CONTROL.MODE[2:1]</code>처럼 여러 Bit를 하나의 Field로 사용할 때 Software에는 Mask와 Shift를 함께 정의한다.</p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Bit Field · Mask · Shift · 소스 코드"><code>#define CUSTOM_CONTROL_MODE_MASK   0x00000006U
+#define CUSTOM_CONTROL_MODE_SHIFT  1U</code></pre></section>
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>CONTROL 설계</h2><div class="table-wrap" tabindex="0" role="region" aria-label="CONTROL 설계 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">Name</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">Reset</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="Name" role="cell">ENABLE</td><td data-label="Access" role="cell">RW</td><td data-label="Reset" role="cell">0</td></tr><tr role="row"><td data-label="Bit" role="cell">2:1</td><td data-label="Name" role="cell">MODE</td><td data-label="Access" role="cell">RW</td><td data-label="Reset" role="cell">0</td></tr><tr role="row"><td data-label="Bit" role="cell">31:3</td><td data-label="Name" role="cell">Reserved</td><td data-label="Access" role="cell">-</td><td data-label="Reset" role="cell">0</td></tr></tbody></table></div></section>
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>STATUS 설계</h2><div class="table-wrap" tabindex="0" role="region" aria-label="STATUS 설계 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">Name</th><th scope="col" role="columnheader">Access</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="Name" role="cell">BUSY</td><td data-label="Access" role="cell">RO</td></tr><tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="Name" role="cell">DONE</td><td data-label="Access" role="cell">RO</td></tr><tr role="row"><td data-label="Bit" role="cell">2</td><td data-label="Name" role="cell">ERROR</td><td data-label="Access" role="cell">RO</td></tr></tbody></table></div><p>상태 Register를 Control 저장 Register와 분리하면 Hardware Source와 Software Write 경계가 명확해진다.</p></section>
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>COMMAND 설계</h2><div class="table-wrap" tabindex="0" role="region" aria-label="COMMAND 설계 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">Name</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">동작</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="Name" role="cell">START</td><td data-label="Access" role="cell">W1P</td><td data-label="동작" role="cell">1 Clock start pulse</td></tr><tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="Name" role="cell">CLEAR</td><td data-label="Access" role="cell">W1P</td><td data-label="동작" role="cell">1 Clock clear pulse</td></tr></tbody></table></div></section>
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>IRQ_STATUS 설계</h2><p>Hardware Event Set과 Software W1C가 같은 Clock에 발생하면 이번 예제는 <strong>Hardware Set 우선</strong>으로 정의한다. 새 Event가 Clear Write와 동시에 들어와도 Event를 잃지 않기 위한 정책이다.</p></section>
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>DATA_IN · DATA_OUT</h2><div class="table-wrap" tabindex="0" role="region" aria-label="DATA_IN · DATA_OUT · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">Access</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Register" role="cell">DATA_IN</td><td data-label="방향" role="cell">Software → Hardware</td><td data-label="Access" role="cell">RW</td></tr><tr role="row"><td data-label="Register" role="cell">DATA_OUT</td><td data-label="방향" role="cell">Hardware → Software</td><td data-label="Access" role="cell">RO</td></tr></tbody></table></div></section>
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>VERSION · ID</h2><p>VERSION과 ID Register를 두면 Software가 연결된 IP 종류와 Revision을 확인할 수 있다.</p><div class="signal-map" tabindex="0" role="region" aria-label="19절 신호 및 실행 흐름">VERSION = 0x00010000 → v1.0
+ID = 0x524D4150 → ASCII "RMAP"</div></section>
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>WSTRB와 Byte Write</h2><p>Register Bank는 AXI Slave와 독립적으로 <code>wr_strb[3:0]</code>를 입력받도록 한다. DATA_IN은 각 Byte Strobe가 1인 Byte만 갱신한다.</p><div class="signal-map" tabindex="0" role="region" aria-label="20절 신호 및 실행 흐름">wr_strb = 4'b0001 → bits [7:0]만 변경
+wr_strb = 4'b0011 → bits [15:0] 변경
+wr_strb = 4'b1111 → 32 bit 전체 변경</div></section>
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Read-Modify-Write 주의</h2><p>CONTROL처럼 순수 RW Register는 Read → Mask 변경 → Write가 자연스럽다. 반면 W1C 상태 Bit를 같은 Register에 섞으면 Read 값의 1을 다시 Write하면서 의도하지 않은 Clear가 발생할 수 있다.</p><div class="warn"><strong>원칙:</strong> 일반 Control RW Bit와 W1C Event Status는 가능하면 별도 Register로 분리한다.</div></section>
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Hardware / Software Contract</h2><figure class="manual-figure"><a href="../../images/soc11/soc11_hw_sw_contract.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Hardware software register contract · 원본 보기 (새 탭)"><img src="../../images/soc11/soc11_hw_sw_contract.svg" alt="Hardware software register contract"></a><figcaption>Register Map은 Software Header와 RTL이 공유하는 단일 계약이다.<br><a href="../../images/soc11/soc11_hw_sw_contract.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Hardware software register contract · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>C Header</h2><p>AMD Driver가 사용하는 것처럼 <code>BaseAddress + RegOffset</code> 형태로 32-bit Register를 접근한다.</p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="C Header · 소스 코드"><code>#ifndef CUSTOM_REGMAP_H
+#define CUSTOM_REGMAP_H
+
+#include "xil_io.h"
+#include "xil_types.h"
+
+/*
+ * SoC 11 - Custom Register Map example
+ *
+ * Base address is assigned by Vivado Address Editor.
+ * This file defines only offsets, fields and access helpers.
+ */
+
+/* Register offsets */
+#define CUSTOM_CONTROL_OFFSET        0x00U
+#define CUSTOM_STATUS_OFFSET         0x04U
+#define CUSTOM_COMMAND_OFFSET        0x08U
+#define CUSTOM_IRQ_STATUS_OFFSET     0x0CU
+#define CUSTOM_DATA_IN_OFFSET        0x10U
+#define CUSTOM_DATA_OUT_OFFSET       0x14U
+#define CUSTOM_VERSION_OFFSET        0x18U
+#define CUSTOM_ID_OFFSET             0x1CU
+
+/* CONTROL register fields: RW */
+#define CUSTOM_CONTROL_ENABLE_MASK   0x00000001U
+#define CUSTOM_CONTROL_MODE_MASK     0x00000006U
+#define CUSTOM_CONTROL_MODE_SHIFT    1U
+
+/* STATUS register fields: RO */
+#define CUSTOM_STATUS_BUSY_MASK      0x00000001U
+#define CUSTOM_STATUS_DONE_MASK      0x00000002U
+#define CUSTOM_STATUS_ERROR_MASK     0x00000004U
+
+/* COMMAND register fields: W1P */
+#define CUSTOM_COMMAND_START_MASK    0x00000001U
+#define CUSTOM_COMMAND_CLEAR_MASK    0x00000002U
+
+/* IRQ_STATUS register fields: W1C */
+#define CUSTOM_IRQ_DONE_MASK         0x00000001U
+#define CUSTOM_IRQ_ERROR_MASK        0x00000002U
+
+/* Fixed read-only values */
+#define CUSTOM_VERSION_VALUE         0x00010000U  /* v1.0 */
+#define CUSTOM_ID_VALUE              0x524D4150U  /* ASCII "RMAP" */
+
+#define Custom_ReadReg(BaseAddress, RegOffset) \
+    Xil_In32((BaseAddress) + (RegOffset))
+
+#define Custom_WriteReg(BaseAddress, RegOffset, Data) \
+    Xil_Out32((BaseAddress) + (RegOffset), (Data))
+
+static inline void Custom_SetEnable(UINTPTR BaseAddress, u32 Enable)
+{
+    u32 value;
+
+    value = Custom_ReadReg(BaseAddress, CUSTOM_CONTROL_OFFSET);
+
+    if (Enable != 0U) {
+        value |= CUSTOM_CONTROL_ENABLE_MASK;
+    } else {
+        value &amp;= ~CUSTOM_CONTROL_ENABLE_MASK;
+    }
+
+    Custom_WriteReg(BaseAddress, CUSTOM_CONTROL_OFFSET, value);
+}
+
+static inline void Custom_SetMode(UINTPTR BaseAddress, u32 Mode)
+{
+    u32 value;
+
+    value = Custom_ReadReg(BaseAddress, CUSTOM_CONTROL_OFFSET);
+    value &amp;= ~CUSTOM_CONTROL_MODE_MASK;
+    value |= (Mode &lt;&lt; CUSTOM_CONTROL_MODE_SHIFT) &amp; CUSTOM_CONTROL_MODE_MASK;
+
+    Custom_WriteReg(BaseAddress, CUSTOM_CONTROL_OFFSET, value);
+}
+
+static inline void Custom_Start(UINTPTR BaseAddress)
+{
+    /* W1P: write 1 to generate one-cycle start pulse */
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_COMMAND_OFFSET,
+        CUSTOM_COMMAND_START_MASK
+    );
+}
+
+static inline void Custom_ClearDoneIrq(UINTPTR BaseAddress)
+{
+    /* W1C: writing 1 clears only DONE IRQ */
+    Custom_WriteReg(
+        BaseAddress,
+        CUSTOM_IRQ_STATUS_OFFSET,
+        CUSTOM_IRQ_DONE_MASK
+    );
+}
+
+#endif
+</code></pre></section>
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>RTL Register Bank</h2><p>AXI 신호를 직접 넣지 않고 <code>wr_en / wr_offset / wr_data / wr_strb / rd_offset / rd_data</code>의 Bus-independent Interface로 작성한다.</p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="RTL Register Bank · 소스 코드"><code>module custom_register_bank (
+    input  wire        clk,
+    input  wire        resetn,
+
+    // Bus-independent register access interface.
+    // SoC 12 will connect this interface to AXI4-Lite.
+    input  wire        wr_en,
+    input  wire [7:0]  wr_offset,
+    input  wire [31:0] wr_data,
+    input  wire [3:0]  wr_strb,
+
+    input  wire [7:0]  rd_offset,
+    output reg  [31:0] rd_data,
+
+    // Hardware status / event inputs
+    input  wire        busy_i,
+    input  wire        done_i,
+    input  wire        error_i,
+    input  wire        irq_done_event_i,
+    input  wire        irq_error_event_i,
+    input  wire [31:0] data_out_i,
+
+    // Control outputs
+    output reg         enable_o,
+    output reg  [1:0]  mode_o,
+    output reg         start_pulse_o,
+    output reg         clear_pulse_o,
+    output reg  [31:0] data_in_o,
+    output reg  [1:0]  irq_status_o
+);
+
+localparam [7:0] REG_CONTROL    = 8'h00;
+localparam [7:0] REG_STATUS     = 8'h04;
+localparam [7:0] REG_COMMAND    = 8'h08;
+localparam [7:0] REG_IRQ_STATUS = 8'h0C;
+localparam [7:0] REG_DATA_IN    = 8'h10;
+localparam [7:0] REG_DATA_OUT   = 8'h14;
+localparam [7:0] REG_VERSION    = 8'h18;
+localparam [7:0] REG_ID         = 8'h1C;
+
+localparam [31:0] VERSION_VALUE = 32'h0001_0000;
+localparam [31:0] ID_VALUE      = 32'h524D_4150; // ASCII "RMAP"
+
+integer byte_index;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        enable_o      &lt;= 1'b0;
+        mode_o        &lt;= 2'b00;
+        start_pulse_o &lt;= 1'b0;
+        clear_pulse_o &lt;= 1'b0;
+        data_in_o     &lt;= 32'h0000_0000;
+        irq_status_o  &lt;= 2'b00;
+    end else begin
+        // W1P pulses are one clock wide by default.
+        start_pulse_o &lt;= 1'b0;
+        clear_pulse_o &lt;= 1'b0;
+
+        // Hardware events set IRQ status.
+        // Event set has priority over software clear in the same cycle.
+        if (irq_done_event_i) begin
+            irq_status_o[0] &lt;= 1'b1;
+        end else if (
+            wr_en &amp;&amp;
+            (wr_offset == REG_IRQ_STATUS) &amp;&amp;
+            wr_strb[0] &amp;&amp;
+            wr_data[0]
+        ) begin
+            irq_status_o[0] &lt;= 1'b0;
+        end
+
+        if (irq_error_event_i) begin
+            irq_status_o[1] &lt;= 1'b1;
+        end else if (
+            wr_en &amp;&amp;
+            (wr_offset == REG_IRQ_STATUS) &amp;&amp;
+            wr_strb[0] &amp;&amp;
+            wr_data[1]
+        ) begin
+            irq_status_o[1] &lt;= 1'b0;
+        end
+
+        if (wr_en) begin
+            case (wr_offset)
+                REG_CONTROL: begin
+                    if (wr_strb[0]) begin
+                        enable_o &lt;= wr_data[0];
+                        mode_o   &lt;= wr_data[2:1];
+                    end
+                end
+
+                REG_COMMAND: begin
+                    if (wr_strb[0]) begin
+                        start_pulse_o &lt;= wr_data[0];
+                        clear_pulse_o &lt;= wr_data[1];
+                    end
+                end
+
+                REG_DATA_IN: begin
+                    // Byte-enable write using WSTRB-equivalent strobes.
+                    for (byte_index = 0; byte_index &lt; 4; byte_index = byte_index + 1) begin
+                        if (wr_strb[byte_index]) begin
+                            data_in_o[byte_index*8 +: 8] &lt;=
+                                wr_data[byte_index*8 +: 8];
+                        end
+                    end
+                end
+
+                default: begin
+                    // RO / reserved / unmapped writes have no effect.
+                end
+            endcase
+        end
+    end
+end
+
+always @(*) begin
+    case (rd_offset)
+        REG_CONTROL: begin
+            rd_data = {29'h0, mode_o, enable_o};
+        end
+
+        REG_STATUS: begin
+            rd_data = {29'h0, error_i, done_i, busy_i};
+        end
+
+        REG_COMMAND: begin
+            // W1P command register has no retained state.
+            rd_data = 32'h0000_0000;
+        end
+
+        REG_IRQ_STATUS: begin
+            rd_data = {30'h0, irq_status_o};
+        end
+
+        REG_DATA_IN: begin
+            rd_data = data_in_o;
+        end
+
+        REG_DATA_OUT: begin
+            rd_data = data_out_i;
+        end
+
+        REG_VERSION: begin
+            rd_data = VERSION_VALUE;
+        end
+
+        REG_ID: begin
+            rd_data = ID_VALUE;
+        end
+
+        default: begin
+            rd_data = 32'h0000_0000;
+        end
+    endcase
+end
+
+endmodule
+</code></pre></section>
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>AXI와 Register Bank 분리</h2><div class="signal-map" tabindex="0" role="region" aria-label="25절 신호 및 실행 흐름">SoC 12 AXI4-Lite Slave
+AW/W/B/AR/R
+      ↓
+Address Decode + Write/Read Event
+      ↓
+wr_en / wr_offset / wr_data / wr_strb
+rd_offset / rd_data
+      ↓
+custom_register_bank
+      ↓
+Controller / Datapath</div><p>Register 기능을 AXI Protocol Logic과 분리하면 Register Bank를 다른 Bus나 Testbench에서도 재사용할 수 있다.</p></section>
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>검증 포인트</h2><div class="table-wrap" tabindex="0" role="region" aria-label="검증 포인트 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="항목" role="cell">Reset</td><td data-label="확인" role="cell">CONTROL/IRQ_STATUS/DATA_IN 초기값</td></tr><tr role="row"><td data-label="항목" role="cell">RW</td><td data-label="확인" role="cell">CONTROL Write 후 Readback</td></tr><tr role="row"><td data-label="항목" role="cell">RO</td><td data-label="확인" role="cell">STATUS/DATA_OUT Write 무시</td></tr><tr role="row"><td data-label="항목" role="cell">W1P</td><td data-label="확인" role="cell">START/CLEAR가 1 Clock만 High</td></tr><tr role="row"><td data-label="항목" role="cell">W1C</td><td data-label="확인" role="cell">1인 Bit만 Clear</td></tr><tr role="row"><td data-label="항목" role="cell">WSTRB</td><td data-label="확인" role="cell">선택된 Byte만 변경</td></tr><tr role="row"><td data-label="항목" role="cell">Reserved</td><td data-label="확인" role="cell">Read 0 / Write 무시</td></tr><tr role="row"><td data-label="항목" role="cell">VERSION/ID</td><td data-label="확인" role="cell">상수 Readback</td></tr></tbody></table></div></section>
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>확장 규칙</h2><p>Motor, PWM, UART Controller, NPU 등으로 확장할 때도 기본 패턴을 유지한다.</p><div class="flow">CONTROL → STATUS → COMMAND → IRQ_STATUS → CONFIG/DATA → VERSION/ID</div><p>새 Register를 추가할 때 기존 Offset 의미를 바꾸지 않고 뒤쪽에 확장하는 것이 Software 호환성에 유리하다.</p></section>
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>오류 점검</h2><div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문제</th><th scope="col" role="columnheader">원인</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="문제" role="cell">C Header와 RTL Offset 불일치</td><td data-label="원인" role="cell">Software가 다른 Register 접근</td></tr><tr role="row"><td data-label="문제" role="cell">RW와 W1C 혼합</td><td data-label="원인" role="cell">Read-Modify-Write Side Effect</td></tr><tr role="row"><td data-label="문제" role="cell">Reserved Bit 값을 그대로 반환</td><td data-label="원인" role="cell">Revision 간 Software 호환성 저하</td></tr><tr role="row"><td data-label="문제" role="cell">W1P를 저장 Register로 구현</td><td data-label="원인" role="cell">Start 신호가 계속 High</td></tr><tr role="row"><td data-label="문제" role="cell">W1C Event와 Clear 우선순위 미정</td><td data-label="원인" role="cell">동시 Event 누락 가능</td></tr><tr role="row"><td data-label="문제" role="cell">WSTRB 무시</td><td data-label="원인" role="cell">Byte Write 동작 불일치 가능</td></tr></tbody></table></div></section>
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 11 완료 체크리스트</h2><ul><li>[ ] Register Map을 Hardware/Software Contract로 설명할 수 있다.</li><li>[ ] 32-bit Register를 4-byte Offset으로 배치한다.</li><li>[ ] RW, RO, W1C, W1P를 구분한다.</li><li>[ ] Reserved Bit와 Reset Value를 명시한다.</li><li>[ ] Field마다 Mask와 Shift를 정의한다.</li><li>[ ] CONTROL과 W1C IRQ_STATUS를 분리한다.</li><li>[ ] W1P COMMAND는 1 Clock Pulse로 구현한다.</li><li>[ ] Hardware Event와 W1C가 동시에 발생할 때 Set 우선 정책을 정의했다.</li><li>[ ] DATA_IN에 Byte Strobe를 반영한다.</li><li>[ ] C Header와 RTL Offset이 동일하다.</li><li>[ ] Register Bank를 AXI Protocol과 분리했다.</li><li>[ ] 다음 SoC 12에서 이 Register Bank를 AXI4-Lite Slave에 연결할 준비가 되었다.</li></ul><div class="flow">SoC 11 완료 → SoC 12 Custom AXI4-Lite Slave 기초</div></section>
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2><div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg144-axi-gpio/Register-Space" target="_blank" rel="noopener">AMD PG144 · AXI GPIO · 2026-01-30</a></td><td data-label="확인 항목" role="cell">Base-relative Offset, 32-bit Register 배치, Access Type</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Control/Status-Register-0-TCSR0?contentId=ASGr4FLEGrG7tvSqKfTnkQ" target="_blank" rel="noopener">AMD PG079 · TCSR0 · 2025-08-15</a></td><td data-label="확인 항목" role="cell">RW Bit와 Write-1-to-Clear T0INT 실제 사례</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_io.h" target="_blank" rel="noopener">AMD embeddedsw · xil_io.h</a></td><td data-label="확인 항목" role="cell"><code>Xil_In32</code>, <code>Xil_Out32</code> 32-bit MMIO 접근</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/vphy/src/xvphy_hw.h" target="_blank" rel="noopener">AMD embeddedsw Driver Register Access Pattern</a></td><td data-label="확인 항목" role="cell"><code>ReadReg/WriteReg = BaseAddress + RegOffset</code> 패턴</td></tr></tbody></table></div></section>
+<nav class="chapter-nav"><a href="10_microblaze_gpio_uart_timer_integration.html">← SoC 10</a><a href="../../index.html">전체 목차</a><a href="12_custom_axi4lite_slave_basics.html">SoC 12 →</a></nav>
+</main></div><footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer></body></html>

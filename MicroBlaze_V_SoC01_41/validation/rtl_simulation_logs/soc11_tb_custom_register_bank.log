@@ -1,0 +1,5 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_custom_register_bank -o validation-tools/rtl_runs/soc11_tb_custom_register_bank.vvp code/soc11/tb_custom_register_bank.v code/soc11/custom_register_bank.v
+code/soc11/custom_register_bank.v:1: warning: timescale for custom_register_bank inherited from another file.
+code/soc11/tb_custom_register_bank.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---

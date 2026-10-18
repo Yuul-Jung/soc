@@ -1,0 +1,18 @@
+Tensor input addresses:
+  0x000 -> 16
+  0x004 -> 32
+  0x008 -> 48
+  0x00C -> 64
+  0x010 -> 32
+  0x014 -> 64
+  0x018 -> 96
+  0x01C -> 128
+
+OUTPUT_CH0 address = 0x100
+OUTPUT_CH1 address = 0x104
+OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+NPU BRAM reads = 8 words
+NPU BRAM writes = 2 words
+CPU/NPU ownership rule: no same-buffer access while NPU BUSY
+SOC33 PYTHON TENSOR-BRAM REFERENCE: PASS

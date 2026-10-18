@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Basys3 SoC + NPU SoC 01~41 그룹별 전체 목차">
+<title>Basys3 SoC + NPU · SoC 01~41 그룹별 전체 목차</title>
+<link rel="stylesheet" href="overview.css"><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../assets/reader.css"><script defer src="../assets/reader.js"></script></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><header class="hero"><div class="inner">
+<div class="num">BASYS3 SOC + NPU · SOC 01~41</div>
+<h1>그룹별 전체 목차 · Complete Curriculum</h1>
+<p>MicroBlaze V 최소 SoC → AXI 주변장치 → Custom IP → RTL 검증 → NPU 연산·메모리 → 통합·최적화.</p>
+</div></header>
+
+<main class="container" id="main-content" tabindex="-1"><section class="reader-catalog" aria-label="교재 탐색"><div class="reader-links"><a href="../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../validation/verification.html">장별 검증 결과</a></div><label for="course-filter">장 번호·제목 검색</label><input id="course-filter" data-course-filter type="search" placeholder="예: 03, Interrupt, BRAM" autocomplete="off"><p id="course-filter-status" class="reader-status" role="status">41개 장</p></section>
+<section class="summary">
+  <div class="metric"><span class="small">전체 장</span><b>41</b>SoC 01~41</div>
+  <div class="metric"><span class="small">그룹</span><b>8</b>단계별 기술 흐름</div>
+  <div class="metric"><span class="small">최종 NPU Static Schedule</span><b>16 cycles</b>SoC 40</div>
+  <div class="metric"><span class="small">마지막 장</span><b>SoC 41</b>Group 8 Sign-off</div>
+</section>
+
+<section class="group">
+<h2>전체 구조</h2>
+<div class="flow path">01~05 Minimum SoC → 06~10 AMD Peripheral IP → 11~16 Custom AXI → 17~23 RTL IP/Verification/QoR → 24~26 NPU Compute → 27~30 Memory/Dataflow/Quantization → 31~36 NPU SoC Integration → 37~41 Performance/Optimization/Sign-off</div>
+</section>
+
+
+    <section class="group" id="group1">
+      <div class="group-head">
+        <span class="badge">GROUP 1</span>
+        <div><h2 style="margin:0">MicroBlaze V 기반 최소 SoC · SoC 01~05</h2>
+        <p class="small">MicroBlaze V, BRAM, Clock/Reset, Memory Map, AXI 구조를 이용해 최소 SoC의 뼈대를 만든다.</p>
+        <a class="linkbtn" href="../groups/group01_microblaze_minimal_soc/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 01</div>
+          <h3>MicroBlaze V + BRAM 최소 SoC</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/01_microblaze_bram_minimal_soc.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc01_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC01_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 02</div>
+          <h3>Clock / Reset 구조와 Processor System Reset</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/02_clock_reset_processor_system_reset.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc02_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC02_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 03</div>
+          <h3>MicroBlaze V 실행 구조와 BRAM 프로그램 실행</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/03_microblaze_bram_program_execution.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc03_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC03_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 04</div>
+          <h3>Memory Map과 Memory-Mapped I/O</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/04_memory_map_memory_mapped_io.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc04_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC04_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 05</div>
+          <h3>AXI4 / AXI4-Lite / AXI4-Stream 구조</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/05_axi4_axi4lite_axi4stream.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc05_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC05_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group2">
+      <div class="group-head">
+        <span class="badge">GROUP 2</span>
+        <div><h2 style="margin:0">AMD IP 기반 주변장치 SoC · SoC 06~10</h2>
+        <p class="small">AXI GPIO, UART Lite, Timer, Interrupt Controller를 연결하고 MicroBlaze V 주변장치 시스템으로 통합한다.</p>
+        <a class="linkbtn" href="../groups/group02_amd_ip_peripheral_soc/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 06</div>
+          <h3>AXI GPIO - Switch 입력을 LED 출력으로</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/06_axi_gpio.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc06_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC06_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 07</div>
+          <h3>AXI UART Lite - PC 터미널 Echo 통신</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/07_axi_uart_lite.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc07_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC07_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 08</div>
+          <h3>AXI Timer - 0.5초 Polling과 LED Blink</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/08_axi_timer.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc08_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC08_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 09</div>
+          <h3>AXI Interrupt Controller - Timer Interrupt와 ISR</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/09_axi_interrupt_controller.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc09_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC09_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 10</div>
+          <h3>MicroBlaze V + GPIO + UART + Timer 통합</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/10_microblaze_gpio_uart_timer_integration.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc10_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC10_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group3">
+      <div class="group-head">
+        <span class="badge">GROUP 3</span>
+        <div><h2 style="margin:0">Register Map · Custom AXI IP · SoC 11~16</h2>
+        <p class="small">Register Map에서 Custom AXI4-Lite Slave, RTL Controller, Software Driver, IP Packaging까지 완성한다.</p>
+        <a class="linkbtn" href="../groups/group03_register_map_custom_axi_ip/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 11</div>
+          <h3>Register Map 설계 원칙</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/11_register_map_design_principles.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc11_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC11_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 12</div>
+          <h3>Custom AXI4-Lite Slave 기초</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/12_custom_axi4lite_slave_basics.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc12_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC12_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 13</div>
+          <h3>AXI Register Read / Write 경로</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/13_axi_register_read_write_path.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc13_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC13_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 14</div>
+          <h3>Register Bank + RTL Controller 연결</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/14_register_bank_rtl_controller.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc14_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC14_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 15</div>
+          <h3>MicroBlaze V Software Driver</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/15_microblaze_software_driver.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc15_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC15_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 16</div>
+          <h3>Vivado IP Packaging과 재사용</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/16_vivado_ip_packaging_reuse.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc16_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC16_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group4">
+      <div class="group-head">
+        <span class="badge">GROUP 4</span>
+        <div><h2 style="margin:0">기존 RTL IP화 · Verification · Timing/Power · SoC 17~23</h2>
+        <p class="small">기존 RTL을 재사용 가능한 IP로 만들고 CDC/Reset, Self-Checking 검증, Timing, Resource, Power까지 확장한다.</p>
+        <a class="linkbtn" href="../groups/group04_rtl_ip_verification_qor/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 17</div>
+          <h3>기존 Verilog RTL을 IP로 변환</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/17_existing_verilog_rtl_to_ip.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc17_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC17_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 18</div>
+          <h3>UART / PWM Controller IP화</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/18_uart_pwm_controller_ip.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc18_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC18_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 19</div>
+          <h3>AXI Control / Status Bridge</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/19_axi_control_status_bridge.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc19_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC19_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 20</div>
+          <h3>CDC / Reset 안전 설계</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/20_cdc_reset_safe_design.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc20_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC20_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 21</div>
+          <h3>Self-Checking Testbench / Assertion / Coverage</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/21_self_checking_assertion_coverage.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc21_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC21_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 22</div>
+          <h3>Timing / Critical Path / WNS / TNS</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/22_timing_critical_path_wns_tns.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc22_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC22_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 23</div>
+          <h3>Resource / Power / Thermal</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/23_resource_power_thermal.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc23_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC23_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group5">
+      <div class="group-head">
+        <span class="badge">GROUP 5</span>
+        <div><h2 style="margin:0">NPU Compute Datapath · SoC 24~26</h2>
+        <p class="small">MAC에서 PE/Parallel MAC, Vector Dot Product Controller로 NPU 계산 데이터패스를 단계적으로 구축한다.</p>
+        <a class="linkbtn" href="../groups/group05_npu_compute_datapath/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 24</div>
+          <h3>NPU Datapath 시작 · MAC 기본 구조</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/24_npu_mac_datapath.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc24_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC24_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 25</div>
+          <h3>PE / Parallel MAC / Vector Dot Product</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/25_pe_parallel_mac_vector_dot_product.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc25_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC25_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 26</div>
+          <h3>Vector Dot Product Controller</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/26_vector_dot_product_controller.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc26_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC26_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group6">
+      <div class="group-head">
+        <span class="badge">GROUP 6</span>
+        <div><h2 style="margin:0">NPU Memory · Dataflow · Quantization · SoC 27~30</h2>
+        <p class="small">Local BRAM, Prefetch/FIFO/Double Buffer, Weight Stationary/Tiling, Bias/Requantization/int8 Output을 연결한다.</p>
+        <a class="linkbtn" href="../groups/group06_npu_memory_dataflow_quantization/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 27</div>
+          <h3>Local BRAM / Address Generator / Data Feeding</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/27_local_bram_address_generator_data_feeding.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc27_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC27_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 28</div>
+          <h3>Prefetch / FIFO / Double Buffer / Stall-safe Feeding</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc28_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC28_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 29</div>
+          <h3>Data Reuse · Weight Stationary · Activation Broadcast · Tiling</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/29_data_reuse_weight_stationary_tiling.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc29_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC29_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 30</div>
+          <h3>Bias · Requantization · Rounding · Saturation · int8 Output</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/30_bias_requantization_rounding_saturation_int8.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc30_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC30_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group7">
+      <div class="group-head">
+        <span class="badge">GROUP 7</span>
+        <div><h2 style="margin:0">NPU SoC Integration · SoC 31~36</h2>
+        <p class="small">NPU Register Map, Interrupt, Tensor Buffer, Job Descriptor, Full Accelerator, CPU↔NPU End-to-End Software를 통합한다.</p>
+        <a class="linkbtn" href="../groups/group07_npu_soc_integration/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 31</div>
+          <h3>NPU Register Map · MicroBlaze V Control · AXI4-Lite Integration</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/31_npu_register_map_microblaze_axi_integration.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc31_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC31_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 32</div>
+          <h3>NPU Done Interrupt · AXI Interrupt Controller · ISR</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/32_npu_done_interrupt_axi_intc_isr.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc32_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC32_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 33</div>
+          <h3>AXI BRAM Tensor Buffer · Control Plane / Data Plane</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc33_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC33_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 34</div>
+          <h3>Command · Descriptor · Job Control</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/34_command_descriptor_job_control.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc34_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC34_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 35</div>
+          <h3>Full NPU Accelerator Integration</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/35_full_npu_accelerator_integration.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc35_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC35_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 36</div>
+          <h3>CPU ↔ NPU End-to-End Software / Inference Flow</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/36_cpu_npu_end_to_end_software_inference.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc36_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC36_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="group" id="group8">
+      <div class="group-head">
+        <span class="badge">GROUP 8</span>
+        <div><h2 style="margin:0">Performance · Optimization · Sign-off · SoC 37~41</h2>
+        <p class="small">Baseline 측정에서 BRAM/Compute/Dataflow 최적화, 최종 Sign-off Matrix까지 성능·품질 검증을 완성한다.</p>
+        <a class="linkbtn" href="../groups/group08_performance_optimization_signoff/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="num">SOC 37</div>
+          <h3>Performance Baseline · Timing · Resource · Power · Throughput</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/37_performance_baseline_timing_resource_power_throughput.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc37_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC37_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 38</div>
+          <h3>Bottleneck Analysis · Pipelined BRAM Read Optimization</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/38_bottleneck_analysis_pipelined_bram_read.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc38_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC38_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 39</div>
+          <h3>4-Lane Parallel Requantization Optimization</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/39_parallel4_requantization_optimization.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc39_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC39_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 40</div>
+          <h3>Prefetch · Ping-Pong Buffer · Data-Compute Overlap</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/40_prefetch_pingpong_data_compute_overlap.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc40_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC40_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 41</div>
+          <h3>Group 8 Cumulative Sign-off Matrix</h3>
+          <div class="links">
+            <a class="linkbtn" href="../pages/soc/41_group8_cumulative_signoff_matrix.html">본문</a>
+            <a class="linkbtn" href="../manifests/soc41_manifest.html">Manifest</a>
+            <a class="linkbtn" href="../validation/SOC41_VALIDATION.txt">검증</a>
+          </div>
+        </article></div>
+    </section>
+
+<section class="group">
+<h2>압축파일 내부 핵심 디렉토리</h2>
+<table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">디렉토리</th><th scope="col" role="columnheader">내용</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">pages/soc/</td><td data-label="내용" role="cell">SoC 01~41 최종 HTML 본문</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">images/socXX/</td><td data-label="내용" role="cell">각 장 SVG/도식 이미지</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">code/socXX/</td><td data-label="내용" role="cell">RTL, C, Python, Tcl, XDC, Testbench, README 등</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">validation/</td><td data-label="내용" role="cell">장별 검증 결과</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">packages/chapter_updates/</td><td data-label="내용" role="cell">각 장 원본 Technical_Learning Update ZIP</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">packages/source_labs/</td><td data-label="내용" role="cell">독립 Lab / IP Source ZIP</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">groups/</td><td data-label="내용" role="cell">8개 그룹별 전용 목차</td></tr>
+<tr role="row"><td class="path" data-label="디렉토리" role="cell">manifests/</td><td data-label="내용" role="cell">각 장 파일 목록과 링크</td></tr>
+</tbody></table>
+</section>
+</main>
+<footer class="footer">Basys3 SoC + NPU · Technical Learning SoC 01~41</footer>
+</body></html>

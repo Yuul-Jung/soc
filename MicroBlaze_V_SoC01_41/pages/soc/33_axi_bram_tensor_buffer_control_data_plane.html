@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 MicroBlaze V NPU에서 AXI BRAM Controller와 True Dual-Port BRAM으로 Tensor Data Plane을 분리하는 SoC 33 자료." name="description">
+<title>SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 33</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Group 7 · NPU SoC Integration · SoC 33</p>
+<h1>AXI BRAM Tensor Buffer · Control Plane / Data Plane</h1>
+<p class="hero-desc">SoC 31~32의 Register 중심 NPU 제어 구조에서 Tensor Data 자체를 Memory로 분리한다. MicroBlaze V는 AXI BRAM Controller를 통해 True Dual-Port BRAM의 Port A를 사용하고, NPU는 Port B를 Native Interface로 사용한다. 이를 통해 Control Plane과 Data Plane을 명확하게 분리한다.</p>
+<div class="hero-meta"><span class="chip">AXI BRAM Controller</span><span class="chip">True Dual-Port BRAM</span><span class="chip">Tensor Buffer</span><span class="chip">Control Plane</span><span class="chip">Data Plane</span><span class="chip">BRAM</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html" selected>SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc33_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc33">이 장 검증</a></div></div><p class="nav-title">SOC 33 · LEARNING FLOW</p><p class="nav-help">Register → Memory → Tensor → NPU</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>Register 입력의 한계</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Control Plane / Data Plane</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>전체 Architecture</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>True Dual-Port BRAM</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Port A / Port B</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>4 KB / 32-bit Memory</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Tensor Memory Map</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Byte Address</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Memory Ownership</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>동시 접근 Collision</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Synchronous Read</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>READ_REQ / READ_CAPTURE</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>NPU Data Plane Engine</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Input Tensor Read</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>SoC30 Requantization 재사용</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Output Tensor Write</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Read / Write Counter</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>BRAM RTL Model</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Data Plane RTL</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Demo Top</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>MicroBlaze V CPU-side Access</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Tensor Buffer Driver</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>CPU Access Demo</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Vivado AXI BRAM Controller</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Block Memory Generator</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Connection Automation</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Address Editor</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Port Width / Address Warning</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>Ownership Regression</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Expected Output</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>Python Reference</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>OOC Synthesis</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>RAMB / DSP Mapping</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>Control Plane 연결 위치</span></a></li>
+<li><a href="#s37"><span class="n">37</span><span>SoC 34 연결</span></a></li>
+<li><a href="#s38"><span class="n">38</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">39</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">40</span><span>공식 문서 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 31 AXI Register</span><span class="arrow">→</span><span class="stage">SoC 32 Interrupt</span><span class="arrow">→</span><span class="stage"><strong>SoC 33 Tensor BRAM</strong></span><span class="arrow">→</span><span class="stage">SoC 34 Descriptor</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc33/soc33_control_data_plane.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Control plane and data plane · 원본 보기 (새 탭)"><img src="../../images/soc33/soc33_control_data_plane.svg" alt="Control plane and data plane"></a><figcaption>명령·상태는 AXI4-Lite, Tensor 데이터는 BRAM Data Plane으로 분리한다.<br><a href="../../images/soc33/soc33_control_data_plane.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Control plane and data plane · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Register 입력의 한계</h2>
+<p>SoC 31의 <code>ACC_IN0~7</code> Register 방식은 AXI Register Map을 배우기에는 적합하지만 Tensor 크기가 커지면 Register 수가 선형으로 증가한다. 실제 Accelerator에서는 Tensor Data를 Memory에 두고 Register에는 주소, 길이, 명령 같은 제어 정보만 두는 구조가 일반적이다.</p>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Control Plane / Data Plane</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="03절 신호 및 실행 흐름">Control Plane
+MicroBlaze V → AXI4-Lite → START / STATUS / IRQ
+
+Data Plane
+MicroBlaze V → AXI BRAM Controller → Tensor BRAM ← NPU</div>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>전체 Architecture</h2>
+<figure class="manual-figure"><a href="../../images/soc33/soc33_control_data_plane.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC33 architecture · 원본 보기 (새 탭)"><img src="../../images/soc33/soc33_control_data_plane.svg" alt="SoC33 architecture"></a><figcaption>Control Traffic과 Tensor Traffic을 서로 다른 경로로 분리한다.<br><a href="../../images/soc33/soc33_control_data_plane.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC33 architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>True Dual-Port BRAM</h2>
+<p>True Dual-Port BRAM은 하나의 Memory Array를 두 Port가 독립적으로 접근할 수 있게 한다. Vivado 합성은 Single-Port, Simple Dual-Port, True Dual-Port RAM 추론을 지원한다.</p>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Port A / Port B</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Port A / Port B · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Port</th><th scope="col" role="columnheader">사용 주체</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Port" role="cell">A</td><td data-label="사용 주체" role="cell">MicroBlaze V</td><td data-label="역할" role="cell">AXI BRAM Controller를 통한 Tensor Read/Write</td></tr>
+<tr role="row"><td data-label="Port" role="cell">B</td><td data-label="사용 주체" role="cell">NPU</td><td data-label="역할" role="cell">Native BRAM Interface를 통한 Tensor Read/Output Write</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>4 KB / 32-bit Memory</h2>
+<div class="flow">4 KB → 4096 byte → 32-bit word 1024개</div>
+<p>이번 실습은 주소 해석을 쉽게 하기 위해 32-bit Word와 12-bit Byte Address를 사용한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Tensor Memory Map</h2>
+<figure class="manual-figure"><a href="../../images/soc33/soc33_tensor_memory_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Tensor memory map · 원본 보기 (새 탭)"><img src="../../images/soc33/soc33_tensor_memory_map.svg" alt="Tensor memory map"></a><figcaption>입력 8 Word와 결과 2 Word를 하나의 BRAM Address Space에 배치한다.<br><a href="../../images/soc33/soc33_tensor_memory_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Tensor memory map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Byte Address</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">0x000 → word 0
+0x004 → word 1
+0x008 → word 2
+...
+0x100 → output word 0
+0x104 → output word 1</div>
+<p>RTL Model에서는 Word Index를 <code>addr[11:2]</code>로 계산한다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Memory Ownership</h2>
+<figure class="manual-figure"><a href="../../images/soc33/soc33_buffer_ownership.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Tensor buffer ownership · 원본 보기 (새 탭)"><img src="../../images/soc33/soc33_buffer_ownership.svg" alt="Tensor buffer ownership"></a><figcaption>CPU가 Input을 작성한 뒤 NPU BUSY 동안 해당 Buffer 접근을 중지하고 DONE 후 다시 소유권을 가져온다.<br><a href="../../images/soc33/soc33_buffer_ownership.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Tensor buffer ownership · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>동시 접근 Collision</h2>
+<p>Dual-Port라고 해서 동일 주소에 대한 CPU/NPU 동시 Write를 허용하는 것은 아니다. 이번 단계에서는 같은 Tensor Buffer를 동시에 수정하지 않는 Ownership Rule로 충돌을 회피한다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Synchronous Read</h2>
+<figure class="manual-figure"><a href="../../images/soc33/soc33_bram_read_latency.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Synchronous BRAM read latency · 원본 보기 (새 탭)"><img src="../../images/soc33/soc33_bram_read_latency.svg" alt="Synchronous BRAM read latency"></a><figcaption>BRAM Read는 주소 요청 Clock과 Data Capture Clock을 분리해서 생각한다.<br><a href="../../images/soc33/soc33_bram_read_latency.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Synchronous BRAM read latency · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>READ_REQ / READ_CAPTURE</h2>
+<div class="flow">READ_REQ → BRAM Address/EN 출력 → Clock → READ_CAPTURE → bram_rdata 사용</div>
+<p>Memory Read Latency를 FSM 상태로 명확히 표현하면 향후 Prefetch/FIFO와 연결할 때도 Timing 관계를 유지하기 쉽다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>NPU Data Plane Engine</h2>
+<div class="flow">8 Word Read → int32 Batch → SoC30 Requantizer → 2 Word Write</div>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Input Tensor Read</h2>
+<p>NPU는 Port B에서 <code>0x000~0x01C</code>를 순서대로 읽어 CH0/CH1 128-bit Batch Register를 구성한다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>SoC30 Requantization 재사용</h2>
+<p><code>requantize_s32_to_s8.v</code>와 <code>requantize_batch2x4_serial.v</code>는 SoC 32 패키지에서 수정 없이 재사용한다. SoC 33의 변경점은 계산식이 아니라 Input/Output Data 이동 방식이다.</p>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Output Tensor Write</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="17절 신호 및 실행 흐름">0x100 → OUT_CH0 = 0x20181008
+0x104 → OUT_CH1 = 0x7F7F6333</div>
+<p>CPU는 NPU DONE 이후 같은 BRAM을 다시 소유하고 결과를 읽는다.</p>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Read / Write Counter</h2>
+<p>교육용 관찰값으로 NPU가 BRAM에서 읽은 Word 수와 쓴 Word 수를 센다.</p>
+<div class="flow">Expected → Read 8 words / Write 2 words</div>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>BRAM RTL Model</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="BRAM RTL Model · 소스 코드"><code>module tensor_bram_tdp_4k_model (
+    input  wire         clk,
+
+    // --------------------------------------------------------
+    // Port A: CPU / AXI BRAM Controller side
+    // --------------------------------------------------------
+    input  wire         a_en_i,
+    input  wire [3:0]   a_we_i,
+    input  wire [11:0]  a_addr_i,
+    input  wire [31:0]  a_wdata_i,
+    output reg  [31:0]  a_rdata_o,
+
+    // --------------------------------------------------------
+    // Port B: NPU native side
+    // --------------------------------------------------------
+    input  wire         b_en_i,
+    input  wire [3:0]   b_we_i,
+    input  wire [11:0]  b_addr_i,
+    input  wire [31:0]  b_wdata_i,
+    output reg  [31:0]  b_rdata_o
+);
+
+// ------------------------------------------------------------
+// 4 KB, 32-bit, byte-addressed True Dual-Port BRAM model.
+//
+// Address:
+//   0x000 .. 0xFFF byte address
+//
+// Word index:
+//   addr[11:2]
+//
+// Both ports use the same clock in SoC 33.
+// Same-address simultaneous write/write or write/read access is
+// intentionally prohibited by the software/hardware ownership rule.
+//
+// This RTL model is used for simulation/OOC education.
+// In the Vivado Block Design, use a True Dual-Port Block Memory
+// Generator and connect:
+//   Port A -&gt; AXI BRAM Controller / MicroBlaze V
+//   Port B -&gt; NPU native port
+// ------------------------------------------------------------
+
+(* ram_style = "block" *)
+reg [31:0] mem [0:1023];
+
+wire [9:0] a_word_addr_w;
+wire [9:0] b_word_addr_w;
+
+assign a_word_addr_w =
+    a_addr_i[11:2];
+
+assign b_word_addr_w =
+    b_addr_i[11:2];
+
+integer byte_index_a;
+integer byte_index_b;
+
+always @(posedge clk) begin
+    if (a_en_i) begin
+        // Read-first behavior for the simulation model.
+        a_rdata_o &lt;=
+            mem[a_word_addr_w];
+
+        for (
+            byte_index_a = 0;
+            byte_index_a &lt; 4;
+            byte_index_a = byte_index_a + 1
+        ) begin
+            if (a_we_i[byte_index_a]) begin
+                mem[a_word_addr_w][
+                    (byte_index_a * 8) +: 8
+                ] &lt;=
+                    a_wdata_i[
+                        (byte_index_a * 8) +: 8
+                    ];
+            end
+        end
+    end
+end
+
+always @(posedge clk) begin
+    if (b_en_i) begin
+        // Read-first behavior for the simulation model.
+        b_rdata_o &lt;=
+            mem[b_word_addr_w];
+
+        for (
+            byte_index_b = 0;
+            byte_index_b &lt; 4;
+            byte_index_b = byte_index_b + 1
+        ) begin
+            if (b_we_i[byte_index_b]) begin
+                mem[b_word_addr_w][
+                    (byte_index_b * 8) +: 8
+                ] &lt;=
+                    b_wdata_i[
+                        (byte_index_b * 8) +: 8
+                    ];
+            end
+        end
+    end
+end
+
+endmodule</code></pre>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Data Plane RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Data Plane RTL · 소스 코드"><code>module tensor_bram_data_plane_engine (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output reg                  done_o,
+    output reg                  error_o,
+
+    // Native BRAM Port B.
+    output reg                  bram_en_o,
+    output reg  [3:0]           bram_we_o,
+    output reg  [11:0]          bram_addr_o,
+    output reg  [31:0]          bram_wdata_o,
+    input  wire [31:0]          bram_rdata_i,
+
+    output reg  [15:0]          read_word_count_o,
+    output reg  [15:0]          write_word_count_o
+);
+
+// ------------------------------------------------------------
+// SoC 33 Data Plane
+// ------------------------------------------------------------
+//
+// Fixed teaching memory map:
+//
+// Input int32 tensor:
+//   0x000 CH0 sample0
+//   0x004 CH0 sample1
+//   0x008 CH0 sample2
+//   0x00C CH0 sample3
+//   0x010 CH1 sample0
+//   0x014 CH1 sample1
+//   0x018 CH1 sample2
+//   0x01C CH1 sample3
+//
+// Output packed int8 tensor:
+//   0x100 OUT_CH0 = four signed int8 values
+//   0x104 OUT_CH1 = four signed int8 values
+//
+// SoC 34 will replace these fixed addresses with programmable
+// descriptor/base registers.
+//
+// BRAM read latency:
+//   request clock -&gt; synchronous BRAM output update
+//   next engine state captures bram_rdata_i
+// ------------------------------------------------------------
+
+localparam [11:0] INPUT_BASE_ADDR     = 12'h000;
+localparam [11:0] OUTPUT_CH0_ADDR     = 12'h100;
+localparam [11:0] OUTPUT_CH1_ADDR     = 12'h104;
+
+localparam [3:0] ST_IDLE          = 4'd0;
+localparam [3:0] ST_READ_REQ      = 4'd1;
+localparam [3:0] ST_READ_CAPTURE  = 4'd2;
+localparam [3:0] ST_START_REQUANT = 4'd3;
+localparam [3:0] ST_WAIT_RESULT   = 4'd4;
+localparam [3:0] ST_WRITE_CH0     = 4'd5;
+localparam [3:0] ST_WRITE_CH1     = 4'd6;
+localparam [3:0] ST_DONE          = 4'd7;
+
+reg [3:0] state_q;
+reg [3:0] read_index_q;
+
+reg [127:0] acc_ch0_batch_q;
+reg [127:0] acc_ch1_batch_q;
+
+reg requant_start_q;
+
+wire requant_busy_w;
+wire requant_done_w;
+wire requant_result_valid_w;
+
+wire [31:0] q_ch0_batch_w;
+wire [31:0] q_ch1_batch_w;
+
+wire [7:0] saturation_count_w;
+
+assign busy_o =
+    (state_q != ST_IDLE) &amp;&amp;
+    (state_q != ST_DONE);
+
+requantize_batch2x4_serial u_requant_batch (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(requant_start_q),
+
+    .acc_ch0_batch_i(acc_ch0_batch_q),
+    .acc_ch1_batch_i(acc_ch1_batch_q),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(requant_busy_w),
+    .done_o(requant_done_w),
+    .result_valid_o(requant_result_valid_w),
+
+    .q_ch0_batch_o(q_ch0_batch_w),
+    .q_ch1_batch_o(q_ch1_batch_w),
+
+    .saturation_count_o(saturation_count_w)
+);
+
+// ------------------------------------------------------------
+// Native BRAM Port B output policy.
+// ------------------------------------------------------------
+always @(*) begin
+    bram_en_o    = 1'b0;
+    bram_we_o    = 4'b0000;
+    bram_addr_o  = 12'h000;
+    bram_wdata_o = 32'h0000_0000;
+
+    case (state_q)
+        ST_READ_REQ: begin
+            bram_en_o = 1'b1;
+            bram_we_o = 4'b0000;
+
+            // Each int32 input occupies one 32-bit word.
+            bram_addr_o =
+                INPUT_BASE_ADDR +
+                {read_index_q, 2'b00};
+        end
+
+        ST_WRITE_CH0: begin
+            bram_en_o    = 1'b1;
+            bram_we_o    = 4'b1111;
+            bram_addr_o  = OUTPUT_CH0_ADDR;
+            bram_wdata_o = q_ch0_batch_w;
+        end
+
+        ST_WRITE_CH1: begin
+            bram_en_o    = 1'b1;
+            bram_we_o    = 4'b1111;
+            bram_addr_o  = OUTPUT_CH1_ADDR;
+            bram_wdata_o = q_ch1_batch_w;
+        end
+
+        default: begin
+        end
+    endcase
+end
+
+// ------------------------------------------------------------
+// Data-plane controller.
+// ------------------------------------------------------------
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q &lt;= ST_IDLE;
+
+        read_index_q &lt;= 4'd0;
+
+        acc_ch0_batch_q &lt;= 128'd0;
+        acc_ch1_batch_q &lt;= 128'd0;
+
+        requant_start_q &lt;= 1'b0;
+
+        done_o  &lt;= 1'b0;
+        error_o &lt;= 1'b0;
+
+        read_word_count_o  &lt;= 16'd0;
+        write_word_count_o &lt;= 16'd0;
+    end else begin
+        requant_start_q &lt;= 1'b0;
+        done_o          &lt;= 1'b0;
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    read_index_q &lt;= 4'd0;
+
+                    acc_ch0_batch_q &lt;= 128'd0;
+                    acc_ch1_batch_q &lt;= 128'd0;
+
+                    error_o &lt;= 1'b0;
+
+                    read_word_count_o  &lt;= 16'd0;
+                    write_word_count_o &lt;= 16'd0;
+
+                    state_q &lt;= ST_READ_REQ;
+                end
+            end
+
+            ST_READ_REQ: begin
+                // Synchronous BRAM read request is issued through
+                // the combinational native BRAM port above.
+                state_q &lt;= ST_READ_CAPTURE;
+            end
+
+            ST_READ_CAPTURE: begin
+                read_word_count_o &lt;=
+                    read_word_count_o + 16'd1;
+
+                case (read_index_q)
+                    4'd0: acc_ch0_batch_q[31:0]    &lt;= bram_rdata_i;
+                    4'd1: acc_ch0_batch_q[63:32]   &lt;= bram_rdata_i;
+                    4'd2: acc_ch0_batch_q[95:64]   &lt;= bram_rdata_i;
+                    4'd3: acc_ch0_batch_q[127:96]  &lt;= bram_rdata_i;
+
+                    4'd4: acc_ch1_batch_q[31:0]    &lt;= bram_rdata_i;
+                    4'd5: acc_ch1_batch_q[63:32]   &lt;= bram_rdata_i;
+                    4'd6: acc_ch1_batch_q[95:64]   &lt;= bram_rdata_i;
+
+                    default:
+                        acc_ch1_batch_q[127:96] &lt;= bram_rdata_i;
+                endcase
+
+                if (read_index_q == 4'd7) begin
+                    state_q &lt;= ST_START_REQUANT;
+                end else begin
+                    read_index_q &lt;=
+                        read_index_q + 4'd1;
+
+                    state_q &lt;= ST_READ_REQ;
+                end
+            end
+
+            ST_START_REQUANT: begin
+                if (!requant_busy_w) begin
+                    requant_start_q &lt;= 1'b1;
+                    state_q &lt;= ST_WAIT_RESULT;
+                end
+            end
+
+            ST_WAIT_RESULT: begin
+                if (requant_result_valid_w) begin
+                    state_q &lt;= ST_WRITE_CH0;
+                end
+            end
+
+            ST_WRITE_CH0: begin
+                write_word_count_o &lt;=
+                    write_word_count_o + 16'd1;
+
+                state_q &lt;= ST_WRITE_CH1;
+            end
+
+            ST_WRITE_CH1: begin
+                write_word_count_o &lt;=
+                    write_word_count_o + 16'd1;
+
+                state_q &lt;= ST_DONE;
+            end
+
+            ST_DONE: begin
+                done_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+
+            default: begin
+                error_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Demo Top</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Demo Top · 소스 코드"><code>module tensor_bram_data_plane_demo_top (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    // CPU-side simulation/native access.
+    input  wire                 cpu_en_i,
+    input  wire [3:0]           cpu_we_i,
+    input  wire [11:0]          cpu_addr_i,
+    input  wire [31:0]          cpu_wdata_i,
+    output wire [31:0]          cpu_rdata_o,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output wire                 done_o,
+    output wire                 error_o,
+
+    output wire [15:0]          read_word_count_o,
+    output wire [15:0]          write_word_count_o
+);
+
+// Pure Shell / Wrapper.
+//
+// Simulation/OOC:
+//   Port A = CPU-side native model access.
+//
+// Actual Vivado Block Design:
+//   replace tensor_bram_tdp_4k_model with a True Dual-Port
+//   Block Memory Generator.
+//   Port A is accessed through AXI BRAM Controller.
+//   Port B is connected to tensor_bram_data_plane_engine.
+
+wire        npu_bram_en;
+wire [3:0]  npu_bram_we;
+wire [11:0] npu_bram_addr;
+wire [31:0] npu_bram_wdata;
+wire [31:0] npu_bram_rdata;
+
+tensor_bram_tdp_4k_model u_tensor_bram (
+    .clk(clk),
+
+    .a_en_i(cpu_en_i),
+    .a_we_i(cpu_we_i),
+    .a_addr_i(cpu_addr_i),
+    .a_wdata_i(cpu_wdata_i),
+    .a_rdata_o(cpu_rdata_o),
+
+    .b_en_i(npu_bram_en),
+    .b_we_i(npu_bram_we),
+    .b_addr_i(npu_bram_addr),
+    .b_wdata_i(npu_bram_wdata),
+    .b_rdata_o(npu_bram_rdata)
+);
+
+tensor_bram_data_plane_engine u_data_plane (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_i),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .error_o(error_o),
+
+    .bram_en_o(npu_bram_en),
+    .bram_we_o(npu_bram_we),
+    .bram_addr_o(npu_bram_addr),
+    .bram_wdata_o(npu_bram_wdata),
+    .bram_rdata_i(npu_bram_rdata),
+
+    .read_word_count_o(read_word_count_o),
+    .write_word_count_o(write_word_count_o)
+);
+
+endmodule
+</code></pre>
+<p>Top은 Memory Model과 Engine 연결만 담당하는 Shell/Wrapper다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>MicroBlaze V CPU-side Access</h2>
+<p>실제 Block Design에서는 Port A를 AXI BRAM Controller에 연결한다. MicroBlaze V는 일반 Memory-Mapped Address처럼 Tensor BRAM을 Read/Write한다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Tensor Buffer Driver</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Tensor Buffer Driver · 소스 코드"><code>#ifndef TENSOR_BUFFER_H
+#define TENSOR_BUFFER_H
+
+#include "xil_io.h"
+#include "xil_types.h"
+
+// ------------------------------------------------------------
+// SoC 33 Tensor BRAM fixed teaching map.
+//
+// These are offsets inside the Tensor BRAM address range.
+// SoC 34 will make base/length information programmable.
+// ------------------------------------------------------------
+
+#define TENSOR_INPUT_CH0_S0_OFFSET   0x000U
+#define TENSOR_INPUT_CH0_S1_OFFSET   0x004U
+#define TENSOR_INPUT_CH0_S2_OFFSET   0x008U
+#define TENSOR_INPUT_CH0_S3_OFFSET   0x00CU
+
+#define TENSOR_INPUT_CH1_S0_OFFSET   0x010U
+#define TENSOR_INPUT_CH1_S1_OFFSET   0x014U
+#define TENSOR_INPUT_CH1_S2_OFFSET   0x018U
+#define TENSOR_INPUT_CH1_S3_OFFSET   0x01CU
+
+#define TENSOR_OUTPUT_CH0_OFFSET     0x100U
+#define TENSOR_OUTPUT_CH1_OFFSET     0x104U
+
+static inline void Tensor_Write32(
+    UINTPTR TensorBase,
+    u32 Offset,
+    u32 Value
+)
+{
+    Xil_Out32(
+        TensorBase + (UINTPTR)Offset,
+        Value
+    );
+}
+
+static inline u32 Tensor_Read32(
+    UINTPTR TensorBase,
+    u32 Offset
+)
+{
+    return Xil_In32(
+        TensorBase + (UINTPTR)Offset
+    );
+}
+
+#endif
+</code></pre>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>CPU Access Demo</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="CPU Access Demo · 소스 코드"><code>#include "xil_printf.h"
+#include "xparameters.h"
+
+#include "tensor_buffer.h"
+
+// The actual Tensor BRAM base address comes from Vivado Address Editor.
+// Replace/alias the symbol below with the generated xparameters.h symbol.
+
+#ifndef TENSOR_BRAM_BASEADDR
+#error "Define TENSOR_BRAM_BASEADDR from generated xparameters.h."
+#endif
+
+int main(void)
+{
+    const UINTPTR tensor_base =
+        (UINTPTR)TENSOR_BRAM_BASEADDR;
+
+    u32 value;
+
+    xil_printf("\r\nSoC33 Tensor BRAM access demo\r\n");
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH0_S0_OFFSET,
+        16U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH0_S1_OFFSET,
+        32U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH0_S2_OFFSET,
+        48U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH0_S3_OFFSET,
+        64U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH1_S0_OFFSET,
+        32U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH1_S1_OFFSET,
+        64U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH1_S2_OFFSET,
+        96U
+    );
+
+    Tensor_Write32(
+        tensor_base,
+        TENSOR_INPUT_CH1_S3_OFFSET,
+        128U
+    );
+
+    value = Tensor_Read32(
+        tensor_base,
+        TENSOR_INPUT_CH0_S0_OFFSET
+    );
+
+    xil_printf(
+        "INPUT[0] = %u\r\n",
+        (unsigned int)value
+    );
+
+    value = Tensor_Read32(
+        tensor_base,
+        TENSOR_INPUT_CH1_S3_OFFSET
+    );
+
+    xil_printf(
+        "INPUT[7] = %u\r\n",
+        (unsigned int)value
+    );
+
+    // In SoC 33 this program demonstrates the CPU-side Data Plane.
+    // The self-checking RTL testbench verifies NPU Port-B access.
+    //
+    // SoC 34/35 will connect the Control Plane START/IRQ path
+    // and this Tensor BRAM Data Plane into one accelerator system.
+
+    xil_printf("SOC33 CPU TENSOR-BRAM ACCESS: PASS\r\n");
+
+    return 0;
+}
+</code></pre>
+<p>SoC 33 Software는 CPU-side BRAM 접근 자체를 검증한다. Control Plane START/IRQ와 Data Plane의 완전 결합은 SoC 34~35에서 진행한다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Vivado AXI BRAM Controller</h2>
+<p>AXI BRAM Controller는 AXI Master가 Local Block RAM을 Memory-Mapped 방식으로 접근하도록 연결하는 Endpoint Slave IP다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Block Memory Generator</h2>
+<p>실제 Block Design에서는 Simulation용 RTL Model 대신 Block Memory Generator를 사용한다. 이번 단계에서는 True Dual-Port, 32-bit Data, Common Clock 구조를 기준으로 한다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Connection Automation</h2>
+<p>AMD MicroBlaze V 2026.1 가이드는 AXI BRAM Controller의 BRAM Port를 Block Memory Generator에 자동 연결하고 True Dual-Port Memory로 구성하는 흐름을 제공한다. 이번 실습은 Port B를 NPU가 사용하므로 자동화 후 Port B 연결을 반드시 확인한다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Address Editor</h2>
+<p>Tensor BRAM의 CPU-visible Base Address는 Vivado Address Editor가 결정한다. Software는 생성된 <code>xparameters.h</code> Symbol을 사용하며 자료에서 절대 Base Address를 임의로 정하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Port Width / Address Warning</h2>
+<p>IP Integrator는 서로 다른 Port Width 연결을 허용할 수 있지만 하위 Bit만 연결되는 Warning이 발생할 수 있다. BRAM Address Width와 Byte/Word Address 의미를 확인한 뒤 의도된 연결인지 판단해야 한다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>Self-Checking Testbench</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_tensor_bram_data_plane;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+logic start_i = 1'b0;
+
+logic cpu_en_i = 1'b0;
+logic [3:0] cpu_we_i = 4'b0000;
+logic [11:0] cpu_addr_i = 12'h000;
+logic [31:0] cpu_wdata_i = 32'h0000_0000;
+wire [31:0] cpu_rdata_o;
+
+logic signed [31:0] bias_ch0_i = 32'sd0;
+logic signed [31:0] bias_ch1_i = 32'sd4;
+
+logic signed [15:0] mult_ch0_i = 16'sd1;
+logic signed [15:0] mult_ch1_i = 16'sd3;
+
+logic [5:0] shift_ch0_i = 6'd1;
+logic [5:0] shift_ch1_i = 6'd1;
+
+logic signed [15:0] zp_ch0_i = 16'sd0;
+logic signed [15:0] zp_ch1_i = -16'sd3;
+
+wire busy_o;
+wire done_o;
+wire error_o;
+
+wire [15:0] read_word_count_o;
+wire [15:0] write_word_count_o;
+
+integer check_count = 0;
+integer error_count = 0;
+
+always #5 clk = ~clk;
+
+tensor_bram_data_plane_demo_top dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_i),
+
+    .cpu_en_i(cpu_en_i),
+    .cpu_we_i(cpu_we_i),
+    .cpu_addr_i(cpu_addr_i),
+    .cpu_wdata_i(cpu_wdata_i),
+    .cpu_rdata_o(cpu_rdata_o),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .error_o(error_o),
+
+    .read_word_count_o(read_word_count_o),
+    .write_word_count_o(write_word_count_o)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        check_count = check_count + 1;
+
+        if (actual !== expected) begin
+            error_count = error_count + 1;
+
+            $error(
+                "CHECK FAIL: %s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic cpu_write32(
+    input [11:0] address,
+    input [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_en_i = 1'b1;
+        cpu_we_i = 4'b1111;
+        cpu_addr_i = address;
+        cpu_wdata_i = data;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_en_i = 1'b0;
+        cpu_we_i = 4'b0000;
+        cpu_addr_i = 12'h000;
+        cpu_wdata_i = 32'h0000_0000;
+    end
+endtask
+
+task automatic cpu_read32(
+    input [11:0] address,
+    output [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_en_i = 1'b1;
+        cpu_we_i = 4'b0000;
+        cpu_addr_i = address;
+
+        // Synchronous BRAM read.
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_en_i = 1'b0;
+        cpu_addr_i = 12'h000;
+
+        // Capture the registered Port-A output.
+        data = cpu_rdata_o;
+    end
+endtask
+
+initial begin
+    reg [31:0] rd;
+    integer timeout;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. CPU / Port-A writes the input tensor.
+    // --------------------------------------------------------
+    cpu_write32(12'h000, 32'd16);
+    cpu_write32(12'h004, 32'd32);
+    cpu_write32(12'h008, 32'd48);
+    cpu_write32(12'h00C, 32'd64);
+
+    cpu_write32(12'h010, 32'd32);
+    cpu_write32(12'h014, 32'd64);
+    cpu_write32(12'h018, 32'd96);
+    cpu_write32(12'h01C, 32'd128);
+
+    // Read back representative input locations before NPU ownership.
+    cpu_read32(12'h000, rd);
+    check_eq32("INPUT word0 readback", rd, 32'd16);
+
+    cpu_read32(12'h01C, rd);
+    check_eq32("INPUT word7 readback", rd, 32'd128);
+
+    // --------------------------------------------------------
+    // 2. Transfer buffer ownership to NPU and start.
+    //    CPU Port A stays idle while BUSY.
+    // --------------------------------------------------------
+    @(negedge clk);
+    start_i = 1'b1;
+
+    @(negedge clk);
+    start_i = 1'b0;
+
+    timeout = 0;
+
+    while (busy_o !== 1'b1) begin
+        @(posedge clk);
+        #1;
+
+        timeout = timeout + 1;
+
+        if (timeout &gt; 20) begin
+            $fatal(1, "BUSY did not assert");
+        end
+    end
+
+    check_true(
+        "CPU idle while NPU owns tensor buffer",
+        cpu_en_i === 1'b0
+    );
+
+    timeout = 0;
+
+    while (done_o !== 1'b1) begin
+        @(posedge clk);
+        #1;
+
+        check_true(
+            "CPU remains idle during NPU BUSY",
+            cpu_en_i === 1'b0
+        );
+
+        timeout = timeout + 1;
+
+        if (timeout &gt; 200) begin
+            $fatal(1, "NPU tensor engine timeout");
+        end
+    end
+
+    check_true(
+        "NPU error low",
+        error_o === 1'b0
+    );
+
+    check_true(
+        "NPU read count = 8",
+        read_word_count_o == 16'd8
+    );
+
+    check_true(
+        "NPU write count = 2",
+        write_word_count_o == 16'd2
+    );
+
+    // Wait until engine has returned to IDLE before CPU reclaims buffer.
+    @(posedge clk);
+    #1;
+
+    // --------------------------------------------------------
+    // 3. CPU / Port-A reads output tensor.
+    // --------------------------------------------------------
+    cpu_read32(12'h100, rd);
+    check_eq32(
+        "OUTPUT CH0 packed int8",
+        rd,
+        32'h2018_1008
+    );
+
+    cpu_read32(12'h104, rd);
+    check_eq32(
+        "OUTPUT CH1 packed int8",
+        rd,
+        32'h7F7F_6333
+    );
+
+    // Input data must remain intact.
+    cpu_read32(12'h000, rd);
+    check_eq32(
+        "INPUT word0 preserved",
+        rd,
+        32'd16
+    );
+
+    cpu_read32(12'h01C, rd);
+    check_eq32(
+        "INPUT word7 preserved",
+        rd,
+        32'd128
+    );
+
+    $display("");
+    $display("SOC33 CHECK COUNT : %0d", check_count);
+    $display("SOC33 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC33 TENSOR BRAM DATA-PLANE TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC33 TENSOR BRAM DATA-PLANE TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>Ownership Regression</h2>
+<p>Testbench는 CPU가 Input을 Write한 뒤 NPU가 BUSY인 동안 Port A를 Idle로 유지한다. DONE 후에만 CPU가 Output Address를 다시 읽는다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Expected Output</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="32절 신호 및 실행 흐름">INPUT words  = 8
+NPU reads    = 8
+NPU writes   = 2
+OUT_CH0      = 0x20181008
+OUT_CH1      = 0x7F7F6333</div>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>Python Reference</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Reference · 소스 코드"><code>Tensor input addresses:
+  0x000 -&gt; 16
+  0x004 -&gt; 32
+  0x008 -&gt; 48
+  0x00C -&gt; 64
+  0x010 -&gt; 32
+  0x014 -&gt; 64
+  0x018 -&gt; 96
+  0x01C -&gt; 128
+
+OUTPUT_CH0 address = 0x100
+OUTPUT_CH1 address = 0x104
+OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+NPU BRAM reads = 8 words
+NPU BRAM writes = 2 words
+CPU/NPU ownership rule: no same-buffer access while NPU BUSY
+SOC33 PYTHON TENSOR-BRAM REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=&lt;seconds&gt; to increase the limit.
+</code></pre>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>OOC Synthesis</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="OOC Synthesis · 소스 코드"><code># SoC 33 · Tensor BRAM Data Plane OOC synthesis
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set out_dir    [file normalize [file join $root_dir "reports" "generic_ooc"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "requantize_s32_to_s8.v"]
+read_verilog [file join $rtl_dir "requantize_batch2x4_serial.v"]
+read_verilog [file join $rtl_dir "tensor_bram_tdp_4k_model.v"]
+read_verilog [file join $rtl_dir "tensor_bram_data_plane_engine.v"]
+read_verilog [file join $rtl_dir "tensor_bram_data_plane_demo_top.v"]
+
+synth_design \
+    -mode out_of_context \
+    -top tensor_bram_data_plane_demo_top \
+    -part xc7a35tcpg236-1
+
+create_clock \
+    -name clk \
+    -period 10.000 \
+    [get_ports clk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_ooc.rpt"]
+
+redirect -file [file join $out_dir "02_ramb_cells_ooc.rpt"] {
+    set ramb_cells [get_cells -hier -filter {REF_NAME =~ RAMB*}]
+    puts "RAMB primitive count: [llength $ramb_cells]"
+
+    foreach cell $ramb_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+redirect -file [file join $out_dir "03_dsp48_cells_ooc.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "04_timing_summary_ooc.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "05_design_analysis_ooc.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "06_methodology_ooc.rpt"]
+
+puts ""
+puts "SoC 33 Tensor BRAM Data Plane OOC synthesis complete."
+puts "Check actual RAMB/DSP mapping in generated reports."
+</code></pre>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>RAMB / DSP Mapping</h2>
+<p>RTL에 <code>ram_style="block"</code> 요청을 넣었지만 실제 RAMB Primitive 수와 DSP48 Primitive 수는 합성 Report로 확인한다. 자료에서 실제 Mapping 개수를 미리 확정하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>Control Plane 연결 위치</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="36절 신호 및 실행 흐름">SoC32 Control Plane
+START ───────────────→ tensor_bram_data_plane_engine.start_i
+BUSY  ←─────────────── engine.busy_o
+DONE  ←─────────────── engine.done_o
+ERROR ←─────────────── engine.error_o
+IRQ   ← Register/IRQ logic</div>
+<p>이번 장은 Data Plane을 독립 검증하고, 다음 단계에서 이 경계를 Register/Descriptor에 연결한다.</p>
+</section>
+
+<section class="step-card" id="s37"><span class="step">SECTION 37</span><h2>SoC 34 연결</h2>
+<div class="flow">고정 0x000 / 0x100 주소 → INPUT_BASE / OUTPUT_BASE<br>고정 8 Word → LENGTH<br>단일 START → Job Descriptor</div>
+</section>
+
+<section class="step-card" id="s38"><span class="step">SECTION 38</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">첫 Read 값이 이전 Address 값</td><td data-label="원인" role="cell">Synchronous Read Latency 무시</td><td data-label="확인" role="cell">READ_REQ / READ_CAPTURE</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Input이 실행 중 변함</td><td data-label="원인" role="cell">CPU/NPU Ownership 위반</td><td data-label="확인" role="cell">BUSY 중 CPU Buffer 접근 금지</td></tr>
+<tr role="row"><td data-label="증상" role="cell">0x004 대신 Word1이 안 읽힘</td><td data-label="원인" role="cell">Byte/Word Address 혼동</td><td data-label="확인" role="cell">addr[11:2]</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Output이 Input 영역을 덮음</td><td data-label="원인" role="cell">Memory Map 충돌</td><td data-label="확인" role="cell">0x000~0x01C / 0x100~0x104</td></tr>
+<tr role="row"><td data-label="증상" role="cell">BRAM 대신 LUTRAM 사용</td><td data-label="원인" role="cell">Memory Inference 결과 차이</td><td data-label="확인" role="cell">RAMB Cell Report</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Block Design Warning</td><td data-label="원인" role="cell">BRAM Port Width 불일치</td><td data-label="확인" role="cell">Address/Data Width 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">CPU에서 BRAM 주소가 다름</td><td data-label="원인" role="cell">Base Address 하드코딩</td><td data-label="확인" role="cell">Address Editor / xparameters.h</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 33 완료 체크리스트</h2>
+<ul>
+<li>[ ] Control Plane과 Data Plane을 구분한다.</li>
+<li>[ ] Register Tensor 입력의 확장성 한계를 설명한다.</li>
+<li>[ ] True Dual-Port BRAM의 Port A/B 역할을 구분한다.</li>
+<li>[ ] 4 KB / 32-bit / 1024 Word 관계를 계산한다.</li>
+<li>[ ] Byte Address와 Word Index를 구분한다.</li>
+<li>[ ] CPU/NPU Memory Ownership 규칙을 적용한다.</li>
+<li>[ ] Synchronous BRAM Read Latency를 FSM으로 처리한다.</li>
+<li>[ ] NPU가 8 Word를 읽고 2 Word를 쓴다.</li>
+<li>[ ] SoC30 Requantization RTL을 그대로 재사용한다.</li>
+<li>[ ] MicroBlaze V는 AXI BRAM Controller로 Tensor BRAM에 접근한다.</li>
+<li>[ ] 실제 RAMB/DSP 수는 Synthesis Report로 확인한다.</li>
+<li>[ ] 다음 단계에서 Base/Length를 Descriptor로 바꿀 준비를 한다.</li>
+</ul>
+<div class="flow">SoC 33 완료 → SoC 34 Command / Descriptor / Job Control</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">자료</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Run-Connection-Automation?contentId=IxPWsMFdU_lj2UFNFL_LnQ" target="_blank" rel="noopener">AMD UG1711 · Run Connection Automation · 2026.1</a></td><td data-label="확인 항목" role="cell">AXI BRAM Controller와 Block Memory Generator True Dual-Port 연결 흐름</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Memory-Inference-Capabilities" target="_blank" rel="noopener">AMD UG901 · Memory Inference Capabilities · 2026.1</a></td><td data-label="확인 항목" role="cell">Single/Simple/True Dual-Port RAM, Byte Write Enable</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/BRAM_TDP_MACRO" target="_blank" rel="noopener">AMD UG953 · BRAM_TDP_MACRO · 2026.1</a></td><td data-label="확인 항목" role="cell">7-Series True Dual-Port BRAM의 독립 Port와 synchronous access</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Connecting-Ports-with-Different-Widths" target="_blank" rel="noopener">AMD UG994 · Connecting Ports with Different Widths · 2026.1</a></td><td data-label="확인 항목" role="cell">BRAM Port Width mismatch와 lower-order bit 연결 Warning</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/v/u/en-US/pg078-axi-bram-ctrl" target="_blank" rel="noopener">AMD PG078 · AXI BRAM Controller</a></td><td data-label="확인 항목" role="cell">AXI Master와 Local BRAM 연결</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="32_npu_done_interrupt_axi_intc_isr.html">← SoC 32</a><a href="../../index.html">전체 목차</a><a href="34_command_descriptor_job_control.html">SoC 34 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

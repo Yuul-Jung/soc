@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650">
+<rect width="1400" height="650" fill="white"/>
+<text x="700" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 28 · Prefetch FIFO + Ping-Pong Double Buffer</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="45" y="110" width="300" height="210" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="195" y="155" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Ping-Pong Local Memory</text>
+<text x="195" y="200" text-anchor="middle" font-family="sans-serif" font-size="16">Bank 0: Activation + Weight</text>
+<text x="195" y="240" text-anchor="middle" font-family="sans-serif" font-size="16">Bank 1: Activation + Weight</text>
+<text x="195" y="285" text-anchor="middle" font-family="sans-serif" font-size="15">Load와 Compute Bank 분리</text>
+
+<rect x="430" y="110" width="260" height="210" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="560" y="155" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Prefetch Controller</text>
+<text x="560" y="205" text-anchor="middle" font-family="sans-serif" font-size="16">Read Issue</text>
+<text x="560" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">Outstanding Count</text>
+<text x="560" y="285" text-anchor="middle" font-family="sans-serif" font-size="16">Credit Control</text>
+
+<rect x="775" y="110" width="250" height="210" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="900" y="155" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">64-bit FIFO ×4</text>
+<text x="900" y="205" text-anchor="middle" font-family="sans-serif" font-size="16">A[31:0] + B[31:0]</text>
+<text x="900" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">Backpressure 흡수</text>
+<text x="900" y="285" text-anchor="middle" font-family="sans-serif" font-size="16">Elastic Buffer</text>
+
+<rect x="1110" y="110" width="245" height="210" rx="14" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1233" y="145" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold"><tspan x="1233" y="145">SoC26 Controller</tspan><tspan x="1233" y="174">+ PE4</tspan></text>
+<text x="1233" y="205" text-anchor="middle" font-family="sans-serif" font-size="16">READY / VALID</text>
+<text x="1233" y="245" text-anchor="middle" font-family="sans-serif" font-size="16">Tail Mask</text>
+<text x="1233" y="285" text-anchor="middle" font-family="sans-serif" font-size="16">Dot Product</text>
+
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="345" y1="215" x2="430" y2="215"/>
+<line x1="690" y1="215" x2="775" y2="215"/>
+<line x1="1025" y1="215" x2="1110" y2="215"/>
+</g>
+
+<rect x="280" y="410" width="840" height="135" rx="14" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="700" y="452" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold">핵심 변화</text>
+<text x="700" y="492" text-anchor="middle" font-family="sans-serif" font-size="16">BRAM Response를 PE에 직결하지 않고 FIFO에 저장하여 Consumer Stall과 Memory Read를 분리</text>
+<text x="700" y="525" text-anchor="middle" font-family="sans-serif" font-size="16">Bank 0 계산 중 Bank 1 Load → 완료 후 Bank Swap → Load/Compute Overlap</text>
+</svg>

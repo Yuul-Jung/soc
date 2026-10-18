@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Group 7 · NPU SoC Integration</title>
+<link rel="stylesheet" href="../../00_overview/overview.css"><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><header class="hero"><div class="inner"><div class="num">GROUP 7 · SOC 31~36</div>
+<h1>NPU SoC Integration</h1><p>NPU Register Map, Interrupt, Tensor Buffer, Job Descriptor, Full Accelerator, CPU↔NPU End-to-End Software를 통합한다.</p></div></header>
+<main class="container" id="main-content" tabindex="-1"><section class="reader-catalog" aria-label="교재 탐색"><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../validation/verification.html">장별 검증 결과</a></div><label for="course-filter">장 번호·제목 검색</label><input id="course-filter" data-course-filter type="search" placeholder="예: 03, Interrupt, BRAM" autocomplete="off"><p id="course-filter-status" class="reader-status" role="status">6개 장</p></section>
+<div class="links"><a class="linkbtn" href="../../index.html">🏠 전체 목차</a>
+<a class="linkbtn" href="../../00_overview/SoC01_41_Grouped_Curriculum.html">📚 그룹별 목차</a></div>
+<section class="group"><div class="grid">
+        <article class="card">
+          <div class="num">SOC 31</div>
+          <h3>NPU Register Map · MicroBlaze V Control · AXI4-Lite Integration</h3>
+          <div class="links">
+            <a class="linkbtn" href="../../pages/soc/31_npu_register_map_microblaze_axi_integration.html">본문 HTML</a>
+            <a class="linkbtn" href="../../manifests/soc31_manifest.html">파일 Manifest</a>
+            <a class="linkbtn" href="../../validation/SOC31_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 32</div>
+          <h3>NPU Done Interrupt · AXI Interrupt Controller · ISR</h3>
+          <div class="links">
+            <a class="linkbtn" href="../../pages/soc/32_npu_done_interrupt_axi_intc_isr.html">본문 HTML</a>
+            <a class="linkbtn" href="../../manifests/soc32_manifest.html">파일 Manifest</a>
+            <a class="linkbtn" href="../../validation/SOC32_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 33</div>
+          <h3>AXI BRAM Tensor Buffer · Control Plane / Data Plane</h3>
+          <div class="links">
+            <a class="linkbtn" href="../../pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html">본문 HTML</a>
+            <a class="linkbtn" href="../../manifests/soc33_manifest.html">파일 Manifest</a>
+            <a class="linkbtn" href="../../validation/SOC33_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 34</div>
+          <h3>Command · Descriptor · Job Control</h3>
+          <div class="links">
+            <a class="linkbtn" href="../../pages/soc/34_command_descriptor_job_control.html">본문 HTML</a>
+            <a class="linkbtn" href="../../manifests/soc34_manifest.html">파일 Manifest</a>
+            <a class="linkbtn" href="../../validation/SOC34_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 35</div>
+          <h3>Full NPU Accelerator Integration</h3>
+          <div class="links">
+            <a class="linkbtn" href="../../pages/soc/35_full_npu_accelerator_integration.html">본문 HTML</a>
+            <a class="linkbtn" href="../../manifests/soc35_manifest.html">파일 Manifest</a>
+            <a class="linkbtn" href="../../validation/SOC35_VALIDATION.txt">검증</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="num">SOC 36</div>
+          <h3>CPU ↔ NPU End-to-End Software / Inference Flow</h3>
+          <div class="links">
+            <a class="linkbtn" href="../../pages/soc/36_cpu_npu_end_to_end_software_inference.html">본문 HTML</a>
+            <a class="linkbtn" href="../../manifests/soc36_manifest.html">파일 Manifest</a>
+            <a class="linkbtn" href="../../validation/SOC36_VALIDATION.txt">검증</a>
+          </div>
+        </article></div></section>
+</main><footer class="footer">Basys3 SoC + NPU · Group 7</footer></body></html>

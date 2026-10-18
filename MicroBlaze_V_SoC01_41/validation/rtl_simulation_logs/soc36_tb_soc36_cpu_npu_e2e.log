@@ -1,0 +1,93 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_soc36_cpu_npu_e2e -o validation-tools/rtl_runs/soc36_tb_soc36_cpu_npu_e2e.vvp code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv code/soc36/cpu_npu_end_to_end_lab/rtl/requantize_batch2x4_serial.v code/soc36/cpu_npu_end_to_end_lab/rtl/axi4lite_reg_bridge.v code/soc36/cpu_npu_end_to_end_lab/rtl/bram_clock_reset_adapter.v code/soc36/cpu_npu_end_to_end_lab/rtl/tensor_bram_tdp_4k_model.v code/soc36/cpu_npu_end_to_end_lab/rtl/requantize_s32_to_s8.v code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_accelerator_ip.v code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_control_irq.v code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_accelerator_sim_top.v code/soc36/cpu_npu_end_to_end_lab/rtl/tensor_job_engine.v
+code/soc36/cpu_npu_end_to_end_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/axi4lite_reg_bridge.v:1: warning: timescale for axi4lite_reg_bridge inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/bram_clock_reset_adapter.v:1: warning: timescale for bram_clock_reset_adapter inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/tensor_bram_tdp_4k_model.v:1: warning: timescale for tensor_bram_tdp_4k_model inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_accelerator_ip.v:1: warning: timescale for npu_full_accelerator_ip inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_control_irq.v:1: warning: timescale for npu_full_control_irq inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/npu_full_accelerator_sim_top.v:1: warning: timescale for npu_full_accelerator_sim_top inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+code/soc36/cpu_npu_end_to_end_lab/rtl/tensor_job_engine.v:1: warning: timescale for tensor_job_engine inherited from another file.
+code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: RRESP OKAY
+CHECK PASS: descriptor valid
+CHECK PASS: BRESP OKAY
+CHECK PASS: RRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: RRESP OKAY
+CHECK PASS: ACTIVE_INPUT remains 0x200 = 0x00000200
+CHECK PASS: RRESP OKAY
+CHECK PASS: ACTIVE_OUTPUT remains 0x300 = 0x00000300
+CHECK PASS: RRESP OKAY
+CHECK PASS: DONE IRQ pending
+CHECK PASS: ERROR IRQ clear
+CHECK PASS: full integration OUT_CH0 = 0x20181008
+CHECK PASS: full integration OUT_CH1 = 0x7f7f6333
+CHECK PASS: RRESP OKAY
+CHECK PASS: JOB_ID = 1 = 0x00000001
+CHECK PASS: RRESP OKAY
+CHECK PASS: READ_WORD_COUNT = 8 = 0x00000008
+CHECK PASS: RRESP OKAY
+CHECK PASS: WRITE_WORD_COUNT = 2 = 0x00000002
+CHECK PASS: BRESP OKAY
+CHECK PASS: DONE W1C deasserts IRQ
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: RRESP OKAY
+CHECK PASS: JOB1 descriptor valid
+CHECK PASS: BRESP OKAY
+CHECK PASS: RRESP OKAY
+CHECK PASS: JOB1 DONE IRQ pending
+CHECK PASS: JOB1 OUT_CH0 = 0x04030201
+CHECK PASS: JOB1 OUT_CH1 = 0x1b150f09
+CHECK PASS: RRESP OKAY
+CHECK PASS: JOB_ID = 2 after second accepted job = 0x00000002
+CHECK PASS: RRESP OKAY
+CHECK PASS: JOB1 READ_WORD_COUNT = 8 = 0x00000008
+CHECK PASS: RRESP OKAY
+CHECK PASS: JOB1 WRITE_WORD_COUNT = 2 = 0x00000002
+CHECK PASS: BRESP OKAY
+CHECK PASS: JOB1 W1C deasserts IRQ
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: BRESP OKAY
+CHECK PASS: RRESP OKAY
+CHECK PASS: descriptor ERROR IRQ pending
+CHECK PASS: RRESP OKAY
+CHECK PASS: descriptor ERROR_CODE = 2 = 0x00000002
+CHECK PASS: RRESP OKAY
+CHECK PASS: rejected job keeps JOB_ID = 2 = 0x00000002
+CHECK PASS: BRESP OKAY
+CHECK PASS: ERROR W1C deasserts IRQ
+
+SOC36 CHECK COUNT : 68
+SOC36 ERROR COUNT : 0
+SOC36 CPU-NPU END-TO-END TEST: PASS

@@ -1,0 +1,20 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_legacy_processing_core -o validation-tools/rtl_runs/soc17_tb_legacy_processing_core.vvp code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/axi4lite_slave_adapter.v code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/legacy_core_controller_adapter.v code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/legacy_processing_core.v code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_axi4lite_legacy_ip.v code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_register_bank.v code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_axi4lite_ip.v
+code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v:1: ...: The inherited timescale is here.
+code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/legacy_core_controller_adapter.v:1: warning: timescale for legacy_core_controller_adapter inherited from another file.
+code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v:1: ...: The inherited timescale is here.
+code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/legacy_processing_core.v:1: warning: timescale for legacy_processing_core inherited from another file.
+code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v:1: ...: The inherited timescale is here.
+code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_axi4lite_legacy_ip.v:1: warning: timescale for custom_axi4lite_legacy_ip inherited from another file.
+code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v:1: ...: The inherited timescale is here.
+code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_register_bank.v:1: warning: timescale for custom_register_bank inherited from another file.
+code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v:1: ...: The inherited timescale is here.
+code/soc17/ip_repo/legacy_processing_ip_1_0/hdl/custom_axi4lite_ip.v:1: warning: timescale for custom_axi4lite_ip inherited from another file.
+code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+PASS: op=0 in=12345678 out=12345678
+PASS: op=1 in=ffffffff out=00000000
+PASS: op=2 in=80000001 out=00000002
+PASS: op=3 in=a5a55a5a out=5a5aa5a5
+LEGACY PROCESSING CORE TEST: PASS

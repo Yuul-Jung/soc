@@ -1,0 +1,29 @@
+prefetch_fifo_double_buffer_lab/
+├── rtl/
+│   ├── mul_s8_dsp.v
+│   ├── pe4_dot_accum_pipelined.v
+│   ├── vector_dot_controller_pe4.v
+│   ├── vector_bram_sdp.v
+│   ├── stream_fifo_64x4.v
+│   ├── bram_prefetch_fifo_feeder.v
+│   ├── pingpong_vector_memory.v
+│   ├── prefetch_double_buffer_dot_accelerator.v
+│   ├── double_buffer_demo_controller.v
+│   ├── double_buffer_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   └── prefetch_double_buffer_basys3_top.v
+├── testbench/
+│   └── tb_prefetch_double_buffer_dot_accelerator.sv
+├── constraints/
+│   └── basys3_soc28_lab.xdc
+├── scripts/
+│   ├── run_soc28_generic_ooc.tcl
+│   ├── run_soc28_board_analysis.tcl
+│   ├── prepare_soc28_simulation.tcl
+│   └── run_soc28_analysis.sh
+├── reference/
+│   ├── soc28_reference.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_SOC28.md
+└── SOURCE_TREE.txt

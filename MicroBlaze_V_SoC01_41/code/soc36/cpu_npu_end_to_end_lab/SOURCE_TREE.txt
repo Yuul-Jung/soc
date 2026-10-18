@@ -1,0 +1,32 @@
+cpu_npu_end_to_end_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── tensor_job_engine.v
+│   ├── npu_full_control_irq.v
+│   ├── axi4lite_reg_bridge.v
+│   ├── bram_clock_reset_adapter.v
+│   ├── npu_full_accelerator_ip.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   └── npu_full_accelerator_sim_top.v
+├── software/
+│   ├── npu_full.h
+│   ├── npu_e2e.h
+│   ├── npu_platform.h
+│   └── main_end_to_end.c
+├── testbench/
+│   └── tb_soc36_cpu_npu_e2e.sv
+├── reference/
+│   ├── soc36_e2e_reference.py
+│   ├── python_reference_output.txt
+│   ├── soc36_host_reference.c
+│   └── host_reference_output.txt
+├── scripts/
+│   ├── prepare_soc36_simulation.tcl
+│   ├── run_soc36_hardware_freeze_ooc.tcl
+│   ├── run_soc36_analysis.sh
+│   └── run_host_reference.sh
+├── doc/
+│   ├── README_SOC36.md
+│   └── VITIS_E2E_RUN_GUIDE.md
+└── SOURCE_TREE.txt

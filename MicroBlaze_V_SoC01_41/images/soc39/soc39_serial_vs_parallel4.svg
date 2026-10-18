@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="660" viewBox="0 0 1400 660">
+<rect width="1400" height="660" fill="white"/>
+<text x="700" y="44" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 39 · Serial → 4-Lane Parallel Requantization</text>
+
+<rect x="70" y="105" width="520" height="430" rx="16" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="330" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">SoC 38 · Serial</text>
+<text x="330" y="220" text-anchor="middle" font-family="sans-serif" font-size="17">Core 1개</text>
+<text x="330" y="270" text-anchor="middle" font-family="sans-serif" font-size="17">CH0[0] → CH0[1] → CH0[2] → CH0[3]</text>
+<text x="330" y="315" text-anchor="middle" font-family="sans-serif" font-size="17">→ CH1[0] → CH1[1] → CH1[2] → CH1[3]</text>
+<text x="330" y="390" text-anchor="middle" font-family="sans-serif" font-size="19">8 feed clocks</text>
+<text x="330" y="445" text-anchor="middle" font-family="sans-serif" font-size="19">Requant phase 14 cycles</text>
+
+<rect x="810" y="105" width="520" height="430" rx="16" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1070" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">SoC 39 · Parallel4</text>
+<text x="1070" y="220" text-anchor="middle" font-family="sans-serif" font-size="17">Core 4개</text>
+<text x="1070" y="275" text-anchor="middle" font-family="sans-serif" font-size="17">Clock A → CH0[0..3] 동시에</text>
+<text x="1070" y="325" text-anchor="middle" font-family="sans-serif" font-size="17">Clock B → CH1[0..3] 동시에</text>
+<text x="1070" y="390" text-anchor="middle" font-family="sans-serif" font-size="19">2 feed clocks</text>
+<text x="1070" y="445" text-anchor="middle" font-family="sans-serif" font-size="19">Requant phase 8 cycles</text>
+
+<text x="700" y="600" text-anchor="middle" font-family="sans-serif" font-size="18">같은 4-stage arithmetic pipeline을 Spatial Parallelism으로 복제한다.</text>
+</svg>

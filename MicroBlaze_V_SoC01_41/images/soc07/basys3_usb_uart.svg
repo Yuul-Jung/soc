@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420">
+<rect width="1100" height="420" fill="white"/>
+<text x="550" y="42" text-anchor="middle" font-size="26" font-family="sans-serif" font-weight="bold">Basys3 USB-UART 연결</text>
+<rect x="70" y="135" width="210" height="150" rx="12" fill="#f3f4f6" stroke="#111827" stroke-width="2"/>
+<text x="175" y="195" text-anchor="middle" font-size="22" font-family="sans-serif">PC</text>
+<text x="175" y="228" text-anchor="middle" font-size="17" font-family="sans-serif">minicom / moserial</text>
+
+<rect x="390" y="120" width="230" height="180" rx="12" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="505" y="180" text-anchor="middle" font-size="21" font-family="sans-serif">FT2232HQ</text>
+<text x="505" y="215" text-anchor="middle" font-size="17" font-family="sans-serif">USB-UART Bridge</text>
+<text x="505" y="250" text-anchor="middle" font-size="17" font-family="sans-serif">J4 Micro-USB</text>
+
+<rect x="735" y="105" width="270" height="210" rx="12" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="870" y="160" text-anchor="middle" font-size="21" font-family="sans-serif">Artix-7 FPGA</text>
+<text x="870" y="205" text-anchor="middle" font-size="18" font-family="sans-serif">B18 : RsRx (FPGA RX)</text>
+<text x="870" y="242" text-anchor="middle" font-size="18" font-family="sans-serif">A18 : RsTx (FPGA TX)</text>
+<text x="870" y="280" text-anchor="middle" font-size="17" font-family="sans-serif">AXI UART Lite</text>
+
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<line x1="280" y1="200" x2="390" y2="200" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="620" y1="180" x2="735" y2="180" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<text x="680" y="165" font-size="17" font-family="sans-serif">PC TX → B18</text>
+<line x1="735" y1="250" x2="620" y2="250" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<text x="650" y="278" font-size="17" font-family="sans-serif">A18 → PC RX</text>
+<text x="550" y="382" text-anchor="middle" font-size="16" font-family="sans-serif">Digilent Basys 3 Reference Manual Figure 6 기반 재작성 연결도</text>
+</svg>

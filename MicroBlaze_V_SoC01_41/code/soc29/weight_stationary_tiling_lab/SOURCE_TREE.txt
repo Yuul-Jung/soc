@@ -1,0 +1,24 @@
+weight_stationary_tiling_lab/
+├── rtl/
+│   ├── mul_s8_dsp.v
+│   ├── ws_dual_pe4_datapath.v
+│   ├── ws_tiled_batch_engine.v
+│   ├── ws_board_demo_controller.v
+│   ├── ws_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   └── ws_tiled_batch_basys3_top.v
+├── testbench/
+│   └── tb_ws_tiled_batch_engine.sv
+├── constraints/
+│   └── basys3_soc29_lab.xdc
+├── scripts/
+│   ├── run_soc29_generic_ooc.tcl
+│   ├── run_soc29_board_analysis.tcl
+│   ├── prepare_soc29_simulation.tcl
+│   └── run_soc29_analysis.sh
+├── reference/
+│   ├── soc29_reference.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_SOC29.md
+└── SOURCE_TREE.txt

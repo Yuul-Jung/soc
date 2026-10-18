@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="620" viewBox="0 0 1280 620">
+<rect width="1280" height="620" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Serial Adder vs Balanced Adder Tree</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<text x="80" y="100" font-family="sans-serif" font-size="20" font-weight="bold">Serial</text>
+<text x="80" y="135" font-family="sans-serif" font-size="16">p0 + p1 + p2 + p3 → 3개 Add Level</text>
+<g font-family="sans-serif">
+<rect x="80" y="180" width="120" height="75" rx="8" fill="#eef6ff" stroke="#111827"/><text x="140" y="225" text-anchor="middle">p0+p1</text>
+<rect x="270" y="180" width="140" height="75" rx="8" fill="#fff7ed" stroke="#111827"/><text x="340" y="225" text-anchor="middle">+ p2</text>
+<rect x="480" y="180" width="140" height="75" rx="8" fill="#f0fdf4" stroke="#111827"/><text x="550" y="225" text-anchor="middle">+ p3</text>
+</g>
+<line x1="200" y1="218" x2="270" y2="218" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="410" y1="218" x2="480" y2="218" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+
+<text x="80" y="355" font-family="sans-serif" font-size="20" font-weight="bold">Balanced Tree</text>
+<text x="80" y="390" font-family="sans-serif" font-size="16">(p0+p1) + (p2+p3) → 2개 Add Level</text>
+<rect x="120" y="435" width="150" height="75" rx="8" fill="#eef6ff" stroke="#111827"/><text x="195" y="480" text-anchor="middle" font-family="sans-serif">p0+p1</text>
+<rect x="120" y="525" width="150" height="75" rx="8" fill="#eef6ff" stroke="#111827"/><text x="195" y="570" text-anchor="middle" font-family="sans-serif">p2+p3</text>
+<rect x="390" y="480" width="180" height="75" rx="8" fill="#f0fdf4" stroke="#111827"/><text x="480" y="525" text-anchor="middle" font-family="sans-serif">sum01+sum23</text>
+<line x1="270" y1="473" x2="390" y2="505" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="270" y1="563" x2="390" y2="535" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+
+<rect x="760" y="165" width="420" height="355" rx="14" fill="#fafafa" stroke="#111827" stroke-width="2"/>
+<text x="970" y="215" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">왜 Tree를 쓰는가?</text>
+<text x="810" y="270" font-family="sans-serif" font-size="16">• Logic Depth 감소</text>
+<text x="810" y="315" font-family="sans-serif" font-size="16">• Timing Closure에 유리할 수 있음</text>
+<text x="810" y="360" font-family="sans-serif" font-size="16">• N개 입력에서 깊이 ≈ ceil(log₂N)</text>
+<text x="810" y="405" font-family="sans-serif" font-size="16">• 각 Level마다 Bit Width 확장 필요</text>
+<text x="810" y="450" font-family="sans-serif" font-size="16">• Pipeline Register 삽입 지점이 명확</text>
+</svg>

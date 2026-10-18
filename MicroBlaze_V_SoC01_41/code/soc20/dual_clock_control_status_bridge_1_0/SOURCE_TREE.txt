@@ -1,0 +1,23 @@
+dual_clock_control_status_bridge_1_0/
+├── hdl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── control_status_bridge_core.v
+│   ├── axi_control_status_bridge_ip.v
+│   ├── cdc_level_sync_educational.v
+│   ├── cdc_pulse_toggle_educational.v
+│   ├── reset_sync_async_assert_educational.v
+│   ├── xpm_single_bit_sync.v
+│   ├── xpm_pulse_sync.v
+│   ├── xpm_reset_sync_active_low.v
+│   ├── xpm_ready_valid_bus_bridge.v
+│   ├── dual_clock_bridge_cdc_adapter.v
+│   ├── dual_clock_example_core.v
+│   └── dual_clock_control_status_bridge_demo.v
+├── testbench/
+│   ├── tb_cdc_primitives_educational.v
+│   └── tb_dual_clock_control_status_bridge_demo.v
+├── doc/
+│   └── README_CDC.md
+└── tcl/
+    ├── prepare_cdc_demo_project.tcl
+    └── run_cdc_reports.tcl

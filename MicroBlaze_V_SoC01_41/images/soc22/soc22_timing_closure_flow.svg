@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="560" viewBox="0 0 1320 560">
+<rect width="1320" height="560" fill="white"/>
+<text x="660" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Timing Closure 절차</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<g font-family="sans-serif">
+<rect x="50" y="155" width="180" height="120" rx="12" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="140" y="195" text-anchor="middle" font-size="18" font-weight="bold">1. Constraints</text>
+<text x="140" y="235" text-anchor="middle" font-size="15">Clock / I/O / CDC</text>
+
+<rect x="280" y="155" width="180" height="120" rx="12" fill="#f3f4f6" stroke="#111827" stroke-width="2"/>
+<text x="370" y="195" text-anchor="middle" font-size="18" font-weight="bold">2. Baseline</text>
+<text x="370" y="235" text-anchor="middle" font-size="15">Synthesis / Place</text>
+
+<rect x="510" y="155" width="180" height="120" rx="12" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="600" y="195" text-anchor="middle" font-size="18" font-weight="bold">3. Analyze</text>
+<text x="600" y="225" text-anchor="middle" font-size="15"><tspan x="600" y="225">WNS/TNS</tspan><tspan x="600" y="249">Critical Path</tspan></text>
+
+<rect x="740" y="155" width="180" height="120" rx="12" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="830" y="195" text-anchor="middle" font-size="18" font-weight="bold">4. Root Cause</text>
+<text x="830" y="235" text-anchor="middle" font-size="15">Logic / Route / Clock</text>
+
+<rect x="970" y="155" width="180" height="120" rx="12" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1060" y="195" text-anchor="middle" font-size="18" font-weight="bold">5. Improve</text>
+<text x="1060" y="235" text-anchor="middle" font-size="15">RTL / Pipeline / QoR</text>
+
+<rect x="510" y="355" width="300" height="110" rx="12" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="660" y="384" text-anchor="middle" font-size="18" font-weight="bold"><tspan x="660" y="384">6. Regression</tspan><tspan x="660" y="410">+ Re-implement</tspan></text>
+<text x="660" y="434" text-anchor="middle" font-size="15"><tspan x="660" y="434">Function PASS +</tspan><tspan x="660" y="456">Post-route Timing Signoff</tspan></text>
+</g>
+
+<g stroke="#111827" stroke-width="3" marker-end="url(#a)">
+<line x1="230" y1="215" x2="280" y2="215"/>
+<line x1="460" y1="215" x2="510" y2="215"/>
+<line x1="690" y1="215" x2="740" y2="215"/>
+<line x1="920" y1="215" x2="970" y2="215"/>
+<path d="M1060 275 L1060 410 L810 410" fill="none"/>
+<path d="M510 410 L370 410 L370 275" fill="none"/>
+</g>
+</svg>

@@ -1,0 +1,35 @@
+/* (추가) 기존 색상과 좌측 세부 목차를 유지하는 읽기 도구 */
+[hidden]{display:none!important}
+.reader-tools{border-bottom:1px solid var(--line,#dddfd8);padding-bottom:16px;margin-bottom:18px;display:grid;gap:10px}
+.reader-tools label,.reader-search label,.reader-catalog label{display:block;font-size:.875rem;font-weight:700;margin-bottom:5px;color:#343842}
+.reader-tools select,.reader-search input,.reader-catalog input{width:100%;min-width:0;min-height:42px;border:1px solid #9a9fa8;border-radius:2px;background:#fff;color:#20232a;font:inherit;font-size:.875rem;padding:8px;box-sizing:border-box}
+.reader-tools button,.reader-copy{background:#fff;color:#4635b1;border:1px solid #9a91c5;border-radius:2px;min-height:38px;padding:7px 12px;font:inherit;font-size:.875rem;cursor:pointer}
+.reader-tools button{margin-top:6px;width:100%}
+.reader-tools .reader-links{display:flex;gap:8px 12px;flex-wrap:wrap;font-size:.875rem;line-height:1.7}
+.reader-links a{text-decoration:underline;text-underline-offset:3px}
+.reader-search{margin-bottom:14px}.reader-count{font-size:.8rem;color:#555d69;margin:6px 0}
+.reader-code-tools{display:flex;justify-content:flex-end;margin:12px 0 -6px}
+.reader-sr,.reader-copy-buffer{position:fixed;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.reader-catalog{padding:18px 22px;background:#fff;border:1px solid #dddfd8;margin:22px 0}
+.reader-catalog .reader-links{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.reader-catalog input{max-width:620px}
+.reader-status{font-size:.875rem;color:#555d69;margin:6px 0 0}
+@media(max-width:760px){.stage-flow{flex-wrap:wrap}.stage{min-width:0}.flow-nav{max-height:460px!important}.reader-tools{gap:8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*{animation:none!important;transition:none!important}}
+@media print{
+ @page{size:A4;margin:16mm}
+ html,body{background:#fff!important;color:#000!important;font-size:10pt!important}
+ .topbar,.flow-nav,.skip-link,.chapter-nav,.site-footer,.reader-code-tools,.reader-catalog,.reader-tools,.figure-original{display:none!important}
+ .hero{background:#fff!important;color:#000!important;border-bottom:1px solid #888;overflow:visible!important}.hero-grid{display:none}
+ .hero-inner,.hero .inner{padding:0 0 12pt!important}.hero h1{font-size:23pt!important;color:#000!important}.hero-desc,.hero-meta,.hero-kicker{color:#222!important}
+ .hero-brief{display:none!important}.wrap,.container{display:block!important;max-width:none!important;padding:0!important;margin:0!important}
+ main{padding-top:12pt!important}.step-card,.overview-card{padding:12pt 0!important;border:0!important;box-shadow:none!important;margin:0 0 12pt!important}
+ h2,h3{break-after:avoid}p,li{orphans:3;widows:3}
+ pre,.signal-map{white-space:pre-wrap!important;overflow-wrap:anywhere!important;overflow:visible!important;max-height:none!important;font-size:8pt!important;line-height:1.5!important;color:#000!important;background:#fff!important;border:1px solid #bbb!important}
+ figure{break-inside:avoid;max-width:100%!important}figure img{max-height:200mm!important;width:auto!important;max-width:100%!important}
+ .table-wrap{overflow:visible!important}table{display:table!important;table-layout:auto!important;font-size:9pt!important}thead{display:table-header-group!important;position:static!important;width:auto!important;height:auto!important;clip-path:none!important}tbody{display:table-row-group!important}tr{display:table-row!important;break-inside:avoid}th,td{display:table-cell!important;padding:6pt!important;color:#000!important;background:#fff!important}td:before{display:none!important}
+ .signal-table{white-space:normal!important}.signal-table table,.signal-table td,.signal-table th{color:#000!important}
+ a{color:#000!important}a[href^="http"]{text-decoration:underline}
+}
+
+.skip-link{position:fixed;top:12px;left:16px;z-index:1000;transform:translateY(-180%);background:#fff;color:#33218f;padding:10px 16px;border:3px solid #4635b1}.skip-link:focus{transform:none}:focus-visible{outline:3px solid #6547cf;outline-offset:3px}

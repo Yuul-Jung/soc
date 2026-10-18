@@ -1,0 +1,40 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_custom_axi4lite_controller_ip -o validation-tools/rtl_runs/soc16_tb_custom_axi4lite_controller_ip.vvp code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v code/soc16/ip_repo/custom_processing_ip_1_0/hdl/axi4lite_slave_adapter.v code/soc16/ip_repo/custom_processing_ip_1_0/hdl/example_processing_controller.v code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_axi4lite_controller_ip.v code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_register_bank.v code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_axi4lite_ip.v
+code/soc16/ip_repo/custom_processing_ip_1_0/hdl/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v:1: ...: The inherited timescale is here.
+code/soc16/ip_repo/custom_processing_ip_1_0/hdl/example_processing_controller.v:1: warning: timescale for example_processing_controller inherited from another file.
+code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v:1: ...: The inherited timescale is here.
+code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_axi4lite_controller_ip.v:1: warning: timescale for custom_axi4lite_controller_ip inherited from another file.
+code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v:1: ...: The inherited timescale is here.
+code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_register_bank.v:1: warning: timescale for custom_register_bank inherited from another file.
+code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v:1: ...: The inherited timescale is here.
+code/soc16/ip_repo/custom_processing_ip_1_0/hdl/custom_axi4lite_ip.v:1: warning: timescale for custom_axi4lite_ip inherited from another file.
+code/soc16/ip_repo/custom_processing_ip_1_0/testbench/tb_custom_axi4lite_controller_ip.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+---- FIXED REGISTERS ----
+PASS: VERSION = 00010000
+PASS: ID = 524d4150
+---- DISABLED START -> ERROR ----
+PASS: STATUS.ERROR set
+PASS: IRQ_STATUS.ERROR set
+---- CLEAR STATUS ONLY ----
+PASS: STATUS after COMMAND.CLEAR = 00000000
+PASS: IRQ_STATUS remains latched = 00000002
+PASS: IRQ_STATUS W1C clear = 00000000
+---- MODE 0 PASS-THROUGH ----
+PASS: DATA_OUT result = 12345678
+PASS: DONE IRQ status latched
+---- MODE 1 ADD 1 ----
+PASS: DATA_OUT result = 00000000
+PASS: DONE IRQ status latched
+---- MODE 2 SHIFT LEFT ----
+PASS: DATA_OUT result = 00000002
+PASS: DONE IRQ status latched
+---- MODE 3 BITWISE NOT ----
+PASS: DATA_OUT result = 5a5aa5a5
+PASS: DONE IRQ status latched
+---- START WHILE BUSY -> ERROR ----
+PASS: busy restart ERROR retained
+PASS: original operation still completed = cafebabe
+PASS: DONE+ERROR IRQ status latched
+SOC14 REGISTER BANK + CONTROLLER TEST: PASS

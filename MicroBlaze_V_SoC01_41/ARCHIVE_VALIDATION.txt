@@ -1,0 +1,4 @@
+2026-10-19 · 41 chapters preserved; 586 source files unchanged from version 5.
+68 nested archives: CRC and corresponding source bytes PASS.
+See validation/FINISHING_REVIEW.md for current checks and execution limits.
+Run: python3 validation/verify_distribution.py

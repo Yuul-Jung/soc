@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 Artix-7에서 4-lane parallel MAC, balanced adder tree, vector dot product, DSP48E1 scaling, pipeline, self-checking testbench, timing/resource/power 분석을 수행하는 NPU Processing Element 실습 자료." name="description">
+<title>SoC 25 · PE / Parallel MAC / Vector Dot Product</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 25</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 25</p>
+<h1>PE / Parallel MAC / Vector Dot Product</h1>
+<p class="hero-desc">SoC 24의 MAC 하나를 4개 병렬 Lane으로 확장한다. 4개의 signed 8×8 Product를 Balanced Adder Tree로 Reduction하여 4-way Dot Product를 만들고 32-bit Accumulator에 누산한다. Pipeline과 Valid 정렬, DSP Resource Scaling, Timing·Power까지 함께 분석한다.</p>
+<div class="hero-meta"><span class="chip">Processing Element</span><span class="chip">Parallel MAC</span><span class="chip">Dot Product</span><span class="chip">Adder Tree</span><span class="chip">DSP48E1</span><span class="chip">Pipeline</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html" selected>SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc25_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc25">이 장 검증</a></div></div><p class="nav-title">SOC 25 · LEARNING FLOW</p><p class="nav-help">4 Products → Reduction → Accumulate → Scale</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>MAC과 PE의 차이</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>4-Lane PE 전체 구조</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>4-way Vector Dot Product</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Packed Vector Lane Mapping</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Fixed-Point 규칙 유지</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>4개 Product의 폭</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Pair Sum 17 bit</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Dot4 Sum 18 bit</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Balanced Adder Tree</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Serial Sum과 Logic Depth</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Basic PE4</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Basic PE4 RTL</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Pipelined PE4</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Valid Pipeline</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Pipelined PE4 RTL</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Multiplier와 USE_DSP</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>DSP Register 흡수</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>DSP Resource Scaling</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Python Reference</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Directed Vector Test</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Random Regression</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Throughput 계산</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>GOPS 해석 주의</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Vector Length가 4보다 큰 경우</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Tail Handling</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Basys3 Board 구조</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Vivado 분석 Script</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>Timing 비교</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>Resource / DSP 비교</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Power 비교</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>PE Array 확장</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>Memory Bandwidth가 다음 병목</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">36</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">37</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 23 Resource/Power</span><span class="arrow">→</span><span class="stage">SoC 24 MAC</span><span class="arrow">→</span><span class="stage"><strong>SoC 25 PE4 / Dot Product</strong></span><span class="arrow">→</span><span class="stage">SoC 26 Vector Controller</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc25/soc25_scaling.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="1 MAC to 4 lane PE and NPU array · 원본 보기 (새 탭)"><img src="../../images/soc25/soc25_scaling.svg" alt="1 MAC to 4 lane PE and NPU array"></a><figcaption>1 MAC에서 4-Lane PE로 계산 병렬도를 늘리고 이후 PE Array로 확장한다.<br><a href="../../images/soc25/soc25_scaling.svg" target="_blank" rel="noopener" class="figure-original" aria-label="1 MAC to 4 lane PE and NPU array · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>MAC과 PE의 차이</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="MAC과 PE의 차이 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구조</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구조" role="cell">MAC</td><td data-label="역할" role="cell">한 쌍의 Multiply + Accumulate</td></tr>
+<tr role="row"><td data-label="구조" role="cell">PE</td><td data-label="역할" role="cell">여러 Multiply Lane + Reduction + Partial Sum/Accumulator + Valid/Control</td></tr>
+</tbody></table></div>
+<p>PE(Processing Element, 처리 요소)는 NPU Array를 구성하는 계산 블록 단위이며, 구현마다 내부 Lane 수와 Reduction 방식은 달라질 수 있다.</p>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>4-Lane PE 전체 구조</h2>
+<figure class="manual-figure"><a href="../../images/soc25/soc25_pe4_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="4 lane processing element architecture · 원본 보기 (새 탭)"><img src="../../images/soc25/soc25_pe4_architecture.svg" alt="4 lane processing element architecture"></a><figcaption>4개 Product를 두 단계 Balanced Adder Tree로 합산한 뒤 Accumulator에 더한다.<br><a href="../../images/soc25/soc25_pe4_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="4 lane processing element architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>4-way Vector Dot Product</h2>
+<div class="flow">dot4 → a₀b₀ + a₁b₁ + a₂b₂ + a₃b₃</div>
+<p>한 Clock 입력에서 4개의 Weight×Activation Pair를 동시에 처리한다. 이 Dot4 결과를 여러 Cycle 누적하면 더 긴 Vector의 Dot Product가 된다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Packed Vector Lane Mapping</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Packed Vector Lane Mapping · 소스 코드"><code>a_vec_i[7:0]   → lane0
+a_vec_i[15:8]  → lane1
+a_vec_i[23:16] → lane2
+a_vec_i[31:24] → lane3
+
+b_vec_i도 동일</code></pre>
+<p>Top Interface는 32-bit Packed Bus로 단순화하고 내부에서 각 signed 8-bit Lane으로 분리한다.</p>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Fixed-Point 규칙 유지</h2>
+<p>SoC 24와 동일하게 각 입력은 signed 8 bit, Fractional Bits는 7이다. 각 Product는 Fractional Bits 14이며, 여러 Product를 더해도 Binary Point는 이동하지 않는다.</p>
+<div class="flow">8-bit F=7 × 8-bit F=7 → 16-bit Product F=14 → Dot Sum도 F=14</div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>4개 Product의 폭</h2>
+<p>각 Lane의 signed 8×8 전체 Product는 signed 16 bit다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="4개 Product의 폭 · 소스 코드"><code>(* use_dsp = "yes" *)
+module mul_s8_dsp (
+    input  wire signed [7:0]  a_i,
+    input  wire signed [7:0]  b_i,
+    output wire signed [15:0] p_o
+);
+
+// Dedicated 8x8 signed multiplier building block.
+// USE_DSP requests DSP implementation, but the final mapping
+// must still be verified with Vivado synthesis reports.
+
+assign p_o =
+    $signed(a_i) * $signed(b_i);
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Pair Sum 17 bit</h2>
+<div class="flow">signed 16-bit + signed 16-bit → signed 17-bit</div>
+<p>두 Product를 더할 때 Carry/Sign 범위를 보존하려면 1 bit를 추가한다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Dot4 Sum 18 bit</h2>
+<p>4개 Lane 모두 <code>-128 × -128</code>이면 각 Product는 16384이고 합은 65536이다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">4 × 16384 → 65536
+signed 17-bit max → 65535
+따라서 Dot4 → signed 18 bit 필요</div>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Balanced Adder Tree</h2>
+<figure class="manual-figure"><a href="../../images/soc25/soc25_balanced_adder_tree.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Balanced adder tree versus serial sum · 원본 보기 (새 탭)"><img src="../../images/soc25/soc25_balanced_adder_tree.svg" alt="Balanced adder tree versus serial sum"></a><figcaption>4개 입력에서는 Balanced Tree가 Serial Sum보다 Addition Logic Depth를 줄인다.<br><a href="../../images/soc25/soc25_balanced_adder_tree.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Balanced adder tree versus serial sum · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Serial Sum과 Logic Depth</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Serial Sum과 Logic Depth · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">형태</th><th scope="col" role="columnheader">Add Depth</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="형태" role="cell"><code>(((p0+p1)+p2)+p3)</code></td><td data-label="Add Depth" role="cell">3 Level</td></tr>
+<tr role="row"><td data-label="형태" role="cell"><code>(p0+p1)+(p2+p3)</code></td><td data-label="Add Depth" role="cell">2 Level</td></tr>
+</tbody></table></div>
+<p>Lane 수가 N으로 증가하면 균형 Tree의 Reduction Depth는 대략 <code>ceil(log₂N)</code> 단계로 구성할 수 있다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Basic PE4</h2>
+<p>Basic 구조는 4개의 Multiply와 2-Level Adder Tree를 조합 경로로 계산한 후 같은 Clock Edge에서 32-bit Accumulator에 더한다.</p>
+<div class="flow">4 Multiply → Pair Sums → Dot4 → Accumulator Register</div>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Basic PE4 RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basic PE4 RTL · 소스 코드"><code>module pe4_dot_accum_basic (
+    input  wire                    clk,
+    input  wire                    resetn,
+    input  wire                    clear_i,
+    input  wire                    valid_i,
+
+    input  wire [31:0]             a_vec_i,
+    input  wire [31:0]             b_vec_i,
+
+    output reg  signed [31:0]      acc_o,
+    output reg                     valid_o
+);
+
+// 4-lane PE:
+//   4 parallel signed 8x8 multipliers
+//   balanced adder tree
+//   32-bit accumulator
+//
+// Packed lane mapping:
+//   lane0 = [7:0]
+//   lane1 = [15:8]
+//   lane2 = [23:16]
+//   lane3 = [31:24]
+
+wire signed [7:0] a0;
+wire signed [7:0] a1;
+wire signed [7:0] a2;
+wire signed [7:0] a3;
+
+wire signed [7:0] b0;
+wire signed [7:0] b1;
+wire signed [7:0] b2;
+wire signed [7:0] b3;
+
+assign a0 = $signed(a_vec_i[7:0]);
+assign a1 = $signed(a_vec_i[15:8]);
+assign a2 = $signed(a_vec_i[23:16]);
+assign a3 = $signed(a_vec_i[31:24]);
+
+assign b0 = $signed(b_vec_i[7:0]);
+assign b1 = $signed(b_vec_i[15:8]);
+assign b2 = $signed(b_vec_i[23:16]);
+assign b3 = $signed(b_vec_i[31:24]);
+
+wire signed [15:0] p0;
+wire signed [15:0] p1;
+wire signed [15:0] p2;
+wire signed [15:0] p3;
+
+mul_s8_dsp u_mul0 (.a_i(a0), .b_i(b0), .p_o(p0));
+mul_s8_dsp u_mul1 (.a_i(a1), .b_i(b1), .p_o(p1));
+mul_s8_dsp u_mul2 (.a_i(a2), .b_i(b2), .p_o(p2));
+mul_s8_dsp u_mul3 (.a_i(a3), .b_i(b3), .p_o(p3));
+
+// Pair sums need one extra signed bit.
+wire signed [16:0] sum01;
+wire signed [16:0] sum23;
+
+assign sum01 =
+    $signed({p0[15], p0}) +
+    $signed({p1[15], p1});
+
+assign sum23 =
+    $signed({p2[15], p2}) +
+    $signed({p3[15], p3});
+
+// Four-product sum needs 18 signed bits.
+// Worst positive case:
+//   4 * (-128 * -128) = 65536
+// which does not fit in signed 17-bit.
+wire signed [17:0] dot4_w;
+
+assign dot4_w =
+    $signed({sum01[16], sum01}) +
+    $signed({sum23[16], sum23});
+
+wire signed [31:0] dot4_ext_w;
+
+assign dot4_ext_w =
+    {{14{dot4_w[17]}}, dot4_w};
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        acc_o   &lt;= 32'sd0;
+        valid_o &lt;= 1'b0;
+    end else if (clear_i) begin
+        acc_o   &lt;= 32'sd0;
+        valid_o &lt;= 1'b0;
+    end else begin
+        valid_o &lt;= valid_i;
+
+        if (valid_i) begin
+            acc_o &lt;= acc_o + dot4_ext_w;
+        end
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Pipelined PE4</h2>
+<figure class="manual-figure"><a href="../../images/soc25/soc25_pe4_pipeline.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Pipelined 4 lane PE · 원본 보기 (새 탭)"><img src="../../images/soc25/soc25_pe4_pipeline.svg" alt="Pipelined 4 lane PE"></a><figcaption>Product, Pair Sum, Dot4, Accumulator를 네 Stage로 분리한다.<br><a href="../../images/soc25/soc25_pe4_pipeline.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Pipelined 4 lane PE · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>AMD는 DSP Block을 사용하는 Datapath를 충분히 Pipeline하여 내부 Register Stage를 활용하도록 권장한다. 실제 Timing 개선 정도는 구현 결과로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Valid Pipeline</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Valid Pipeline · 소스 코드"><code>valid_i
+  ↓
+valid_s1_q
+  ↓
+valid_s2_q
+  ↓
+valid_s3_q
+  ↓
+valid_o</code></pre>
+<p>Product, Pair Sum, Dot4가 각각 한 Stage씩 이동하므로 Valid도 같은 순서로 이동해야 한다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Pipelined PE4 RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Pipelined PE4 RTL · 소스 코드"><code>module pe4_dot_accum_pipelined (
+    input  wire                    clk,
+    input  wire                    resetn,
+    input  wire                    clear_i,
+    input  wire                    valid_i,
+
+    input  wire [31:0]             a_vec_i,
+    input  wire [31:0]             b_vec_i,
+
+    output reg  signed [31:0]      acc_o,
+    output reg                     valid_o
+);
+
+// Four-stage datapath:
+//   Stage 1: 4 parallel products
+//   Stage 2: 2 pair sums
+//   Stage 3: final 4-way dot-product sum
+//   Stage 4: accumulator
+//
+// valid_i is pipelined through the same stages.
+
+wire signed [7:0] a0;
+wire signed [7:0] a1;
+wire signed [7:0] a2;
+wire signed [7:0] a3;
+
+wire signed [7:0] b0;
+wire signed [7:0] b1;
+wire signed [7:0] b2;
+wire signed [7:0] b3;
+
+assign a0 = $signed(a_vec_i[7:0]);
+assign a1 = $signed(a_vec_i[15:8]);
+assign a2 = $signed(a_vec_i[23:16]);
+assign a3 = $signed(a_vec_i[31:24]);
+
+assign b0 = $signed(b_vec_i[7:0]);
+assign b1 = $signed(b_vec_i[15:8]);
+assign b2 = $signed(b_vec_i[23:16]);
+assign b3 = $signed(b_vec_i[31:24]);
+
+wire signed [15:0] p0_w;
+wire signed [15:0] p1_w;
+wire signed [15:0] p2_w;
+wire signed [15:0] p3_w;
+
+mul_s8_dsp u_mul0 (.a_i(a0), .b_i(b0), .p_o(p0_w));
+mul_s8_dsp u_mul1 (.a_i(a1), .b_i(b1), .p_o(p1_w));
+mul_s8_dsp u_mul2 (.a_i(a2), .b_i(b2), .p_o(p2_w));
+mul_s8_dsp u_mul3 (.a_i(a3), .b_i(b3), .p_o(p3_w));
+
+// Stage 1 registers.
+reg signed [15:0] p0_q;
+reg signed [15:0] p1_q;
+reg signed [15:0] p2_q;
+reg signed [15:0] p3_q;
+reg               valid_s1_q;
+
+// Stage 2 combinational pair sums.
+wire signed [16:0] sum01_w;
+wire signed [16:0] sum23_w;
+
+assign sum01_w =
+    $signed({p0_q[15], p0_q}) +
+    $signed({p1_q[15], p1_q});
+
+assign sum23_w =
+    $signed({p2_q[15], p2_q}) +
+    $signed({p3_q[15], p3_q});
+
+// Stage 2 registers.
+reg signed [16:0] sum01_q;
+reg signed [16:0] sum23_q;
+reg               valid_s2_q;
+
+// Stage 3 final reduction.
+wire signed [17:0] dot4_w;
+
+assign dot4_w =
+    $signed({sum01_q[16], sum01_q}) +
+    $signed({sum23_q[16], sum23_q});
+
+reg signed [17:0] dot4_q;
+reg               valid_s3_q;
+
+wire signed [31:0] dot4_ext_w;
+
+assign dot4_ext_w =
+    {{14{dot4_q[17]}}, dot4_q};
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        p0_q       &lt;= 16'sd0;
+        p1_q       &lt;= 16'sd0;
+        p2_q       &lt;= 16'sd0;
+        p3_q       &lt;= 16'sd0;
+        valid_s1_q &lt;= 1'b0;
+
+        sum01_q    &lt;= 17'sd0;
+        sum23_q    &lt;= 17'sd0;
+        valid_s2_q &lt;= 1'b0;
+
+        dot4_q     &lt;= 18'sd0;
+        valid_s3_q &lt;= 1'b0;
+
+        acc_o      &lt;= 32'sd0;
+        valid_o    &lt;= 1'b0;
+    end else if (clear_i) begin
+        p0_q       &lt;= 16'sd0;
+        p1_q       &lt;= 16'sd0;
+        p2_q       &lt;= 16'sd0;
+        p3_q       &lt;= 16'sd0;
+        valid_s1_q &lt;= 1'b0;
+
+        sum01_q    &lt;= 17'sd0;
+        sum23_q    &lt;= 17'sd0;
+        valid_s2_q &lt;= 1'b0;
+
+        dot4_q     &lt;= 18'sd0;
+        valid_s3_q &lt;= 1'b0;
+
+        acc_o      &lt;= 32'sd0;
+        valid_o    &lt;= 1'b0;
+    end else begin
+        // Stage 1
+        valid_s1_q &lt;= valid_i;
+
+        if (valid_i) begin
+            p0_q &lt;= p0_w;
+            p1_q &lt;= p1_w;
+            p2_q &lt;= p2_w;
+            p3_q &lt;= p3_w;
+        end
+
+        // Stage 2
+        valid_s2_q &lt;= valid_s1_q;
+
+        if (valid_s1_q) begin
+            sum01_q &lt;= sum01_w;
+            sum23_q &lt;= sum23_w;
+        end
+
+        // Stage 3
+        valid_s3_q &lt;= valid_s2_q;
+
+        if (valid_s2_q) begin
+            dot4_q &lt;= dot4_w;
+        end
+
+        // Stage 4
+        valid_o &lt;= valid_s3_q;
+
+        if (valid_s3_q) begin
+            acc_o &lt;= acc_o + dot4_ext_w;
+        end
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Multiplier와 USE_DSP</h2>
+<p>각 Lane의 <code>mul_s8_dsp</code>에 <code>(* use_dsp = "yes" *)</code>를 적용했다. Vivado 2026.1에서 USE_DSP=yes는 해당 Arithmetic Structure를 DSP Block에 배치하도록 지시한다.</p>
+<div class="warn">실제 DSP48E1 사용 개수는 Synthesis Report를 보기 전까지 확정하지 않는다.</div>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>DSP Register 흡수</h2>
+<p>Vivado Synthesis는 Multiply-Add/MAC 구조 주변의 Register를 DSP Block Pipeline에 흡수할 기회를 탐색한다. 따라서 Pipelined RTL의 Product Register가 실제 DSP 내부 Register로 Mapping되는지는 Netlist와 Utilization Report에서 확인한다.</p>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>DSP Resource Scaling</h2>
+<p>XC7A35T에는 DSP48E1이 90개 있다. 각 Multiplier가 DSP 1개를 사용한다고 가정하면 4-Lane PE는 DSP 4개를 요구한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="19절 신호 및 실행 흐름">90 // 4 → 22 PE4
+22 × 4 → 88 DSP
+잔여 → 2 DSP</div>
+<div class="warn">이는 DSP 개수만 나눈 이론값이다. 실제 최대 PE 수는 LUT/FF/BRAM, Routing, Timing, Power, 기타 DSP 사용에 의해 달라진다.</div>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Python Reference</h2>
+<p>Bit Width와 Fixed-Point 해석, 4-Lane Dot Product를 Python으로 실제 검증했다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Reference · 소스 코드"><code>case,dot_raw,dot_real,acc_raw,acc_real
+four lanes of 0.5 * 0.5,16384,1.00000000,16384,1.00000000
+mixed sign cancellation,0,0.00000000,16384,1.00000000
+worst positive lane products,65536,4.00000000,81920,5.00000000
+large negative dot product,-65024,-3.96875000,16896,1.03125000
+
+4-lane max positive dot raw = 65536
+4-lane min negative dot raw = -65024
+dot4 exact signed width = 18 bits
+
+DSP-only theoretical PE4 groups on XC7A35T = 22 groups (88 DSP used, 2 remaining)
+At 100 MHz: 4-lane product throughput = 400,000,000 products/s
+If multiply and add are counted as separate operations: 0.800 GOPS
+GOPS counting conventions vary; this is a theoretical arithmetic-rate illustration, not measured NPU performance.
+SOC25 PYTHON PE4 REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
+</code></pre>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Self-Checking Testbench</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_pe4_dot_accum_compare;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+logic clear_i = 1'b0;
+logic valid_i = 1'b0;
+
+logic [31:0] a_vec_i = 32'h0;
+logic [31:0] b_vec_i = 32'h0;
+
+wire signed [31:0] basic_acc_o;
+wire               basic_valid_o;
+
+wire signed [31:0] pipe_acc_o;
+wire               pipe_valid_o;
+
+logic signed [31:0] expected_basic_q[$];
+logic signed [31:0] expected_pipe_q[$];
+
+logic signed [31:0] reference_acc;
+
+int error_count = 0;
+int check_count = 0;
+
+always #5 clk = ~clk;
+
+pe4_dot_accum_basic u_basic (
+    .clk(clk),
+    .resetn(resetn),
+    .clear_i(clear_i),
+    .valid_i(valid_i),
+    .a_vec_i(a_vec_i),
+    .b_vec_i(b_vec_i),
+    .acc_o(basic_acc_o),
+    .valid_o(basic_valid_o)
+);
+
+pe4_dot_accum_pipelined u_pipe (
+    .clk(clk),
+    .resetn(resetn),
+    .clear_i(clear_i),
+    .valid_i(valid_i),
+    .a_vec_i(a_vec_i),
+    .b_vec_i(b_vec_i),
+    .acc_o(pipe_acc_o),
+    .valid_o(pipe_valid_o)
+);
+
+function automatic logic [31:0] pack4(
+    input integer x0,
+    input integer x1,
+    input integer x2,
+    input integer x3
+);
+    begin
+        pack4 = {
+            x3[7:0],
+            x2[7:0],
+            x1[7:0],
+            x0[7:0]
+        };
+    end
+endfunction
+
+function automatic logic signed [17:0] dot4_reference(
+    input logic [31:0] avec,
+    input logic [31:0] bvec
+);
+    logic signed [7:0] a0;
+    logic signed [7:0] a1;
+    logic signed [7:0] a2;
+    logic signed [7:0] a3;
+
+    logic signed [7:0] b0;
+    logic signed [7:0] b1;
+    logic signed [7:0] b2;
+    logic signed [7:0] b3;
+
+    logic signed [15:0] p0;
+    logic signed [15:0] p1;
+    logic signed [15:0] p2;
+    logic signed [15:0] p3;
+
+    logic signed [16:0] s01;
+    logic signed [16:0] s23;
+
+    begin
+        a0 = $signed(avec[7:0]);
+        a1 = $signed(avec[15:8]);
+        a2 = $signed(avec[23:16]);
+        a3 = $signed(avec[31:24]);
+
+        b0 = $signed(bvec[7:0]);
+        b1 = $signed(bvec[15:8]);
+        b2 = $signed(bvec[23:16]);
+        b3 = $signed(bvec[31:24]);
+
+        p0 = a0 * b0;
+        p1 = a1 * b1;
+        p2 = a2 * b2;
+        p3 = a3 * b3;
+
+        s01 =
+            $signed({p0[15], p0}) +
+            $signed({p1[15], p1});
+
+        s23 =
+            $signed({p2[15], p2}) +
+            $signed({p3[15], p3});
+
+        dot4_reference =
+            $signed({s01[16], s01}) +
+            $signed({s23[16], s23});
+    end
+endfunction
+
+function automatic logic signed [31:0] accum_reference(
+    input logic signed [31:0] acc,
+    input logic [31:0] avec,
+    input logic [31:0] bvec
+);
+    logic signed [17:0] dot4;
+    logic signed [31:0] dot4_ext;
+
+    begin
+        dot4 = dot4_reference(avec, bvec);
+
+        dot4_ext = {
+            {14{dot4[17]}},
+            dot4
+        };
+
+        accum_reference = acc + dot4_ext;
+    end
+endfunction
+
+task automatic drive_vector(
+    input integer a0,
+    input integer a1,
+    input integer a2,
+    input integer a3,
+    input integer b0,
+    input integer b1,
+    input integer b2,
+    input integer b3
+);
+    logic [31:0] avec;
+    logic [31:0] bvec;
+    logic signed [31:0] next_acc;
+
+    begin
+        @(negedge clk);
+
+        avec = pack4(a0, a1, a2, a3);
+        bvec = pack4(b0, b1, b2, b3);
+
+        a_vec_i = avec;
+        b_vec_i = bvec;
+        valid_i = 1'b1;
+        clear_i = 1'b0;
+
+        next_acc = accum_reference(
+            reference_acc,
+            avec,
+            bvec
+        );
+
+        reference_acc = next_acc;
+
+        expected_basic_q.push_back(next_acc);
+        expected_pipe_q.push_back(next_acc);
+    end
+endtask
+
+task automatic drive_idle;
+    begin
+        @(negedge clk);
+        valid_i = 1'b0;
+        a_vec_i = 32'h0;
+        b_vec_i = 32'h0;
+    end
+endtask
+
+task automatic wait_queues_empty;
+    int k;
+
+    begin
+        drive_idle();
+
+        for (k = 0; k &lt; 32; k++) begin
+            @(posedge clk);
+
+            if (
+                (expected_basic_q.size() == 0) &amp;&amp;
+                (expected_pipe_q.size() == 0)
+            ) begin
+                return;
+            end
+        end
+
+        error_count++;
+        $error(
+            "TIMEOUT: basic_q=%0d pipe_q=%0d",
+            expected_basic_q.size(),
+            expected_pipe_q.size()
+        );
+    end
+endtask
+
+task automatic clear_pe;
+    begin
+        wait_queues_empty();
+
+        @(negedge clk);
+        clear_i = 1'b1;
+        valid_i = 1'b0;
+
+        @(negedge clk);
+        clear_i = 1'b0;
+
+        reference_acc = 32'sd0;
+    end
+endtask
+
+always @(posedge clk) begin
+    #1;
+
+    if (resetn &amp;&amp; basic_valid_o) begin
+        check_count++;
+
+        if (expected_basic_q.size() == 0) begin
+            error_count++;
+            $error("BASIC PE4: unexpected valid");
+        end else begin
+            if (basic_acc_o !== expected_basic_q[0]) begin
+                error_count++;
+                $error(
+                    "BASIC PE4 mismatch actual=%0d expected=%0d",
+                    basic_acc_o,
+                    expected_basic_q[0]
+                );
+            end else begin
+                $display(
+                    "PASS BASIC PE4: acc=%0d",
+                    basic_acc_o
+                );
+            end
+
+            expected_basic_q.pop_front();
+        end
+    end
+
+    if (resetn &amp;&amp; pipe_valid_o) begin
+        check_count++;
+
+        if (expected_pipe_q.size() == 0) begin
+            error_count++;
+            $error("PIPE PE4: unexpected valid");
+        end else begin
+            if (pipe_acc_o !== expected_pipe_q[0]) begin
+                error_count++;
+                $error(
+                    "PIPE PE4 mismatch actual=%0d expected=%0d",
+                    pipe_acc_o,
+                    expected_pipe_q[0]
+                );
+            end else begin
+                $display(
+                    "PASS PIPE PE4: acc=%0d",
+                    pipe_acc_o
+                );
+            end
+
+            expected_pipe_q.pop_front();
+        end
+    end
+end
+
+initial begin
+    reference_acc = 32'sd0;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // 4 lanes of +0.5 * +0.5.
+    // Each lane = 0.25, dot4 = 1.0.
+    drive_vector(
+        64, 64, 64, 64,
+        64, 64, 64, 64
+    );
+
+    // Mixed signs, dot4 = 0.0.
+    drive_vector(
+        64, -64, 32, -32,
+        64, 64, 64, 64
+    );
+
+    // Worst positive lane product: -128 * -128.
+    // Four lanes produce raw dot4 = 65536.
+    drive_vector(
+        -128, -128, -128, -128,
+        -128, -128, -128, -128
+    );
+
+    // Large negative dot product.
+    drive_vector(
+        -128, -128, -128, -128,
+        127, 127, 127, 127
+    );
+
+    wait_queues_empty();
+    clear_pe();
+
+    // Random signed 8-bit vectors.
+    repeat (32) begin
+        drive_vector(
+            $urandom_range(0, 255),
+            $urandom_range(0, 255),
+            $urandom_range(0, 255),
+            $urandom_range(0, 255),
+            $urandom_range(0, 255),
+            $urandom_range(0, 255),
+            $urandom_range(0, 255),
+            $urandom_range(0, 255)
+        );
+    end
+
+    wait_queues_empty();
+
+    $display("");
+    $display("SOC25 CHECK COUNT : %0d", check_count);
+    $display("SOC25 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC25 PE4 SELF-CHECKING TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC25 PE4 SELF-CHECKING TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+<p>Basic과 Pipelined PE는 Latency가 다르므로 Expected Queue를 각각 유지하면서 동일 Reference Accumulator와 비교한다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Directed Vector Test</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Directed Vector Test · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Vector</th><th scope="col" role="columnheader">목적</th><th scope="col" role="columnheader">Dot4 Raw</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Vector" role="cell">4×(64,64)</td><td data-label="목적" role="cell">0.5×0.5를 4 Lane</td><td data-label="Dot4 Raw" role="cell">16384 → 1.0</td></tr>
+<tr role="row"><td data-label="Vector" role="cell">Mixed Sign</td><td data-label="목적" role="cell">양수/음수 Cancellation</td><td data-label="Dot4 Raw" role="cell">0</td></tr>
+<tr role="row"><td data-label="Vector" role="cell">4×(-128,-128)</td><td data-label="목적" role="cell">최대 양수 합</td><td data-label="Dot4 Raw" role="cell">65536</td></tr>
+<tr role="row"><td data-label="Vector" role="cell">4×(-128,127)</td><td data-label="목적" role="cell">큰 음수 합</td><td data-label="Dot4 Raw" role="cell">-65024</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Random Regression</h2>
+<p>Directed Test 후 4개 A Lane과 4개 B Lane을 각각 Random 8-bit 값으로 만든 Vector를 32회 입력하여 누적 결과를 Reference Model과 비교한다.</p>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Throughput 계산</h2>
+<div class="flow">4 Lane × 100 MHz → 이론 400,000,000 Products/s</div>
+<p>Pipeline이 충분히 채워진 뒤 매 Clock 한 Vector Group을 받을 수 있다는 가정의 Arithmetic Throughput이다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>GOPS 해석 주의</h2>
+<p>Multiply와 Add를 각각 한 Operation으로 세는 관습을 사용하면 4 Lane × 2 Operation × 100 MHz로 0.8 GOPS가 된다.</p>
+<div class="warn">MAC을 1 Operation으로 세는 문헌도 있으므로 GOPS 숫자만 비교하지 말고 계산 규칙을 함께 명시한다. 또한 0.8 GOPS는 Memory Stall이 없는 이론 산술률이며 실제 NPU 성능 측정값이 아니다.</div>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Vector Length가 4보다 큰 경우</h2>
+<p>PE4는 한 Cycle에 4 Element를 처리한다. 따라서 Vector Length가 16이면 4개의 Group으로 나누어 같은 Accumulator에 순서대로 누산한다.</p>
+<div class="flow">N=16 → 4 Lane/cycle → 4 valid cycles → Final Dot Product</div>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Tail Handling</h2>
+<p>Vector Length가 4의 배수가 아니면 마지막 Cycle의 사용하지 않는 Lane을 0으로 Mask하면 된다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="27절 신호 및 실행 흐름">N=10
+Cycle 0 → lane 0..3
+Cycle 1 → lane 4..7
+Cycle 2 → lane 8..9 + zero + zero</div>
+<p>이번 장은 Datapath에 집중하고 Tail Mask와 Length Counter는 SoC 26 Controller에서 구현한다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Basys3 Board 구조</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="28절 신호 및 실행 흐름">W5 100 MHz
+  ↓
+pe4_pattern_source
+  ↓
+PE4 Basic 또는 Pipelined
+  ↓
+pe4_result_sink
+  ↓
+LED[15:0]
+
+btnC → Reset Adapter → resetn</div>
+<p>Board Top은 연결만 수행하고 PE Datapath 로직은 독립 Module에 유지한다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Vivado 분석 Script</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Vivado 분석 Script · 소스 코드"><code># SoC 25 · 4-Lane PE / Parallel MAC analysis
+#
+# Usage:
+#   vivado -mode batch -source scripts/run_pe4_analysis.tcl \
+#          -tclargs basic
+#
+#   vivado -mode batch -source scripts/run_pe4_analysis.tcl \
+#          -tclargs pipelined
+
+if {$argc &lt; 1} {
+    puts "ERROR: usage: run_pe4_analysis.tcl &lt;basic|pipelined&gt;"
+    exit 1
+}
+
+set variant [lindex $argv 0]
+
+if {$variant eq "basic"} {
+    set top_name pe4_basic_basys3_top
+    set pe_file pe4_dot_accum_basic.v
+    set board_file pe4_basic_basys3_top.v
+} elseif {$variant eq "pipelined"} {
+    set top_name pe4_pipelined_basys3_top
+    set pe_file pe4_dot_accum_pipelined.v
+    set board_file pe4_pipelined_basys3_top.v
+} else {
+    puts "ERROR: unknown variant '$variant'"
+    exit 1
+}
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir [file normalize [file join $script_dir ".."]]
+set rtl_dir [file join $root_dir "rtl"]
+set xdc_dir [file join $root_dir "constraints"]
+set out_dir [file normalize [file join $root_dir "reports" $variant]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "reset_active_high_to_active_low.v"]
+read_verilog [file join $rtl_dir "mul_s8_dsp.v"]
+read_verilog [file join $rtl_dir "pe4_pattern_source.v"]
+read_verilog [file join $rtl_dir "pe4_result_sink.v"]
+read_verilog [file join $rtl_dir $pe_file]
+read_verilog [file join $rtl_dir $board_file]
+
+synth_design \
+    -top $top_name \
+    -part xc7a35tcpg236-1
+
+read_xdc [file join $xdc_dir "basys3_pe4_lab.xdc"]
+
+create_clock \
+    -name sys_clk \
+    -period 10.000 \
+    [get_ports clk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_post_synth.rpt"]
+
+redirect -file [file join $out_dir "02_dsp48_cells_post_synth.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 cell count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts $cell
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 10 \
+    -file [file join $out_dir "03_timing_summary_post_synth.rpt"]
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "04_utilization_post_route.rpt"]
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "05_timing_summary_post_route.rpt"]
+
+report_timing \
+    -delay_type max \
+    -max_paths 20 \
+    -nworst 1 \
+    -sort_by group \
+    -input_pins \
+    -file [file join $out_dir "06_worst_setup_paths.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "07_design_analysis_post_route.rpt"]
+
+# Same What-If activity assumption used in SoC 23/24.
+set_switching_activity \
+    -default_static_probability 0.5 \
+    -default_toggle_rate 12.5
+
+report_power \
+    -file [file join $out_dir "08_power_normalized_activity.rpt"] \
+    -rpx  [file join $out_dir "08_power_normalized_activity.rpx"]
+
+report_methodology \
+    -file [file join $out_dir "09_methodology_post_route.rpt"]
+
+write_checkpoint -force \
+    [file join $out_dir "${variant}_pe4_post_route.dcp"]
+
+puts ""
+puts "SoC 25 PE4 analysis complete."
+puts "Variant : $variant"
+puts "Reports : $out_dir"
+puts ""
+puts "DSP count must be read from actual synthesis reports."
+</code></pre>
+<p>Synthesis에서 DSP48 Cell을 확인한 뒤 Post-route Timing, Design Analysis, Utilization, 동일 12.5% What-If Activity Power를 생성한다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>Timing 비교</h2>
+<p>Basic 구조는 Multiply + Adder Tree + Accumulate가 긴 Path가 될 수 있다. Pipelined 구조는 Product/Reduction Stage를 분리하므로 Timing Closure에 유리할 수 있지만 실제 Critical Path와 WNS는 Post-route Report로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>Resource / DSP 비교</h2>
+<p><code>01_utilization_post_synth.rpt</code>와 <code>02_dsp48_cells_post_synth.rpt</code>에서 실제 DSP48 개수를 확인한다. Pipelined PE는 Register가 더 많아질 수 있으며 Vivado가 일부 Register를 DSP 내부 Pipeline으로 흡수할 수도 있다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Power 비교</h2>
+<p>SoC 23/24와 동일하게 Static Probability 0.5, Toggle Rate 12.5%를 What-If 비교 조건으로 적용한다. Lane 수 증가로 DSP Activity와 Data Routing이 늘기 때문에 1 MAC과 단순 비례한다고 가정하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>PE Array 확장</h2>
+<figure class="manual-figure"><a href="../../images/soc25/soc25_scaling.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="PE scaling · 원본 보기 (새 탭)"><img src="../../images/soc25/soc25_scaling.svg" alt="PE scaling"></a><figcaption>PE를 여러 개 배치하면 여러 Output Channel이나 Neuron을 동시에 계산할 수 있다.<br><a href="../../images/soc25/soc25_scaling.svg" target="_blank" rel="noopener" class="figure-original" aria-label="PE scaling · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>Memory Bandwidth가 다음 병목</h2>
+<p>계산 Lane을 늘리면 매 Clock 공급해야 하는 Weight와 Activation 수도 늘어난다.</p>
+<div class="flow">4 Lane PE → 매 Cycle A 4개 + B 4개 → 8 × 8 bit = 64 bit Input/cycle</div>
+<p>PE Array가 커질수록 DSP 개수보다 BRAM Port, Data Reuse, Buffer 구조, Memory Bandwidth가 먼저 병목이 될 수 있다.</p>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">65536 Case가 음수/0으로 변함</td><td data-label="원인" role="cell">Dot Sum 폭 부족</td><td data-label="확인" role="cell">18-bit dot4</td></tr>
+<tr role="row"><td data-label="증상" role="cell">음수 Lane만 오류</td><td data-label="원인" role="cell">Lane signed 변환 누락</td><td data-label="확인" role="cell"><code>$signed()</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">Serial Sum Timing 불리</td><td data-label="원인" role="cell">Add Logic Depth 증가</td><td data-label="확인" role="cell">Balanced Tree</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Pipeline 출력 순서 불일치</td><td data-label="원인" role="cell">Valid Stage 오류</td><td data-label="확인" role="cell">s1/s2/s3/valid_o</td></tr>
+<tr role="row"><td data-label="증상" role="cell">DSP 수가 예상과 다름</td><td data-label="원인" role="cell">Synthesis Mapping/흡수</td><td data-label="확인" role="cell">DSP48 Cell Report</td></tr>
+<tr role="row"><td data-label="증상" role="cell">4 Lane인데 성능 향상 적음</td><td data-label="원인" role="cell">Memory/Stall 병목</td><td data-label="확인" role="cell">Input Bandwidth/Utilization</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Power가 4배보다 훨씬 다름</td><td data-label="원인" role="cell">Clock/Route/Activity 변화</td><td data-label="확인" role="cell">Resource별 Power</td></tr>
+<tr role="row"><td data-label="증상" role="cell">N이 4의 배수가 아닐 때 오답</td><td data-label="원인" role="cell">Tail Lane 미처리</td><td data-label="확인" role="cell">Zero Mask</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 25 완료 체크리스트</h2>
+<ul>
+<li>[ ] MAC과 PE의 역할 차이를 설명할 수 있다.</li>
+<li>[ ] 4개의 signed 8×8 Multiply를 병렬 수행한다.</li>
+<li>[ ] Pair Sum은 signed 17 bit로 확장한다.</li>
+<li>[ ] 4-way Dot Product가 signed 18 bit인 이유를 설명할 수 있다.</li>
+<li>[ ] Serial Sum과 Balanced Adder Tree의 Logic Depth를 비교한다.</li>
+<li>[ ] 4-Lane Basic PE를 구현한다.</li>
+<li>[ ] 4-Stage Pipelined PE를 구현한다.</li>
+<li>[ ] Valid를 Data와 같은 Pipeline Stage로 이동한다.</li>
+<li>[ ] USE_DSP 요청과 실제 DSP Mapping 확인을 구분한다.</li>
+<li>[ ] Python Reference로 65536/-65024 극단값을 확인한다.</li>
+<li>[ ] Basic/Pipelined Latency를 독립 Expected Queue로 검증한다.</li>
+<li>[ ] 100 MHz에서 4 Lane Arithmetic Throughput의 의미를 계산한다.</li>
+<li>[ ] Vector Length &gt; 4는 여러 Group 누산으로 확장한다.</li>
+<li>[ ] Tail Lane과 Memory Bandwidth가 다음 설계 문제임을 이해한다.</li>
+</ul>
+<div class="flow">SoC 25 완료 → SoC 26 Vector Dot Product Controller / start·busy·done / Tail Mask</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers" target="_blank" rel="noopener">AMD UG901 · Multipliers · 2026.1</a></td><td data-label="확인 항목" role="cell">Multiplier 추론과 결과 Width</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/USE_DSP" target="_blank" rel="noopener">AMD UG901 · USE_DSP · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP Block 사용 지시와 Attribute 우선순위</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multiply-Add-and-Multiply-Accumulate-Implementation" target="_blank" rel="noopener">AMD UG901 · Multiply-Add / MAC · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP Macro 및 Register Absorption</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Coding-for-Optimal-DSP-and-Arithmetic-Inference" target="_blank" rel="noopener">AMD UG949 · Optimal DSP Inference · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP Datapath Pipeline 권장</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations" target="_blank" rel="noopener">AMD UG949 · Pipelining Considerations · 2026.1</a></td><td data-label="확인 항목" role="cell">Logic Depth 분할과 Latency Trade-off</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Utilization" target="_blank" rel="noopener">AMD UG906 · Report Utilization · 2026.1</a></td><td data-label="확인 항목" role="cell">실제 DSP/LUT/Register 사용 확인</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Netlist-Element-Activity" target="_blank" rel="noopener">AMD UG907 · Netlist Element Activity · 2026.1</a></td><td data-label="확인 항목" role="cell">동일 What-If Switching Activity 비교</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/api/khub/documents/2LByHkO~nSZXcei2D55fTg/content" target="_blank" rel="noopener">AMD DS180 · 7 Series Overview</a></td><td data-label="확인 항목" role="cell">XC7A35T DSP48E1 90개</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="24_npu_mac_datapath.html">← SoC 24</a><a href="../../index.html">전체 목차</a><a href="26_vector_dot_product_controller.html">SoC 26 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

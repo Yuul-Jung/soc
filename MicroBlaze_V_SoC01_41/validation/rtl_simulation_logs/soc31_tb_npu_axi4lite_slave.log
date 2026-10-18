@@ -1,0 +1,77 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_npu_axi4lite_slave -o validation-tools/rtl_runs/soc31_tb_npu_axi4lite_slave.vvp code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv code/soc31/npu_axi_register_map_lab/rtl/npu_axi_accel_ip.v code/soc31/npu_axi_register_map_lab/rtl/requantize_batch2x4_serial.v code/soc31/npu_axi_register_map_lab/rtl/requantize_s32_to_s8.v code/soc31/npu_axi_register_map_lab/rtl/npu_axi4lite_slave.v code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v
+code/soc31/npu_axi_register_map_lab/rtl/npu_axi_accel_ip.v:1: warning: timescale for npu_axi_accel_ip inherited from another file.
+code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv:1: ...: The inherited timescale is here.
+code/soc31/npu_axi_register_map_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv:1: ...: The inherited timescale is here.
+code/soc31/npu_axi_register_map_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv:1: ...: The inherited timescale is here.
+code/soc31/npu_axi_register_map_lab/rtl/npu_axi4lite_slave.v:1: warning: timescale for npu_axi4lite_slave inherited from another file.
+code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv:1: ...: The inherited timescale is here.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:1: warning: timescale for npu_register_bank inherited from another file.
+code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv:1: ...: The inherited timescale is here.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:485: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:486: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:487: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:488: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:490: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:491: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:492: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+code/soc31/npu_axi_register_map_lab/rtl/npu_register_bank.v:493: warning: @* is sensitive to all 8 words in array 'acc_in_q'.
+
+--- SIMULATION ---
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: VERSION = 0x00010000
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: WSTRB partial BIAS_CH0 = 0x1122aa44
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: SCALE_CH0 = 0x00010001
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: SCALE_CH1 = 0x00010003
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: ZERO_POINT = 0xfffd0000
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: debug BUSY output
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: DONE sticky set
+CHECK PASS: ERROR sticky set by START while BUSY
+CHECK PASS: SATURATED_ANY set
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: SAT_COUNT = 0x00000002
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: OUT_CH0 = 0x20181008
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: OUT_CH1 = 0x7f7f6333
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: CYCLE_COUNT non-zero
+CHECK PASS: AXI BRESP OKAY
+CHECK PASS: AXI RRESP OKAY
+CHECK PASS: DONE sticky cleared
+CHECK PASS: ERROR sticky cleared
+
+SOC31 CHECK COUNT : 52
+SOC31 ERROR COUNT : 0
+SOC31 AXI4-LITE NPU REGISTER TEST: PASS

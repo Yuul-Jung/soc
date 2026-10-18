@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="600" viewBox="0 0 1320 600">
+<rect width="1320" height="600" fill="white"/>
+<text x="660" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Ping-Pong Double Buffer Timeline</text>
+
+<text x="100" y="145" font-family="sans-serif" font-size="20" font-weight="bold">Phase A</text>
+<rect x="260" y="95" width="340" height="100" rx="12" fill="#eef6ff" stroke="#111827"/>
+<text x="430" y="155" text-anchor="middle" font-family="sans-serif" font-size="18">Compute Bank 0</text>
+<rect x="650" y="95" width="340" height="100" rx="12" fill="#fff7ed" stroke="#111827"/>
+<text x="820" y="155" text-anchor="middle" font-family="sans-serif" font-size="18">Load Bank 1</text>
+
+<text x="100" y="315" font-family="sans-serif" font-size="20" font-weight="bold">Swap</text>
+<rect x="260" y="265" width="730" height="100" rx="12" fill="#f8fafc" stroke="#111827"/>
+<text x="625" y="325" text-anchor="middle" font-family="sans-serif" font-size="18">Bank 0 done → Compute Bank Select 변경</text>
+
+<text x="100" y="485" font-family="sans-serif" font-size="20" font-weight="bold">Phase B</text>
+<rect x="260" y="435" width="340" height="100" rx="12" fill="#f0fdf4" stroke="#111827"/>
+<text x="430" y="495" text-anchor="middle" font-family="sans-serif" font-size="18">Load Bank 0</text>
+<rect x="650" y="435" width="340" height="100" rx="12" fill="#faf5ff" stroke="#111827"/>
+<text x="820" y="495" text-anchor="middle" font-family="sans-serif" font-size="18">Compute Bank 1</text>
+
+<text x="1130" y="150" text-anchor="middle" font-family="sans-serif" font-size="15">같은 Bank 동시 Write/Compute 금지</text>
+<text x="1130" y="195" text-anchor="middle" font-family="sans-serif" font-size="15">→ bank_conflict</text>
+</svg>

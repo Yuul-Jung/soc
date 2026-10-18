@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 NPU의 static cycle, post-route timing, resource, power, throughput를 분리 측정하는 SoC 37 성능 기준선 자료." name="description">
+<title>SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style>
+<style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 37</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Group 8 · Performance / Measurement / Sign-off · SoC 37</p>
+<h1>Performance Baseline · Timing · Resource · Power · Throughput</h1>
+<p class="hero-desc">SoC 35~36에서 동결한 NPU Hardware를 수정하지 않고 성능 기준선을 만든다. RTL 구조에서 계산한 Cycle Schedule, Vivado Post-Route Timing/Resource/Power, 실제 MicroBlaze V End-to-End Latency를 서로 분리하여 기록하고 다음 최적화 장에서 비교할 기준점을 만든다.</p>
+<div class="hero-meta"><span class="chip">WNS/TNS</span><span class="chip">LUT/FF</span><span class="chip">DSP/BRAM</span><span class="chip">Power</span><span class="chip">Cycle</span><span class="chip">Throughput</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html" selected>SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc37_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc37">이 장 검증</a></div></div><p class="nav-title">SOC 37 · LEARNING FLOW</p><p class="nav-help">Schedule → Route → Measure → Baseline</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>Group 8 시작</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>측정의 세 층</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Hardware Freeze</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Static Cycle Schedule</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>35 Cycle 분해</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>100 MHz 환산</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Static Upper Bound</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>왜 실측 Throughput이 아닌가</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Timing Sign-off</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>WNS / TNS</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>WHS / THS</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Unconstrained Path</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Report Timing Summary</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Resource Baseline</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Hierarchical Utilization</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Clock Utilization</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>DSP / BRAM</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Design Analysis</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Methodology / DRC</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Power Baseline</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Vectorless Power</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>SAIF / Activity</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Thermal / Supply</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Isolated NPU Baseline</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Full SoC Baseline</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Cycle Regression</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>JOB0 / JOB1</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>CPU-visible Latency</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>AXI Timer</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>반복 측정</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Bottleneck 분류</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>현재 구조의 예상 Bottleneck</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>Measurement Record</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>Post-Route Tcl</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>Full System Collector</span></a></li>
+<li><a href="#s37"><span class="n">37</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s38"><span class="n">38</span><span>실제 측정 전 주의</span></a></li>
+<li><a href="#s39"><span class="n">39</span><span>SoC38 연결</span></a></li>
+<li><a href="#s40"><span class="n">40</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">41</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">42</span><span>공식 문서 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 35 Full NPU</span><span class="arrow">→</span><span class="stage">SoC 36 End-to-End</span><span class="arrow">→</span><span class="stage"><strong>SoC 37 Baseline</strong></span><span class="arrow">→</span><span class="stage">SoC 38 Bottleneck Optimization</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc37/soc37_measurement_layers.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="measurement layers · 원본 보기 (새 탭)"><img src="../../images/soc37/soc37_measurement_layers.svg" alt="measurement layers"></a><figcaption>정적 RTL 예상값, Vivado 분석값, 실제 보드 측정값을 서로 다른 층으로 관리한다.<br><a href="../../images/soc37/soc37_measurement_layers.svg" target="_blank" rel="noopener" class="figure-original" aria-label="measurement layers · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Group 8 시작</h2>
+<p>Group 7이 “동작하는 NPU SoC”를 만드는 과정이었다면 Group 8은 “얼마나 잘 동작하는가”를 수치로 판단하는 과정이다.</p>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>측정의 세 층</h2>
+<figure class="manual-figure"><a href="../../images/soc37/soc37_measurement_layers.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="three measurement layers · 원본 보기 (새 탭)"><img src="../../images/soc37/soc37_measurement_layers.svg" alt="three measurement layers"></a><figcaption>35 cycle과 WNS와 CPU Latency는 서로 다른 종류의 숫자다.<br><a href="../../images/soc37/soc37_measurement_layers.svg" target="_blank" rel="noopener" class="figure-original" aria-label="three measurement layers · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Hardware Freeze</h2>
+<div class="warn">SoC 37에서 NPU RTL 기능을 변경하지 않는다. SoC 36 Hardware와 동일한 RTL을 사용해 기준선을 먼저 확보해야 SoC 38 이후 최적화 효과를 비교할 수 있다.</div>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Static Cycle Schedule</h2>
+<figure class="manual-figure"><a href="../../images/soc37/soc37_cycle_schedule.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="cycle schedule · 원본 보기 (새 탭)"><img src="../../images/soc37/soc37_cycle_schedule.svg" alt="cycle schedule"></a><figcaption>Frozen RTL에서 Engine이 START를 수락한 시점부터 DONE IRQ Pending까지 예상되는 상태 진행을 Clock 단위로 분해한다.<br><a href="../../images/soc37/soc37_cycle_schedule.svg" target="_blank" rel="noopener" class="figure-original" aria-label="cycle schedule · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>35 Cycle 분해</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="35 Cycle 분해 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구간</th><th scope="col" role="columnheader">Cycle</th><th scope="col" role="columnheader">원인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구간" role="cell">BRAM Read</td><td data-label="Cycle" role="cell">16</td><td data-label="원인" role="cell">8 Word × READ_REQ/READ_CAPTURE</td></tr>
+<tr role="row"><td data-label="구간" role="cell">Requant</td><td data-label="Cycle" role="cell">14</td><td data-label="원인" role="cell">Launch + 8-item Feed + Pipeline Drain</td></tr>
+<tr role="row"><td data-label="구간" role="cell">Finish / IRQ</td><td data-label="Cycle" role="cell">5</td><td data-label="원인" role="cell">Result Handoff + 2 Write + DONE + IRQ Latch</td></tr>
+<tr role="row"><td data-label="구간" role="cell"><strong>Total</strong></td><td data-label="Cycle" role="cell"><strong>35</strong></td><td data-label="원인" role="cell">Frozen RTL Static Schedule</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>100 MHz 환산</h2>
+<div class="flow">Clock Period 10 ns → 35 cycles × 10 ns → 350 ns</div>
+<p>350 ns는 RTL 상태 진행에서 계산한 예상 시간이며 Routing Delay나 CPU 관측 Latency를 의미하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Static Upper Bound</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Static Upper Bound · 소스 코드"><code>SoC37 STATIC RTL SCHEDULE
+clock = 100 MHz (10.0 ns)
+BRAM read phase = 16 cycles
+requant phase = 14 cycles
+finish/IRQ phase = 5 cycles
+engine START accept -&gt; IRQ pending = 35 cycles
+static schedule time = 350.0 ns
+upper-bound jobs/s = 2,857,142.857
+upper-bound scalar outputs/s = 22,857,142.857
+
+IMPORTANT:
+- This excludes AXI START transaction latency.
+- This excludes CPU Tensor fill/read.
+- This excludes ISR/software overhead.
+- This is not WNS/TNS or post-route timing.
+- Actual performance must be measured in Vivado/board.
+SOC37 STATIC PERFORMANCE REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=&lt;seconds&gt; to increase the limit.
+</code></pre>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>왜 실측 Throughput이 아닌가</h2>
+<p>이 계산에는 AXI START Transaction, Tensor Fill/Read, Interrupt Controller, ISR, 다음 Descriptor 준비가 없다. 따라서 실제 CPU↔NPU 처리량보다 높은 구조상 상한값이다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Timing Sign-off</h2>
+<figure class="manual-figure"><a href="../../images/soc37/soc37_signoff_funnel.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="signoff funnel · 원본 보기 (새 탭)"><img src="../../images/soc37/soc37_signoff_funnel.svg" alt="signoff funnel"></a><figcaption>Timing PASS만으로 Sign-off를 끝내지 않고 Resource, Methodology, Power까지 함께 기록한다.<br><a href="../../images/soc37/soc37_signoff_funnel.svg" target="_blank" rel="noopener" class="figure-original" aria-label="signoff funnel · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>WNS / TNS</h2>
+<p>Setup 분석에서는 WNS(Worst Negative Slack, 최악의 음수 여유)와 TNS(Total Negative Slack, 전체 음수 여유)를 확인한다. 목표 Clock을 만족하려면 최종 구현 결과에서 Setup Violation이 없어야 한다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>WHS / THS</h2>
+<p>Hold 분석도 별도로 확인한다. Setup이 PASS라도 Hold Violation이 있으면 Timing Sign-off가 아니다.</p>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Unconstrained Path</h2>
+<p>Slack 값만 양수라고 끝내지 않는다. Clock/Path Constraint가 빠진 경로가 없는지 함께 확인한다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Report Timing Summary</h2>
+<p>AMD UG906은 Post-Implementation 단계의 Report Timing Summary를 Timing Sign-off 확인에 사용하는 핵심 Report로 설명한다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Resource Baseline</h2>
+<div class="flow">LUT + FF + BRAM + DSP48E1 + Clocking</div>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Hierarchical Utilization</h2>
+<p><code>report_utilization -hierarchical</code>로 전체 숫자뿐 아니라 NPU 내부 어떤 Hierarchy가 Resource를 소비하는지 확인한다.</p>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Clock Utilization</h2>
+<p>Clock Primitive, Clock Net, Load를 확인해 Clock 자체가 Placement/Timing 문제의 원인인지 구분한다.</p>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>DSP / BRAM</h2>
+<p>DSP와 BRAM은 요청 Attribute가 아니라 실제 구현 Report를 기준으로 기록한다. Isolated NPU에서는 외부 Tensor BRAM이 포함되지 않으므로 Full SoC Resource와 구분한다.</p>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Design Analysis</h2>
+<p><code>report_design_analysis</code>로 Critical Path의 Logic Level과 Interconnect 특성을 확인한다. 다음 장의 구조 개선 후보를 고르는 근거로 사용한다.</p>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Methodology / DRC</h2>
+<p>Timing이 우연히 PASS해도 Methodology Warning과 DRC를 그대로 방치하지 않는다. Critical Warning부터 원인을 확인한다.</p>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Power Baseline</h2>
+<p>Power는 하나의 숫자만 적지 않고 Total, Dynamic, Static, Junction Temperature, Supply Current를 함께 기록한다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Vectorless Power</h2>
+<p>Activity 정보가 없으면 Vivado의 Vectorless 추정이 사용될 수 있다. 이것은 비교용 초기 Baseline으로 사용할 수 있지만 실제 보드 소비전력으로 표현하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>SAIF / Activity</h2>
+<p>Simulation Activity 파일이나 사용자 Activity를 제공하면 Power 분석의 근거가 개선된다. Activity Source를 결과표에 반드시 기록한다.</p>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Thermal / Supply</h2>
+<p>Ambient, Airflow, Heat Sink, Supply Voltage 같은 환경 조건이 Power/Thermal 추정에 영향을 주므로 Report와 함께 기록한다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Isolated NPU Baseline</h2>
+<p>NPU IP만 OOC Post-Route하여 NPU 자체의 Timing/Resource를 확인한다. MicroBlaze V, AXI BRAM Controller, Tensor BMG는 포함하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Full SoC Baseline</h2>
+<p>실제 SoC Project의 <code>impl_1</code>을 Open한 뒤 별도 Collector Script로 전체 시스템 Timing/Resource/Power를 기록한다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Cycle Regression</h2>
+<div class="flow">JOB0 → 35 cycles<br>JOB1 → 35 cycles</div>
+<p>두 Job 모두 같은 Cycle Schedule을 유지하는지 Self-Checking Testbench에서 확인한다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>JOB0 / JOB1</h2>
+<p>입력 데이터와 BRAM Offset은 달라도 Hardware State Schedule은 동일해야 한다. 데이터 값과 제어 Latency를 분리해서 보는 연습이다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>CPU-visible Latency</h2>
+<p>Software 관점 Latency는 35 cycle보다 크다. AXI Register Write, Interrupt Controller, Exception Entry, ISR, Memory Access 시간이 추가되기 때문이다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>AXI Timer</h2>
+<p>실제 보드에서는 기존 SoC 단계에서 다룬 AXI Timer를 사용해 START→ISR 및 Tensor Fill→Verify 구간을 측정할 수 있다.</p>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>반복 측정</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="31절 신호 및 실행 흐름">Warm-up
+→ 여러 Job 반복
+→ min
+→ average
+→ max</div>
+<p>UART 출력은 측정 구간 밖으로 빼서 I/O 시간이 성능 수치에 섞이지 않도록 한다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Bottleneck 분류</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Bottleneck 분류 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">분류</th><th scope="col" role="columnheader">관찰값</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="분류" role="cell">Data Movement</td><td data-label="관찰값" role="cell">BRAM read/write cycle, CPU copy</td></tr>
+<tr role="row"><td data-label="분류" role="cell">Compute</td><td data-label="관찰값" role="cell">Requant feed/drain</td></tr>
+<tr role="row"><td data-label="분류" role="cell">Control</td><td data-label="관찰값" role="cell">Descriptor/START/IRQ</td></tr>
+<tr role="row"><td data-label="분류" role="cell">Timing</td><td data-label="관찰값" role="cell">Critical path / interconnect</td></tr>
+<tr role="row"><td data-label="분류" role="cell">Resource</td><td data-label="관찰값" role="cell">DSP/BRAM/LUT 압박</td></tr>
+<tr role="row"><td data-label="분류" role="cell">Power</td><td data-label="관찰값" role="cell">Dynamic/thermal margin</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>현재 구조의 예상 Bottleneck</h2>
+<p>정적 구조만 보면 8 Word를 각각 <code>READ_REQ → READ_CAPTURE</code> 두 상태로 읽는 구간이 16 cycle을 사용한다. 다만 실제 최적화 우선순위는 Vivado와 보드 측정 결과를 확인한 뒤 결정한다.</p>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>Measurement Record</h2>
+<p><code>doc/MEASUREMENT_RECORD.md</code>에 Timing, Resource, Power, Runtime 성능과 측정 조건을 한 곳에 기록한다.</p>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>Post-Route Tcl</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Post-Route Tcl · 소스 코드"><code># SoC 37 · Frozen NPU post-route baseline
+# Target: Basys3 xc7a35tcpg236-1, 100 MHz.
+# This is an isolated NPU-IP baseline, not the full MicroBlaze V system.
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir [file normalize [file join $script_dir ".."]]
+set rtl_dir [file join $root_dir "rtl"]
+set out_dir [file normalize [file join $root_dir "reports" "npu_post_route"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+foreach f {
+    requantize_s32_to_s8.v
+    requantize_batch2x4_serial.v
+    tensor_job_engine.v
+    npu_full_control_irq.v
+    axi4lite_reg_bridge.v
+    bram_clock_reset_adapter.v
+    npu_full_accelerator_ip.v
+} {
+    read_verilog [file join $rtl_dir $f]
+}
+
+synth_design \
+    -mode out_of_context \
+    -top npu_full_accelerator_ip \
+    -part xc7a35tcpg236-1
+
+create_clock \
+    -name s_axi_aclk \
+    -period 10.000 \
+    [get_ports s_axi_aclk]
+
+report_methodology \
+    -file [file join $out_dir "01_methodology_post_synth.rpt"]
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 50 \
+    -file [file join $out_dir "02_timing_summary_post_route.rpt"]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "03_utilization_post_route.rpt"]
+
+report_clock_utilization \
+    -file [file join $out_dir "04_clock_utilization_post_route.rpt"]
+
+report_design_analysis \
+    -setup \
+    -max_paths 50 \
+    -logic_level_distribution \
+    -file [file join $out_dir "05_design_analysis_post_route.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "06_methodology_post_route.rpt"]
+
+report_drc \
+    -file [file join $out_dir "07_drc_post_route.rpt"]
+
+report_power \
+    -file [file join $out_dir "08_power_vectorless_post_route.rpt"]
+
+write_checkpoint \
+    -force \
+    [file join $out_dir "soc37_npu_post_route.dcp"]
+
+puts ""
+puts "SoC 37 isolated NPU post-route baseline complete."
+puts "Power report uses available/default activity unless you annotate SAIF/activity."
+puts "Do not treat vectorless power as board-measured power."</code></pre>
+</section>
+
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>Full System Collector</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Full System Collector · 소스 코드"><code># SoC 37 · Full SoC implemented report collector
+#
+# Usage:
+#   open_project &lt;your_project.xpr&gt;
+#   open_run impl_1
+#   source collect_soc37_full_system_reports.tcl
+#
+# This script does not implement the design. It records the currently
+# opened implemented design.
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir [file normalize [file join $script_dir ".."]]
+set out_dir [file normalize [file join $root_dir "reports" "full_system"]]
+
+file mkdir $out_dir
+
+if {[llength [get_cells -quiet]] == 0} {
+    error "No implemented design is open. Run open_run impl_1 first."
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 100 \
+    -file [file join $out_dir "01_timing_summary.rpt"]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "02_utilization_hierarchical.rpt"]
+
+report_clock_utilization \
+    -file [file join $out_dir "03_clock_utilization.rpt"]
+
+report_design_analysis \
+    -setup \
+    -max_paths 100 \
+    -logic_level_distribution \
+    -file [file join $out_dir "04_design_analysis.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "05_methodology.rpt"]
+
+report_drc \
+    -file [file join $out_dir "06_drc.rpt"]
+
+report_power \
+    -file [file join $out_dir "07_power.rpt"]
+
+puts ""
+puts "SoC 37 full-system reports collected."
+puts "Record the power activity source and environment together with 07_power.rpt."
+</code></pre>
+</section>
+
+<section class="step-card" id="s37"><span class="step">SECTION 37</span><h2>Self-Checking Testbench</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_soc37_cycle_baseline;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic [7:0]  awaddr = 8'h00;
+logic        awvalid = 1'b0;
+wire         awready;
+
+logic [31:0] wdata = 32'h0000_0000;
+logic [3:0]  wstrb = 4'h0;
+logic        wvalid = 1'b0;
+wire         wready;
+
+wire [1:0]   bresp;
+wire         bvalid;
+logic        bready = 1'b1;
+
+logic [7:0]  araddr = 8'h00;
+logic        arvalid = 1'b0;
+wire         arready;
+
+wire [31:0]  rdata;
+wire [1:0]   rresp;
+wire         rvalid;
+logic        rready = 1'b1;
+
+logic        cpu_mem_en_i = 1'b0;
+logic [3:0]  cpu_mem_we_i = 4'h0;
+logic [11:0] cpu_mem_addr_i = 12'h000;
+logic [31:0] cpu_mem_wdata_i = 32'h0000_0000;
+wire [31:0]  cpu_mem_rdata_o;
+
+wire irq_o;
+
+integer check_count = 0;
+integer error_count = 0;
+
+integer cycle_counter = 0;
+integer engine_start_cycle = -1;
+integer irq_cycle = -1;
+logic engine_busy_d = 1'b0;
+
+always @(posedge clk) begin
+    cycle_counter = cycle_counter + 1;
+
+    // Wait until NBA updates settle before observing DUT pulses.
+    #1;
+
+    if (
+        dut.u_npu.engine_busy &amp;&amp;
+        !engine_busy_d
+    ) begin
+        engine_start_cycle = cycle_counter;
+    end
+
+    engine_busy_d = dut.u_npu.engine_busy;
+
+    if (
+        (irq_o === 1'b1) &amp;&amp;
+        (irq_cycle &lt; 0)
+    ) begin
+        irq_cycle = cycle_counter;
+    end
+end
+
+always #5 clk = ~clk;
+
+npu_full_accelerator_sim_top dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready),
+
+    .cpu_mem_en_i(cpu_mem_en_i),
+    .cpu_mem_we_i(cpu_mem_we_i),
+    .cpu_mem_addr_i(cpu_mem_addr_i),
+    .cpu_mem_wdata_i(cpu_mem_wdata_i),
+    .cpu_mem_rdata_o(cpu_mem_rdata_o),
+
+    .irq_o(irq_o)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        check_count = check_count + 1;
+        if (actual !== expected) begin
+            error_count = error_count + 1;
+            $error(
+                "CHECK FAIL: %s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic axi_write(
+    input [7:0] address,
+    input [31:0] data,
+    input integer order
+);
+    bit aw_done;
+    bit w_done;
+    integer timeout;
+
+    begin
+        aw_done = 0;
+        w_done = 0;
+
+        @(negedge clk);
+
+        awaddr = address;
+        wdata = data;
+        wstrb = 4'hF;
+
+        case (order)
+            0: begin
+                awvalid = 1'b1;
+                wvalid = 1'b1;
+            end
+
+            1: begin
+                awvalid = 1'b1;
+                wvalid = 1'b0;
+            end
+
+            default: begin
+                awvalid = 1'b0;
+                wvalid = 1'b1;
+            end
+        endcase
+
+        timeout = 0;
+
+        while (!(aw_done &amp;&amp; w_done)) begin
+            @(posedge clk);
+            // (변경) READY가 갱신되기 전 상승 에지의 handshake를 관측한다.
+
+            if (awvalid &amp;&amp; awready)
+                aw_done = 1;
+
+            if (wvalid &amp;&amp; wready)
+                w_done = 1;
+
+            @(negedge clk);
+
+            if (aw_done)
+                awvalid = 1'b0;
+
+            if (w_done)
+                wvalid = 1'b0;
+
+            if (
+                (order == 1) &amp;&amp;
+                aw_done &amp;&amp;
+                !w_done
+            )
+                wvalid = 1'b1;
+
+            if (
+                (order == 2) &amp;&amp;
+                w_done &amp;&amp;
+                !aw_done
+            )
+                awvalid = 1'b1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI write timeout");
+        end
+
+        timeout = 0;
+
+        while (!bvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI BVALID timeout");
+        end
+
+        check_true(
+            "BRESP OKAY",
+            bresp == 2'b00
+        );
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic axi_read(
+    input [7:0] address,
+    output [31:0] data
+);
+    integer timeout;
+
+    begin
+        @(negedge clk);
+
+        araddr = address;
+        arvalid = 1'b1;
+
+        timeout = 0;
+
+        while (!arready) begin
+            @(posedge clk);
+            #1;
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI ARREADY timeout");
+        end
+
+        @(posedge clk);
+        #1;
+
+        timeout = 0;
+
+        while (!rvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI RVALID timeout");
+        end
+
+        data = rdata;
+
+        check_true(
+            "RRESP OKAY",
+            rresp == 2'b00
+        );
+
+        @(negedge clk);
+        arvalid = 1'b0;
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic mem_write32(
+    input [11:0] address,
+    input [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b1;
+        cpu_mem_we_i = 4'hF;
+        cpu_mem_addr_i = address;
+        cpu_mem_wdata_i = data;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b0;
+        cpu_mem_we_i = 4'h0;
+        cpu_mem_addr_i = 12'h000;
+        cpu_mem_wdata_i = 32'h0000_0000;
+    end
+endtask
+
+task automatic mem_read32(
+    input [11:0] address,
+    output [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b1;
+        cpu_mem_we_i = 4'h0;
+        cpu_mem_addr_i = address;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b0;
+        cpu_mem_addr_i = 12'h000;
+
+        data = cpu_mem_rdata_o;
+    end
+endtask
+
+task automatic wait_irq_high;
+    integer timeout;
+    begin
+        timeout = 0;
+
+        while (irq_o !== 1'b1) begin
+            @(posedge clk);
+            // (변경) 같은 시각의 #1 성능 모니터보다 뒤에서 IRQ를 관측한다.
+            #2;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 300)
+                $fatal(1, "IRQ did not assert");
+        end
+    end
+endtask
+
+initial begin
+    reg [31:0] rd;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. CPU fills Tensor BRAM through Port A.
+    // --------------------------------------------------------
+    mem_write32(12'h200, 32'd16);
+    mem_write32(12'h204, 32'd32);
+    mem_write32(12'h208, 32'd48);
+    mem_write32(12'h20C, 32'd64);
+
+    mem_write32(12'h210, 32'd32);
+    mem_write32(12'h214, 32'd64);
+    mem_write32(12'h218, 32'd96);
+    mem_write32(12'h21C, 32'd128);
+
+    // --------------------------------------------------------
+    // 2. Program descriptor / parameter / IRQ registers.
+    //    Exercise all three AXI write channel orders.
+    // --------------------------------------------------------
+    axi_write(8'h10, 32'h0000_0200, 0);
+    axi_write(8'h14, 32'h0000_0300, 1);
+    axi_write(8'h18, 32'd8,         2);
+
+    axi_write(8'h20, 32'd0,         0);
+    axi_write(8'h24, 32'd4,         1);
+    axi_write(8'h28, 32'h0001_0001, 2);
+    axi_write(8'h2C, 32'h0001_0003, 0);
+    axi_write(8'h30, 32'hFFFD_0000, 1);
+
+    // Clear stale IRQ and status, then enable DONE/ERROR.
+    axi_write(8'h4C, 32'h0000_0003, 2);
+    axi_write(8'h00, 32'h0000_0006, 0);
+    axi_write(8'h48, 32'h0000_0003, 1);
+
+    axi_read(8'h04, rd);
+
+    check_true(
+        "descriptor valid",
+        (rd &amp; 32'h8) != 0
+    );
+
+    // --------------------------------------------------------
+    // 3. START and wait for DONE IRQ.
+    // --------------------------------------------------------
+    axi_write(8'h00, 32'h0000_0001, 0);
+
+    // Wait until BUSY appears.
+    do begin
+        axi_read(8'h04, rd);
+    end while ((rd &amp; 32'h1) == 0);
+
+    // Shadow changes while the active job is running.
+    axi_write(8'h10, 32'h0000_0400, 1);
+    axi_write(8'h14, 32'h0000_0500, 2);
+
+    axi_read(8'h34, rd);
+    check_eq32(
+        "ACTIVE_INPUT remains 0x200",
+        rd,
+        32'h0000_0200
+    );
+
+    axi_read(8'h38, rd);
+    check_eq32(
+        "ACTIVE_OUTPUT remains 0x300",
+        rd,
+        32'h0000_0300
+    );
+
+    wait_irq_high();
+
+    check_true(
+        "JOB0 static latency = 35 cycles",
+        (irq_cycle - engine_start_cycle) == 35
+    );
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "DONE IRQ pending",
+        (rd &amp; 32'h1) != 0
+    );
+
+    check_true(
+        "ERROR IRQ clear",
+        (rd &amp; 32'h2) == 0
+    );
+
+    // CPU reclaims Tensor Buffer after completion.
+    mem_read32(12'h300, rd);
+    check_eq32(
+        "full integration OUT_CH0",
+        rd,
+        32'h2018_1008
+    );
+
+    mem_read32(12'h304, rd);
+    check_eq32(
+        "full integration OUT_CH1",
+        rd,
+        32'h7F7F_6333
+    );
+
+    axi_read(8'h0C, rd);
+    check_eq32(
+        "JOB_ID = 1",
+        rd,
+        32'd1
+    );
+
+    axi_read(8'h40, rd);
+    check_eq32(
+        "READ_WORD_COUNT = 8",
+        rd,
+        32'd8
+    );
+
+    axi_read(8'h44, rd);
+    check_eq32(
+        "WRITE_WORD_COUNT = 2",
+        rd,
+        32'd2
+    );
+
+    // ISR-equivalent W1C.
+    axi_write(8'h4C, 32'h0000_0001, 0);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "DONE W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    // --------------------------------------------------------
+    // 4. Second complete job: same hardware, new Tensor buffer.
+    // --------------------------------------------------------
+    mem_write32(12'h400, 32'd2);
+    mem_write32(12'h404, 32'd4);
+    mem_write32(12'h408, 32'd6);
+    mem_write32(12'h40C, 32'd8);
+
+    mem_write32(12'h410, 32'd4);
+    mem_write32(12'h414, 32'd8);
+    mem_write32(12'h418, 32'd12);
+    mem_write32(12'h41C, 32'd16);
+
+    // Shadow addresses already changed to 0x400 / 0x500
+    // during JOB0. Keep LENGTH=8 and parameters unchanged.
+    axi_write(8'h18, 32'd8, 2);
+
+    axi_write(8'h00, 32'h0000_0006, 0);
+    axi_write(8'h4C, 32'h0000_0003, 1);
+    axi_write(8'h48, 32'h0000_0003, 2);
+
+    axi_read(8'h04, rd);
+
+    check_true(
+        "JOB1 descriptor valid",
+        (rd &amp; 32'h8) != 0
+    );
+
+    engine_start_cycle = -1;
+    irq_cycle = -1;
+
+    axi_write(8'h00, 32'h0000_0001, 0);
+
+    wait_irq_high();
+
+    check_true(
+        "JOB1 static latency = 35 cycles",
+        (irq_cycle - engine_start_cycle) == 35
+    );
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "JOB1 DONE IRQ pending",
+        (rd &amp; 32'h1) != 0
+    );
+
+    mem_read32(12'h500, rd);
+    check_eq32(
+        "JOB1 OUT_CH0",
+        rd,
+        32'h0403_0201
+    );
+
+    mem_read32(12'h504, rd);
+    check_eq32(
+        "JOB1 OUT_CH1",
+        rd,
+        32'h1B15_0F09
+    );
+
+    axi_read(8'h0C, rd);
+    check_eq32(
+        "JOB_ID = 2 after second accepted job",
+        rd,
+        32'd2
+    );
+
+    axi_read(8'h40, rd);
+    check_eq32(
+        "JOB1 READ_WORD_COUNT = 8",
+        rd,
+        32'd8
+    );
+
+    axi_read(8'h44, rd);
+    check_eq32(
+        "JOB1 WRITE_WORD_COUNT = 2",
+        rd,
+        32'd2
+    );
+
+    axi_write(8'h4C, 32'h0000_0001, 1);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "JOB1 W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    // --------------------------------------------------------
+    // 5. Integrated descriptor ERROR IRQ after two good jobs.
+    // --------------------------------------------------------
+    axi_write(8'h00, 32'h0000_0006, 1);
+    axi_write(8'h4C, 32'h0000_0003, 2);
+    axi_write(8'h48, 32'h0000_0002, 0);
+
+    axi_write(8'h10, 32'h0000_0202, 1);
+    axi_write(8'h14, 32'h0000_0600, 2);
+    axi_write(8'h18, 32'd8,         0);
+
+    axi_write(8'h00, 32'h0000_0001, 1);
+
+    wait_irq_high();
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "descriptor ERROR IRQ pending",
+        (rd &amp; 32'h2) != 0
+    );
+
+    axi_read(8'h1C, rd);
+
+    check_eq32(
+        "descriptor ERROR_CODE = 2",
+        rd,
+        32'd2
+    );
+
+    axi_read(8'h0C, rd);
+
+    check_eq32(
+        "rejected job keeps JOB_ID = 2",
+        rd,
+        32'd2
+    );
+
+    axi_write(8'h4C, 32'h0000_0002, 2);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "ERROR W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    $display("");
+    $display("SOC37 CHECK COUNT : %0d", check_count);
+    $display("SOC37 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC37 PERFORMANCE BASELINE TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC37 PERFORMANCE BASELINE TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s38"><span class="step">SECTION 38</span><h2>실제 측정 전 주의</h2>
+<div class="warn">현재 자료에서 확정할 수 있는 것은 RTL 구조, Reference 실행, Script 문법이다. 실제 WNS/TNS, Resource, Power, Basys3 Runtime은 Vivado/Board 실행 전까지 빈 값으로 유지한다.</div>
+</section>
+
+<section class="step-card" id="s39"><span class="step">SECTION 39</span><h2>SoC38 연결</h2>
+<div class="flow">SoC37 Baseline → 가장 큰 Bottleneck 선택 → SoC38 구조 개선 → 동일 지표 재측정</div>
+</section>
+
+<section class="step-card" id="s40"><span class="step">SECTION 40</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">오류</th><th scope="col" role="columnheader">문제</th><th scope="col" role="columnheader">조치</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="오류" role="cell">35 cycle을 WNS로 해석</td><td data-label="문제" role="cell">Cycle Schedule과 Timing Slack 혼동</td><td data-label="조치" role="cell">측정 층 분리</td></tr>
+<tr role="row"><td data-label="오류" role="cell">Vectorless Power를 실측전력으로 기록</td><td data-label="문제" role="cell">Activity 근거 부족</td><td data-label="조치" role="cell">Activity Source 기록</td></tr>
+<tr role="row"><td data-label="오류" role="cell">OOC NPU Resource를 Full SoC 값으로 사용</td><td data-label="문제" role="cell">MicroBlaze V/BRAM 제외</td><td data-label="조치" role="cell">Full System Report 별도</td></tr>
+<tr role="row"><td data-label="오류" role="cell">WNS만 보고 Sign-off</td><td data-label="문제" role="cell">Hold/Constraint/DRC 누락</td><td data-label="조치" role="cell">Timing Summary + Methodology</td></tr>
+<tr role="row"><td data-label="오류" role="cell">UART Print 포함 Latency</td><td data-label="문제" role="cell">I/O 시간이 결과 오염</td><td data-label="조치" role="cell">측정 구간 밖으로 이동</td></tr>
+<tr role="row"><td data-label="오류" role="cell">최적화 후 기준값 없음</td><td data-label="문제" role="cell">개선 효과 비교 불가</td><td data-label="조치" role="cell">SoC37 Baseline 보존</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 37 완료 체크리스트</h2>
+<ul>
+<li>[ ] SoC36 Hardware를 byte-identical하게 유지한다.</li>
+<li>[ ] Static Cycle, Vivado Timing, Runtime Latency를 구분한다.</li>
+<li>[ ] 35-cycle Static Schedule의 구성을 설명한다.</li>
+<li>[ ] WNS/TNS와 WHS/THS를 함께 확인한다.</li>
+<li>[ ] Unconstrained Path를 확인한다.</li>
+<li>[ ] Hierarchical Resource를 기록한다.</li>
+<li>[ ] Power Activity Source와 환경조건을 기록한다.</li>
+<li>[ ] Isolated NPU와 Full SoC 결과를 구분한다.</li>
+<li>[ ] JOB0/JOB1 Cycle Regression을 수행한다.</li>
+<li>[ ] 실제 Runtime은 AXI Timer 등으로 별도 측정한다.</li>
+<li>[ ] Measurement Record를 다음 최적화의 기준선으로 보존한다.</li>
+</ul>
+<div class="flow">SoC 37 완료 → SoC 38 Bottleneck Analysis / Optimization</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">자료</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Verifying-Timing-Signoff" target="_blank" rel="noopener">AMD UG906 · Verifying Timing Signoff · 2026.1</a></td><td data-label="확인 항목" role="cell">Post-Implementation Timing Sign-off</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Utilization" target="_blank" rel="noopener">AMD UG906 · Report Utilization · 2026.1</a></td><td data-label="확인 항목" role="cell">LUT/FF/BRAM/DSP 등 Resource 분석</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Design-Analysis" target="_blank" rel="noopener">AMD UG906 · Report Design Analysis · 2026.1</a></td><td data-label="확인 항목" role="cell">Timing Path / Interconnect / Congestion 분석</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Running-Report-Methodology" target="_blank" rel="noopener">AMD UG949 · Report Methodology · 2026.1</a></td><td data-label="확인 항목" role="cell">RTL/Netlist/Constraint/Timing Methodology Check</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Setting-Up-Power-Analysis-from-the-Vivado-IDE" target="_blank" rel="noopener">AMD UG907 · Power Analysis Setup · 2026.1</a></td><td data-label="확인 항목" role="cell">Activity / Environment / Voltage와 Power 정확도 관계</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="36_cpu_npu_end_to_end_software_inference.html">← SoC 36</a><a href="../../index.html">전체 목차</a><a href="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body>
+</html>

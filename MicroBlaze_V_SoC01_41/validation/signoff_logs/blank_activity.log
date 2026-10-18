@@ -1,0 +1,10 @@
+SoC41 SIGN-OFF EVALUATION
+design      : PASS
+functional  : PASS
+timing      : PASS
+methodology : PASS
+resources   : PASS
+power       : INCOMPLETE
+  missing: activity_source
+runtime     : RECORDED
+overall     : INCOMPLETE

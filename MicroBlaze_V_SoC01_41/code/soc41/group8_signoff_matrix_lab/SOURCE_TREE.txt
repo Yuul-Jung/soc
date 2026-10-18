@@ -1,0 +1,26 @@
+group8_signoff_matrix_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_group4_parallel.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   ├── tensor_job_engine_overlap.v
+│   ├── npu_full_control_irq.v
+│   ├── axi4lite_reg_bridge.v
+│   ├── bram_clock_reset_adapter.v
+│   ├── npu_full_accelerator_overlap_ip.v
+│   └── npu_full_accelerator_overlap_sim_top.v
+├── reference/
+│   ├── soc41_group8_reference.py
+│   ├── group8_reference_output.txt
+│   └── empty_signoff_evaluation.txt
+├── data/
+│   └── soc41_signoff_input.json
+├── scripts/
+│   ├── collect_soc41_signoff_reports.tcl
+│   ├── evaluate_soc41_signoff.py
+│   └── run_soc41_guide.sh
+├── doc/
+│   ├── README_SOC41.md
+│   ├── GROUP8_SIGNOFF_MATRIX.md
+│   └── SIGNOFF_PROCEDURE.md
+└── SOURCE_TREE.txt

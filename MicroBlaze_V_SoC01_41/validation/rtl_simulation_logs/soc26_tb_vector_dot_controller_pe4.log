@@ -1,0 +1,17 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_vector_dot_controller_pe4 -o validation-tools/rtl_runs/soc26_tb_vector_dot_controller_pe4.vvp code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_pe4.v code/soc26/vector_dot_controller_lab/rtl/pe4_dot_accum_pipelined.v code/soc26/vector_dot_controller_lab/rtl/reset_active_high_to_active_low.v code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_basys3_top.v code/soc26/vector_dot_controller_lab/rtl/vector_result_sink.v code/soc26/vector_dot_controller_lab/rtl/mul_s8_dsp.v code/soc26/vector_dot_controller_lab/rtl/vector_demo_source_len10.v
+code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_pe4.v:1: warning: timescale for vector_dot_controller_pe4 inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/rtl/pe4_dot_accum_pipelined.v:1: warning: timescale for pe4_dot_accum_pipelined inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_basys3_top.v:1: warning: timescale for vector_dot_controller_basys3_top inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/rtl/vector_result_sink.v:1: warning: timescale for vector_result_sink inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/rtl/mul_s8_dsp.v:2: warning: timescale for mul_s8_dsp inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/rtl/vector_demo_source_len10.v:1: warning: timescale for vector_demo_source_len10 inherited from another file.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:1: ...: The inherited timescale is here.
+code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:308: error: Cannot "return" from tasks.
+1 error(s) during elaboration.

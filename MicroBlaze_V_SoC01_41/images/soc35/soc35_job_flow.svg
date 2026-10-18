@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1380" height="590" viewBox="0 0 1380 590">
+<rect width="1380" height="590" fill="white"/>
+<text x="690" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">End-to-End Job Flow</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<g font-family="sans-serif">
+<rect x="45" y="185" width="180" height="120" rx="12" fill="#eef6ff" stroke="#111827"/><text x="135" y="230" text-anchor="middle" font-size="16">Tensor Fill</text><text x="135" y="270" text-anchor="middle" font-size="13">CPU → BRAM</text>
+<rect x="265" y="185" width="180" height="120" rx="12" fill="#fff7ed" stroke="#111827"/><text x="355" y="230" text-anchor="middle" font-size="16">Descriptor</text><text x="355" y="270" text-anchor="middle" font-size="13">AXI4-Lite</text>
+<rect x="485" y="185" width="180" height="120" rx="12" fill="#fff7ed" stroke="#111827"/><text x="575" y="230" text-anchor="middle" font-size="16">START</text><text x="575" y="270" text-anchor="middle" font-size="13">Snapshot</text>
+<rect x="705" y="185" width="180" height="120" rx="12" fill="#f0fdf4" stroke="#111827"/><text x="795" y="230" text-anchor="middle" font-size="16">Compute</text><text x="795" y="270" text-anchor="middle" font-size="13">BRAM Port B</text>
+<rect x="925" y="185" width="180" height="120" rx="12" fill="#faf5ff" stroke="#111827"/><text x="1015" y="230" text-anchor="middle" font-size="16">DONE IRQ</text><text x="1015" y="270" text-anchor="middle" font-size="13">W1C in ISR</text>
+<rect x="1145" y="185" width="190" height="120" rx="12" fill="#eef6ff" stroke="#111827"/><text x="1240" y="230" text-anchor="middle" font-size="16">Output Read</text><text x="1240" y="270" text-anchor="middle" font-size="13">CPU ← BRAM</text>
+</g>
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)"><line x1="225" y1="245" x2="265" y2="245"/><line x1="445" y1="245" x2="485" y2="245"/><line x1="665" y1="245" x2="705" y2="245"/><line x1="885" y1="245" x2="925" y2="245"/><line x1="1105" y1="245" x2="1145" y2="245"/></g>
+<text x="690" y="435" text-anchor="middle" font-family="sans-serif" font-size="17">SoC 35에서는 앞 장의 개별 기능을 처음으로 한 Job 경로에서 동시에 검증한다.</text>
+</svg>

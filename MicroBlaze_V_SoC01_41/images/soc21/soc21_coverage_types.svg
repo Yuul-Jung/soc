@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+<rect width="1200" height="600" fill="white"/>
+<text x="600" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Coverage는 “PASS했는가?”와 다른 질문이다</text>
+
+<rect x="70" y="115" width="460" height="350" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="300" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Functional Coverage</text>
+<text x="125" y="215" font-family="sans-serif" font-size="17">질문:</text>
+<text x="200" y="215" font-family="sans-serif" font-size="17">의도한 기능 시나리오를 실행했는가?</text>
+<text x="125" y="270" font-family="sans-serif" font-size="16">• mode 0 / 1 / 2 / 3</text>
+<text x="125" y="310" font-family="sans-serif" font-size="16">• normal transaction</text>
+<text x="125" y="350" font-family="sans-serif" font-size="16">• submit pending error</text>
+<text x="125" y="390" font-family="sans-serif" font-size="16">• empty POP error</text>
+<text x="125" y="430" font-family="sans-serif" font-size="16">• mode × scenario cross</text>
+
+<rect x="670" y="115" width="460" height="350" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="900" y="160" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Code Coverage</text>
+<text x="725" y="215" font-family="sans-serif" font-size="17">질문:</text>
+<text x="800" y="215" font-family="sans-serif" font-size="17">RTL 코드가 실제로 실행되었는가?</text>
+<text x="725" y="270" font-family="sans-serif" font-size="16">• Statement / Line</text>
+<text x="725" y="310" font-family="sans-serif" font-size="16">• Branch</text>
+<text x="725" y="350" font-family="sans-serif" font-size="16">• Condition</text>
+<text x="725" y="390" font-family="sans-serif" font-size="16">• Toggle</text>
+<text x="725" y="430" font-family="sans-serif" font-size="16">• Coverage Hole Review</text>
+
+<text x="600" y="525" text-anchor="middle" font-family="sans-serif" font-size="17">100% 숫자를 만드는 것이 목표가 아니라, 검증되지 않은 기능과 코드가 왜 남았는지 설명할 수 있어야 한다.</text>
+</svg>

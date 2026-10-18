@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 Artix-7 NPU에서 int32 accumulator를 bias, fixed-point scale, signed rounding, zero point, saturation을 거쳐 signed int8로 변환하는 requantization RTL 자료." name="description">
+<title>SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 30</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 30</p>
+<h1>Bias · Requantization · Rounding · Saturation · int8 Output</h1>
+<p class="hero-desc">SoC 29의 int32 누산 결과를 다음 Layer에서 다시 사용할 수 있는 signed int8 Tensor로 변환한다. Bias, Fixed-point Multiplier, Power-of-two Shift, Signed Rounding, Zero Point, Saturation을 4-Stage Pipeline으로 구현하고 2채널 × 4샘플 결과를 코어 하나로 시분할 처리한다.</p>
+<div class="hero-meta"><span class="chip">int32 → int8</span><span class="chip">Bias</span><span class="chip">Fixed-point Scale</span><span class="chip">Rounding</span><span class="chip">Saturation</span><span class="chip">DSP48</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html" selected>SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc30_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc30">이 장 검증</a></div></div><p class="nav-title">SOC 30 · LEARNING FLOW</p><p class="nav-help">Accumulate → Scale → Round → Clamp</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>왜 int32에서 int8로 돌아가는가</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Requantization 수식</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Bias</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>33-bit Bias Sum</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Fixed-point Scale</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>49-bit Product</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Shift</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Signed Rounding</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Midpoint 예</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Zero Point</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Saturation</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Pipeline 구조</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Valid 정렬</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Requantizer RTL</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>SoC29 2×4 Batch 입력</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Serial Resource Reuse</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Tag Pipeline</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Batch Wrapper RTL</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Board Demo CH0</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Board Demo CH1</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Saturation Count</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>LED 출력</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Python Reference</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Core Self-Checking Test</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Batch Self-Checking Test</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Integer-only Inference와의 관계</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>교육용 Scale 모델</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>DSP Mapping</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>OOC Synthesis</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>Post-route Timing</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Power / Resource Trade-off</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">34</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">35</span><span>공식 매뉴얼 및 연구 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 28 Memory Subsystem</span><span class="arrow">→</span><span class="stage">SoC 29 Data Reuse</span><span class="arrow">→</span><span class="stage"><strong>SoC 30 Requantization</strong></span><span class="arrow">→</span><span class="stage">SoC 31 NPU SoC Integration</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc30/soc30_requant_pipeline.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="int32 to int8 requantization pipeline · 원본 보기 (새 탭)"><img src="../../images/soc30/soc30_requant_pipeline.svg" alt="int32 to int8 requantization pipeline"></a><figcaption>int32 누산 결과를 Bias → Scale → Round/Shift → Zero Point → int8 Saturation 순서로 처리한다.<br><a href="../../images/soc30/soc30_requant_pipeline.svg" target="_blank" rel="noopener" class="figure-original" aria-label="int32 to int8 requantization pipeline · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>왜 int32에서 int8로 돌아가는가</h2>
+<p>int8 Weight와 int8 Activation을 곱해 여러 항을 누적하면 결과 범위가 int8을 크게 넘기 때문에 Accumulator는 보통 더 넓은 정수형을 사용한다. 하지만 다음 Quantized Layer의 입력은 다시 8-bit Tensor가 필요하므로 Output Stage에서 Scale을 바꾸고 8-bit 범위로 Clamp해야 한다.</p>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Requantization 수식</h2>
+<div class="flow">q → saturate_int8(round_away_from_zero((acc + bias) × multiplier / 2^shift) + zero_point)</div>
+<p>이번 수식은 RTL 학습을 위한 명시적 Fixed-point 형태다. 실제 모델 변환기는 Real Scale을 Integer Multiplier와 Shift로 근사하는 파라미터를 생성한다.</p>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Bias</h2>
+<p>Bias는 Accumulator Scale과 정렬된 정수값으로 더한다. Bias를 Scale 이후가 아니라 int32 누산 영역에서 먼저 더하는 이유는 모델의 Linear/Convolution Output 식을 정수 영역에서 유지하기 위해서다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>33-bit Bias Sum</h2>
+<div class="flow">signed 32 bit + signed 32 bit → signed 33 bit</div>
+<p>두 32-bit 값을 그대로 32-bit로 더하면 최대/최소 경계에서 Overflow할 수 있으므로 Sign Bit를 각각 한 비트 확장한 뒤 더한다.</p>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Fixed-point Scale</h2>
+<p>실수 Scale을 Hardware에서 직접 Floating-point Multiply하지 않고 <code>multiplier / 2^shift</code> 형태로 근사한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="06절 신호 및 실행 흐름">예: multiplier=3, shift=2
+→ 3 / 4
+→ 0.75 배</div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>49-bit Product</h2>
+<div class="flow">signed 33 bit × signed 16 bit → signed 49 bit</div>
+<p>Vivado는 곱셈 연산에서 두 Operand Width의 합으로 Product Width를 추론한다. 실제 DSP48 사용 개수는 Operand 크기와 합성 결과로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Shift</h2>
+<p><code>shift=0</code>이면 Scale Product를 그대로 사용하고, <code>shift&gt;0</code>이면 Power-of-two Division을 Right Shift로 구현한다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Signed Rounding</h2>
+<figure class="manual-figure"><a href="../../images/soc30/soc30_signed_rounding.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="signed symmetric rounding · 원본 보기 (새 탭)"><img src="../../images/soc30/soc30_signed_rounding.svg" alt="signed symmetric rounding"></a><figcaption>Magnitude 영역에서 반올림한 뒤 Sign을 복원하여 양수와 음수 Midpoint를 대칭 처리한다.<br><a href="../../images/soc30/soc30_signed_rounding.svg" target="_blank" rel="noopener" class="figure-original" aria-label="signed symmetric rounding · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Midpoint 예</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Midpoint 예 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">입력</th><th scope="col" role="columnheader">실수값</th><th scope="col" role="columnheader">정책 결과</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="입력" role="cell">+3 / 2</td><td data-label="실수값" role="cell">+1.5</td><td data-label="정책 결과" role="cell">+2</td></tr>
+<tr role="row"><td data-label="입력" role="cell">-3 / 2</td><td data-label="실수값" role="cell">-1.5</td><td data-label="정책 결과" role="cell">-2</td></tr>
+<tr role="row"><td data-label="입력" role="cell">+1 / 2</td><td data-label="실수값" role="cell">+0.5</td><td data-label="정책 결과" role="cell">+1</td></tr>
+<tr role="row"><td data-label="입력" role="cell">-1 / 2</td><td data-label="실수값" role="cell">-0.5</td><td data-label="정책 결과" role="cell">-1</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Zero Point</h2>
+<p>Scale 변환이 끝난 정수값에 Output Zero Point를 더할 수 있도록 입력을 제공한다. signed int8 대칭 양자화에서는 <code>zero_point=0</code>을 사용할 수 있지만, RTL 구조는 Offset 적용 단계가 보이도록 파라미터화했다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Saturation</h2>
+<figure class="manual-figure"><a href="../../images/soc30/soc30_saturation.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="signed int8 saturation · 원본 보기 (새 탭)"><img src="../../images/soc30/soc30_saturation.svg" alt="signed int8 saturation"></a><figcaption>signed int8 범위를 넘어간 값을 Wrap-around시키지 않고 -128 또는 127에 고정한다.<br><a href="../../images/soc30/soc30_saturation.svg" target="_blank" rel="noopener" class="figure-original" aria-label="signed int8 saturation · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Pipeline 구조</h2>
+<div class="flow">S1 Bias → S2 Multiply → S3 Round/Shift → S4 Zero Point + Saturation</div>
+<p>AMD는 DSP 기반 Arithmetic Datapath를 충분히 Pipeline하여 내부 Register 자원을 활용하도록 권장한다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Valid 정렬</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Valid 정렬 · 소스 코드"><code>valid_i
+  ↓
+valid_s1_q
+  ↓
+valid_s2_q
+  ↓
+valid_s3_q
+  ↓
+valid_o</code></pre>
+<p>Data와 Multiplier/Shift/Zero Point 파라미터도 동일한 Stage로 이동한다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Requantizer RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Requantizer RTL · 소스 코드"><code>module requantize_s32_to_s8 (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 valid_i,
+
+    input  wire signed [31:0]   acc_i,
+    input  wire signed [31:0]   bias_i,
+
+    input  wire signed [15:0]   multiplier_i,
+    input  wire        [5:0]    shift_i,
+    input  wire signed [15:0]   zero_point_i,
+
+    output reg                  valid_o,
+    output reg signed [7:0]     q_o,
+
+    output reg                  sat_pos_o,
+    output reg                  sat_neg_o
+);
+
+// Educational integer-only requantization core.
+//
+// Formula:
+//
+//   biased = acc + bias
+//
+//   scaled_product = biased * multiplier
+//
+//   rounded = round_away_from_zero(
+//       scaled_product / 2^shift
+//   )
+//
+//   shifted = rounded + zero_point
+//
+//   q = saturate_to_int8(shifted)
+//
+// Notes:
+// - acc+bias uses 33 bits to preserve the full signed sum.
+// - 33x16 multiply produces a signed 49-bit product.
+// - multiplier is normally positive for NN requantization.
+// - shift=0 means no right shift and no rounding offset.
+// - rounding policy is explicitly symmetric:
+//     +0.5 -&gt; +1
+//     -0.5 -&gt; -1
+// - saturation range is signed int8: -128..127.
+//
+// Pipeline:
+//   S1 : bias add + parameter capture
+//   S2 : fixed-point multiply
+//   S3 : symmetric rounding/right shift
+//   S4 : zero-point add + int8 saturation
+
+// ---------------- Stage 1: bias ----------------
+reg signed [32:0] biased_s1_q;
+reg signed [15:0] mult_s1_q;
+reg        [5:0]  shift_s1_q;
+reg signed [15:0] zp_s1_q;
+reg               valid_s1_q;
+
+wire signed [32:0] biased_w;
+
+assign biased_w =
+    $signed({acc_i[31], acc_i}) +
+    $signed({bias_i[31], bias_i});
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        biased_s1_q &lt;= 33'sd0;
+        mult_s1_q   &lt;= 16'sd0;
+        shift_s1_q  &lt;= 6'd0;
+        zp_s1_q     &lt;= 16'sd0;
+        valid_s1_q  &lt;= 1'b0;
+    end else begin
+        valid_s1_q &lt;= valid_i;
+
+        if (valid_i) begin
+            biased_s1_q &lt;= biased_w;
+            mult_s1_q   &lt;= multiplier_i;
+            shift_s1_q  &lt;= shift_i;
+            zp_s1_q     &lt;= zero_point_i;
+        end
+    end
+end
+
+// ---------------- Stage 2: scale multiply ----------------
+(* use_dsp = "yes" *)
+wire signed [48:0] product_w;
+
+assign product_w =
+    biased_s1_q *
+    mult_s1_q;
+
+reg signed [48:0] product_s2_q;
+reg        [5:0]  shift_s2_q;
+reg signed [15:0] zp_s2_q;
+reg               valid_s2_q;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        product_s2_q &lt;= 49'sd0;
+        shift_s2_q   &lt;= 6'd0;
+        zp_s2_q      &lt;= 16'sd0;
+        valid_s2_q   &lt;= 1'b0;
+    end else begin
+        valid_s2_q &lt;= valid_s1_q;
+
+        if (valid_s1_q) begin
+            product_s2_q &lt;= product_w;
+            shift_s2_q   &lt;= shift_s1_q;
+            zp_s2_q      &lt;= zp_s1_q;
+        end
+    end
+end
+
+// ---------------- Stage 3: symmetric rounding ----------------
+//
+// Magnitude-domain rounding avoids the common bug where adding the
+// same positive rounding constant to negative two's-complement values
+// rounds midpoint cases toward zero instead of away from zero.
+
+wire product_negative_w;
+
+assign product_negative_w =
+    product_s2_q[48];
+
+wire [48:0] product_magnitude_w;
+
+assign product_magnitude_w =
+    product_negative_w
+    ? $unsigned(-product_s2_q)
+    : $unsigned(product_s2_q);
+
+wire [48:0] rounding_add_w;
+
+assign rounding_add_w =
+    (shift_s2_q == 6'd0)
+    ? 49'd0
+    : (49'd1 &lt;&lt; (shift_s2_q - 6'd1));
+
+wire [49:0] rounded_magnitude_extended_w;
+
+assign rounded_magnitude_extended_w =
+    {1'b0, product_magnitude_w} +
+    {1'b0, rounding_add_w};
+
+wire [49:0] shifted_magnitude_w;
+
+assign shifted_magnitude_w =
+    rounded_magnitude_extended_w &gt;&gt;
+    shift_s2_q;
+
+wire signed [50:0] rounded_signed_w;
+
+assign rounded_signed_w =
+    product_negative_w
+    ? -$signed({1'b0, shifted_magnitude_w})
+    :  $signed({1'b0, shifted_magnitude_w});
+
+reg signed [50:0] rounded_s3_q;
+reg signed [15:0] zp_s3_q;
+reg               valid_s3_q;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        rounded_s3_q &lt;= 51'sd0;
+        zp_s3_q      &lt;= 16'sd0;
+        valid_s3_q   &lt;= 1'b0;
+    end else begin
+        valid_s3_q &lt;= valid_s2_q;
+
+        if (valid_s2_q) begin
+            rounded_s3_q &lt;= rounded_signed_w;
+            zp_s3_q      &lt;= zp_s2_q;
+        end
+    end
+end
+
+// ---------------- Stage 4: zero point + saturation ----------------
+wire signed [51:0] shifted_with_zp_w;
+
+assign shifted_with_zp_w =
+    $signed({rounded_s3_q[50], rounded_s3_q}) +
+    $signed({
+        {36{zp_s3_q[15]}},
+        zp_s3_q
+    });
+
+wire sat_pos_w;
+wire sat_neg_w;
+
+assign sat_pos_w =
+    (shifted_with_zp_w &gt; 52'sd127);
+
+assign sat_neg_w =
+    (shifted_with_zp_w &lt; -52'sd128);
+
+wire signed [7:0] saturated_w;
+
+assign saturated_w =
+    sat_pos_w
+    ? 8'sd127
+    : sat_neg_w
+      ? -8'sd128
+      : shifted_with_zp_w[7:0];
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        q_o       &lt;= 8'sd0;
+        valid_o   &lt;= 1'b0;
+        sat_pos_o &lt;= 1'b0;
+        sat_neg_o &lt;= 1'b0;
+    end else begin
+        valid_o &lt;= valid_s3_q;
+
+        if (valid_s3_q) begin
+            q_o       &lt;= saturated_w;
+            sat_pos_o &lt;= sat_pos_w;
+            sat_neg_o &lt;= sat_neg_w;
+        end else begin
+            sat_pos_o &lt;= 1'b0;
+            sat_neg_o &lt;= 1'b0;
+        end
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>SoC29 2×4 Batch 입력</h2>
+<figure class="manual-figure"><a href="../../images/soc30/soc30_batch_serialization.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC29 result serial requantization · 원본 보기 (새 탭)"><img src="../../images/soc30/soc30_batch_serialization.svg" alt="SoC29 result serial requantization"></a><figcaption>SoC 29의 CH0/CH1 × Sample4 총 8개의 int32 값을 하나의 Pipelined Requantizer로 처리한다.<br><a href="../../images/soc30/soc30_batch_serialization.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC29 result serial requantization · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Serial Resource Reuse</h2>
+<p>Requantizer를 8개 병렬 배치하지 않고 하나의 Pipeline Core를 재사용한다. FEED 중에는 매 Clock 새 값을 넣을 수 있으므로 Resource를 줄이면서 Throughput은 1 value/clock까지 유지할 수 있다.</p>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Tag Pipeline</h2>
+<p>입력 순서 0~7을 Data와 함께 Pipeline으로 이동해 Output Byte를 원래 CH/Sample 위치에 다시 배치한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="18절 신호 및 실행 흐름">0..3 → CH0 sample0..3
+4..7 → CH1 sample0..3</div>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Batch Wrapper RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Batch Wrapper RTL · 소스 코드"><code>module requantize_batch2x4_serial (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    input  wire [127:0]         acc_ch0_batch_i,
+    input  wire [127:0]         acc_ch1_batch_i,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output reg                  done_o,
+    output reg                  result_valid_o,
+
+    output reg  [31:0]          q_ch0_batch_o,
+    output reg  [31:0]          q_ch1_batch_o,
+
+    output reg  [7:0]           saturation_count_o
+);
+
+// Serializes the 2-channel x 4-sample int32 result block from SoC 29
+// through one pipelined requantization core.
+//
+// Feed order:
+//   index 0..3 -&gt; CH0 sample 0..3
+//   index 4..7 -&gt; CH1 sample 0..3
+//
+// One item is launched per clock while FEED is active.
+// The requantizer itself is fully pipelined, so after startup it also
+// produces one result per clock.
+
+localparam [1:0] ST_IDLE  = 2'd0;
+localparam [1:0] ST_FEED  = 2'd1;
+localparam [1:0] ST_DRAIN = 2'd2;
+
+reg [1:0] state_q;
+reg [3:0] feed_index_q;
+reg [3:0] output_count_q;
+
+assign busy_o =
+    (state_q != ST_IDLE);
+
+wire core_valid_i;
+
+assign core_valid_i =
+    (state_q == ST_FEED);
+
+wire current_is_ch1_w;
+wire [1:0] current_sample_w;
+
+assign current_is_ch1_w =
+    feed_index_q[2];
+
+assign current_sample_w =
+    feed_index_q[1:0];
+
+reg signed [31:0] selected_acc_w;
+
+always @(*) begin
+    case (feed_index_q)
+        4'd0: selected_acc_w = $signed(acc_ch0_batch_i[31:0]);
+        4'd1: selected_acc_w = $signed(acc_ch0_batch_i[63:32]);
+        4'd2: selected_acc_w = $signed(acc_ch0_batch_i[95:64]);
+        4'd3: selected_acc_w = $signed(acc_ch0_batch_i[127:96]);
+
+        4'd4: selected_acc_w = $signed(acc_ch1_batch_i[31:0]);
+        4'd5: selected_acc_w = $signed(acc_ch1_batch_i[63:32]);
+        4'd6: selected_acc_w = $signed(acc_ch1_batch_i[95:64]);
+
+        default:
+            selected_acc_w = $signed(acc_ch1_batch_i[127:96]);
+    endcase
+end
+
+wire signed [31:0] selected_bias_w;
+wire signed [15:0] selected_mult_w;
+wire        [5:0]  selected_shift_w;
+wire signed [15:0] selected_zp_w;
+
+assign selected_bias_w =
+    current_is_ch1_w
+    ? bias_ch1_i
+    : bias_ch0_i;
+
+assign selected_mult_w =
+    current_is_ch1_w
+    ? mult_ch1_i
+    : mult_ch0_i;
+
+assign selected_shift_w =
+    current_is_ch1_w
+    ? shift_ch1_i
+    : shift_ch0_i;
+
+assign selected_zp_w =
+    current_is_ch1_w
+    ? zp_ch1_i
+    : zp_ch0_i;
+
+wire              core_valid_o;
+wire signed [7:0] core_q_w;
+wire              core_sat_pos_w;
+wire              core_sat_neg_w;
+
+requantize_s32_to_s8 u_requantizer (
+    .clk(clk),
+    .resetn(resetn),
+
+    .valid_i(core_valid_i),
+
+    .acc_i(selected_acc_w),
+    .bias_i(selected_bias_w),
+
+    .multiplier_i(selected_mult_w),
+    .shift_i(selected_shift_w),
+    .zero_point_i(selected_zp_w),
+
+    .valid_o(core_valid_o),
+    .q_o(core_q_w),
+
+    .sat_pos_o(core_sat_pos_w),
+    .sat_neg_o(core_sat_neg_w)
+);
+
+// Tag pipeline matches the 4 registered stages in requantize_s32_to_s8.
+reg [3:0] tag_s1_q;
+reg [3:0] tag_s2_q;
+reg [3:0] tag_s3_q;
+reg [3:0] tag_s4_q;
+
+reg valid_tag_s1_q;
+reg valid_tag_s2_q;
+reg valid_tag_s3_q;
+reg valid_tag_s4_q;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        tag_s1_q &lt;= 4'd0;
+        tag_s2_q &lt;= 4'd0;
+        tag_s3_q &lt;= 4'd0;
+        tag_s4_q &lt;= 4'd0;
+
+        valid_tag_s1_q &lt;= 1'b0;
+        valid_tag_s2_q &lt;= 1'b0;
+        valid_tag_s3_q &lt;= 1'b0;
+        valid_tag_s4_q &lt;= 1'b0;
+    end else begin
+        valid_tag_s1_q &lt;= core_valid_i;
+        valid_tag_s2_q &lt;= valid_tag_s1_q;
+        valid_tag_s3_q &lt;= valid_tag_s2_q;
+        valid_tag_s4_q &lt;= valid_tag_s3_q;
+
+        if (core_valid_i) begin
+            tag_s1_q &lt;= feed_index_q;
+        end
+
+        if (valid_tag_s1_q) begin
+            tag_s2_q &lt;= tag_s1_q;
+        end
+
+        if (valid_tag_s2_q) begin
+            tag_s3_q &lt;= tag_s2_q;
+        end
+
+        if (valid_tag_s3_q) begin
+            tag_s4_q &lt;= tag_s3_q;
+        end
+    end
+end
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q             &lt;= ST_IDLE;
+        feed_index_q        &lt;= 4'd0;
+        output_count_q      &lt;= 4'd0;
+
+        done_o              &lt;= 1'b0;
+        result_valid_o      &lt;= 1'b0;
+
+        q_ch0_batch_o       &lt;= 32'h0000_0000;
+        q_ch1_batch_o       &lt;= 32'h0000_0000;
+
+        saturation_count_o  &lt;= 8'd0;
+    end else begin
+        done_o         &lt;= 1'b0;
+        result_valid_o &lt;= 1'b0;
+
+        if (core_valid_o) begin
+            case (tag_s4_q)
+                4'd0: q_ch0_batch_o[7:0]   &lt;= core_q_w;
+                4'd1: q_ch0_batch_o[15:8]  &lt;= core_q_w;
+                4'd2: q_ch0_batch_o[23:16] &lt;= core_q_w;
+                4'd3: q_ch0_batch_o[31:24] &lt;= core_q_w;
+
+                4'd4: q_ch1_batch_o[7:0]   &lt;= core_q_w;
+                4'd5: q_ch1_batch_o[15:8]  &lt;= core_q_w;
+                4'd6: q_ch1_batch_o[23:16] &lt;= core_q_w;
+
+                default:
+                    q_ch1_batch_o[31:24] &lt;= core_q_w;
+            endcase
+
+            if (
+                core_sat_pos_w ||
+                core_sat_neg_w
+            ) begin
+                saturation_count_o &lt;=
+                    saturation_count_o + 8'd1;
+            end
+
+            output_count_q &lt;=
+                output_count_q + 4'd1;
+
+            if (tag_s4_q == 4'd7) begin
+                done_o         &lt;= 1'b1;
+                result_valid_o &lt;= 1'b1;
+                state_q        &lt;= ST_IDLE;
+            end
+        end
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    feed_index_q       &lt;= 4'd0;
+                    output_count_q     &lt;= 4'd0;
+
+                    q_ch0_batch_o      &lt;= 32'h0000_0000;
+                    q_ch1_batch_o      &lt;= 32'h0000_0000;
+
+                    saturation_count_o &lt;= 8'd0;
+
+                    state_q &lt;= ST_FEED;
+                end
+            end
+
+            ST_FEED: begin
+                if (feed_index_q == 4'd7) begin
+                    state_q &lt;= ST_DRAIN;
+                end else begin
+                    feed_index_q &lt;=
+                        feed_index_q + 4'd1;
+                end
+            end
+
+            ST_DRAIN: begin
+                // Wait for tag 7 to return from the 4-stage core.
+            end
+
+            default: begin
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Board Demo CH0</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="20절 신호 및 실행 흐름">SoC29 CH0 int32 = [16,32,48,64]
+bias=0
+mult=1
+shift=1
+zero_point=0
+→ int8 [8,16,24,32]</div>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Board Demo CH1</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="21절 신호 및 실행 흐름">SoC29 CH1 int32 = [32,64,96,128]
+bias=4
+mult=3
+shift=1
+zero_point=-3
+→ [51,99,147,195]
+→ Saturation
+→ int8 [51,99,127,127]</div>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Saturation Count</h2>
+<p>Batch Wrapper는 <code>sat_pos_o || sat_neg_o</code> 횟수를 세어 이번 Batch에서 몇 개 값이 int8 Range를 벗어났는지 확인할 수 있다. Board Demo 예상값은 2회다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>LED 출력</h2>
+<div class="flow">LED[15:8] → CH0 sample3 = 32 = 0x20<br>LED[7:0] → CH1 sample3 = 127 = 0x7F<br>최종 LED → 0x207F</div>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Python Reference</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Reference · 소스 코드"><code>rounding midpoint checks:
++3 / 2 -&gt; 2
+-3 / 2 -&gt; -2
++1 / 2 -&gt; 1
+-1 / 2 -&gt; -1
+
+CH0 int32 -&gt; int8 = [8, 16, 24, 32]
+CH1 int32 -&gt; int8 = [51, 99, 127, 127]
+saturation count = 2
+selected LED = 0x207F
+
+formula: saturate_int8(round_away_from_zero((acc+bias)*mult / 2^shift) + zero_point)
+SOC30 PYTHON REQUANTIZATION REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
+</code></pre>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Core Self-Checking Test</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Core Self-Checking Test · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_requantize_s32_to_s8;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic valid_i = 1'b0;
+logic signed [31:0] acc_i = 32'sd0;
+logic signed [31:0] bias_i = 32'sd0;
+logic signed [15:0] multiplier_i = 16'sd1;
+logic [5:0] shift_i = 6'd0;
+logic signed [15:0] zero_point_i = 16'sd0;
+
+wire valid_o;
+wire signed [7:0] q_o;
+wire sat_pos_o;
+wire sat_neg_o;
+
+integer check_count = 0;
+integer error_count = 0;
+
+integer wr_ptr = 0;
+integer rd_ptr = 0;
+
+reg signed [7:0] expected_q [0:255];
+reg expected_sat_pos [0:255];
+reg expected_sat_neg [0:255];
+
+always #5 clk = ~clk;
+
+requantize_s32_to_s8 dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .valid_i(valid_i),
+
+    .acc_i(acc_i),
+    .bias_i(bias_i),
+
+    .multiplier_i(multiplier_i),
+    .shift_i(shift_i),
+    .zero_point_i(zero_point_i),
+
+    .valid_o(valid_o),
+    .q_o(q_o),
+
+    .sat_pos_o(sat_pos_o),
+    .sat_neg_o(sat_neg_o)
+);
+
+function automatic integer signed ref_requant(
+    input integer signed acc,
+    input integer signed bias,
+    input integer signed mult,
+    input integer shift,
+    input integer signed zp
+);
+    reg signed [63:0] biased;
+    reg signed [63:0] product;
+    reg signed [63:0] magnitude;
+    reg signed [63:0] rounded;
+    reg signed [63:0] shifted;
+    reg signed [63:0] rounding_add;
+
+    begin
+        biased = acc;
+        biased = biased + bias;
+
+        product = biased * mult;
+
+        if (product &lt; 0)
+            magnitude = -product;
+        else
+            magnitude = product;
+
+        if (shift == 0) begin
+            rounded = magnitude;
+        end else begin
+            rounding_add = 64'sd1 &lt;&lt;&lt; (shift - 1);
+            rounded = (magnitude + rounding_add) &gt;&gt;&gt; shift;
+        end
+
+        if (product &lt; 0)
+            rounded = -rounded;
+
+        shifted = rounded + zp;
+
+        if (shifted &gt; 127)
+            ref_requant = 127;
+        else if (shifted &lt; -128)
+            ref_requant = -128;
+        else
+            ref_requant = shifted;
+    end
+endfunction
+
+function automatic bit ref_sat_pos(
+    input integer signed acc,
+    input integer signed bias,
+    input integer signed mult,
+    input integer shift,
+    input integer signed zp
+);
+    reg signed [63:0] biased;
+    reg signed [63:0] product;
+    reg signed [63:0] magnitude;
+    reg signed [63:0] rounded;
+    reg signed [63:0] shifted;
+
+    begin
+        biased = acc;
+        biased = biased + bias;
+        product = biased * mult;
+
+        magnitude = (product &lt; 0) ? -product : product;
+
+        if (shift == 0)
+            rounded = magnitude;
+        else
+            rounded =
+                (magnitude + (64'sd1 &lt;&lt;&lt; (shift - 1))) &gt;&gt;&gt; shift;
+
+        if (product &lt; 0)
+            rounded = -rounded;
+
+        shifted = rounded + zp;
+
+        ref_sat_pos = (shifted &gt; 127);
+    end
+endfunction
+
+function automatic bit ref_sat_neg(
+    input integer signed acc,
+    input integer signed bias,
+    input integer signed mult,
+    input integer shift,
+    input integer signed zp
+);
+    reg signed [63:0] biased;
+    reg signed [63:0] product;
+    reg signed [63:0] magnitude;
+    reg signed [63:0] rounded;
+    reg signed [63:0] shifted;
+
+    begin
+        biased = acc;
+        biased = biased + bias;
+        product = biased * mult;
+
+        magnitude = (product &lt; 0) ? -product : product;
+
+        if (shift == 0)
+            rounded = magnitude;
+        else
+            rounded =
+                (magnitude + (64'sd1 &lt;&lt;&lt; (shift - 1))) &gt;&gt;&gt; shift;
+
+        if (product &lt; 0)
+            rounded = -rounded;
+
+        shifted = rounded + zp;
+
+        ref_sat_neg = (shifted &lt; -128);
+    end
+endfunction
+
+task automatic send_case(
+    input integer signed acc,
+    input integer signed bias,
+    input integer signed mult,
+    input integer shift,
+    input integer signed zp
+);
+    integer signed q_ref;
+
+    begin
+        q_ref = ref_requant(
+            acc,
+            bias,
+            mult,
+            shift,
+            zp
+        );
+
+        expected_q[wr_ptr] =
+            q_ref[7:0];
+
+        expected_sat_pos[wr_ptr] =
+            ref_sat_pos(acc, bias, mult, shift, zp);
+
+        expected_sat_neg[wr_ptr] =
+            ref_sat_neg(acc, bias, mult, shift, zp);
+
+        wr_ptr = wr_ptr + 1;
+
+        @(negedge clk);
+
+        acc_i = acc;
+        bias_i = bias;
+        multiplier_i = mult;
+        shift_i = shift[5:0];
+        zero_point_i = zp;
+        valid_i = 1'b1;
+    end
+endtask
+
+task automatic stop_input;
+    begin
+        @(negedge clk);
+        valid_i = 1'b0;
+    end
+endtask
+
+always @(posedge clk) begin
+    #1;
+
+    if (valid_o) begin
+        check_count = check_count + 1;
+
+        if (q_o !== expected_q[rd_ptr]) begin
+            error_count = error_count + 1;
+
+            $error(
+                "Q FAIL idx=%0d actual=%0d expected=%0d",
+                rd_ptr,
+                q_o,
+                expected_q[rd_ptr]
+            );
+        end
+
+        if (sat_pos_o !== expected_sat_pos[rd_ptr]) begin
+            error_count = error_count + 1;
+
+            $error(
+                "SAT+ FAIL idx=%0d",
+                rd_ptr
+            );
+        end
+
+        if (sat_neg_o !== expected_sat_neg[rd_ptr]) begin
+            error_count = error_count + 1;
+
+            $error(
+                "SAT- FAIL idx=%0d",
+                rd_ptr
+            );
+        end
+
+        rd_ptr = rd_ptr + 1;
+    end
+end
+
+initial begin
+    integer i;
+    integer signed r_acc;
+    integer signed r_bias;
+    integer signed r_mult;
+    integer r_shift;
+    integer signed r_zp;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // Directed midpoint / sign / saturation cases.
+    send_case(0, 0, 1, 0, 0);
+
+    send_case(3, 0, 1, 1, 0);    // +1.5 -&gt; +2
+    send_case(-3, 0, 1, 1, 0);   // -1.5 -&gt; -2
+
+    send_case(1, 0, 1, 1, 0);    // +0.5 -&gt; +1
+    send_case(-1, 0, 1, 1, 0);   // -0.5 -&gt; -1
+
+    send_case(200, 0, 1, 0, 0);  // + saturation
+    send_case(-200, 0, 1, 0, 0); // - saturation
+
+    send_case(120, 20, 1, 0, 0);
+    send_case(-120, -20, 1, 0, 0);
+
+    send_case(100, 0, 3, 1, -3);
+    send_case(-100, 0, 3, 1, 5);
+
+    send_case(10, 0, 1, 0, 5);
+    send_case(-10, 0, 1, 0, 5);
+
+    // Bias addition must not overflow at 32-bit boundary.
+    send_case(32'sh7FFF_FFFF, 32'sh7FFF_FFFF, 1, 25, 0);
+    send_case(32'sh8000_0000, -32'sh7FFF_FFFF, 1, 25, 0);
+
+    // Randomized moderate-range regression.
+    for (i = 0; i &lt; 80; i = i + 1) begin
+        r_acc = ($urandom % 4001) - 2000;
+        r_bias = ($urandom % 401) - 200;
+        r_mult = ($urandom % 15) + 1;
+        r_shift = $urandom % 9;
+        r_zp = ($urandom % 21) - 10;
+
+        send_case(
+            r_acc,
+            r_bias,
+            r_mult,
+            r_shift,
+            r_zp
+        );
+    end
+
+    stop_input();
+
+    while (rd_ptr &lt; wr_ptr) begin
+        @(posedge clk);
+    end
+
+    repeat (3) @(posedge clk);
+
+    $display("");
+    $display("SOC30 CORE CASES  : %0d", wr_ptr);
+    $display("SOC30 CORE CHECKS : %0d", check_count);
+    $display("SOC30 CORE ERRORS : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC30 REQUANT CORE TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC30 REQUANT CORE TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+<p>Midpoint, Positive/Negative Saturation, Bias Boundary와 Random 80 Case를 Reference Function과 비교한다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Batch Self-Checking Test</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Batch Self-Checking Test · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_requantize_batch2x4_serial;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+logic start_i = 1'b0;
+
+logic [127:0] acc_ch0_batch_i;
+logic [127:0] acc_ch1_batch_i;
+
+logic signed [31:0] bias_ch0_i;
+logic signed [31:0] bias_ch1_i;
+
+logic signed [15:0] mult_ch0_i;
+logic signed [15:0] mult_ch1_i;
+
+logic [5:0] shift_ch0_i;
+logic [5:0] shift_ch1_i;
+
+logic signed [15:0] zp_ch0_i;
+logic signed [15:0] zp_ch1_i;
+
+wire busy_o;
+wire done_o;
+wire result_valid_o;
+
+wire [31:0] q_ch0_batch_o;
+wire [31:0] q_ch1_batch_o;
+
+wire [7:0] saturation_count_o;
+
+integer error_count = 0;
+integer check_count = 0;
+
+always #5 clk = ~clk;
+
+requantize_batch2x4_serial dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_i),
+
+    .acc_ch0_batch_i(acc_ch0_batch_i),
+    .acc_ch1_batch_i(acc_ch1_batch_i),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .result_valid_o(result_valid_o),
+
+    .q_ch0_batch_o(q_ch0_batch_o),
+    .q_ch1_batch_o(q_ch1_batch_o),
+
+    .saturation_count_o(saturation_count_o)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+initial begin
+    integer timeout;
+
+    // SoC 29 board-demo int32 output:
+    // CH0 = [16, 32, 48, 64]
+    // CH1 = [32, 64, 96, 128]
+    acc_ch0_batch_i = {
+        32'sd64,
+        32'sd48,
+        32'sd32,
+        32'sd16
+    };
+
+    acc_ch1_batch_i = {
+        32'sd128,
+        32'sd96,
+        32'sd64,
+        32'sd32
+    };
+
+    // CH0:
+    // q = round(x / 2)
+    // -&gt; [8, 16, 24, 32]
+    bias_ch0_i = 32'sd0;
+    mult_ch0_i = 16'sd1;
+    shift_ch0_i = 6'd1;
+    zp_ch0_i = 16'sd0;
+
+    // CH1:
+    // q = round((x + 4) * 3 / 2) - 3
+    // -&gt; [51, 99, 127, 127]
+    // last two saturate positive.
+    bias_ch1_i = 32'sd4;
+    mult_ch1_i = 16'sd3;
+    shift_ch1_i = 6'd1;
+    zp_ch1_i = -16'sd3;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    @(negedge clk);
+    start_i = 1'b1;
+
+    @(negedge clk);
+    start_i = 1'b0;
+
+    timeout = 0;
+
+    while (
+        (result_valid_o !== 1'b1) &amp;&amp;
+        (timeout &lt; 100)
+    ) begin
+        @(posedge clk);
+        #1;
+        timeout = timeout + 1;
+    end
+
+    check_true(
+        "result_valid arrived",
+        result_valid_o === 1'b1
+    );
+
+    check_true(
+        "done aligned with result",
+        done_o === 1'b1
+    );
+
+    check_true(
+        "CH0 packed int8",
+        q_ch0_batch_o == 32'h2018_1008
+    );
+
+    check_true(
+        "CH1 packed int8",
+        q_ch1_batch_o == 32'h7F7F_6333
+    );
+
+    check_true(
+        "saturation count = 2",
+        saturation_count_o == 8'd2
+    );
+
+    $display("");
+    $display("CH0 quantized = 0x%08h", q_ch0_batch_o);
+    $display("CH1 quantized = 0x%08h", q_ch1_batch_o);
+    $display("saturation count = %0d", saturation_count_o);
+
+    if (error_count == 0) begin
+        $display("SOC30 BATCH REQUANT TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC30 BATCH REQUANT TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+<p>SoC 29 Board Demo 결과를 입력해 Packed CH0 <code>0x20181008</code>, Packed CH1 <code>0x7F7F6333</code>, Saturation Count 2를 확인한다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Integer-only Inference와의 관계</h2>
+<p>Integer-only Quantized Inference에서는 int32 Accumulator를 Output Scale로 다시 변환하는 단계가 필요하다. Jacob 등은 8-bit Weight/Activation과 Integer-only Arithmetic으로 Inference를 수행하는 Quantization Scheme을 제시했다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>교육용 Scale 모델</h2>
+<p>gemmlowp 계열 구현은 Fixed-point Multiplier와 Rounding Shift를 사용하지만 실제 구현은 Q31 Multiplier, Saturating High Multiply 등 더 정교한 형태를 사용한다. 이번 장의 16-bit Multiplier / Power-of-two Shift는 Hardware 원리를 이해하기 위한 단순화 모델이다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>DSP Mapping</h2>
+<p>Scale Multiply에 <code>(* use_dsp = "yes" *)</code>를 적용했다. 하지만 33×16 Multiply는 7-Series DSP48 하나에 들어간다고 가정하지 않는다. 실제 Primitive Count는 Synthesis Report를 기준으로 한다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>OOC Synthesis</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="OOC Synthesis · 소스 코드"><code># SoC 30 · Generic requantization core OOC synthesis
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set out_dir    [file normalize [file join $root_dir "reports" "generic_ooc"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "requantize_s32_to_s8.v"]
+
+synth_design \
+    -mode out_of_context \
+    -top requantize_s32_to_s8 \
+    -part xc7a35tcpg236-1
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_ooc.rpt"]
+
+redirect -file [file join $out_dir "02_dsp48_cells_ooc.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "03_timing_summary_ooc.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "04_design_analysis_ooc.rpt"]
+
+puts ""
+puts "SoC 30 OOC synthesis complete."
+puts "Check actual DSP mapping in 02_dsp48_cells_ooc.rpt."
+puts "33x16 multiplication may require more than one DSP48 on 7-series."
+</code></pre>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>Post-route Timing</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Post-route Timing · 소스 코드"><code># SoC 30 · Basys3 board demo implementation
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set xdc_dir    [file join $root_dir "constraints"]
+set out_dir    [file normalize [file join $root_dir "reports" "board_demo"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "reset_active_high_to_active_low.v"]
+read_verilog [file join $rtl_dir "requantize_s32_to_s8.v"]
+read_verilog [file join $rtl_dir "requantize_batch2x4_serial.v"]
+read_verilog [file join $rtl_dir "soc29_result_demo_source.v"]
+read_verilog [file join $rtl_dir "requant_result_sink.v"]
+read_verilog [file join $rtl_dir "requantization_basys3_top.v"]
+
+synth_design \
+    -top requantization_basys3_top \
+    -part xc7a35tcpg236-1
+
+read_xdc [file join $xdc_dir "basys3_soc30_lab.xdc"]
+
+create_clock \
+    -name sys_clk \
+    -period 10.000 \
+    [get_ports clk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_post_synth.rpt"]
+
+redirect -file [file join $out_dir "02_dsp48_cells_post_synth.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "03_utilization_post_route.rpt"]
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "04_timing_summary_post_route.rpt"]
+
+report_timing \
+    -delay_type max \
+    -max_paths 20 \
+    -nworst 1 \
+    -sort_by group \
+    -input_pins \
+    -file [file join $out_dir "05_worst_setup_paths.rpt"]
+
+set_switching_activity \
+    -default_static_probability 0.5 \
+    -default_toggle_rate 12.5
+
+report_power \
+    -file [file join $out_dir "06_power_normalized_activity.rpt"] \
+    -rpx  [file join $out_dir "06_power_normalized_activity.rpx"]
+
+report_methodology \
+    -file [file join $out_dir "07_methodology_post_route.rpt"]
+
+write_checkpoint -force \
+    [file join $out_dir "soc30_board_demo_post_route.dcp"]
+
+puts ""
+puts "SoC 30 board implementation complete."
+puts "Expected LED[15:0] = 0x207F."
+</code></pre>
+<p>Dynamic Right Shift는 Barrel Shifter Logic을 만들 수 있고 33×16 Multiply도 Resource가 크므로 Post-route WNS/TNS와 Worst Setup Path를 반드시 확인한다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Power / Resource Trade-off</h2>
+<p>코어 1개 시분할 방식은 병렬 코어 8개보다 Resource 사용량을 줄일 수 있지만 Batch Completion Latency는 증가한다. 실제 NPU에서는 요구 Throughput에 따라 Requantizer 병렬도를 결정한다.</p>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">큰 Bias에서 부호 반전</td><td data-label="원인" role="cell">32-bit Bias Sum Overflow</td><td data-label="확인" role="cell">33-bit sum</td></tr>
+<tr role="row"><td data-label="증상" role="cell">-1.5가 -1로 나옴</td><td data-label="원인" role="cell">음수 반올림 정책 오류</td><td data-label="확인" role="cell">Magnitude-domain rounding</td></tr>
+<tr role="row"><td data-label="증상" role="cell">128이 -128로 Wrap</td><td data-label="원인" role="cell">Saturation 누락</td><td data-label="확인" role="cell">127/-128 Clamp</td></tr>
+<tr role="row"><td data-label="증상" role="cell">CH/Sample 결과 섞임</td><td data-label="원인" role="cell">Tag Pipeline 불일치</td><td data-label="확인" role="cell">tag_s1~s4</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Scale이 지나치게 큼</td><td data-label="원인" role="cell">Multiplier/Shift 파라미터 오류</td><td data-label="확인" role="cell">Offline Quantization 값 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">DSP 개수 예상과 다름</td><td data-label="원인" role="cell">33×16 Mapping</td><td data-label="확인" role="cell">DSP48 Cell Report</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Timing 악화</td><td data-label="원인" role="cell">Wide Multiply/Dynamic Shift</td><td data-label="확인" role="cell">Pipeline/Post-route Timing</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 30 완료 체크리스트</h2>
+<ul>
+<li>[ ] int32 Accumulator를 다시 int8로 변환해야 하는 이유를 설명한다.</li>
+<li>[ ] acc+bias를 signed 33 bit로 계산한다.</li>
+<li>[ ] 33×16 Product가 signed 49 bit임을 이해한다.</li>
+<li>[ ] multiplier/2^shift 형태의 Fixed-point Scale을 이해한다.</li>
+<li>[ ] Signed Midpoint를 대칭적으로 반올림한다.</li>
+<li>[ ] Zero Point 적용 위치를 이해한다.</li>
+<li>[ ] signed int8 -128~127 Saturation을 구현한다.</li>
+<li>[ ] Valid를 4 Pipeline Stage와 정렬한다.</li>
+<li>[ ] SoC29의 8개 int32 결과를 코어 하나로 시분할한다.</li>
+<li>[ ] Tag Pipeline으로 CH/Sample 위치를 복원한다.</li>
+<li>[ ] Board Demo Saturation 2회를 확인한다.</li>
+<li>[ ] 실제 DSP Count는 Synthesis Report로 확인한다.</li>
+</ul>
+<div class="flow">SoC 30 완료 → SoC 31 NPU Register Map / MicroBlaze V Control / Accelerator Integration</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 연구 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 연구 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers" target="_blank" rel="noopener">AMD UG901 · Multipliers · 2026.1</a></td><td data-label="확인 항목" role="cell">Multiplier Product Width와 추론</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers-Implementation" target="_blank" rel="noopener">AMD UG901 · Multipliers Implementation · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP/Slice 구현 선택과 USE_DSP</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Coding-for-Optimal-DSP-and-Arithmetic-Inference" target="_blank" rel="noopener">AMD UG949 · Optimal DSP Inference · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP Datapath Pipeline 권장</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations" target="_blank" rel="noopener">AMD UG949 · Pipelining Considerations · 2026.1</a></td><td data-label="확인 항목" role="cell">Latency/Throughput Trade-off</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://openaccess.thecvf.com/content_cvpr_2018/html/Jacob_Quantization_and_Training_CVPR_2018_paper.html" target="_blank" rel="noopener">Jacob et al. · CVPR 2018</a></td><td data-label="확인 항목" role="cell">Integer-only 8-bit Quantized Inference</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/google/gemmlowp/blob/master/public/output_stages.h" target="_blank" rel="noopener">gemmlowp · Output Stages</a></td><td data-label="확인 항목" role="cell">int32 Quantize-down, Multiplier, Shift, Rounding, Saturating Cast</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="29_data_reuse_weight_stationary_tiling.html">← SoC 29</a><a href="../../index.html">전체 목차</a><a href="31_npu_register_map_microblaze_axi_integration.html">SoC 31 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

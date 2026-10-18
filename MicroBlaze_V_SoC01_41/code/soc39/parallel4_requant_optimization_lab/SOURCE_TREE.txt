@@ -1,0 +1,31 @@
+parallel4_requant_optimization_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── requantize_batch2x4_parallel4.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   ├── tensor_job_engine_pipelined_read.v
+│   ├── tensor_job_engine_parallel4_requant.v
+│   ├── npu_full_control_irq.v
+│   ├── axi4lite_reg_bridge.v
+│   ├── bram_clock_reset_adapter.v
+│   ├── npu_full_accelerator_fastread_ip.v
+│   ├── npu_full_accelerator_parallel4_ip.v
+│   ├── npu_full_accelerator_fastread_sim_top.v
+│   └── npu_full_accelerator_parallel4_sim_top.v
+├── testbench/
+│   ├── tb_requantize_batch2x4_parallel4.sv
+│   └── tb_soc39_parallel4_regression.sv
+├── reference/
+│   ├── soc39_static_comparison.py
+│   └── static_comparison_output.txt
+├── scripts/
+│   ├── prepare_soc39_batch_simulation.tcl
+│   ├── prepare_soc39_simulation.tcl
+│   ├── run_soc39_soc38_serial_post_route.tcl
+│   ├── run_soc39_parallel4_post_route.tcl
+│   └── run_soc39_compare.sh
+├── doc/
+│   ├── README_SOC39.md
+│   └── SERIAL_VS_PARALLEL4.md
+└── SOURCE_TREE.txt

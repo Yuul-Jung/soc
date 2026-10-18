@@ -1,0 +1,22 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_custom_axi4lite_ip -o validation-tools/rtl_runs/soc12_tb_custom_axi4lite_ip.vvp code/soc12/tb_custom_axi4lite_ip.v code/soc12/axi4lite_slave_adapter.v code/soc12/custom_register_bank.v code/soc12/custom_axi4lite_ip.v
+code/soc12/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc12/tb_custom_axi4lite_ip.v:1: ...: The inherited timescale is here.
+code/soc12/custom_register_bank.v:1: warning: timescale for custom_register_bank inherited from another file.
+code/soc12/tb_custom_axi4lite_ip.v:1: ...: The inherited timescale is here.
+code/soc12/custom_axi4lite_ip.v:1: warning: timescale for custom_axi4lite_ip inherited from another file.
+code/soc12/tb_custom_axi4lite_ip.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+=== SoC 12 AXI4-Lite self-checking test start ===
+PASS: CONTROL reset = 00000000
+PASS: VERSION = 00010000
+PASS: ID = 524d4150
+PASS: AW-first CONTROL write = 00000005
+PASS: W-first DATA_IN write = 11223344
+PASS: WSTRB low-byte update = 112233aa
+PASS: COMMAND start pulse count = 00000001
+PASS: STATUS read = 00000005
+PASS: IRQ event set = 00000001
+PASS: IRQ W1C clear = 00000000
+PASS: DATA_OUT read = 12345678
+=== PASS: SoC 12 AXI4-Lite self-checking test ===

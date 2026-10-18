@@ -1,0 +1,194 @@
+{
+  "repository": "https://github.com/Xilinx/embeddedsw",
+  "commit": "97f2baf7f69e9d5f447650110af0d8841e501277",
+  "sources": [
+    {
+      "path": "lib/bsp/standalone/src/common/xil_types.h",
+      "bytes": 6384,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/xil_types.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/common/xil_assert.h",
+      "bytes": 7095,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/xil_assert.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/common/xstatus.h",
+      "bytes": 19742,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/xstatus.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/common/xil_io.h",
+      "bytes": 15446,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/xil_io.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/common/xil_printf.h",
+      "bytes": 1818,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/xil_printf.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/common/intr/xinterrupt_wrap.h",
+      "bytes": 5494,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/intr/xinterrupt_wrap.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/common/intr/xinterrupt_wrap.c",
+      "bytes": 20548,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/common/intr/xinterrupt_wrap.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/riscv/xil_exception.h",
+      "bytes": 4953,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/xil_exception.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/riscv/xil_exception.c",
+      "bytes": 6232,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/xil_exception.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/riscv/riscv_interface.h",
+      "bytes": 10717,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/riscv_interface.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/riscv/xpseudo_asm.h",
+      "bytes": 1597,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/xpseudo_asm.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/gpio/src/xgpio.h",
+      "bytes": 6705,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/gpio/src/xgpio.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/gpio/src/xgpio_l.h",
+      "bytes": 6097,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/gpio/src/xgpio_l.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/gpio/src/xgpio.c",
+      "bytes": 8865,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/gpio/src/xgpio.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/gpio/src/xgpio_sinit.c",
+      "bytes": 5059,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/gpio/src/xgpio_sinit.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr.h",
+      "bytes": 14040,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr_l.h",
+      "bytes": 15808,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr_l.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr.c",
+      "bytes": 24393,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr_sinit.c",
+      "bytes": 3491,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr_sinit.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c",
+      "bytes": 17594,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/uartlite/src/xuartlite.h",
+      "bytes": 11999,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/uartlite/src/xuartlite.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/uartlite/src/xuartlite_l.h",
+      "bytes": 10010,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/uartlite/src/xuartlite_l.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/uartlite/src/xuartlite.c",
+      "bytes": 23396,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/uartlite/src/xuartlite.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/uartlite/src/xuartlite_sinit.c",
+      "bytes": 4922,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/uartlite/src/xuartlite_sinit.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/uartlite/examples/xuartlite_intr_example.c",
+      "bytes": 15188,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/uartlite/examples/xuartlite_intr_example.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/intc/src/xintc.h",
+      "bytes": 17673,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/intc/src/xintc_l.h",
+      "bytes": 12113,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc_l.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/intc/src/xintc.c",
+      "bytes": 44573,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/intc/src/xintc_i.h",
+      "bytes": 1977,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc_i.h",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr_intr.c",
+      "bytes": 6297,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/tmrctr/src/xtmrctr_intr.c",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    },
+    {
+      "path": "lib/bsp/standalone/src/riscv/boot.S",
+      "bytes": 5041,
+      "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/boot.S",
+      "commit": "97f2baf7f69e9d5f447650110af0d8841e501277"
+    }
+  ],
+  "generated_parameter_fixture": "#pragma once\n#define XPAR_MICROBLAZE_RISCV_ADDR_SIZE 32\n#define XPAR_MICROBLAZE_RISCV_USE_INTERRUPT 1\n#define XPAR_AXI_INTC 1\n#define XPAR_INTC_MAX_NUM_INTR_INPUTS 32\n#define XPAR_INTC_NUM_INSTANCES 1\n#define XPAR_INTC_0_INTC_TYPE 0\n#define XPAR_INTC_0_IS_FAST 0\n#define XPAR_INTC_0_NUM_INTR_INPUTS 2\n#define XPAR_INTC_0_IVAR_RESET_VALUE 0x10U\n#define XPAR_GPIO_0_DEVICE_ID 0U\n#define XPAR_TMRCTR_0_DEVICE_ID 0U\n#define XPAR_INTC_0_DEVICE_ID 0U\n#define XPAR_INTC_0_TMRCTR_0_VEC_ID 0U\n#define XPAR_UARTLITE_0_BASEADDR 0x40600000U\n#define XPAR_XUARTLITE_0_BASEADDR 0x40600000U\n#define XPAR_XGPIO_0_BASEADDR 0x40000000U\n#define XPAR_XTMRCTR_0_BASEADDR 0x41C00000U\n#define XPAR_XINTC_0_BASEADDR 0x41200000U\n#define XPAR_NPU_AXI_IRQ_0_BASEADDR 0x44A00000U\n#define XPAR_AXI_UARTLITE_0_BASEADDR 0x40600000U\n",
+  "scope": "Host GCC -fsyntax-only with real AMD headers and a synthetic generated-parameter fixture. No target code generation, BSP build, linking or board execution."
+}

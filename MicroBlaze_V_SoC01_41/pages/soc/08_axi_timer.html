@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 MicroBlaze V SoC에 AXI Timer를 추가하여 100 MHz Clock 기준 0.5초 Polling Timer와 AXI GPIO LED Blink를 구현하는 실습 자료." name="description">
+<title>SoC 08 · AXI Timer</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 08</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 08</p><h1>AXI Timer - 0.5초 Polling과 LED Blink</h1>
+<p class="hero-desc">100 MHz AXI Clock을 직접 세어 0.5초 간격을 만들고, Timer 만료를 MicroBlaze V가 Polling으로 확인해 AXI GPIO의 LED0를 반전한다. Clock → Counter → Register → Software → LED 동작이 하나의 경로로 연결된다.</p>
+<div class="hero-meta"><span class="chip">AXI Timer</span><span class="chip">100 MHz</span><span class="chip">32-bit Counter</span><span class="chip">Down Count</span><span class="chip">Auto Reload</span><span class="chip">Polling</span></div>
+<div class="hero-brief"><article><h2>Timer</h2><p>100 MHz Clock을 50,000,000회 세어 약 0.5초를 만든다.</p></article><article><h2>CPU</h2><p>Timer 만료 Flag를 Polling으로 확인한다.</p></article><article><h2>LED</h2><p>만료할 때마다 LED0를 반전해 약 1초 Blink 주기를 만든다.</p></article></div>
+</div></header>
+
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html" selected>SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc08_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc08">이 장 검증</a></div></div><p class="nav-title">SOC 08 · LEARNING FLOW</p><p class="nav-help">Clock → Counter → Expire → CPU → LED</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>실습 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>기존 SoC에 Timer 추가</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>AXI Timer 내부 구조</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>두 개의 32-bit Timer</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Clock와 Prescaler</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Timer Mode</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>IP 추가</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>AXI 연결</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Address Editor</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Register Map</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>TCSR0 핵심 비트</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>TLR0 · TCR0</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>0.5초 계산</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Auto Reload</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Polling 만료 확인</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>LED Toggle 구조</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>XDC 유지</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>XSA · Vitis 갱신</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Timer + GPIO 프로그램</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Driver API와 Register</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>실행 순서</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>눈으로 확인하는 결과</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Debugger 확인</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>AXI Transaction 추적</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">26</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">27</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage">SoC 07 AXI UART Lite</span><span class="arrow">→</span><span class="stage"><strong>SoC 08 AXI Timer</strong></span><span class="arrow">→</span><span class="stage">SoC 09 AXI Interrupt Controller</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>실습 목표</h2>
+<div class="flow">100 MHz Clock → AXI Timer → 0.5초 만료 → MicroBlaze V Polling → AXI GPIO → LED0 Toggle</div>
+<p>LED0는 0.5초마다 상태가 바뀐다. 따라서 OFF 0.5초 → ON 0.5초 → OFF 0.5초로 반복되며 한 번의 완전한 ON/OFF Cycle은 약 1초이다.</p></section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>기존 SoC에 Timer 추가</h2>
+<p>SoC 06의 AXI GPIO와 SoC 07의 AXI UART Lite는 그대로 유지하고 <code>axi_timer_0</code>만 추가한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">MicroBlaze V
+   │
+   ▼
+SmartConnect
+   ├─ AXI GPIO ──────▶ LED[15:0]
+   ├─ AXI UART Lite ─▶ PC Terminal
+   └─ AXI Timer
+          │
+          └─ Polling으로 만료 상태 확인</div>
+<p>Timer에는 별도의 외부 FPGA Pin이 필요하지 않는다.</p></section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI Timer 내부 구조</h2>
+<figure class="manual-figure"><a href="../../images/soc08/pg079_axi_timer_block.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI Timer internal block diagram · 원본 보기 (새 탭)"><img src="../../images/soc08/pg079_axi_timer_block.svg" alt="AXI Timer internal block diagram">
+</a><figcaption>AMD PG079 Functional Description의 Block Diagram을 기준으로 재작성한 구조도.
+<span class="figure-source">원문: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description" target="_blank" rel="noopener">AMD PG079 · Functional Description</a></span><br><a href="../../images/soc08/pg079_axi_timer_block.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI Timer internal block diagram · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>AXI Timer는 AXI4-Lite Slave Interface와 두 개의 Timer/Counter Module을 가진다. 각 Timer는 Load Register, Counter Register, Control/Status Register를 갖는다.</p><p>MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 <code>xparameters.h</code>의 심볼을 사용한다.</p></section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>두 개의 32-bit Timer</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="두 개의 32-bit Timer · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구분</th><th scope="col" role="columnheader">Timer 0</th><th scope="col" role="columnheader">Timer 1</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구분" role="cell">Control/Status</td><td data-label="Timer 0" role="cell"><code>TCSR0</code></td><td data-label="Timer 1" role="cell"><code>TCSR1</code></td></tr>
+<tr role="row"><td data-label="구분" role="cell">Load</td><td data-label="Timer 0" role="cell"><code>TLR0</code></td><td data-label="Timer 1" role="cell"><code>TLR1</code></td></tr>
+<tr role="row"><td data-label="구분" role="cell">Counter</td><td data-label="Timer 0" role="cell"><code>TCR0</code></td><td data-label="Timer 1" role="cell"><code>TCR1</code></td></tr>
+<tr role="row"><td data-label="구분" role="cell">SoC 08</td><td data-label="Timer 0" role="cell"><strong>사용</strong></td><td data-label="Timer 1" role="cell">미사용</td></tr>
+</tbody></table></div>
+<p>두 Counter를 Cascade하면 64-bit Counter로 사용할 수 있지만 이번 장에서는 Timer 0 하나만 사용한다.</p></section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Clock와 Prescaler</h2>
+<p>PG079는 Timer Module의 Clock Rate가 <code>s_axi_aclk</code>이며 별도의 Prescaling을 하지 않는다고 설명한다. 현재 시스템 Clock은 100 MHz이므로 Timer도 100 MHz를 직접 센다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="05절 신호 및 실행 흐름">100 MHz
+→ 1 Clock = 10 ns
+→ 100,000,000 Clocks = 1 s
+→ 50,000,000 Clocks  = 0.5 s</div></section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Timer Mode</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Timer Mode · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Mode</th><th scope="col" role="columnheader">기능</th><th scope="col" role="columnheader">SoC 08</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Mode" role="cell">Generate</td><td data-label="기능" role="cell">설정한 시간 간격 만료 생성</td><td data-label="SoC 08" role="cell"><strong>사용</strong></td></tr>
+<tr role="row"><td data-label="Mode" role="cell">Capture</td><td data-label="기능" role="cell">외부 Event 시 Counter 값 저장</td><td data-label="SoC 08" role="cell">미사용</td></tr>
+<tr role="row"><td data-label="Mode" role="cell">PWM</td><td data-label="기능" role="cell">Timer 0/1을 이용한 PWM 생성</td><td data-label="SoC 08" role="cell">미사용</td></tr>
+<tr role="row"><td data-label="Mode" role="cell">Cascade</td><td data-label="기능" role="cell">두 Counter를 64-bit로 결합</td><td data-label="SoC 08" role="cell">미사용</td></tr>
+</tbody></table></div>
+<p>이번 장은 Generate + Down Count + Auto Reload로 구성한다.</p></section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>IP 추가</h2>
+<ol class="step-seq">
+<li><h3>Add IP</h3><p>Vivado Block Design에서 <strong>AXI Timer</strong>를 추가한다.</p></li>
+<li><h3>Instance</h3><p>기본 이름 <code>axi_timer_0</code>을 사용한다.</p></li>
+<li><h3>Timer Width</h3><p>32-bit 기본 Counter를 사용한다.</p></li>
+<li><h3>Interrupt</h3><p>IP의 Interrupt Port는 생성될 수 있지만 SoC 08에서는 CPU Interrupt 경로에 연결하지 않는다.</p></li>
+</ol></section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>AXI 연결</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="08절 신호 및 실행 흐름">MicroBlaze V M_AXI
+      │
+      ▼
+SmartConnect
+      │
+      ▼
+axi_timer_0/S_AXI
+
+clk_wiz/clk_out1 ─────────────▶ s_axi_aclk
+proc_sys_reset/peripheral_aresetn ─▶ s_axi_aresetn</div>
+<p>Timer는 AXI4-Lite Slave이므로 SoC 05에서 배운 Memory-Mapped Read/Write 방식으로 Register를 제어한다.</p></section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Address Editor</h2>
+<p><code>axi_timer_0/S_AXI</code>에 실제 Base Address를 할당한다. 문서나 C 코드에 임의 주소를 고정하지 않고, Vivado가 생성한 XSA와 <code>xparameters.h</code>의 Macro를 사용한다.</p>
+<div class="flow">Address Editor → AXI Timer Base → XSA → xparameters.h → XTmrCtr Driver</div></section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Register Map</h2>
+<figure class="manual-figure"><a href="../../images/soc08/pg079_timer_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI Timer register map · 원본 보기 (새 탭)"><img src="../../images/soc08/pg079_timer_register_map.svg" alt="AXI Timer register map">
+</a><figcaption>AMD PG079 Register Space Table 1 기준 재작성.
+<span class="figure-source">원문: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space" target="_blank" rel="noopener">AMD PG079 · Register Space</a></span><br><a href="../../images/soc08/pg079_timer_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI Timer register map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x00</code></td><td data-label="Register" role="cell"><code>TCSR0</code></td><td data-label="역할" role="cell">Timer 0 Control / Status</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x04</code></td><td data-label="Register" role="cell"><code>TLR0</code></td><td data-label="역할" role="cell">Timer 0 Load Value</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x08</code></td><td data-label="Register" role="cell"><code>TCR0</code></td><td data-label="역할" role="cell">Timer 0 현재 Counter</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x10</code></td><td data-label="Register" role="cell"><code>TCSR1</code></td><td data-label="역할" role="cell">Timer 1 Control / Status</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x14</code></td><td data-label="Register" role="cell"><code>TLR1</code></td><td data-label="역할" role="cell">Timer 1 Load Value</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x18</code></td><td data-label="Register" role="cell"><code>TCR1</code></td><td data-label="역할" role="cell">Timer 1 현재 Counter</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>TCSR0 핵심 비트</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="TCSR0 핵심 비트 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">이름</th><th scope="col" role="columnheader">SoC 08</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Bit" role="cell">8</td><td data-label="이름" role="cell"><code>T0INT</code></td><td data-label="SoC 08" role="cell">Timer 만료 Event Flag · Write 1 to Clear</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">7</td><td data-label="이름" role="cell"><code>ENT0</code></td><td data-label="SoC 08" role="cell">Timer Enable</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">6</td><td data-label="이름" role="cell"><code>ENIT0</code></td><td data-label="SoC 08" role="cell">Interrupt Output Enable · <strong>0</strong></td></tr>
+<tr role="row"><td data-label="Bit" role="cell">5</td><td data-label="이름" role="cell"><code>LOAD0</code></td><td data-label="SoC 08" role="cell">TLR0 값을 TCR0에 Load</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="이름" role="cell"><code>ARHT0</code></td><td data-label="SoC 08" role="cell">Auto Reload</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="이름" role="cell"><code>UDT0</code></td><td data-label="SoC 08" role="cell">1 = Down Count</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="이름" role="cell"><code>MDT0</code></td><td data-label="SoC 08" role="cell">0 = Generate Mode</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>TLR0 · TCR0</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="12절 신호 및 실행 흐름">TLR0
+ │  시작값 저장
+ ▼
+LOAD
+ │
+ ▼
+TCR0
+49,999,998
+49,999,997
+49,999,996
+...
+2
+1
+0
+ │
+ ▼
+Timer Expired
+ │
+ └─ Auto Reload → 다시 TLR0 값부터 Down Count</div></section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>0.5초 계산</h2>
+<p>PG079의 32-bit Down-count Generate Mode 식을 그대로 사용한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="13절 신호 및 실행 흐름">TIMING_INTERVAL = (TLR0 + 2) × AXI_CLOCK_PERIOD
+
+AXI_CLOCK_PERIOD = 10 ns
+목표 시간 = 0.5 s = 500,000,000 ns
+
+500,000,000 ns
+= (TLR0 + 2) × 10 ns
+
+TLR0 + 2 = 50,000,000
+
+TLR0 = 49,999,998
+     = 0x02FAF07E</div>
+<p>따라서 코드의 <code>TIMER_RESET_VALUE</code>는 <code>49,999,998</code>이다.</p></section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Auto Reload</h2>
+<figure class="manual-figure"><a href="../../images/soc08/timer_500ms_led_toggle.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="500 ms timer and LED toggle timing · 원본 보기 (새 탭)"><img src="../../images/soc08/timer_500ms_led_toggle.svg" alt="500 ms timer and LED toggle timing">
+</a><figcaption>0.5초 만료 때마다 Auto Reload되고 LED0를 반전하는 실습 흐름.<br><a href="../../images/soc08/timer_500ms_led_toggle.svg" target="_blank" rel="noopener" class="figure-original" aria-label="500 ms timer and LED toggle timing · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p><code>XTC_AUTO_RELOAD_OPTION</code>을 사용하면 Counter가 만료된 뒤 Load Value를 다시 불러와 반복 Count한다.</p></section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Polling 만료 확인</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Polling 만료 확인 · 소스 코드"><code>if (XTmrCtr_IsExpired(&amp;Timer, TIMER0)) {
+    clear_timer_expired();
+
+    expire_count++;
+
+    led_state ^= LED0_MASK;
+    XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+}</code></pre>
+<p><code>XTmrCtr_IsExpired()</code>는 TCSR0의 만료 Event Flag를 Polling한다. Interrupt 출력은 활성화하지 않는다.</p></section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>LED Toggle 구조</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="16절 신호 및 실행 흐름">LED0 OFF : led_state = 0x00000000
+          ↓ 0.5 s
+LED0 ON  : led_state = 0x00000001
+          ↓ 0.5 s
+LED0 OFF : led_state = 0x00000000
+          ↓
+         반복</div>
+<p>비트 XOR 연산 <code>led_state ^= 0x1</code>로 LED0만 반전한다.</p></section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>XDC 유지</h2>
+<p>AXI Timer 자체는 외부 Pin이 없다. LED 출력은 기존 SoC 06 AXI GPIO를 그대로 사용하므로 기존 Basys3 Switch/LED XDC를 유지한다.</p>
+<div class="flow">Timer = 내부 IP · 신규 XDC 없음 → LED0 = 기존 AXI GPIO/XDC 사용</div></section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>XSA · Vitis 갱신</h2>
+<div class="flow">AXI Timer 추가 → Validate → Bitstream → Export XSA → Vitis Platform Update → BSP Regenerate → Build</div>
+<p>Vitis의 <code>xparameters.h</code>에서 Timer Instance Macro가 생성되었는지 확인한다. Classic Flow는 <code>XPAR_TMRCTR_0_DEVICE_ID</code>, SDT Flow는 <code>XPAR_XTMRCTR_0_BASEADDR</code> 형태를 사용한다.</p></section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Timer + GPIO 프로그램</h2>
+<p>아래 코드는 SoC 08 실습을 위해 작성한 교육용 코드이며 Timer Driver API는 AMD embeddedsw의 Polling Example과 현재 Driver 정의를 기준으로 사용한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Timer + GPIO 프로그램 · 소스 코드"><code>#include "xparameters.h"
+#include "xtmrctr.h"
+#include "xgpio.h"
+#include "xstatus.h"
+#include "xil_types.h"
+
+/*
+ * SoC 08 - AXI Timer Polling + AXI GPIO LED Blink
+ *
+ * Timer clock : 100 MHz
+ * Clock period: 10 ns
+ *
+ * Down-count Generate Mode:
+ *   interval = (TLR0 + 2) * 10 ns
+ *
+ * 0.5 s:
+ *   50,000,000 clocks
+ *   TLR0 = 50,000,000 - 2
+ *        = 49,999,998
+ *        = 0x02FAF07E
+ *
+ * Timer expires every 0.5 s.
+ * LED0 toggles at every expiration.
+ * Therefore LED0 ON/OFF full cycle is about 1 s.
+ */
+
+#define TIMER0                  0U
+#define LED_CHANNEL             1U
+#define LED0_MASK               0x00000001U
+
+#define TIMER_CLOCK_HZ          100000000U
+#define TIMER_INTERVAL_MS       500U
+#define TIMER_TICKS_500MS       50000000U
+#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)
+
+#ifndef SDT
+#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
+#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
+#else
+#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
+#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
+#endif
+
+static XTmrCtr Timer;
+static XGpio Gpio;
+
+volatile u32 led_state    = 0U;
+volatile u32 expire_count = 0U;
+volatile u32 timer_value  = 0U;
+
+static int init_gpio(void)
+{
+#ifndef SDT
+    return XGpio_Initialize(&amp;Gpio, GPIO_DEVICE_ID);
+#else
+    return XGpio_Initialize(&amp;Gpio, GPIO_BASEADDR);
+#endif
+}
+
+static int init_timer(void)
+{
+    int status;
+
+#ifndef SDT
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
+#else
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
+#endif
+
+    if (status != XST_SUCCESS) {
+        return status;
+    }
+
+    status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
+    if (status != XST_SUCCESS) {
+        return status;
+    }
+
+    /*
+     * Polling Generate Mode:
+     * - Down Count
+     * - Auto Reload
+     * - Interrupt output is NOT enabled
+     */
+    XTmrCtr_SetOptions(
+        &amp;Timer,
+        TIMER0,
+        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION
+    );
+
+    XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
+    XTmrCtr_Start(&amp;Timer, TIMER0);
+
+    return XST_SUCCESS;
+}
+
+static void clear_timer_expired(void)
+{
+    u32 csr;
+
+    /*
+     * T0INT is Write-1-to-Clear.
+     * Keep the current control bits and write 1 only to the event flag.
+     */
+    csr = XTmrCtr_GetControlStatusReg(Timer.BaseAddress, TIMER0);
+
+    XTmrCtr_SetControlStatusReg(
+        Timer.BaseAddress,
+        TIMER0,
+        csr | XTC_CSR_INT_OCCURED_MASK
+    );
+}
+
+int main(void)
+{
+    int status;
+
+    status = init_gpio();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = init_timer();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    /* LED0 initially OFF */
+    XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+
+    while (1) {
+        /* Debugger에서 현재 down-counter 값을 관찰할 수 있다. */
+        timer_value = XTmrCtr_GetValue(&amp;Timer, TIMER0);
+
+        if (XTmrCtr_IsExpired(&amp;Timer, TIMER0)) {
+            clear_timer_expired();
+
+            expire_count++;
+
+            /* LED0 toggle */
+            led_state ^= LED0_MASK;
+            XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+        }
+    }
+
+    return XST_SUCCESS;
+}
+</code></pre></section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Driver API와 Register</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Driver API와 Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">API</th><th scope="col" role="columnheader">Hardware 동작</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetResetValue()</code></td><td data-label="Hardware 동작" role="cell"><code>TLR0</code>에 시작값 설정</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetOptions()</code></td><td data-label="Hardware 동작" role="cell">TCSR0의 Down Count / Auto Reload 등 설정</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_Start()</code></td><td data-label="Hardware 동작" role="cell">Timer Enable 후 Count 시작</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_GetValue()</code></td><td data-label="Hardware 동작" role="cell"><code>TCR0</code> 현재값 Read</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_IsExpired()</code></td><td data-label="Hardware 동작" role="cell">TCSR0의 Event Flag 확인</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetControlStatusReg()</code></td><td data-label="Hardware 동작" role="cell">T0INT에 1을 써서 만료 Flag Clear</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>실행 순서</h2>
+<ol class="step-seq">
+<li><h3>Vivado</h3><p>AXI Timer를 추가하고 Address Editor에서 주소를 할당한다.</p></li>
+<li><h3>Bitstream</h3><p>Validate → Synthesis → Implementation → Bitstream을 생성한다.</p></li>
+<li><h3>Vitis</h3><p>새 XSA로 Platform을 갱신하고 Application을 Build한다.</p></li>
+<li><h3>Program / Run</h3><p>Basys3를 Program하고 ELF를 실행한다.</p></li>
+<li><h3>LED0</h3><p>LED0가 약 0.5초 간격으로 ON/OFF 되는지 관찰한다.</p></li>
+</ol></section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>눈으로 확인하는 결과</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="눈으로 확인하는 결과 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">경과 시간</th><th scope="col" role="columnheader"><code>expire_count</code></th><th scope="col" role="columnheader">LED0</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="경과 시간" role="cell">시작</td><td data-label="expire_count" role="cell">0</td><td data-label="LED0" role="cell">OFF</td></tr>
+<tr role="row"><td data-label="경과 시간" role="cell">약 0.5 s</td><td data-label="expire_count" role="cell">1</td><td data-label="LED0" role="cell">ON</td></tr>
+<tr role="row"><td data-label="경과 시간" role="cell">약 1.0 s</td><td data-label="expire_count" role="cell">2</td><td data-label="LED0" role="cell">OFF</td></tr>
+<tr role="row"><td data-label="경과 시간" role="cell">약 1.5 s</td><td data-label="expire_count" role="cell">3</td><td data-label="LED0" role="cell">ON</td></tr>
+<tr role="row"><td data-label="경과 시간" role="cell">약 2.0 s</td><td data-label="expire_count" role="cell">4</td><td data-label="LED0" role="cell">OFF</td></tr>
+</tbody></table></div>
+<div class="note">표는 설정식에 따른 예상 동작이다. 실제 LED 주기는 보드에서 실행하여 확인한다.</div></section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Debugger 확인</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Debugger 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">변수</th><th scope="col" role="columnheader">확인 내용</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="변수" role="cell"><code>timer_value</code></td><td data-label="확인 내용" role="cell">현재 Down Counter 값</td></tr>
+<tr role="row"><td data-label="변수" role="cell"><code>expire_count</code></td><td data-label="확인 내용" role="cell">0.5초 만료 횟수</td></tr>
+<tr role="row"><td data-label="변수" role="cell"><code>led_state</code></td><td data-label="확인 내용" role="cell">0 / 1 Toggle 상태</td></tr>
+</tbody></table></div>
+<p><code>timer_value</code>는 매우 빠르게 감소하므로 Breakpoint에서 매번 정확히 같은 값으로 보이지 않는 것이 정상이다.</p></section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>AXI Transaction 추적</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="24절 신호 및 실행 흐름">[초기 설정]
+MicroBlaze V
+  → AXI Write → TLR0 = 49,999,998
+  → AXI Write → TCSR0 : Down + Auto Reload + Enable
+
+[반복 확인]
+MicroBlaze V
+  → AXI Read → TCR0 / TCSR0
+  → 만료 확인
+  → AXI Write → TCSR0 Event Flag Clear
+  → AXI Write → GPIO_DATA LED0 Toggle</div>
+<p>Timer는 Clock을 Hardware에서 독립적으로 세지만, Polling에서는 CPU가 AXI Read를 반복하여 Event Flag를 확인한다.</p></section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">LED가 너무 빠르게 깜빡임</td><td data-label="원인 후보" role="cell">Clock/Load 계산 오류</td><td data-label="확인" role="cell">100 MHz, 49,999,998 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">LED가 한 번만 변함</td><td data-label="원인 후보" role="cell">Auto Reload 미설정</td><td data-label="확인" role="cell"><code>XTC_AUTO_RELOAD_OPTION</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">LED가 계속 빠르게 반전</td><td data-label="원인 후보" role="cell">만료 Flag를 Clear하지 않음</td><td data-label="확인" role="cell">T0INT Write-1-to-Clear 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Timer가 움직이지 않음</td><td data-label="원인 후보" role="cell">Enable/Clock/Reset 문제</td><td data-label="확인" role="cell"><code>XTmrCtr_Start</code>, <code>s_axi_aclk</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">Build Macro 없음</td><td data-label="원인 후보" role="cell">XSA/Platform 미갱신</td><td data-label="확인" role="cell"><code>xparameters.h</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">GPIO LED가 안 켜짐</td><td data-label="원인 후보" role="cell">기존 SoC 06 AXI GPIO/XDC 문제</td><td data-label="확인" role="cell">Channel 1 Output, LED XDC 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Interrupt가 발생하지 않음</td><td data-label="원인 후보" role="cell">정상</td><td data-label="확인" role="cell">SoC 08은 Polling, Interrupt는 SoC 09</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 08 완료 체크리스트</h2>
+<ul>
+<li>[ ] 기존 AXI GPIO와 AXI UART Lite를 유지한 상태에서 AXI Timer를 추가했다.</li>
+<li>[ ] AXI Timer가 AXI4-Lite Slave임을 이해한다.</li>
+<li>[ ] Timer 0의 TCSR0, TLR0, TCR0 역할을 구분한다.</li>
+<li>[ ] Timer Clock이 100 MHz이고 별도 Prescaler가 없음을 이해한다.</li>
+<li>[ ] Generate Mode + Down Count + Auto Reload를 사용했다.</li>
+<li>[ ] 0.5초에 필요한 TLR0가 <code>49,999,998 = 0x02FAF07E</code>임을 계산할 수 있다.</li>
+<li>[ ] Interrupt Output을 사용하지 않고 Polling으로 만료를 확인했다.</li>
+<li>[ ] T0INT가 Write-1-to-Clear임을 이해한다.</li>
+<li>[ ] 0.5초마다 LED0를 Toggle한다.</li>
+<li>[ ] LED의 전체 ON/OFF Cycle이 약 1초임을 이해한다.</li>
+<li>[ ] Debugger에서 <code>timer_value</code>, <code>expire_count</code>, <code>led_state</code>를 확인했다.</li>
+<li>[ ] 다음 장에서 Polling을 AXI Interrupt Controller 기반 Interrupt 구조로 변경할 준비가 되었다.</li>
+</ul>
+<div class="flow">SoC 08 완료 → SoC 09 AXI Interrupt Controller</div></section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer" target="_blank" rel="noopener">AMD PG079 · AXI Timer v2.0 · 2025-08-15</a></td><td data-label="확인 항목" role="cell">AXI4-Lite Timer 구조, Timer Mode, Register, Counter</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description" target="_blank" rel="noopener">PG079 · Functional Description</a></td><td data-label="확인 항목" role="cell">두 32-bit Timer, <code>s_axi_aclk</code>, Prescaling 없음</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space" target="_blank" rel="noopener">PG079 · Register Space</a></td><td data-label="확인 항목" role="cell">TCSR/TLR/TCR Offset</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Control/Status-Register-0-TCSR0?contentId=ASGr4FLEGrG7tvSqKfTnkQ" target="_blank" rel="noopener">PG079 · TCSR0</a></td><td data-label="확인 항목" role="cell">T0INT, ENT0, LOAD0, ARHT0, UDT0, MDT0</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Generate-Mode" target="_blank" rel="noopener">PG079 · Generate Mode</a></td><td data-label="확인 항목" role="cell">Down Count 식, Auto Reload Programming Sequence</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://xilinx.github.io/embeddedsw.github.io/tmrctr/doc/html/api/index.html" target="_blank" rel="noopener">AMD/Xilinx Timer Counter Driver API</a></td><td data-label="확인 항목" role="cell">XTmrCtr API</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_polled_example.c" target="_blank" rel="noopener">AMD embeddedsw · xtmrctr_polled_example.c</a></td><td data-label="확인 항목" role="cell">Polling Example, Classic/SDT 초기화</td></tr>
+</tbody></table></div></section>
+
+<nav class="chapter-nav"><a href="07_axi_uart_lite.html">← SoC 07</a><a href="../../index.html">전체 목차</a><a href="09_axi_interrupt_controller.html">SoC 09 →</a></nav>
+</main></div>
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+</body></html>

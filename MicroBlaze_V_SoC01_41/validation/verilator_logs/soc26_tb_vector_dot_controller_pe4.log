@@ -1,0 +1,162 @@
+make: Entering directory 'validation-tools/verilator_runs/soc26_tb_vector_dot_controller_pe4'
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated.o validation-tools/tools/usr/share/verilator/include/verilated.cpp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated_timing.o validation-tools/tools/usr/share/verilator/include/verilated_timing.cpp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated_threads.o validation-tools/tools/usr/share/verilator/include/verilated_threads.cpp
+/usr/bin/python3 validation-tools/tools/usr/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtb_vector_dot_controller_pe4.cpp Vtb_vector_dot_controller_pe4___024root__DepSet_hd4b18214__0.cpp Vtb_vector_dot_controller_pe4___024root__DepSet_h42ebbb17__0.cpp Vtb_vector_dot_controller_pe4__main.cpp Vtb_vector_dot_controller_pe4___024root__Slow.cpp Vtb_vector_dot_controller_pe4___024root__DepSet_hd4b18214__0__Slow.cpp Vtb_vector_dot_controller_pe4___024root__DepSet_h42ebbb17__0__Slow.cpp Vtb_vector_dot_controller_pe4__Syms.cpp > Vtb_vector_dot_controller_pe4__ALL.cpp
+echo "" > Vtb_vector_dot_controller_pe4__ALL.verilator_deplist.tmp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o Vtb_vector_dot_controller_pe4__ALL.o Vtb_vector_dot_controller_pe4__ALL.cpp
+Archive ar -rcs Vtb_vector_dot_controller_pe4__ALL.a Vtb_vector_dot_controller_pe4__ALL.o
+g++    verilated.o verilated_timing.o verilated_threads.o Vtb_vector_dot_controller_pe4__ALL.a    -pthread -lpthread -latomic   -o Vtb_vector_dot_controller_pe4
+rm Vtb_vector_dot_controller_pe4__ALL.verilator_deplist.tmp
+make: Leaving directory 'validation-tools/verilator_runs/soc26_tb_vector_dot_controller_pe4'
+%Warning-WIDTH: code/soc26/vector_dot_controller_lab/rtl/vector_dot_controller_pe4.v:50:29: Operator ASSIGNW expects 16 bits on the Assign RHS, but Assign RHS's SEL generates 15 bits.
+                                                                                                                                                      : ... In instance tb_vector_dot_controller_pe4.dut
+   50 | assign groups_from_length_w =
+      |                             ^
+                ... For warning description see https://verilator.org/warn/WIDTH?v=5.006
+                ... Use "/* verilator lint_off WIDTH */" and lint_on around source to disable this message.
+%Warning-WIDTH: code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:63:43: Operator AND expects 32 bits on the RHS, but RHS's CONST '8'hff' generates 8 bits.
+                                                                                                                                                                : ... In instance tb_vector_dot_controller_pe4
+   63 |         temp = ((scalar_index * 29) + 17) & 8'hFF;
+      |                                           ^
+%Warning-WIDTH: code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:79:43: Operator AND expects 32 bits on the RHS, but RHS's CONST '8'hff' generates 8 bits.
+                                                                                                                                                                : ... In instance tb_vector_dot_controller_pe4
+   79 |         temp = ((scalar_index * 47) + 91) & 8'hFF;
+      |                                           ^
+%Warning-WIDTH: code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:370:31: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'accepted_groups_o' generates 16 bits.
+                                                                                                                                                                 : ... In instance tb_vector_dot_controller_pe4
+  370 |             accepted_groups_o == group_count
+      |                               ^~
+%Warning-WIDTH: code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:375:32: Operator EQ expects 32 bits on the LHS, but LHS's VARREF 'completed_groups_o' generates 16 bits.
+                                                                                                                                                                 : ... In instance tb_vector_dot_controller_pe4
+  375 |             completed_groups_o == group_count
+      |                                ^~
+
+--- SIMULATION ---
+
+RUN length=0 groups=0
+CHECK PASS: zero-length result_valid
+CHECK PASS: zero-length done
+CHECK PASS: zero-length result = 0
+CHECK PASS: zero-length busy low
+
+RUN length=1 groups=1
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = 1547
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=2 groups=1
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -3881
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=3 groups=1
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -9206
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=4 groups=1
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -11702
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=5 groups=2
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -14531
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=10 groups=3
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -25045
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=16 groups=4
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -19384
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=17 groups=5
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -21709
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+RUN length=31 groups=8
+CHECK PASS: busy asserted during operation
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: group presented only when ready
+CHECK PASS: result_valid after pipeline drain
+CHECK PASS: done with result_valid
+CHECK PASS: busy low when done pulses
+CHECK PASS: vector dot result = -19552
+CHECK PASS: accepted group count
+CHECK PASS: completed group count
+CHECK PASS: result_valid is one-cycle pulse
+
+SOC26 CHECK COUNT : 102
+SOC26 ERROR COUNT : 0
+SOC26 VECTOR CONTROLLER TEST: PASS
+- code/soc26/vector_dot_controller_lab/testbench/tb_vector_dot_controller_pe4.sv:423: Verilog $finish

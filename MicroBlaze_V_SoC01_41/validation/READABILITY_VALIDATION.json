@@ -1,0 +1,59 @@
+{
+  "scope": "Readability and accessibility improvements, existing 41-chapter layout retained",
+  "changes": {
+    "chapters": 41,
+    "signal_blocks": 187,
+    "connection_tables": 11,
+    "figure_original_links": 148,
+    "scroll_regions": 529
+  },
+  "viewport_cases": 164,
+  "viewports_px": [
+    1440,
+    1024,
+    390,
+    320
+  ],
+  "document_overflow": 0,
+  "broken_images": 0,
+  "text_zoom_200_percent_cases": 41,
+  "text_zoom_document_overflow": 0,
+  "svg_measured": 119,
+  "svg_canvas_or_box_overflow": 0,
+  "keyboard": {
+    "skipFocused": true,
+    "skipped": true,
+    "scrollRegion": {
+      "scrollLeft": 40,
+      "overflow": true
+    }
+  },
+  "index_viewports": [
+    {
+      "width": 1440,
+      "body": 1440
+    },
+    {
+      "width": 390,
+      "body": 390
+    },
+    {
+      "width": 320,
+      "body": 320
+    }
+  ],
+  "source_files_byte_identical_to_before_readability_edit": 586,
+  "hardware_tests_performed_in_this_edit": false,
+  "limitations": [
+    "Automated layout and keyboard checks plus representative visual inspection; not a complete assistive-technology conformance audit.",
+    "RTL simulation / target build / Vivado implementation / Basys3 board run: NOT RUN."
+  ],
+  "post_adversarial_review_recheck": {
+    "viewport_cases": 164,
+    "text_zoom_cases": 41,
+    "svg_files": 119,
+    "document_overflow": 0,
+    "broken_images": 0,
+    "keyboard": "PASS"
+  }
+}

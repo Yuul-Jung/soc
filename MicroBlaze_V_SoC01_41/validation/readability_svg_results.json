@@ -1,0 +1,597 @@
+[
+  {
+    "file": "soc07/basys3_usb_uart.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc07/pg142_axi_uartlite_block.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc07/pg142_uart_register_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc08/pg079_axi_timer_block.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc08/pg079_timer_register_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc08/timer_500ms_led_toggle.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc09/interrupt_software_chain.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc09/pg099_intc_register_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc09/timer_intc_microblaze_path.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc10/soc10_integrated_hardware.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc10/soc10_led_ownership.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc10/soc10_main_interrupt_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc11/soc11_hw_sw_contract.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc11/soc11_register_design_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc11/soc11_register_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc12/axi4lite_adapter_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc12/axi4lite_read_response.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc12/axi4lite_write_independent.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc13/soc13_base_offset.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc13/soc13_read_path.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc13/soc13_write_path.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc14/soc14_controller_fsm.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc14/soc14_register_controller_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc14/soc14_software_hardware_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc15/soc15_driver_layer.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc15/soc15_error_model.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc15/soc15_runblocking_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc16/soc16_packaging_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc16/soc16_ports_interfaces.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc16/soc16_reuse_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc17/soc17_existing_rtl_to_axi_ip.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc17/soc17_interface_contract.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc17/soc17_stage_gates.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc18/soc18_pwm_shadow_update.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc18/soc18_uart_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc18/soc18_uart_pwm_compare.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc19/soc19_bridge_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc19/soc19_ready_valid_buffers.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc19/soc19_register_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc20/soc20_cdc_selection.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc20/soc20_dual_clock_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc20/soc20_report_cdc_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc20/soc20_reset_domains.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc21/soc21_coverage_types.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc21/soc21_verification_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc21/soc21_verification_ladder.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc22/soc22_pipeline_compare.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc22/soc22_timing_closure_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc22/soc22_timing_path.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc22/soc22_wns_tns.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc23/soc23_power_confidence.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc23/soc23_power_structure.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc23/soc23_resource_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc23/soc23_thermal_feedback.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc23/soc23_tradeoff.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc24/soc24_analysis_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc24/soc24_dsp48_mapping.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc24/soc24_fixed_point.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc24/soc24_mac_pipeline.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc24/soc24_mac_structure.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc25/soc25_balanced_adder_tree.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc25/soc25_pe4_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc25/soc25_pe4_pipeline.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc25/soc25_scaling.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc26/soc26_controller_fsm.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc26/soc26_interface.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc26/soc26_pipeline_drain.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc26/soc26_tail_mask.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc27/soc27_bram_read_latency.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc27/soc27_local_bandwidth.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc27/soc27_local_bram_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc28/soc28_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc28/soc28_backpressure.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc28/soc28_credit_control.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc28/soc28_pingpong.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc29/soc29_mini_gemm.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc29/soc29_tiling.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc29/soc29_traffic_comparison.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc29/soc29_weight_stationary_broadcast.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc30/soc30_batch_serialization.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc30/soc30_requant_pipeline.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc30/soc30_saturation.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc30/soc30_signed_rounding.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc31/soc31_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc31/soc31_axi_write_channels.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc31/soc31_register_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc31/soc31_software_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc32/soc32_interrupt_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc32/soc32_irq_registers.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc32/soc32_isr_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc32/soc32_polling_vs_interrupt.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc33/soc33_bram_read_latency.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc33/soc33_buffer_ownership.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc33/soc33_control_data_plane.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc33/soc33_tensor_memory_map.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc34/soc34_descriptor_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc34/soc34_descriptor_validation.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc34/soc34_programmable_address.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc35/soc35_full_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc35/soc35_job_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc36/soc36_e2e_architecture.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc36/soc36_one_job_flow.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc36/soc36_software_stack.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc36/soc36_two_jobs.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc37/soc37_cycle_schedule.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc37/soc37_measurement_layers.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc37/soc37_signoff_funnel.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc38/soc38_acceptance_gate.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc38/soc38_read_pipeline_compare.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc38/soc38_schedule_comparison.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc39/soc39_parallelism_tradeoff.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc39/soc39_schedule_comparison.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc39/soc39_serial_vs_parallel4.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc40/soc40_overlap.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc40/soc40_progression.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc40/soc40_timeline.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc41/soc41_evidence_layers.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc41/soc41_group8_progression.svg",
+    "clipped": [],
+    "boxOverflow": []
+  },
+  {
+    "file": "soc41/soc41_signoff_gates.svg",
+    "clipped": [],
+    "boxOverflow": []
+  }
+]

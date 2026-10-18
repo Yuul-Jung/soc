@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="650" viewBox="0 0 1240 650">
+<rect width="1240" height="650" fill="white"/>
+<text x="620" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">Custom IP Register Map Example</text>
+<g font-family="sans-serif" font-size="18">
+<rect x="120" y="85" width="1000" height="60" fill="#eef6ff" stroke="#111827"/><text x="155" y="122">0x00</text><text x="310" y="122">CONTROL</text><text x="500" y="122">RW</text><text x="620" y="122">ENABLE[0], MODE[2:1]</text>
+<rect x="120" y="145" width="1000" height="60" fill="#f8fafc" stroke="#111827"/><text x="155" y="182">0x04</text><text x="310" y="182">STATUS</text><text x="500" y="182">RO</text><text x="620" y="182">BUSY[0], DONE[1], ERROR[2]</text>
+<rect x="120" y="205" width="1000" height="60" fill="#fff7ed" stroke="#111827"/><text x="155" y="242">0x08</text><text x="310" y="242">COMMAND</text><text x="500" y="242">W1P</text><text x="620" y="242">START[0], CLEAR[1]</text>
+<rect x="120" y="265" width="1000" height="60" fill="#fef2f2" stroke="#111827"/><text x="155" y="302">0x0C</text><text x="310" y="302">IRQ_STATUS</text><text x="500" y="302">W1C</text><text x="620" y="302">DONE_IRQ[0], ERROR_IRQ[1]</text>
+<rect x="120" y="325" width="1000" height="60" fill="#eef6ff" stroke="#111827"/><text x="155" y="362">0x10</text><text x="310" y="362">DATA_IN</text><text x="500" y="362">RW</text><text x="620" y="362">Software → Hardware 32-bit Data</text>
+<rect x="120" y="385" width="1000" height="60" fill="#f8fafc" stroke="#111827"/><text x="155" y="422">0x14</text><text x="310" y="422">DATA_OUT</text><text x="500" y="422">RO</text><text x="620" y="422">Hardware → Software 32-bit Data</text>
+<rect x="120" y="445" width="1000" height="60" fill="#f0fdf4" stroke="#111827"/><text x="155" y="482">0x18</text><text x="310" y="482">VERSION</text><text x="500" y="482">RO</text><text x="620" y="482">0x00010000 = v1.0</text>
+<rect x="120" y="505" width="1000" height="60" fill="#f0fdf4" stroke="#111827"/><text x="155" y="542">0x1C</text><text x="310" y="542">ID</text><text x="500" y="542">RO</text><text x="620" y="542">0x524D4150 = ASCII RMAP</text>
+</g>
+<text x="620" y="610" text-anchor="middle" font-family="sans-serif" font-size="16">4-byte aligned · 32-bit registers · reserved bits read as 0</text>
+</svg>

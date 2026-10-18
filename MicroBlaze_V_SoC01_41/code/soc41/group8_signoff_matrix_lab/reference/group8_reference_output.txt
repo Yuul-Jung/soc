@@ -1,0 +1,45 @@
+SoC41 GROUP-8 STATIC PROGRESSION
+clock = 100 MHz
+
+SoC37 Baseline: 35 cycles, 350.0 ns, 2,857,142.857 upper jobs/s
+  change = Baseline
+  step latency reduction = 0.0%
+  cumulative latency reduction = 0.0%
+  cumulative upper-throughput gain = 0.0%
+SoC38 BRAM Read Pipeline: 28 cycles, 280.0 ns, 3,571,428.571 upper jobs/s
+  change = Read bubble removal
+  step latency reduction = 20.0%
+  cumulative latency reduction = 20.0%
+  cumulative upper-throughput gain = 25.0%
+SoC39 Parallel4 Requant: 22 cycles, 220.0 ns, 4,545,454.545 upper jobs/s
+  change = Spatial parallelism
+  step latency reduction = 21.4%
+  cumulative latency reduction = 37.1%
+  cumulative upper-throughput gain = 59.1%
+SoC40 Data/Compute Overlap: 16 cycles, 160.0 ns, 6,250,000.000 upper jobs/s
+  change = Prefetch + overlap
+  step latency reduction = 27.3%
+  cumulative latency reduction = 54.3%
+  cumulative upper-throughput gain = 118.8%
+
+GROUP-8 STATIC RESULT
+35 -> 16 cycles
+350.0 ns -> 160.0 ns @ 100 MHz
+19 cycles saved
+cumulative static latency reduction = 54.3%
+cumulative static upper-throughput gain = 118.8%
+
+IMPORTANT:
+- These are RTL schedule values.
+- WNS/TNS/WHS/THS are not measured here.
+- LUT/FF/DSP/BRAM are not measured here.
+- Power/thermal are not measured here.
+- Basys3 START->ISR and end-to-end latency are not measured here.
+SOC41 GROUP8 STATIC REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=<seconds> to increase the limit.

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="610" viewBox="0 0 1320 610">
+<rect width="1320" height="610" fill="white"/>
+<text x="660" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">고정 주소 → Programmable Job Address</text>
+<rect x="90" y="130" width="470" height="300" rx="14" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="325" y="180" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">SoC 33</text><text x="325" y="235" text-anchor="middle" font-family="sans-serif" font-size="17">INPUT = 0x000</text><text x="325" y="285" text-anchor="middle" font-family="sans-serif" font-size="17">OUTPUT = 0x100</text><text x="325" y="335" text-anchor="middle" font-family="sans-serif" font-size="17">LENGTH = fixed 8</text><text x="325" y="385" text-anchor="middle" font-family="sans-serif" font-size="15">RTL에 주소 고정</text>
+<rect x="760" y="130" width="470" height="300" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="995" y="180" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">SoC 34</text><text x="995" y="235" text-anchor="middle" font-family="sans-serif" font-size="17">INPUT_BASE = Software</text><text x="995" y="285" text-anchor="middle" font-family="sans-serif" font-size="17">OUTPUT_BASE = Software</text><text x="995" y="335" text-anchor="middle" font-family="sans-serif" font-size="17">LENGTH = Descriptor</text><text x="995" y="385" text-anchor="middle" font-family="sans-serif" font-size="15">START 시 Active Snapshot</text>
+<text x="660" y="520" text-anchor="middle" font-family="sans-serif" font-size="17">현재 Kernel은 LENGTH=8만 지원하지만 Job Interface는 주소와 길이를 명시적으로 분리한다.</text>
+</svg>

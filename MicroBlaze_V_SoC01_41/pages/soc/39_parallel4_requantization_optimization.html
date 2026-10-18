@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 NPU의 serial requantizer를 4-lane 병렬 구조로 바꾸어 Requant 14→8 cycles, 전체 28→22 cycles로 최적화하는 SoC 39 자료." name="description">
+<title>SoC 39 · 4-Lane Parallel Requantization Optimization</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style>
+<style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
+<body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 39</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Group 8 · Performance / Optimization · SoC 39</p>
+<h1>4-Lane Parallel Requantization Optimization</h1>
+<p class="hero-desc">SoC 38에서 BRAM Read를 9 cycles로 줄인 뒤 남은 가장 큰 정적 구간인 Requant 14 cycles를 최적화한다. 기존 하나의 Requant Core에 8개 값을 직렬 투입하는 구조를 4개의 동일 Pipeline Core로 바꾸고, CH0 4개를 한 Clock, CH1 4개를 다음 Clock에 처리한다. 산술식과 4-stage Pipeline은 그대로 유지하면서 Spatial Parallelism을 높인다.</p>
+<div class="hero-meta"><span class="chip">Parallel4</span><span class="chip">DSP48</span><span class="chip">Spatial Parallelism</span><span class="chip">22 cycles</span><span class="chip">Trade-off</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html" selected>SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc39_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc39">이 장 검증</a></div></div><p class="nav-title">SOC 39 · LEARNING FLOW</p><p class="nav-help">Serial → Parallel → Regression → QoR</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>SoC 38 이후 남은 병목</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>왜 4-lane인가</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Serial Requant 구조</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>4-Lane Parallel 구조</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Feed 8 → 2 Clock</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Arithmetic Pipeline 유지</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Spatial Parallelism</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>CH0 / CH1 Group</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>4개 Lane</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Tag Pipeline</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Saturation Count</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Requant 14 → 8</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Total 28 → 22</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Latency / Throughput</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Static Reference</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>변경 범위</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Serial Batch RTL</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Parallel4 Batch RTL</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Parallel4 Job Engine</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Optimized Top</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Top Shell/Wrapper</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Standalone Batch Regression</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Integrated Regression</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>JOB0</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>JOB1</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>JOB_ID / Counter</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>DONE / ERROR IRQ</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Resource Trade-off</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>DSP48 주의</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>33×16 Multiply</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Timing Trade-off</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>Power Trade-off</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>동일 조건 Post-Route</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>SoC38 Serial Report</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>SoC39 Parallel4 Report</span></a></li>
+<li><a href="#s37"><span class="n">37</span><span>Acceptance Gate</span></a></li>
+<li><a href="#s38"><span class="n">38</span><span>비교 기록표</span></a></li>
+<li><a href="#s39"><span class="n">39</span><span>SoC40 연결</span></a></li>
+<li><a href="#s40"><span class="n">40</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">41</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">42</span><span>공식 문서 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 38 BRAM Read</span><span class="arrow">→</span><span class="stage"><strong>SoC 39 Parallel4 Requant</strong></span><span class="arrow">→</span><span class="stage">SoC 40 Data/Compute Overlap</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc39/soc39_serial_vs_parallel4.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="serial versus parallel4 requant · 원본 보기 (새 탭)"><img src="../../images/soc39/soc39_serial_vs_parallel4.svg" alt="serial versus parallel4 requant"></a><figcaption>동일한 Requant Arithmetic Pipeline을 4개 Lane으로 복제해 Feed Clock을 줄인다.<br><a href="../../images/soc39/soc39_serial_vs_parallel4.svg" target="_blank" rel="noopener" class="figure-original" aria-label="serial versus parallel4 requant · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>SoC 38 이후 남은 병목</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="SoC 38 이후 남은 병목 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구간</th><th scope="col" role="columnheader">Cycle</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구간" role="cell">BRAM Read</td><td data-label="Cycle" role="cell">9</td></tr><tr role="row"><td data-label="구간" role="cell"><strong>Requant</strong></td><td data-label="Cycle" role="cell"><strong>14</strong></td></tr><tr role="row"><td data-label="구간" role="cell">Finish/IRQ</td><td data-label="Cycle" role="cell">5</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>왜 4-lane인가</h2>
+<p>8개 Core 전체 병렬보다 Resource 증가를 줄이면서 현재 데이터 구조인 <code>2 channel × 4 sample</code>과 자연스럽게 대응한다.</p>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Serial Requant 구조</h2>
+<div class="flow">CH0[0] → CH0[1] → CH0[2] → CH0[3] → CH1[0] → CH1[1] → CH1[2] → CH1[3]</div>
+<p>Pipeline Core 자체는 매 Clock 새 값을 받을 수 있지만 Wrapper가 한 개 Core만 사용하므로 8개 값을 8 Clock에 투입한다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>4-Lane Parallel 구조</h2>
+<figure class="manual-figure"><a href="../../images/soc39/soc39_serial_vs_parallel4.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="parallel4 structure · 원본 보기 (새 탭)"><img src="../../images/soc39/soc39_serial_vs_parallel4.svg" alt="parallel4 structure"></a><figcaption>Clock A에서 CH0 4개, Clock B에서 CH1 4개를 병렬 투입한다.<br><a href="../../images/soc39/soc39_serial_vs_parallel4.svg" target="_blank" rel="noopener" class="figure-original" aria-label="parallel4 structure · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Feed 8 → 2 Clock</h2>
+<div class="flow">Serial → 8 feed clocks<br>Parallel4 → 2 group feed clocks</div>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Arithmetic Pipeline 유지</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="07절 신호 및 실행 흐름">Stage 1 → Bias
+Stage 2 → Multiply
+Stage 3 → Round / Shift
+Stage 4 → Zero Point / Saturation</div>
+<p>Pipeline 깊이를 줄여 Critical Path를 늘리는 방식이 아니라 같은 Pipeline을 Lane 단위로 복제한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Spatial Parallelism</h2>
+<p>시간을 더 잘게 쪼개는 Pipeline Parallelism과 달리 같은 종류의 연산기를 여러 개 배치해 한 Clock에 여러 데이터를 처리한다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>CH0 / CH1 Group</h2>
+<div class="flow">FEED_CH0 → 4 samples parallel<br>FEED_CH1 → 4 samples parallel<br>DRAIN → 결과 회수</div>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>4개 Lane</h2>
+<p>Lane0~Lane3는 같은 Bias/Multiplier/Shift/Zero Point를 공유하되 Accumulator 입력만 서로 다르다.</p>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Tag Pipeline</h2>
+<p>4-stage Arithmetic Pipeline과 동일한 깊이의 Channel Tag Pipeline을 두어 현재 반환된 4개 결과가 CH0인지 CH1인지 맞춘다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Saturation Count</h2>
+<p>각 Clock에 4개 Lane이 동시에 Saturation될 수 있으므로 네 Lane의 Saturation Event를 합산해 누적한다. JOB0 기준 Expected Saturation Count는 2다.</p>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Requant 14 → 8</h2>
+<div class="flow">Serial Requant Phase → 14 cycles<br>Parallel4 Requant Phase → 8 cycles</div>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Total 28 → 22</h2>
+<figure class="manual-figure"><a href="../../images/soc39/soc39_schedule_comparison.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="schedule comparison · 원본 보기 (새 탭)"><img src="../../images/soc39/soc39_schedule_comparison.svg" alt="schedule comparison"></a><figcaption>Read 9와 Finish 5는 유지하고 Requant만 14 → 8로 줄인다.<br><a href="../../images/soc39/soc39_schedule_comparison.svg" target="_blank" rel="noopener" class="figure-original" aria-label="schedule comparison · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Latency / Throughput</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Latency / Throughput · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Metric</th><th scope="col" role="columnheader">SoC38</th><th scope="col" role="columnheader">SoC39</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Metric" role="cell">Static Total</td><td data-label="SoC38" role="cell">28 cycles</td><td data-label="SoC39" role="cell">22 cycles</td></tr>
+<tr role="row"><td data-label="Metric" role="cell">@100 MHz</td><td data-label="SoC38" role="cell">280 ns</td><td data-label="SoC39" role="cell">220 ns</td></tr>
+<tr role="row"><td data-label="Metric" role="cell">Latency 변화</td><td data-label="SoC38" role="cell">기준</td><td data-label="SoC39" role="cell">-21.4%</td></tr>
+<tr role="row"><td data-label="Metric" role="cell">Upper jobs/s</td><td data-label="SoC38" role="cell">3.571 M</td><td data-label="SoC39" role="cell">4.545 M</td></tr>
+<tr role="row"><td data-label="Metric" role="cell">Upper Throughput 변화</td><td data-label="SoC38" role="cell">기준</td><td data-label="SoC39" role="cell">+27.3%</td></tr>
+</tbody></table></div>
+<p>구조상 계산값이며 실제 Basys3 Runtime이 아니다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Static Reference</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Static Reference · 소스 코드"><code>SoC39 STATIC PARALLEL-REQUANT COMPARISON
+clock = 100 MHz
+
+SoC38 read/requant/finish = 9/14/5
+SoC39 read/requant/finish = 9/8/5
+
+SoC38 total = 28 cycles (280.0 ns)
+SoC39 total = 22 cycles (220.0 ns)
+saved = 6 cycles
+static latency reduction vs SoC38 = 21.4%
+SoC38 upper jobs/s = 3,571,428.571
+SoC39 upper jobs/s = 4,545,454.545
+static upper throughput gain vs SoC38 = 27.3%
+
+SPATIAL TRADE-OFF:
+- requant core instances: 1 -&gt; 4
+- actual DSP48 count is NOT assumed
+- 33x16 multiply is wider than one 25x18 DSP48E1 multiplier input
+- synthesis must report the actual DSP/LUT mapping
+
+NOT MEASURED:
+- WNS/TNS/WHS/THS
+- DSP48/LUT/FF delta
+- power delta
+- Basys3 runtime
+SOC39 STATIC PARALLEL4 REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=&lt;seconds&gt; to increase the limit.
+</code></pre>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>변경 범위</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="17절 신호 및 실행 흐름">신규:
+requantize_batch2x4_parallel4.v
+tensor_job_engine_parallel4_requant.v
+npu_full_accelerator_parallel4_ip.v
+
+유지:
+requantize_s32_to_s8.v
+BRAM Read Pipeline
+Control / Descriptor / IRQ / AXI Bridge</div>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Serial Batch RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Serial Batch RTL · 소스 코드"><code>module requantize_batch2x4_serial (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    input  wire [127:0]         acc_ch0_batch_i,
+    input  wire [127:0]         acc_ch1_batch_i,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output reg                  done_o,
+    output reg                  result_valid_o,
+
+    output reg  [31:0]          q_ch0_batch_o,
+    output reg  [31:0]          q_ch1_batch_o,
+
+    output reg  [7:0]           saturation_count_o
+);
+
+// Serializes the 2-channel x 4-sample int32 result block from SoC 29
+// through one pipelined requantization core.
+//
+// Feed order:
+//   index 0..3 -&gt; CH0 sample 0..3
+//   index 4..7 -&gt; CH1 sample 0..3
+//
+// One item is launched per clock while FEED is active.
+// The requantizer itself is fully pipelined, so after startup it also
+// produces one result per clock.
+
+localparam [1:0] ST_IDLE  = 2'd0;
+localparam [1:0] ST_FEED  = 2'd1;
+localparam [1:0] ST_DRAIN = 2'd2;
+
+reg [1:0] state_q;
+reg [3:0] feed_index_q;
+reg [3:0] output_count_q;
+
+assign busy_o =
+    (state_q != ST_IDLE);
+
+wire core_valid_i;
+
+assign core_valid_i =
+    (state_q == ST_FEED);
+
+wire current_is_ch1_w;
+wire [1:0] current_sample_w;
+
+assign current_is_ch1_w =
+    feed_index_q[2];
+
+assign current_sample_w =
+    feed_index_q[1:0];
+
+reg signed [31:0] selected_acc_w;
+
+always @(*) begin
+    case (feed_index_q)
+        4'd0: selected_acc_w = $signed(acc_ch0_batch_i[31:0]);
+        4'd1: selected_acc_w = $signed(acc_ch0_batch_i[63:32]);
+        4'd2: selected_acc_w = $signed(acc_ch0_batch_i[95:64]);
+        4'd3: selected_acc_w = $signed(acc_ch0_batch_i[127:96]);
+
+        4'd4: selected_acc_w = $signed(acc_ch1_batch_i[31:0]);
+        4'd5: selected_acc_w = $signed(acc_ch1_batch_i[63:32]);
+        4'd6: selected_acc_w = $signed(acc_ch1_batch_i[95:64]);
+
+        default:
+            selected_acc_w = $signed(acc_ch1_batch_i[127:96]);
+    endcase
+end
+
+wire signed [31:0] selected_bias_w;
+wire signed [15:0] selected_mult_w;
+wire        [5:0]  selected_shift_w;
+wire signed [15:0] selected_zp_w;
+
+assign selected_bias_w =
+    current_is_ch1_w
+    ? bias_ch1_i
+    : bias_ch0_i;
+
+assign selected_mult_w =
+    current_is_ch1_w
+    ? mult_ch1_i
+    : mult_ch0_i;
+
+assign selected_shift_w =
+    current_is_ch1_w
+    ? shift_ch1_i
+    : shift_ch0_i;
+
+assign selected_zp_w =
+    current_is_ch1_w
+    ? zp_ch1_i
+    : zp_ch0_i;
+
+wire              core_valid_o;
+wire signed [7:0] core_q_w;
+wire              core_sat_pos_w;
+wire              core_sat_neg_w;
+
+requantize_s32_to_s8 u_requantizer (
+    .clk(clk),
+    .resetn(resetn),
+
+    .valid_i(core_valid_i),
+
+    .acc_i(selected_acc_w),
+    .bias_i(selected_bias_w),
+
+    .multiplier_i(selected_mult_w),
+    .shift_i(selected_shift_w),
+    .zero_point_i(selected_zp_w),
+
+    .valid_o(core_valid_o),
+    .q_o(core_q_w),
+
+    .sat_pos_o(core_sat_pos_w),
+    .sat_neg_o(core_sat_neg_w)
+);
+
+// Tag pipeline matches the 4 registered stages in requantize_s32_to_s8.
+reg [3:0] tag_s1_q;
+reg [3:0] tag_s2_q;
+reg [3:0] tag_s3_q;
+reg [3:0] tag_s4_q;
+
+reg valid_tag_s1_q;
+reg valid_tag_s2_q;
+reg valid_tag_s3_q;
+reg valid_tag_s4_q;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        tag_s1_q &lt;= 4'd0;
+        tag_s2_q &lt;= 4'd0;
+        tag_s3_q &lt;= 4'd0;
+        tag_s4_q &lt;= 4'd0;
+
+        valid_tag_s1_q &lt;= 1'b0;
+        valid_tag_s2_q &lt;= 1'b0;
+        valid_tag_s3_q &lt;= 1'b0;
+        valid_tag_s4_q &lt;= 1'b0;
+    end else begin
+        valid_tag_s1_q &lt;= core_valid_i;
+        valid_tag_s2_q &lt;= valid_tag_s1_q;
+        valid_tag_s3_q &lt;= valid_tag_s2_q;
+        valid_tag_s4_q &lt;= valid_tag_s3_q;
+
+        if (core_valid_i) begin
+            tag_s1_q &lt;= feed_index_q;
+        end
+
+        if (valid_tag_s1_q) begin
+            tag_s2_q &lt;= tag_s1_q;
+        end
+
+        if (valid_tag_s2_q) begin
+            tag_s3_q &lt;= tag_s2_q;
+        end
+
+        if (valid_tag_s3_q) begin
+            tag_s4_q &lt;= tag_s3_q;
+        end
+    end
+end
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q             &lt;= ST_IDLE;
+        feed_index_q        &lt;= 4'd0;
+        output_count_q      &lt;= 4'd0;
+
+        done_o              &lt;= 1'b0;
+        result_valid_o      &lt;= 1'b0;
+
+        q_ch0_batch_o       &lt;= 32'h0000_0000;
+        q_ch1_batch_o       &lt;= 32'h0000_0000;
+
+        saturation_count_o  &lt;= 8'd0;
+    end else begin
+        done_o         &lt;= 1'b0;
+        result_valid_o &lt;= 1'b0;
+
+        if (core_valid_o) begin
+            case (tag_s4_q)
+                4'd0: q_ch0_batch_o[7:0]   &lt;= core_q_w;
+                4'd1: q_ch0_batch_o[15:8]  &lt;= core_q_w;
+                4'd2: q_ch0_batch_o[23:16] &lt;= core_q_w;
+                4'd3: q_ch0_batch_o[31:24] &lt;= core_q_w;
+
+                4'd4: q_ch1_batch_o[7:0]   &lt;= core_q_w;
+                4'd5: q_ch1_batch_o[15:8]  &lt;= core_q_w;
+                4'd6: q_ch1_batch_o[23:16] &lt;= core_q_w;
+
+                default:
+                    q_ch1_batch_o[31:24] &lt;= core_q_w;
+            endcase
+
+            if (
+                core_sat_pos_w ||
+                core_sat_neg_w
+            ) begin
+                saturation_count_o &lt;=
+                    saturation_count_o + 8'd1;
+            end
+
+            output_count_q &lt;=
+                output_count_q + 4'd1;
+
+            if (tag_s4_q == 4'd7) begin
+                done_o         &lt;= 1'b1;
+                result_valid_o &lt;= 1'b1;
+                state_q        &lt;= ST_IDLE;
+            end
+        end
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    feed_index_q       &lt;= 4'd0;
+                    output_count_q     &lt;= 4'd0;
+
+                    q_ch0_batch_o      &lt;= 32'h0000_0000;
+                    q_ch1_batch_o      &lt;= 32'h0000_0000;
+
+                    saturation_count_o &lt;= 8'd0;
+
+                    state_q &lt;= ST_FEED;
+                end
+            end
+
+            ST_FEED: begin
+                if (feed_index_q == 4'd7) begin
+                    state_q &lt;= ST_DRAIN;
+                end else begin
+                    feed_index_q &lt;=
+                        feed_index_q + 4'd1;
+                end
+            end
+
+            ST_DRAIN: begin
+                // Wait for tag 7 to return from the 4-stage core.
+            end
+
+            default: begin
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Parallel4 Batch RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Parallel4 Batch RTL · 소스 코드"><code>module requantize_batch2x4_parallel4 (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    input  wire [127:0]         acc_ch0_batch_i,
+    input  wire [127:0]         acc_ch1_batch_i,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output reg                  done_o,
+    output reg                  result_valid_o,
+
+    output reg  [31:0]          q_ch0_batch_o,
+    output reg  [31:0]          q_ch1_batch_o,
+
+    output reg  [7:0]           saturation_count_o
+);
+
+// ------------------------------------------------------------
+// SoC 39 · 4-lane Parallel Requantization
+// ------------------------------------------------------------
+//
+// Baseline SoC 38:
+//   one requant core
+//   CH0[0..3], CH1[0..3] -&gt; 8 serial feed clocks
+//
+// SoC 39:
+//   four identical pipelined requant cores
+//   clock A -&gt; CH0 samples 0..3 in parallel
+//   clock B -&gt; CH1 samples 0..3 in parallel
+//
+// The arithmetic core itself is unchanged.
+// The optimization changes spatial parallelism, not the formula.
+//
+// Requant phase reduction:
+//   14 cycles -&gt; 8 cycles
+//
+// Resource trade-off:
+//   requant core instances 1 -&gt; 4
+//   actual DSP48/LUT/FF mapping must be measured after synthesis.
+
+localparam [1:0] ST_IDLE     = 2'd0;
+localparam [1:0] ST_FEED_CH0 = 2'd1;
+localparam [1:0] ST_FEED_CH1 = 2'd2;
+localparam [1:0] ST_DRAIN    = 2'd3;
+
+reg [1:0] state_q;
+
+assign busy_o =
+    (state_q != ST_IDLE);
+
+wire lanes_valid_i;
+
+assign lanes_valid_i =
+    (state_q == ST_FEED_CH0) ||
+    (state_q == ST_FEED_CH1);
+
+wire current_is_ch1_w;
+
+assign current_is_ch1_w =
+    (state_q == ST_FEED_CH1);
+
+// ------------------------------------------------------------
+// Four accumulator lanes.
+//
+// Packed-vector meaning:
+// lane0 -&gt; [31:0]
+// lane1 -&gt; [63:32]
+// lane2 -&gt; [95:64]
+// lane3 -&gt; [127:96]
+// ------------------------------------------------------------
+wire signed [31:0] lane_acc_0_w;
+wire signed [31:0] lane_acc_1_w;
+wire signed [31:0] lane_acc_2_w;
+wire signed [31:0] lane_acc_3_w;
+
+assign lane_acc_0_w =
+    current_is_ch1_w
+    ? $signed(acc_ch1_batch_i[31:0])
+    : $signed(acc_ch0_batch_i[31:0]);
+
+assign lane_acc_1_w =
+    current_is_ch1_w
+    ? $signed(acc_ch1_batch_i[63:32])
+    : $signed(acc_ch0_batch_i[63:32]);
+
+assign lane_acc_2_w =
+    current_is_ch1_w
+    ? $signed(acc_ch1_batch_i[95:64])
+    : $signed(acc_ch0_batch_i[95:64]);
+
+assign lane_acc_3_w =
+    current_is_ch1_w
+    ? $signed(acc_ch1_batch_i[127:96])
+    : $signed(acc_ch0_batch_i[127:96]);
+
+wire signed [31:0] lane_bias_w;
+wire signed [15:0] lane_mult_w;
+wire        [5:0]  lane_shift_w;
+wire signed [15:0] lane_zp_w;
+
+assign lane_bias_w =
+    current_is_ch1_w
+    ? bias_ch1_i
+    : bias_ch0_i;
+
+assign lane_mult_w =
+    current_is_ch1_w
+    ? mult_ch1_i
+    : mult_ch0_i;
+
+assign lane_shift_w =
+    current_is_ch1_w
+    ? shift_ch1_i
+    : shift_ch0_i;
+
+assign lane_zp_w =
+    current_is_ch1_w
+    ? zp_ch1_i
+    : zp_ch0_i;
+
+// ------------------------------------------------------------
+// Four identical pipelined requantization lanes.
+// ------------------------------------------------------------
+wire lane0_valid_o;
+wire lane1_valid_o;
+wire lane2_valid_o;
+wire lane3_valid_o;
+
+wire signed [7:0] lane0_q_w;
+wire signed [7:0] lane1_q_w;
+wire signed [7:0] lane2_q_w;
+wire signed [7:0] lane3_q_w;
+
+wire lane0_sat_pos_w;
+wire lane1_sat_pos_w;
+wire lane2_sat_pos_w;
+wire lane3_sat_pos_w;
+
+wire lane0_sat_neg_w;
+wire lane1_sat_neg_w;
+wire lane2_sat_neg_w;
+wire lane3_sat_neg_w;
+
+requantize_s32_to_s8 u_lane0 (
+    .clk(clk),
+    .resetn(resetn),
+    .valid_i(lanes_valid_i),
+    .acc_i(lane_acc_0_w),
+    .bias_i(lane_bias_w),
+    .multiplier_i(lane_mult_w),
+    .shift_i(lane_shift_w),
+    .zero_point_i(lane_zp_w),
+    .valid_o(lane0_valid_o),
+    .q_o(lane0_q_w),
+    .sat_pos_o(lane0_sat_pos_w),
+    .sat_neg_o(lane0_sat_neg_w)
+);
+
+requantize_s32_to_s8 u_lane1 (
+    .clk(clk),
+    .resetn(resetn),
+    .valid_i(lanes_valid_i),
+    .acc_i(lane_acc_1_w),
+    .bias_i(lane_bias_w),
+    .multiplier_i(lane_mult_w),
+    .shift_i(lane_shift_w),
+    .zero_point_i(lane_zp_w),
+    .valid_o(lane1_valid_o),
+    .q_o(lane1_q_w),
+    .sat_pos_o(lane1_sat_pos_w),
+    .sat_neg_o(lane1_sat_neg_w)
+);
+
+requantize_s32_to_s8 u_lane2 (
+    .clk(clk),
+    .resetn(resetn),
+    .valid_i(lanes_valid_i),
+    .acc_i(lane_acc_2_w),
+    .bias_i(lane_bias_w),
+    .multiplier_i(lane_mult_w),
+    .shift_i(lane_shift_w),
+    .zero_point_i(lane_zp_w),
+    .valid_o(lane2_valid_o),
+    .q_o(lane2_q_w),
+    .sat_pos_o(lane2_sat_pos_w),
+    .sat_neg_o(lane2_sat_neg_w)
+);
+
+requantize_s32_to_s8 u_lane3 (
+    .clk(clk),
+    .resetn(resetn),
+    .valid_i(lanes_valid_i),
+    .acc_i(lane_acc_3_w),
+    .bias_i(lane_bias_w),
+    .multiplier_i(lane_mult_w),
+    .shift_i(lane_shift_w),
+    .zero_point_i(lane_zp_w),
+    .valid_o(lane3_valid_o),
+    .q_o(lane3_q_w),
+    .sat_pos_o(lane3_sat_pos_w),
+    .sat_neg_o(lane3_sat_neg_w)
+);
+
+// All four lanes share the same valid schedule.
+// Keep an explicit check signal for readability.
+wire all_lanes_valid_o;
+
+assign all_lanes_valid_o =
+    lane0_valid_o &amp;&amp;
+    lane1_valid_o &amp;&amp;
+    lane2_valid_o &amp;&amp;
+    lane3_valid_o;
+
+// ------------------------------------------------------------
+// Channel tag pipeline.
+//
+// The core has four registered stages.
+// tag=0 -&gt; CH0 group
+// tag=1 -&gt; CH1 group
+// ------------------------------------------------------------
+reg group_tag_s1_q;
+reg group_tag_s2_q;
+reg group_tag_s3_q;
+reg group_tag_s4_q;
+
+reg valid_tag_s1_q;
+reg valid_tag_s2_q;
+reg valid_tag_s3_q;
+reg valid_tag_s4_q;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        group_tag_s1_q &lt;= 1'b0;
+        group_tag_s2_q &lt;= 1'b0;
+        group_tag_s3_q &lt;= 1'b0;
+        group_tag_s4_q &lt;= 1'b0;
+
+        valid_tag_s1_q &lt;= 1'b0;
+        valid_tag_s2_q &lt;= 1'b0;
+        valid_tag_s3_q &lt;= 1'b0;
+        valid_tag_s4_q &lt;= 1'b0;
+    end else begin
+        valid_tag_s1_q &lt;= lanes_valid_i;
+        valid_tag_s2_q &lt;= valid_tag_s1_q;
+        valid_tag_s3_q &lt;= valid_tag_s2_q;
+        valid_tag_s4_q &lt;= valid_tag_s3_q;
+
+        if (lanes_valid_i) begin
+            group_tag_s1_q &lt;= current_is_ch1_w;
+        end
+
+        if (valid_tag_s1_q) begin
+            group_tag_s2_q &lt;= group_tag_s1_q;
+        end
+
+        if (valid_tag_s2_q) begin
+            group_tag_s3_q &lt;= group_tag_s2_q;
+        end
+
+        if (valid_tag_s3_q) begin
+            group_tag_s4_q &lt;= group_tag_s3_q;
+        end
+    end
+end
+
+// ------------------------------------------------------------
+// Saturation count for the four current outputs.
+// ------------------------------------------------------------
+wire [2:0] lane_sat_count_w;
+
+assign lane_sat_count_w =
+    {2'b00, (lane0_sat_pos_w || lane0_sat_neg_w)} +
+    {2'b00, (lane1_sat_pos_w || lane1_sat_neg_w)} +
+    {2'b00, (lane2_sat_pos_w || lane2_sat_neg_w)} +
+    {2'b00, (lane3_sat_pos_w || lane3_sat_neg_w)};
+
+// ------------------------------------------------------------
+// Batch control / result collection.
+// ------------------------------------------------------------
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q &lt;= ST_IDLE;
+
+        done_o &lt;= 1'b0;
+        result_valid_o &lt;= 1'b0;
+
+        q_ch0_batch_o &lt;= 32'h0000_0000;
+        q_ch1_batch_o &lt;= 32'h0000_0000;
+
+        saturation_count_o &lt;= 8'd0;
+    end else begin
+        done_o &lt;= 1'b0;
+        result_valid_o &lt;= 1'b0;
+
+        if (
+            all_lanes_valid_o &amp;&amp;
+            valid_tag_s4_q
+        ) begin
+            if (!group_tag_s4_q) begin
+                q_ch0_batch_o &lt;= {
+                    lane3_q_w,
+                    lane2_q_w,
+                    lane1_q_w,
+                    lane0_q_w
+                };
+            end else begin
+                q_ch1_batch_o &lt;= {
+                    lane3_q_w,
+                    lane2_q_w,
+                    lane1_q_w,
+                    lane0_q_w
+                };
+
+                done_o &lt;= 1'b1;
+                result_valid_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+
+            saturation_count_o &lt;=
+                saturation_count_o +
+                {5'd0, lane_sat_count_w};
+        end
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    q_ch0_batch_o &lt;= 32'h0000_0000;
+                    q_ch1_batch_o &lt;= 32'h0000_0000;
+                    saturation_count_o &lt;= 8'd0;
+
+                    state_q &lt;= ST_FEED_CH0;
+                end
+            end
+
+            ST_FEED_CH0: begin
+                state_q &lt;= ST_FEED_CH1;
+            end
+
+            ST_FEED_CH1: begin
+                state_q &lt;= ST_DRAIN;
+            end
+
+            ST_DRAIN: begin
+                // Wait for CH0 then CH1 to return from the four lanes.
+            end
+
+            default: begin
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Parallel4 Job Engine</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Parallel4 Job Engine · 소스 코드"><code>module tensor_job_engine_parallel4_requant #(
+    parameter integer BRAM_READ_LATENCY = 1
+) (
+    input  wire                 clk,
+    input  wire                 resetn,
+
+    input  wire                 start_i,
+
+    input  wire [11:0]          input_base_i,
+    input  wire [11:0]          output_base_i,
+    input  wire [15:0]          length_words_i,
+
+    input  wire signed [31:0]   bias_ch0_i,
+    input  wire signed [31:0]   bias_ch1_i,
+
+    input  wire signed [15:0]   mult_ch0_i,
+    input  wire signed [15:0]   mult_ch1_i,
+
+    input  wire        [5:0]    shift_ch0_i,
+    input  wire        [5:0]    shift_ch1_i,
+
+    input  wire signed [15:0]   zp_ch0_i,
+    input  wire signed [15:0]   zp_ch1_i,
+
+    output wire                 busy_o,
+    output reg                  done_o,
+    output reg                  error_o,
+
+    output reg                  bram_en_o,
+    output reg  [3:0]           bram_we_o,
+    output reg  [11:0]          bram_addr_o,
+    output reg  [31:0]          bram_wdata_o,
+    input  wire [31:0]          bram_rdata_i,
+
+    output reg  [15:0]          read_word_count_o,
+    output reg  [15:0]          write_word_count_o
+);
+
+// ------------------------------------------------------------
+// SoC 39 · Pipelined BRAM Read + 4-Lane Parallel Requantization
+// ------------------------------------------------------------
+//
+// Baseline:
+//   READ_REQ -&gt; READ_CAPTURE -&gt; READ_REQ -&gt; READ_CAPTURE ...
+//   8 words -&gt; 16 cycles
+//
+// Optimized:
+//   issue word0
+//   issue word1 + wait/capture pipeline
+//   issue word2 + capture word0
+//   ...
+//   drain final read
+//
+// With BRAM_READ_LATENCY=1:
+//   8 words -&gt; 9 cycles
+//
+// Important:
+// - The BRAM remains synchronous.
+// - This design does NOT remove a BRAM output register.
+// - It pipelines requests so the read latency is hidden after startup.
+// - If the actual BMG Port-B read latency is changed, set
+//   BRAM_READ_LATENCY to match the configured synchronous output latency.
+// - BRAM_READ_LATENCY must be &gt;= 1.
+
+localparam [2:0] ST_IDLE          = 3'd0;
+localparam [2:0] ST_READ_STREAM   = 3'd1;
+localparam [2:0] ST_START_REQUANT = 3'd2;
+localparam [2:0] ST_WAIT_RESULT   = 3'd3;
+localparam [2:0] ST_WRITE_CH0     = 3'd4;
+localparam [2:0] ST_WRITE_CH1     = 3'd5;
+localparam [2:0] ST_DONE          = 3'd6;
+
+reg [2:0] state_q;
+
+reg [3:0] issue_index_q;
+reg [3:0] capture_index_q;
+reg       issue_done_q;
+
+reg [127:0] acc_ch0_batch_q;
+reg [127:0] acc_ch1_batch_q;
+
+reg requant_start_q;
+
+// One bit per configured BRAM output-latency stage.
+// Example BRAM_READ_LATENCY=1:
+//   issue_read_w -&gt; read_valid_pipe_q[0] -&gt; capture on next clock
+reg [BRAM_READ_LATENCY-1:0] read_valid_pipe_q;
+
+integer valid_stage;
+
+wire issue_read_w;
+wire capture_valid_w;
+
+assign issue_read_w =
+    (state_q == ST_READ_STREAM) &amp;&amp;
+    !issue_done_q;
+
+assign capture_valid_w =
+    read_valid_pipe_q[BRAM_READ_LATENCY-1];
+
+wire requant_busy_w;
+wire requant_done_w;
+wire requant_result_valid_w;
+
+wire [31:0] q_ch0_batch_w;
+wire [31:0] q_ch1_batch_w;
+
+wire [7:0] saturation_count_w;
+
+assign busy_o =
+    (state_q != ST_IDLE) &amp;&amp;
+    (state_q != ST_DONE);
+
+requantize_batch2x4_parallel4 u_requant_batch (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(requant_start_q),
+
+    .acc_ch0_batch_i(acc_ch0_batch_q),
+    .acc_ch1_batch_i(acc_ch1_batch_q),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(requant_busy_w),
+    .done_o(requant_done_w),
+    .result_valid_o(requant_result_valid_w),
+
+    .q_ch0_batch_o(q_ch0_batch_w),
+    .q_ch1_batch_o(q_ch1_batch_w),
+
+    .saturation_count_o(saturation_count_w)
+);
+
+// ------------------------------------------------------------
+// BRAM interface.
+// ------------------------------------------------------------
+always @(*) begin
+    bram_en_o    = 1'b0;
+    bram_we_o    = 4'b0000;
+    bram_addr_o  = 12'h000;
+    bram_wdata_o = 32'h0000_0000;
+
+    case (state_q)
+        ST_READ_STREAM: begin
+            if (!issue_done_q) begin
+                bram_en_o = 1'b1;
+                bram_we_o = 4'b0000;
+
+                bram_addr_o =
+                    input_base_i +
+                    {issue_index_q, 2'b00};
+            end
+        end
+
+        ST_WRITE_CH0: begin
+            bram_en_o    = 1'b1;
+            bram_we_o    = 4'b1111;
+            bram_addr_o  = output_base_i;
+            bram_wdata_o = q_ch0_batch_w;
+        end
+
+        ST_WRITE_CH1: begin
+            bram_en_o    = 1'b1;
+            bram_we_o    = 4'b1111;
+            bram_addr_o  = output_base_i + 12'd4;
+            bram_wdata_o = q_ch1_batch_w;
+        end
+
+        default: begin
+        end
+    endcase
+end
+
+// ------------------------------------------------------------
+// Read-valid pipeline.
+//
+// This tracks when a previously-issued synchronous BRAM read becomes
+// safe to capture into the job-engine batch registers.
+// ------------------------------------------------------------
+always @(posedge clk) begin
+    if (!resetn) begin
+        read_valid_pipe_q &lt;=
+            {BRAM_READ_LATENCY{1'b0}};
+    end else begin
+        read_valid_pipe_q[0] &lt;=
+            issue_read_w;
+
+        for (
+            valid_stage = 1;
+            valid_stage &lt; BRAM_READ_LATENCY;
+            valid_stage = valid_stage + 1
+        ) begin
+            read_valid_pipe_q[valid_stage] &lt;=
+                read_valid_pipe_q[valid_stage - 1];
+        end
+    end
+end
+
+// ------------------------------------------------------------
+// Main state machine.
+// ------------------------------------------------------------
+always @(posedge clk) begin
+    if (!resetn) begin
+        state_q &lt;= ST_IDLE;
+
+        issue_index_q &lt;= 4'd0;
+        capture_index_q &lt;= 4'd0;
+        issue_done_q &lt;= 1'b0;
+
+        acc_ch0_batch_q &lt;= 128'd0;
+        acc_ch1_batch_q &lt;= 128'd0;
+
+        requant_start_q &lt;= 1'b0;
+
+        done_o &lt;= 1'b0;
+        error_o &lt;= 1'b0;
+
+        read_word_count_o &lt;= 16'd0;
+        write_word_count_o &lt;= 16'd0;
+    end else begin
+        requant_start_q &lt;= 1'b0;
+        done_o &lt;= 1'b0;
+
+        case (state_q)
+            ST_IDLE: begin
+                if (start_i) begin
+                    if (length_words_i != 16'd8) begin
+                        error_o &lt;= 1'b1;
+                        done_o &lt;= 1'b1;
+                    end else begin
+                        error_o &lt;= 1'b0;
+
+                        issue_index_q &lt;= 4'd0;
+                        capture_index_q &lt;= 4'd0;
+                        issue_done_q &lt;= 1'b0;
+
+                        acc_ch0_batch_q &lt;= 128'd0;
+                        acc_ch1_batch_q &lt;= 128'd0;
+
+                        read_word_count_o &lt;= 16'd0;
+                        write_word_count_o &lt;= 16'd0;
+
+                        state_q &lt;= ST_READ_STREAM;
+                    end
+                end
+            end
+
+            ST_READ_STREAM: begin
+                // One new address is presented every clock until word 7.
+                if (issue_read_w) begin
+                    if (issue_index_q == 4'd7) begin
+                        issue_done_q &lt;= 1'b1;
+                    end else begin
+                        issue_index_q &lt;=
+                            issue_index_q + 4'd1;
+                    end
+                end
+
+                // After the initial latency, one word is captured per clock.
+                if (capture_valid_w) begin
+                    read_word_count_o &lt;=
+                        read_word_count_o + 16'd1;
+
+                    case (capture_index_q)
+                        4'd0: acc_ch0_batch_q[31:0]   &lt;= bram_rdata_i;
+                        4'd1: acc_ch0_batch_q[63:32]  &lt;= bram_rdata_i;
+                        4'd2: acc_ch0_batch_q[95:64]  &lt;= bram_rdata_i;
+                        4'd3: acc_ch0_batch_q[127:96] &lt;= bram_rdata_i;
+
+                        4'd4: acc_ch1_batch_q[31:0]   &lt;= bram_rdata_i;
+                        4'd5: acc_ch1_batch_q[63:32]  &lt;= bram_rdata_i;
+                        4'd6: acc_ch1_batch_q[95:64]  &lt;= bram_rdata_i;
+
+                        default:
+                            acc_ch1_batch_q[127:96] &lt;= bram_rdata_i;
+                    endcase
+
+                    if (capture_index_q == 4'd7) begin
+                        state_q &lt;= ST_START_REQUANT;
+                    end else begin
+                        capture_index_q &lt;=
+                            capture_index_q + 4'd1;
+                    end
+                end
+            end
+
+            ST_START_REQUANT: begin
+                if (!requant_busy_w) begin
+                    requant_start_q &lt;= 1'b1;
+                    state_q &lt;= ST_WAIT_RESULT;
+                end
+            end
+
+            ST_WAIT_RESULT: begin
+                if (requant_result_valid_w) begin
+                    state_q &lt;= ST_WRITE_CH0;
+                end
+            end
+
+            ST_WRITE_CH0: begin
+                write_word_count_o &lt;=
+                    write_word_count_o + 16'd1;
+
+                state_q &lt;= ST_WRITE_CH1;
+            end
+
+            ST_WRITE_CH1: begin
+                write_word_count_o &lt;=
+                    write_word_count_o + 16'd1;
+
+                state_q &lt;= ST_DONE;
+            end
+
+            ST_DONE: begin
+                done_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+
+            default: begin
+                error_o &lt;= 1'b1;
+                state_q &lt;= ST_IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Optimized Top</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Optimized Top · 소스 코드"><code>module npu_full_accelerator_parallel4_ip (
+    (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 s_axi_aclk CLK" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axi_aclk, ASSOCIATED_BUSIF S_AXI:BRAM, ASSOCIATED_RESET s_axi_aresetn" *)
+    input  wire        s_axi_aclk,
+
+    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 s_axi_aresetn RST" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axi_aresetn, POLARITY ACTIVE_LOW" *)
+    input  wire        s_axi_aresetn,
+
+    // --------------------------------------------------------
+    // AXI4-Lite Control Plane
+    // --------------------------------------------------------
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWADDR" *)
+    input  wire [7:0]  s_axi_awaddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWVALID" *)
+    input  wire        s_axi_awvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWREADY" *)
+    output wire        s_axi_awready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WDATA" *)
+    input  wire [31:0] s_axi_wdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WSTRB" *)
+    input  wire [3:0]  s_axi_wstrb,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WVALID" *)
+    input  wire        s_axi_wvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WREADY" *)
+    output wire        s_axi_wready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BRESP" *)
+    output wire [1:0]  s_axi_bresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BVALID" *)
+    output wire        s_axi_bvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BREADY" *)
+    input  wire        s_axi_bready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARADDR" *)
+    input  wire [7:0]  s_axi_araddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARVALID" *)
+    input  wire        s_axi_arvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARREADY" *)
+    output wire        s_axi_arready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RDATA" *)
+    output wire [31:0] s_axi_rdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RRESP" *)
+    output wire [1:0]  s_axi_rresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RVALID" *)
+    output wire        s_axi_rvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RREADY" *)
+    input  wire        s_axi_rready,
+
+    // --------------------------------------------------------
+    // Native BRAM Data Plane
+    // --------------------------------------------------------
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM CLK" *)
+    output wire        bram_clk_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM RST" *)
+    output wire        bram_rst_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM EN" *)
+    output wire        bram_en_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM WE" *)
+    output wire [3:0]  bram_we_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM ADDR" *)
+    output wire [11:0] bram_addr_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM DIN" *)
+    output wire [31:0] bram_wdata_o,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:bram:1.0 BRAM DOUT" *)
+    input  wire [31:0] bram_rdata_i,
+
+    // --------------------------------------------------------
+    // Interrupt
+    // --------------------------------------------------------
+    (* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 irq INTERRUPT" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME irq, SENSITIVITY LEVEL_HIGH" *)
+    output wire        irq
+);
+
+// Pure Shell / Wrapper:
+// AXI bridge + control/descriptor/IRQ + job engine + BRAM clock/reset adapter.
+
+wire        reg_wr_en;
+wire [7:0]  reg_wr_addr;
+wire [31:0] reg_wr_data;
+wire [3:0]  reg_wr_strb;
+
+wire [7:0]  reg_rd_addr;
+wire [31:0] reg_rd_data;
+
+wire job_start;
+
+wire [11:0] active_input_base;
+wire [11:0] active_output_base;
+wire [15:0] active_length_words;
+
+wire signed [31:0] active_bias_ch0;
+wire signed [31:0] active_bias_ch1;
+
+wire signed [15:0] active_mult_ch0;
+wire signed [15:0] active_mult_ch1;
+
+wire [5:0] active_shift_ch0;
+wire [5:0] active_shift_ch1;
+
+wire signed [15:0] active_zp_ch0;
+wire signed [15:0] active_zp_ch1;
+
+wire engine_busy;
+wire engine_done;
+wire engine_error;
+
+wire [15:0] read_word_count;
+wire [15:0] write_word_count;
+
+wire ctrl_busy;
+wire done_sticky;
+wire error_sticky;
+wire [7:0] error_code;
+wire [31:0] job_id;
+wire [1:0] irq_enable;
+wire [1:0] irq_status;
+
+axi4lite_reg_bridge u_axi_bridge (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(s_axi_aresetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .reg_wr_en_o(reg_wr_en),
+    .reg_wr_addr_o(reg_wr_addr),
+    .reg_wr_data_o(reg_wr_data),
+    .reg_wr_strb_o(reg_wr_strb),
+
+    .reg_rd_addr_o(reg_rd_addr),
+    .reg_rd_data_i(reg_rd_data)
+);
+
+npu_full_control_irq u_control (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .wr_en_i(reg_wr_en),
+    .wr_addr_i(reg_wr_addr),
+    .wr_data_i(reg_wr_data),
+    .wr_strb_i(reg_wr_strb),
+
+    .rd_addr_i(reg_rd_addr),
+    .rd_data_o(reg_rd_data),
+
+    .job_start_o(job_start),
+
+    .active_input_base_o(active_input_base),
+    .active_output_base_o(active_output_base),
+    .active_length_words_o(active_length_words),
+
+    .active_bias_ch0_o(active_bias_ch0),
+    .active_bias_ch1_o(active_bias_ch1),
+
+    .active_mult_ch0_o(active_mult_ch0),
+    .active_mult_ch1_o(active_mult_ch1),
+
+    .active_shift_ch0_o(active_shift_ch0),
+    .active_shift_ch1_o(active_shift_ch1),
+
+    .active_zp_ch0_o(active_zp_ch0),
+    .active_zp_ch1_o(active_zp_ch1),
+
+    .engine_busy_i(engine_busy),
+    .engine_done_i(engine_done),
+    .engine_error_i(engine_error),
+
+    .read_word_count_i(read_word_count),
+    .write_word_count_i(write_word_count),
+
+    .busy_o(ctrl_busy),
+    .done_sticky_o(done_sticky),
+    .error_sticky_o(error_sticky),
+    .error_code_o(error_code),
+    .job_id_o(job_id),
+
+    .irq_o(irq),
+    .irq_enable_o(irq_enable),
+    .irq_status_o(irq_status)
+);
+
+tensor_job_engine_parallel4_requant #(
+    .BRAM_READ_LATENCY(1)
+) u_engine (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .start_i(job_start),
+
+    .input_base_i(active_input_base),
+    .output_base_i(active_output_base),
+    .length_words_i(active_length_words),
+
+    .bias_ch0_i(active_bias_ch0),
+    .bias_ch1_i(active_bias_ch1),
+
+    .mult_ch0_i(active_mult_ch0),
+    .mult_ch1_i(active_mult_ch1),
+
+    .shift_ch0_i(active_shift_ch0),
+    .shift_ch1_i(active_shift_ch1),
+
+    .zp_ch0_i(active_zp_ch0),
+    .zp_ch1_i(active_zp_ch1),
+
+    .busy_o(engine_busy),
+    .done_o(engine_done),
+    .error_o(engine_error),
+
+    .bram_en_o(bram_en_o),
+    .bram_we_o(bram_we_o),
+    .bram_addr_o(bram_addr_o),
+    .bram_wdata_o(bram_wdata_o),
+    .bram_rdata_i(bram_rdata_i),
+
+    .read_word_count_o(read_word_count),
+    .write_word_count_o(write_word_count)
+);
+
+bram_clock_reset_adapter u_bram_clock_reset (
+    .clk_i(s_axi_aclk),
+    .resetn_i(s_axi_aresetn),
+
+    .bram_clk_o(bram_clk_o),
+    .bram_rst_o(bram_rst_o)
+);
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Top Shell/Wrapper</h2>
+<p>기능 로직은 Batch Requantizer와 Job Engine에 두고 Top은 기존 Control/AXI/Engine 연결만 담당한다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Standalone Batch Regression</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Standalone Batch Regression · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_requantize_batch2x4_parallel4;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+logic start_i = 1'b0;
+
+logic [127:0] acc_ch0_batch_i;
+logic [127:0] acc_ch1_batch_i;
+
+logic signed [31:0] bias_ch0_i;
+logic signed [31:0] bias_ch1_i;
+
+logic signed [15:0] mult_ch0_i;
+logic signed [15:0] mult_ch1_i;
+
+logic [5:0] shift_ch0_i;
+logic [5:0] shift_ch1_i;
+
+logic signed [15:0] zp_ch0_i;
+logic signed [15:0] zp_ch1_i;
+
+wire busy_o;
+wire done_o;
+wire result_valid_o;
+
+wire [31:0] q_ch0_batch_o;
+wire [31:0] q_ch1_batch_o;
+wire [7:0] saturation_count_o;
+
+integer cycle_count = 0;
+integer start_cycle = -1;
+integer result_cycle = -1;
+integer errors = 0;
+
+always #5 clk = ~clk;
+
+always @(posedge clk) begin
+    cycle_count = cycle_count + 1;
+    #1;
+
+    if (
+        start_i &amp;&amp;
+        (start_cycle &lt; 0)
+    ) begin
+        start_cycle = cycle_count;
+    end
+
+    if (
+        result_valid_o &amp;&amp;
+        (result_cycle &lt; 0)
+    ) begin
+        result_cycle = cycle_count;
+    end
+end
+
+requantize_batch2x4_parallel4 dut (
+    .clk(clk),
+    .resetn(resetn),
+    .start_i(start_i),
+
+    .acc_ch0_batch_i(acc_ch0_batch_i),
+    .acc_ch1_batch_i(acc_ch1_batch_i),
+
+    .bias_ch0_i(bias_ch0_i),
+    .bias_ch1_i(bias_ch1_i),
+
+    .mult_ch0_i(mult_ch0_i),
+    .mult_ch1_i(mult_ch1_i),
+
+    .shift_ch0_i(shift_ch0_i),
+    .shift_ch1_i(shift_ch1_i),
+
+    .zp_ch0_i(zp_ch0_i),
+    .zp_ch1_i(zp_ch1_i),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .result_valid_o(result_valid_o),
+
+    .q_ch0_batch_o(q_ch0_batch_o),
+    .q_ch1_batch_o(q_ch1_batch_o),
+
+    .saturation_count_o(saturation_count_o)
+);
+
+task automatic check32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        if (actual !== expected) begin
+            errors = errors + 1;
+            $error(
+                "%s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "PASS %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+initial begin
+    // CH0 raw accumulators: 16, 32, 48, 64
+    acc_ch0_batch_i = {
+        32'd64,
+        32'd48,
+        32'd32,
+        32'd16
+    };
+
+    // CH1 raw accumulators: 32, 64, 96, 128
+    acc_ch1_batch_i = {
+        32'd128,
+        32'd96,
+        32'd64,
+        32'd32
+    };
+
+    bias_ch0_i = 32'sd0;
+    bias_ch1_i = 32'sd4;
+
+    mult_ch0_i = 16'sd1;
+    mult_ch1_i = 16'sd3;
+
+    shift_ch0_i = 6'd1;
+    shift_ch1_i = 6'd1;
+
+    zp_ch0_i = 16'sd0;
+    zp_ch1_i = -16'sd3;
+
+    repeat (4) @(posedge clk);
+    resetn = 1'b1;
+
+    @(negedge clk);
+    start_i = 1'b1;
+
+    @(posedge clk);
+    #1;
+
+    @(negedge clk);
+    start_i = 1'b0;
+
+    wait (result_valid_o === 1'b1);
+    #1;
+
+    check32(
+        "CH0",
+        q_ch0_batch_o,
+        32'h2018_1008
+    );
+
+    check32(
+        "CH1",
+        q_ch1_batch_o,
+        32'h7F7F_6333
+    );
+
+    if (saturation_count_o !== 8'd2) begin
+        errors = errors + 1;
+        $error(
+            "saturation_count actual=%0d expected=2",
+            saturation_count_o
+        );
+    end
+
+    if (errors == 0) begin
+        $display("SOC39 PARALLEL4 BATCH TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC39 PARALLEL4 BATCH TEST: FAIL"
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Integrated Regression</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Integrated Regression · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_soc39_parallel4_regression;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic [7:0]  awaddr = 8'h00;
+logic        awvalid = 1'b0;
+wire         awready;
+
+logic [31:0] wdata = 32'h0000_0000;
+logic [3:0]  wstrb = 4'h0;
+logic        wvalid = 1'b0;
+wire         wready;
+
+wire [1:0]   bresp;
+wire         bvalid;
+logic        bready = 1'b1;
+
+logic [7:0]  araddr = 8'h00;
+logic        arvalid = 1'b0;
+wire         arready;
+
+wire [31:0]  rdata;
+wire [1:0]   rresp;
+wire         rvalid;
+logic        rready = 1'b1;
+
+logic        cpu_mem_en_i = 1'b0;
+logic [3:0]  cpu_mem_we_i = 4'h0;
+logic [11:0] cpu_mem_addr_i = 12'h000;
+logic [31:0] cpu_mem_wdata_i = 32'h0000_0000;
+wire [31:0]  cpu_mem_rdata_o;
+
+wire irq_o;
+
+integer check_count = 0;
+integer error_count = 0;
+
+integer cycle_counter = 0;
+integer engine_start_cycle = -1;
+integer irq_cycle = -1;
+logic engine_busy_d = 1'b0;
+
+always @(posedge clk) begin
+    cycle_counter = cycle_counter + 1;
+
+    // Wait until NBA updates settle before observing DUT pulses.
+    #1;
+
+    if (
+        dut.u_npu.engine_busy &amp;&amp;
+        !engine_busy_d
+    ) begin
+        engine_start_cycle = cycle_counter;
+    end
+
+    engine_busy_d = dut.u_npu.engine_busy;
+
+    if (
+        (irq_o === 1'b1) &amp;&amp;
+        (irq_cycle &lt; 0)
+    ) begin
+        irq_cycle = cycle_counter;
+    end
+end
+
+always #5 clk = ~clk;
+
+npu_full_accelerator_parallel4_sim_top dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready),
+
+    .cpu_mem_en_i(cpu_mem_en_i),
+    .cpu_mem_we_i(cpu_mem_we_i),
+    .cpu_mem_addr_i(cpu_mem_addr_i),
+    .cpu_mem_wdata_i(cpu_mem_wdata_i),
+    .cpu_mem_rdata_o(cpu_mem_rdata_o),
+
+    .irq_o(irq_o)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        check_count = check_count + 1;
+        if (actual !== expected) begin
+            error_count = error_count + 1;
+            $error(
+                "CHECK FAIL: %s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic axi_write(
+    input [7:0] address,
+    input [31:0] data,
+    input integer order
+);
+    bit aw_done;
+    bit w_done;
+    integer timeout;
+
+    begin
+        aw_done = 0;
+        w_done = 0;
+
+        @(negedge clk);
+
+        awaddr = address;
+        wdata = data;
+        wstrb = 4'hF;
+
+        case (order)
+            0: begin
+                awvalid = 1'b1;
+                wvalid = 1'b1;
+            end
+
+            1: begin
+                awvalid = 1'b1;
+                wvalid = 1'b0;
+            end
+
+            default: begin
+                awvalid = 1'b0;
+                wvalid = 1'b1;
+            end
+        endcase
+
+        timeout = 0;
+
+        while (!(aw_done &amp;&amp; w_done)) begin
+            @(posedge clk);
+            // (변경) READY가 갱신되기 전 상승 에지의 handshake를 관측한다.
+
+            if (awvalid &amp;&amp; awready)
+                aw_done = 1;
+
+            if (wvalid &amp;&amp; wready)
+                w_done = 1;
+
+            @(negedge clk);
+
+            if (aw_done)
+                awvalid = 1'b0;
+
+            if (w_done)
+                wvalid = 1'b0;
+
+            if (
+                (order == 1) &amp;&amp;
+                aw_done &amp;&amp;
+                !w_done
+            )
+                wvalid = 1'b1;
+
+            if (
+                (order == 2) &amp;&amp;
+                w_done &amp;&amp;
+                !aw_done
+            )
+                awvalid = 1'b1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI write timeout");
+        end
+
+        timeout = 0;
+
+        while (!bvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI BVALID timeout");
+        end
+
+        check_true(
+            "BRESP OKAY",
+            bresp == 2'b00
+        );
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic axi_read(
+    input [7:0] address,
+    output [31:0] data
+);
+    integer timeout;
+
+    begin
+        @(negedge clk);
+
+        araddr = address;
+        arvalid = 1'b1;
+
+        timeout = 0;
+
+        while (!arready) begin
+            @(posedge clk);
+            #1;
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI ARREADY timeout");
+        end
+
+        @(posedge clk);
+        #1;
+
+        timeout = 0;
+
+        while (!rvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 40)
+                $fatal(1, "AXI RVALID timeout");
+        end
+
+        data = rdata;
+
+        check_true(
+            "RRESP OKAY",
+            rresp == 2'b00
+        );
+
+        @(negedge clk);
+        arvalid = 1'b0;
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic mem_write32(
+    input [11:0] address,
+    input [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b1;
+        cpu_mem_we_i = 4'hF;
+        cpu_mem_addr_i = address;
+        cpu_mem_wdata_i = data;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b0;
+        cpu_mem_we_i = 4'h0;
+        cpu_mem_addr_i = 12'h000;
+        cpu_mem_wdata_i = 32'h0000_0000;
+    end
+endtask
+
+task automatic mem_read32(
+    input [11:0] address,
+    output [31:0] data
+);
+    begin
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b1;
+        cpu_mem_we_i = 4'h0;
+        cpu_mem_addr_i = address;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+
+        cpu_mem_en_i = 1'b0;
+        cpu_mem_addr_i = 12'h000;
+
+        data = cpu_mem_rdata_o;
+    end
+endtask
+
+task automatic wait_irq_high;
+    integer timeout;
+    begin
+        timeout = 0;
+
+        while (irq_o !== 1'b1) begin
+            @(posedge clk);
+            // (변경) 같은 시각의 #1 성능 모니터보다 뒤에서 IRQ를 관측한다.
+            #2;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 300)
+                $fatal(1, "IRQ did not assert");
+        end
+    end
+endtask
+
+initial begin
+    reg [31:0] rd;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. CPU fills Tensor BRAM through Port A.
+    // --------------------------------------------------------
+    mem_write32(12'h200, 32'd16);
+    mem_write32(12'h204, 32'd32);
+    mem_write32(12'h208, 32'd48);
+    mem_write32(12'h20C, 32'd64);
+
+    mem_write32(12'h210, 32'd32);
+    mem_write32(12'h214, 32'd64);
+    mem_write32(12'h218, 32'd96);
+    mem_write32(12'h21C, 32'd128);
+
+    // --------------------------------------------------------
+    // 2. Program descriptor / parameter / IRQ registers.
+    //    Exercise all three AXI write channel orders.
+    // --------------------------------------------------------
+    axi_write(8'h10, 32'h0000_0200, 0);
+    axi_write(8'h14, 32'h0000_0300, 1);
+    axi_write(8'h18, 32'd8,         2);
+
+    axi_write(8'h20, 32'd0,         0);
+    axi_write(8'h24, 32'd4,         1);
+    axi_write(8'h28, 32'h0001_0001, 2);
+    axi_write(8'h2C, 32'h0001_0003, 0);
+    axi_write(8'h30, 32'hFFFD_0000, 1);
+
+    // Clear stale IRQ and status, then enable DONE/ERROR.
+    axi_write(8'h4C, 32'h0000_0003, 2);
+    axi_write(8'h00, 32'h0000_0006, 0);
+    axi_write(8'h48, 32'h0000_0003, 1);
+
+    axi_read(8'h04, rd);
+
+    check_true(
+        "descriptor valid",
+        (rd &amp; 32'h8) != 0
+    );
+
+    // --------------------------------------------------------
+    // 3. START and wait for DONE IRQ.
+    // --------------------------------------------------------
+    axi_write(8'h00, 32'h0000_0001, 0);
+
+    // Wait until BUSY appears.
+    do begin
+        axi_read(8'h04, rd);
+    end while ((rd &amp; 32'h1) == 0);
+
+    // Shadow changes while the active job is running.
+    axi_write(8'h10, 32'h0000_0400, 1);
+    axi_write(8'h14, 32'h0000_0500, 2);
+
+    axi_read(8'h34, rd);
+    check_eq32(
+        "ACTIVE_INPUT remains 0x200",
+        rd,
+        32'h0000_0200
+    );
+
+    axi_read(8'h38, rd);
+    check_eq32(
+        "ACTIVE_OUTPUT remains 0x300",
+        rd,
+        32'h0000_0300
+    );
+
+    wait_irq_high();
+
+    check_true(
+        "JOB0 parallel4 latency = 22 cycles",
+        (irq_cycle - engine_start_cycle) == 22
+    );
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "DONE IRQ pending",
+        (rd &amp; 32'h1) != 0
+    );
+
+    check_true(
+        "ERROR IRQ clear",
+        (rd &amp; 32'h2) == 0
+    );
+
+    // CPU reclaims Tensor Buffer after completion.
+    mem_read32(12'h300, rd);
+    check_eq32(
+        "full integration OUT_CH0",
+        rd,
+        32'h2018_1008
+    );
+
+    mem_read32(12'h304, rd);
+    check_eq32(
+        "full integration OUT_CH1",
+        rd,
+        32'h7F7F_6333
+    );
+
+    axi_read(8'h0C, rd);
+    check_eq32(
+        "JOB_ID = 1",
+        rd,
+        32'd1
+    );
+
+    axi_read(8'h40, rd);
+    check_eq32(
+        "READ_WORD_COUNT = 8",
+        rd,
+        32'd8
+    );
+
+    axi_read(8'h44, rd);
+    check_eq32(
+        "WRITE_WORD_COUNT = 2",
+        rd,
+        32'd2
+    );
+
+    // ISR-equivalent W1C.
+    axi_write(8'h4C, 32'h0000_0001, 0);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "DONE W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    // --------------------------------------------------------
+    // 4. Second complete job: same hardware, new Tensor buffer.
+    // --------------------------------------------------------
+    mem_write32(12'h400, 32'd2);
+    mem_write32(12'h404, 32'd4);
+    mem_write32(12'h408, 32'd6);
+    mem_write32(12'h40C, 32'd8);
+
+    mem_write32(12'h410, 32'd4);
+    mem_write32(12'h414, 32'd8);
+    mem_write32(12'h418, 32'd12);
+    mem_write32(12'h41C, 32'd16);
+
+    // Shadow addresses already changed to 0x400 / 0x500
+    // during JOB0. Keep LENGTH=8 and parameters unchanged.
+    axi_write(8'h18, 32'd8, 2);
+
+    axi_write(8'h00, 32'h0000_0006, 0);
+    axi_write(8'h4C, 32'h0000_0003, 1);
+    axi_write(8'h48, 32'h0000_0003, 2);
+
+    axi_read(8'h04, rd);
+
+    check_true(
+        "JOB1 descriptor valid",
+        (rd &amp; 32'h8) != 0
+    );
+
+    engine_start_cycle = -1;
+    irq_cycle = -1;
+
+    axi_write(8'h00, 32'h0000_0001, 0);
+
+    wait_irq_high();
+
+    check_true(
+        "JOB1 parallel4 latency = 22 cycles",
+        (irq_cycle - engine_start_cycle) == 22
+    );
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "JOB1 DONE IRQ pending",
+        (rd &amp; 32'h1) != 0
+    );
+
+    mem_read32(12'h500, rd);
+    check_eq32(
+        "JOB1 OUT_CH0",
+        rd,
+        32'h0403_0201
+    );
+
+    mem_read32(12'h504, rd);
+    check_eq32(
+        "JOB1 OUT_CH1",
+        rd,
+        32'h1B15_0F09
+    );
+
+    axi_read(8'h0C, rd);
+    check_eq32(
+        "JOB_ID = 2 after second accepted job",
+        rd,
+        32'd2
+    );
+
+    axi_read(8'h40, rd);
+    check_eq32(
+        "JOB1 READ_WORD_COUNT = 8",
+        rd,
+        32'd8
+    );
+
+    axi_read(8'h44, rd);
+    check_eq32(
+        "JOB1 WRITE_WORD_COUNT = 2",
+        rd,
+        32'd2
+    );
+
+    axi_write(8'h4C, 32'h0000_0001, 1);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "JOB1 W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    // --------------------------------------------------------
+    // 5. Integrated descriptor ERROR IRQ after two good jobs.
+    // --------------------------------------------------------
+    axi_write(8'h00, 32'h0000_0006, 1);
+    axi_write(8'h4C, 32'h0000_0003, 2);
+    axi_write(8'h48, 32'h0000_0002, 0);
+
+    axi_write(8'h10, 32'h0000_0202, 1);
+    axi_write(8'h14, 32'h0000_0600, 2);
+    axi_write(8'h18, 32'd8,         0);
+
+    axi_write(8'h00, 32'h0000_0001, 1);
+
+    wait_irq_high();
+
+    axi_read(8'h4C, rd);
+
+    check_true(
+        "descriptor ERROR IRQ pending",
+        (rd &amp; 32'h2) != 0
+    );
+
+    axi_read(8'h1C, rd);
+
+    check_eq32(
+        "descriptor ERROR_CODE = 2",
+        rd,
+        32'd2
+    );
+
+    axi_read(8'h0C, rd);
+
+    check_eq32(
+        "rejected job keeps JOB_ID = 2",
+        rd,
+        32'd2
+    );
+
+    axi_write(8'h4C, 32'h0000_0002, 2);
+
+    repeat (2) @(posedge clk);
+    #1;
+
+    check_true(
+        "ERROR W1C deasserts IRQ",
+        irq_o === 1'b0
+    );
+
+    $display("");
+    $display("SOC39 CHECK COUNT : %0d", check_count);
+    $display("SOC39 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC39 PARALLEL4 REQUANT TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC39 PARALLEL4 REQUANT TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>JOB0</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="25절 신호 및 실행 흐름">OUT0 → 0x20181008
+OUT1 → 0x7F7F6333
+Expected internal latency → 22 cycles</div>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>JOB1</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="26절 신호 및 실행 흐름">OUT0 → 0x04030201
+OUT1 → 0x1B150F09
+Expected internal latency → 22 cycles</div>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>JOB_ID / Counter</h2>
+<div class="flow">JOB_ID 1 → 2 · Read Count 8 · Write Count 2</div>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>DONE / ERROR IRQ</h2>
+<p>Compute 병렬화가 Control Plane 계약을 바꾸지 않는다. DONE/W1C와 Descriptor ERROR IRQ를 그대로 회귀 검증한다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Resource Trade-off</h2>
+<figure class="manual-figure"><a href="../../images/soc39/soc39_parallelism_tradeoff.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="parallelism tradeoff · 원본 보기 (새 탭)"><img src="../../images/soc39/soc39_parallelism_tradeoff.svg" alt="parallelism tradeoff"></a><figcaption>Latency 감소와 Resource/Power 증가를 함께 본다.<br><a href="../../images/soc39/soc39_parallelism_tradeoff.svg" target="_blank" rel="noopener" class="figure-original" aria-label="parallelism tradeoff · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>DSP48 주의</h2>
+<p>Source에서는 Requant Core가 1 → 4개이지만 DSP48 Primitive가 정확히 4배가 된다고 가정하지 않는다. 실제 Mapping은 합성 결과로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>33×16 Multiply</h2>
+<p>현재 Core의 Bias 결과는 33-bit이고 Multiplier는 16-bit이므로 Multiply는 signed 33×16이다. 7-Series DSP48E1 단일 Multiplier의 기본 폭 25×18보다 한 Operand가 넓으므로 실제 구현은 여러 DSP 또는 DSP+Fabric 조합이 될 수 있다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Timing Trade-off</h2>
+<p>4개 Lane의 배치와 Parameter Fanout으로 Routing이 복잡해질 수 있다. AMD는 DSP 산술을 충분히 Pipeline하고 Dedicated Block 주변 경로를 Pipeline하도록 권장한다.</p>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>Power Trade-off</h2>
+<p>동시에 동작하는 Multiplier가 늘어 Switching Activity가 증가할 수 있다. 동일한 Activity 조건으로 Power Report를 비교한다.</p>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>동일 조건 Post-Route</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="34절 신호 및 실행 흐름">Same xc7a35tcpg236-1
+Same 100 MHz
+Same Vivado Version
+Same Implementation Flow
+Same Power Assumption</div>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>SoC38 Serial Report</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="SoC38 Serial Report · 소스 코드"><code># SoC 39 · SoC38 fast-read + serial requant post-route comparison
+# Same device, 100 MHz target, flow, and report set.
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir [file normalize [file join $script_dir ".."]]
+set rtl_dir [file join $root_dir "rtl"]
+set out_dir [file normalize [file join $root_dir "reports" "soc38_serial"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+foreach f {
+    requantize_s32_to_s8.v
+    requantize_batch2x4_serial.v
+    tensor_job_engine_pipelined_read.v
+    npu_full_control_irq.v
+    axi4lite_reg_bridge.v
+    bram_clock_reset_adapter.v
+    npu_full_accelerator_fastread_ip.v
+} {
+    read_verilog [file join $rtl_dir $f]
+}
+
+synth_design \
+    -mode out_of_context \
+    -top npu_full_accelerator_fastread_ip \
+    -part xc7a35tcpg236-1
+
+create_clock \
+    -name s_axi_aclk \
+    -period 10.000 \
+    [get_ports s_axi_aclk]
+
+redirect -file [file join $out_dir "01_requant_instances.rpt"] {
+    set cells [get_cells -hier -filter {REF_NAME == requantize_s32_to_s8}]
+    puts "requantize_s32_to_s8 instance count: [llength $cells]"
+    foreach cell $cells {
+        puts $cell
+    }
+}
+
+redirect -file [file join $out_dir "02_dsp48_cells_post_synth.rpt"] {
+    set cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count after synthesis: [llength $cells]"
+    foreach cell $cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "03_utilization_post_synth.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "04_methodology_post_synth.rpt"]
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 50 \
+    -file [file join $out_dir "05_timing_summary_post_route.rpt"]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "06_utilization_post_route.rpt"]
+
+report_design_analysis \
+    -setup \
+    -max_paths 50 \
+    -logic_level_distribution \
+    -file [file join $out_dir "07_design_analysis_post_route.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "08_methodology_post_route.rpt"]
+
+report_drc \
+    -file [file join $out_dir "09_drc_post_route.rpt"]
+
+report_power \
+    -file [file join $out_dir "10_power_vectorless_post_route.rpt"]
+
+puts ""
+puts "SoC 39 SoC38 fast-read + serial requant post-route run complete."
+puts "Do not infer exact DSP cost from source instance count."
+</code></pre>
+</section>
+
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>SoC39 Parallel4 Report</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="SoC39 Parallel4 Report · 소스 코드"><code># SoC 39 · SoC39 fast-read + parallel4 requant post-route comparison
+# Same device, 100 MHz target, flow, and report set.
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir [file normalize [file join $script_dir ".."]]
+set rtl_dir [file join $root_dir "rtl"]
+set out_dir [file normalize [file join $root_dir "reports" "soc39_parallel4"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+foreach f {
+    requantize_s32_to_s8.v
+    requantize_batch2x4_parallel4.v
+    tensor_job_engine_parallel4_requant.v
+    npu_full_control_irq.v
+    axi4lite_reg_bridge.v
+    bram_clock_reset_adapter.v
+    npu_full_accelerator_parallel4_ip.v
+} {
+    read_verilog [file join $rtl_dir $f]
+}
+
+synth_design \
+    -mode out_of_context \
+    -top npu_full_accelerator_parallel4_ip \
+    -part xc7a35tcpg236-1
+
+create_clock \
+    -name s_axi_aclk \
+    -period 10.000 \
+    [get_ports s_axi_aclk]
+
+redirect -file [file join $out_dir "01_requant_instances.rpt"] {
+    set cells [get_cells -hier -filter {REF_NAME == requantize_s32_to_s8}]
+    puts "requantize_s32_to_s8 instance count: [llength $cells]"
+    foreach cell $cells {
+        puts $cell
+    }
+}
+
+redirect -file [file join $out_dir "02_dsp48_cells_post_synth.rpt"] {
+    set cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count after synthesis: [llength $cells]"
+    foreach cell $cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "03_utilization_post_synth.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "04_methodology_post_synth.rpt"]
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 50 \
+    -file [file join $out_dir "05_timing_summary_post_route.rpt"]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "06_utilization_post_route.rpt"]
+
+report_design_analysis \
+    -setup \
+    -max_paths 50 \
+    -logic_level_distribution \
+    -file [file join $out_dir "07_design_analysis_post_route.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "08_methodology_post_route.rpt"]
+
+report_drc \
+    -file [file join $out_dir "09_drc_post_route.rpt"]
+
+report_power \
+    -file [file join $out_dir "10_power_vectorless_post_route.rpt"]
+
+puts ""
+puts "SoC 39 SoC39 fast-read + parallel4 requant post-route run complete."
+puts "Do not infer exact DSP cost from source instance count."
+</code></pre>
+</section>
+
+<section class="step-card" id="s37"><span class="step">SECTION 37</span><h2>Acceptance Gate</h2>
+<div class="flow">Function PASS → 22-cycle Intent → Timing → DSP/LUT/FF → Power → Runtime → 채택 여부</div>
+</section>
+
+<section class="step-card" id="s38"><span class="step">SECTION 38</span><h2>비교 기록표</h2>
+<p><code>doc/SERIAL_VS_PARALLEL4.md</code>에 실제 Vivado/Basys3 결과를 채운다. 측정하지 않은 필드는 빈 상태로 유지한다.</p>
+</section>
+
+<section class="step-card" id="s39"><span class="step">SECTION 39</span><h2>SoC40 연결</h2>
+<p>SoC39 이후 정적 Schedule은 Read 9, Requant 8, Finish 5가 된다. 다음에는 독립 구간을 더 복제하기보다 <strong>Data Read와 Compute를 겹치는 Prefetch/Double Buffer</strong> 방향을 분석하는 것이 자연스럽다.</p>
+</section>
+
+<section class="step-card" id="s40"><span class="step">SECTION 40</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">오류</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="오류" role="cell">CH0/CH1 뒤바뀜</td><td data-label="원인" role="cell">Group Tag 불일치</td><td data-label="확인" role="cell">tag pipeline</td></tr>
+<tr role="row"><td data-label="오류" role="cell">Lane 순서 뒤바뀜</td><td data-label="원인" role="cell">128-bit slice packing 오류</td><td data-label="확인" role="cell">lane0~3 mapping</td></tr>
+<tr role="row"><td data-label="오류" role="cell">Saturation Count 틀림</td><td data-label="원인" role="cell">동시 4-lane event 합산 누락</td><td data-label="확인" role="cell">lane_sat_count</td></tr>
+<tr role="row"><td data-label="오류" role="cell">22 cycle이 안 나옴</td><td data-label="원인" role="cell">Feed/Drain 계측 기준 불일치</td><td data-label="확인" role="cell">engine busy rising → IRQ</td></tr>
+<tr role="row"><td data-label="오류" role="cell">DSP가 예상보다 많음</td><td data-label="원인" role="cell">33×16 multiply 폭</td><td data-label="확인" role="cell">DSP48 report</td></tr>
+<tr role="row"><td data-label="오류" role="cell">WNS 악화</td><td data-label="원인" role="cell">4-lane Placement/Fanout</td><td data-label="확인" role="cell">Design Analysis</td></tr>
+<tr role="row"><td data-label="오류" role="cell">Cycle만 보고 채택</td><td data-label="원인" role="cell">Power/Resource 무시</td><td data-label="확인" role="cell">Acceptance Gate</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 39 완료 체크리스트</h2>
+<ul>
+<li>[ ] SoC38 Serial Baseline을 보존한다.</li>
+<li>[ ] Requant 14-cycle 원인을 설명한다.</li>
+<li>[ ] 4-lane Spatial Parallelism을 설명한다.</li>
+<li>[ ] Feed Clock을 8 → 2로 줄인다.</li>
+<li>[ ] 기존 4-stage Arithmetic Pipeline을 유지한다.</li>
+<li>[ ] CH0/CH1 Tag Pipeline을 맞춘다.</li>
+<li>[ ] Saturation Event를 4-lane 합산한다.</li>
+<li>[ ] Requant 14 → 8 cycles를 계산한다.</li>
+<li>[ ] Total 28 → 22 cycles를 계산한다.</li>
+<li>[ ] JOB0/JOB1 결과를 유지한다.</li>
+<li>[ ] 실제 DSP48 수를 Source Instance 수로 단정하지 않는다.</li>
+<li>[ ] 동일 조건 Post-Route Report로 Timing/Resource/Power를 비교한다.</li>
+</ul>
+<div class="flow">SoC 39 완료 → SoC 40 Prefetch / Double Buffer / Data-Compute Overlap</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">자료</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Coding-for-Optimal-DSP-and-Arithmetic-Inference" target="_blank" rel="noopener">AMD UG949 · Coding for Optimal DSP and Arithmetic Inference · 2026.1</a></td><td data-label="확인 항목" role="cell">DSP48 산술과 충분한 Pipelining 권장</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Know-What-You-Infer" target="_blank" rel="noopener">AMD UG949 · Know What You Infer · 2026.1</a></td><td data-label="확인 항목" role="cell">18×25 이하 Multiply의 단일 DSP Mapping과 큰 Multiply의 다중 DSP 가능성</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations" target="_blank" rel="noopener">AMD UG949 · Pipelining Considerations · 2026.1</a></td><td data-label="확인 항목" role="cell">Pipeline Throughput / Latency Trade-off</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/api/khub/documents/gu4oRPFEh_Pm2uaAlfY6Kg/content" target="_blank" rel="noopener">AMD UG479 · 7 Series DSP48E1 Slice User Guide</a></td><td data-label="확인 항목" role="cell">DSP48E1 25×18 Multiplier 구조</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="38_bottleneck_analysis_pipelined_bram_read.html">← SoC 38</a><a href="../../index.html">전체 목차</a><a href="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body>
+</html>

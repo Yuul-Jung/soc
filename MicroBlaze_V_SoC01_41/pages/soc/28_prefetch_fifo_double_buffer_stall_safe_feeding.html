@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 Artix-7 NPU에서 BRAM prefetch, 64-bit FIFO, READY/VALID backpressure, outstanding-read credit, ping-pong double buffer, load/compute overlap을 구현하는 자료." name="description">
+<title>SoC 28 · Prefetch / FIFO / Double Buffer</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 28</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 28</p>
+<h1>Prefetch / FIFO / Double Buffer / Stall-safe Feeding</h1>
+<p class="hero-desc">SoC 27의 Local BRAM 구조에 Prefetch FIFO와 Ping-Pong Double Buffer를 추가한다. Consumer가 READY를 내리는 동안 Data를 FIFO에 보관하고, FIFO Count와 Outstanding Read를 함께 Credit으로 계산해 Overflow를 막는다. 동시에 Bank 0을 계산하는 동안 Bank 1을 Load하여 Data Movement와 Compute를 겹친다.</p>
+<div class="hero-meta"><span class="chip">Prefetch</span><span class="chip">FIFO</span><span class="chip">Backpressure</span><span class="chip">Outstanding Read</span><span class="chip">Double Buffer</span><span class="chip">Ping-Pong</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html" selected>SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc28_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc28">이 장 검증</a></div></div><p class="nav-title">SOC 28 · LEARNING FLOW</p><p class="nav-help">Prefetch → Buffer → Stall → Swap</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>SoC 27의 제한</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>전체 Architecture</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Prefetch란 무엇인가</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>왜 FIFO가 필요한가</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>READY / VALID Backpressure</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>64-bit FIFO 구조</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>FIFO Push / Pop</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Outstanding Read</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Credit 계산</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Overflow 방지</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Conservative Issue 정책</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>BRAM Read와 FIFO Push</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Stall 시 동작</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>READY 복귀 시 동작</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Ping-Pong Double Buffer</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Bank 0 / Bank 1</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Load / Compute Overlap</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Bank Conflict 보호</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Compute Bank Latch</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>SoC 26 Controller 재사용</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Prefetch FIFO RTL</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>Credit Feeder RTL</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>Ping-Pong Memory RTL</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Integrated Accelerator RTL</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Board Demo</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Self-Checking Testbench</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Python Credit Model</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>FIFO Occupancy 검증</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>OOC Synthesis</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>RAM / FIFO Mapping 확인</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Post-route Timing</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>Power 관점</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>Double Buffer의 한계</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>SoC 29 연결</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">37</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">38</span><span>공식 매뉴얼 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 26 Vector Controller</span><span class="arrow">→</span><span class="stage">SoC 27 Local BRAM</span><span class="arrow">→</span><span class="stage"><strong>SoC 28 Prefetch / FIFO / Double Buffer</strong></span><span class="arrow">→</span><span class="stage">SoC 29 Data Reuse / Tiling</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc28/soc28_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC28 prefetch fifo double buffer architecture · 원본 보기 (새 탭)"><img src="../../images/soc28/soc28_architecture.svg" alt="SoC28 prefetch fifo double buffer architecture"></a><figcaption>Memory Request와 Compute Consumption을 FIFO로 분리하고 두 Local Buffer Bank를 Ping-Pong 방식으로 사용한다.<br><a href="../../images/soc28/soc28_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC28 prefetch fifo double buffer architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>SoC 27의 제한</h2>
+<p>SoC 27의 BRAM Feeder는 SoC 26 Controller가 FEED 동안 READY를 유지한다는 Contract를 이용했다. Consumer가 중간에 멈추면 이미 요청한 BRAM Response를 저장할 곳이 부족해질 수 있다.</p>
+<div class="flow">SoC 27 → BRAM → Consumer 직결에 가까운 구조<br>SoC 28 → BRAM → Prefetch FIFO → Consumer</div>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>전체 Architecture</h2>
+<figure class="manual-figure"><a href="../../images/soc28/soc28_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC28 architecture overview · 원본 보기 (새 탭)"><img src="../../images/soc28/soc28_architecture.svg" alt="SoC28 architecture overview"></a><figcaption>Local Memory, Prefetch, Elastic FIFO, Compute를 독립 블록으로 분리한다.<br><a href="../../images/soc28/soc28_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC28 architecture overview · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Prefetch란 무엇인가</h2>
+<p>Consumer가 Data를 요구한 뒤 Memory Read를 시작하는 대신 FIFO 공간이 있을 때 다음 Vector Group을 미리 읽는다. 첫 Read Latency 이후 PE가 Data를 기다리는 시간을 줄이는 것이 목적이다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>왜 FIFO가 필요한가</h2>
+<p>BRAM은 이미 발생한 Read Request를 즉시 취소할 수 있는 구조가 아니다. Consumer가 갑자기 READY를 내리더라도 이미 요청된 Response는 돌아온다. FIFO는 이 Data를 임시 저장하는 Elastic Buffer 역할을 한다.</p>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>READY / VALID Backpressure</h2>
+<figure class="manual-figure"><a href="../../images/soc28/soc28_backpressure.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Ready valid backpressure with FIFO · 원본 보기 (새 탭)"><img src="../../images/soc28/soc28_backpressure.svg" alt="Ready valid backpressure with FIFO"></a><figcaption>VALID와 READY가 모두 1인 Clock에서만 Stream Item을 소비한다.<br><a href="../../images/soc28/soc28_backpressure.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Ready valid backpressure with FIFO · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>64-bit FIFO 구조</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="07절 신호 및 실행 흐름">FIFO width → 64 bit
+FIFO depth → 4
+payload → {weight[31:0], activation[31:0]}</div>
+<p>한 Entry에 PE4 한 Group의 A/B를 함께 저장하므로 두 Stream의 정렬이 깨지지 않는다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>FIFO Push / Pop</h2>
+<div class="flow">Push → Activation/Weight BRAM Response 둘 다 valid<br>Pop → FIFO valid &amp;&amp; downstream READY</div>
+<p>Full 상태에서도 같은 Clock에 Pop이 일어나면 한 Entry를 교체할 수 있도록 <code>push_ready</code>를 구성했다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Outstanding Read</h2>
+<p>Outstanding Read는 BRAM에 Address를 요청했지만 아직 Response가 FIFO에 도착하지 않은 Item이다. FIFO Count만 보면 미래에 들어올 Data를 놓치게 된다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Credit 계산</h2>
+<figure class="manual-figure"><a href="../../images/soc28/soc28_credit_control.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Prefetch credit control · 원본 보기 (새 탭)"><img src="../../images/soc28/soc28_credit_control.svg" alt="Prefetch credit control"></a><figcaption>이미 저장된 Item과 이미 날아간 Read Request를 모두 FIFO Capacity에 포함한다.<br><a href="../../images/soc28/soc28_credit_control.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Prefetch credit control · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<div class="flow">buffered_credits → fifo_count + outstanding_reads</div>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Overflow 방지</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Overflow 방지 · 소스 코드"><code>새 BRAM Read 허용:
+fifo_count + outstanding_reads &lt; FIFO_DEPTH</code></pre>
+<p>Consumer가 정지하더라도 이미 예약된 Response까지 포함해 공간을 확보하므로 FIFO Overflow를 방지한다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Conservative Issue 정책</h2>
+<p>현재 구현은 같은 Clock의 FIFO Pop을 즉시 새로운 Credit으로 계산하지 않는다. Full 경계에서 Read Request가 한 Clock 늦어질 수 있지만 Control을 단순하게 유지하고 Overflow Safety를 우선한다.</p>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>BRAM Read와 FIFO Push</h2>
+<div class="flow">Read Issue → Outstanding +1<br>BRAM Response → Outstanding -1 / FIFO Push<br>Consumer Transfer → FIFO Pop</div>
+<p>Activation/Weight의 Response Valid가 서로 다르면 <code>response_mismatch_error_o</code>를 남긴다.</p>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Stall 시 동작</h2>
+<p><code>feed_stall_i=1</code>은 교육용 Backpressure Hook이다. 이때 Consumer로 VALID를 전달하지 않고 FIFO Pop도 막는다. FIFO가 차면 Credit 조건에 의해 Memory Read Issue도 자동 중단된다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>READY 복귀 시 동작</h2>
+<p>READY가 다시 올라오면 FIFO에 이미 Prefetch된 Group부터 즉시 전달한다. Memory는 FIFO 공간이 다시 확보되는 만큼 Read Issue를 재개한다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Ping-Pong Double Buffer</h2>
+<figure class="manual-figure"><a href="../../images/soc28/soc28_pingpong.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Ping pong double buffer timeline · 원본 보기 (새 탭)"><img src="../../images/soc28/soc28_pingpong.svg" alt="Ping pong double buffer timeline"></a><figcaption>한 Bank를 Compute하는 동안 다른 Bank에 다음 Vector를 Load한다.<br><a href="../../images/soc28/soc28_pingpong.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Ping pong double buffer timeline · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Bank 0 / Bank 1</h2>
+<p>각 Bank는 Activation BRAM과 Weight BRAM을 한 쌍으로 가진다. 따라서 전체 Local Memory는 네 개의 Memory Array로 구성된다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="17절 신호 및 실행 흐름">Bank 0 → Activation0 + Weight0
+Bank 1 → Activation1 + Weight1</div>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Load / Compute Overlap</h2>
+<div class="flow">Phase A → Compute Bank0 + Load Bank1<br>Phase B → Compute Bank1 + Load Bank0</div>
+<p>Load Time이 Compute Time에 가려지면 전체 Job 사이의 Memory Preparation Gap을 줄일 수 있다.</p>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Bank Conflict 보호</h2>
+<p>현재 Compute 중인 Bank에 Write하려고 하면 Write Enable을 차단하고 <code>bank_conflict_o</code>를 발생시킨다. Testbench는 실제로 잘못된 Same-bank Write를 시도해 차단되는지 검사한다.</p>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Compute Bank Latch</h2>
+<p><code>compute_bank_i</code>는 유효한 <code>start_i</code>에서 내부 Register에 저장한다. 따라서 Host가 Operation 도중 Bank Select를 바꾸더라도 현재 Compute Memory가 바뀌지 않는다.</p>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>SoC 26 Controller 재사용</h2>
+<p>Vector Length, Tail Mask, PE4, DRAIN/FINALIZE 로직은 SoC 26의 <code>vector_dot_controller_pe4.v</code>를 그대로 재사용한다. SoC 28은 Memory Subsystem만 확장한다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Prefetch FIFO RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Prefetch FIFO RTL · 소스 코드"><code>module stream_fifo_64x4 (
+    input  wire         clk,
+    input  wire         resetn,
+    input  wire         clear_i,
+
+    input  wire         push_valid_i,
+    output wire         push_ready_o,
+    input  wire [63:0]  push_data_i,
+
+    output wire         pop_valid_o,
+    input  wire         pop_ready_i,
+    output wire [63:0]  pop_data_o,
+
+    output reg  [2:0]   count_o
+);
+
+// Small elastic FIFO for BRAM prefetch responses.
+//
+// Depth = 4 entries.
+// Width = 64 bits = {weight[31:0], activation[31:0]}.
+//
+// A tiny FIFO is intentionally kept separate from the local BRAM arrays.
+// It absorbs consumer backpressure without changing the BRAM contents.
+
+reg [63:0] mem [0:3];
+
+reg [1:0] wr_ptr_q;
+reg [1:0] rd_ptr_q;
+
+wire push_w;
+wire pop_w;
+
+assign pop_valid_o =
+    (count_o != 3'd0);
+
+assign pop_data_o =
+    mem[rd_ptr_q];
+
+// Allow replacement in the same cycle when full and one item pops.
+assign push_ready_o =
+    (count_o &lt; 3'd4) ||
+    (
+        (count_o == 3'd4) &amp;&amp;
+        pop_valid_o &amp;&amp;
+        pop_ready_i
+    );
+
+assign push_w =
+    push_valid_i &amp;&amp;
+    push_ready_o;
+
+assign pop_w =
+    pop_valid_o &amp;&amp;
+    pop_ready_i;
+
+always @(posedge clk) begin
+    if (!resetn || clear_i) begin
+        wr_ptr_q &lt;= 2'd0;
+        rd_ptr_q &lt;= 2'd0;
+        count_o  &lt;= 3'd0;
+    end else begin
+        if (push_w) begin
+            mem[wr_ptr_q] &lt;= push_data_i;
+            wr_ptr_q &lt;= wr_ptr_q + 2'd1;
+        end
+
+        if (pop_w) begin
+            rd_ptr_q &lt;= rd_ptr_q + 2'd1;
+        end
+
+        case ({push_w, pop_w})
+            2'b10: count_o &lt;= count_o + 3'd1;
+            2'b01: count_o &lt;= count_o - 3'd1;
+            default: count_o &lt;= count_o;
+        endcase
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Credit Feeder RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Credit Feeder RTL · 소스 코드"><code>module bram_prefetch_fifo_feeder #(
+    parameter integer ADDR_WIDTH = 8
+) (
+    input  wire                      clk,
+    input  wire                      resetn,
+
+    input  wire                      start_i,
+    input  wire [15:0]               vector_length_i,
+
+    input  wire                      downstream_ready_i,
+
+    output wire                      act_rd_en_o,
+    output wire [ADDR_WIDTH-1:0]     act_rd_addr_o,
+    input  wire [31:0]               act_rd_data_i,
+    input  wire                      act_rd_valid_i,
+
+    output wire                      weight_rd_en_o,
+    output wire [ADDR_WIDTH-1:0]     weight_rd_addr_o,
+    input  wire [31:0]               weight_rd_data_i,
+    input  wire                      weight_rd_valid_i,
+
+    output wire                      vec_valid_o,
+    output wire [31:0]               a_vec_o,
+    output wire [31:0]               b_vec_o,
+
+    output reg  [15:0]               requested_groups_o,
+    output reg  [15:0]               received_groups_o,
+    output reg  [15:0]               delivered_groups_o,
+
+    output wire [2:0]                fifo_count_o,
+    output reg  [2:0]                outstanding_reads_o,
+
+    output reg                       response_mismatch_error_o,
+    output reg                       fifo_overflow_error_o,
+    output wire                      active_o
+);
+
+// Prefetch policy:
+//
+// buffered credits = FIFO entries + outstanding BRAM reads.
+//
+// A new BRAM read request is issued only if:
+//   1. operation is active
+//   2. more groups remain
+//   3. FIFO + outstanding &lt; FIFO depth
+//
+// This prevents a response from arriving after the FIFO has run out
+// of capacity, even when the consumer deasserts READY.
+//
+// The implementation is intentionally conservative:
+// it does not count a same-cycle FIFO pop as immediate new credit.
+// This can delay a new read request by one cycle at the full boundary,
+// but keeps the control logic simple and safe.
+
+wire [16:0] length_plus3_w;
+wire [15:0] total_groups_w;
+
+assign length_plus3_w =
+    {1'b0, vector_length_i} + 17'd3;
+
+assign total_groups_w =
+    length_plus3_w[16:2];
+
+reg [15:0] total_groups_q;
+reg        active_q;
+
+assign active_o = active_q;
+
+wire [3:0] buffered_credits_w;
+
+assign buffered_credits_w =
+    {1'b0, fifo_count_o} +
+    {1'b0, outstanding_reads_o};
+
+wire can_issue_w;
+
+assign can_issue_w =
+    active_q &amp;&amp;
+    (requested_groups_o &lt; total_groups_q) &amp;&amp;
+    (buffered_credits_w &lt; 4'd4);
+
+assign act_rd_en_o =
+    can_issue_w;
+
+assign weight_rd_en_o =
+    can_issue_w;
+
+assign act_rd_addr_o =
+    requested_groups_o[ADDR_WIDTH-1:0];
+
+assign weight_rd_addr_o =
+    requested_groups_o[ADDR_WIDTH-1:0];
+
+wire paired_response_valid_w;
+
+assign paired_response_valid_w =
+    act_rd_valid_i &amp;&amp;
+    weight_rd_valid_i;
+
+wire [63:0] fifo_push_data_w;
+
+assign fifo_push_data_w = {
+    weight_rd_data_i,
+    act_rd_data_i
+};
+
+wire fifo_push_ready_w;
+wire fifo_pop_valid_w;
+wire [63:0] fifo_pop_data_w;
+
+stream_fifo_64x4 u_prefetch_fifo (
+    .clk(clk),
+    .resetn(resetn),
+    .clear_i(start_i),
+
+    .push_valid_i(paired_response_valid_w),
+    .push_ready_o(fifo_push_ready_w),
+    .push_data_i(fifo_push_data_w),
+
+    .pop_valid_o(fifo_pop_valid_w),
+    .pop_ready_i(downstream_ready_i),
+    .pop_data_o(fifo_pop_data_w),
+
+    .count_o(fifo_count_o)
+);
+
+assign vec_valid_o =
+    fifo_pop_valid_w;
+
+assign a_vec_o =
+    fifo_pop_data_w[31:0];
+
+assign b_vec_o =
+    fifo_pop_data_w[63:32];
+
+wire fifo_pop_w;
+
+assign fifo_pop_w =
+    fifo_pop_valid_w &amp;&amp;
+    downstream_ready_i;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        total_groups_q            &lt;= 16'd0;
+        active_q                  &lt;= 1'b0;
+
+        requested_groups_o        &lt;= 16'd0;
+        received_groups_o         &lt;= 16'd0;
+        delivered_groups_o        &lt;= 16'd0;
+
+        outstanding_reads_o       &lt;= 3'd0;
+
+        response_mismatch_error_o &lt;= 1'b0;
+        fifo_overflow_error_o     &lt;= 1'b0;
+    end else begin
+        if (start_i) begin
+            total_groups_q            &lt;= total_groups_w;
+            active_q                  &lt;=
+                (vector_length_i != 16'd0);
+
+            requested_groups_o        &lt;= 16'd0;
+            received_groups_o         &lt;= 16'd0;
+            delivered_groups_o        &lt;= 16'd0;
+            outstanding_reads_o       &lt;= 3'd0;
+
+            response_mismatch_error_o &lt;= 1'b0;
+            fifo_overflow_error_o     &lt;= 1'b0;
+        end else begin
+            if (
+                act_rd_valid_i ^
+                weight_rd_valid_i
+            ) begin
+                response_mismatch_error_o &lt;= 1'b1;
+            end
+
+            if (
+                paired_response_valid_w &amp;&amp;
+                !fifo_push_ready_w
+            ) begin
+                fifo_overflow_error_o &lt;= 1'b1;
+            end
+
+            if (can_issue_w) begin
+                requested_groups_o &lt;=
+                    requested_groups_o + 16'd1;
+            end
+
+            if (paired_response_valid_w) begin
+                received_groups_o &lt;=
+                    received_groups_o + 16'd1;
+            end
+
+            if (fifo_pop_w) begin
+                delivered_groups_o &lt;=
+                    delivered_groups_o + 16'd1;
+
+                if (
+                    delivered_groups_o ==
+                    (total_groups_q - 16'd1)
+                ) begin
+                    active_q &lt;= 1'b0;
+                end
+            end
+
+            case ({
+                can_issue_w,
+                paired_response_valid_w
+            })
+                2'b10:
+                    outstanding_reads_o &lt;=
+                        outstanding_reads_o + 3'd1;
+
+                2'b01:
+                    outstanding_reads_o &lt;=
+                        outstanding_reads_o - 3'd1;
+
+                default:
+                    outstanding_reads_o &lt;=
+                        outstanding_reads_o;
+            endcase
+        end
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Ping-Pong Memory RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Ping-Pong Memory RTL · 소스 코드"><code>module pingpong_vector_memory #(
+    parameter integer ADDR_WIDTH = 8
+) (
+    input  wire                      clk,
+    input  wire                      resetn,
+
+    input  wire                      load_bank_i,
+    input  wire                      load_active_i,
+
+    input  wire                      act_wr_en_i,
+    input  wire [ADDR_WIDTH-1:0]     act_wr_addr_i,
+    input  wire [31:0]               act_wr_data_i,
+
+    input  wire                      weight_wr_en_i,
+    input  wire [ADDR_WIDTH-1:0]     weight_wr_addr_i,
+    input  wire [31:0]               weight_wr_data_i,
+
+    input  wire                      compute_bank_i,
+    input  wire                      compute_active_i,
+
+    input  wire                      act_rd_en_i,
+    input  wire [ADDR_WIDTH-1:0]     act_rd_addr_i,
+    output wire [31:0]               act_rd_data_o,
+    output wire                      act_rd_valid_o,
+
+    input  wire                      weight_rd_en_i,
+    input  wire [ADDR_WIDTH-1:0]     weight_rd_addr_i,
+    output wire [31:0]               weight_rd_data_o,
+    output wire                      weight_rd_valid_o,
+
+    output wire                      bank_conflict_o
+);
+
+// Two complete local-buffer banks.
+//
+// Bank 0:
+//   activation0 + weight0
+//
+// Bank 1:
+//   activation1 + weight1
+//
+// Intended ping-pong operation:
+//   Compute bank 0 while load bank 1.
+//   Then compute bank 1 while load bank 0.
+//
+// Writes to the currently-computed bank are blocked while compute_active_i
+// is high. A conflict flag makes the violation observable.
+
+wire same_bank_conflict_w;
+
+assign same_bank_conflict_w =
+    load_active_i &amp;&amp;
+    compute_active_i &amp;&amp;
+    (load_bank_i == compute_bank_i);
+
+assign bank_conflict_o =
+    same_bank_conflict_w &amp;&amp;
+    (
+        act_wr_en_i ||
+        weight_wr_en_i
+    );
+
+wire safe_act_write_w;
+wire safe_weight_write_w;
+
+assign safe_act_write_w =
+    act_wr_en_i &amp;&amp;
+    !same_bank_conflict_w;
+
+assign safe_weight_write_w =
+    weight_wr_en_i &amp;&amp;
+    !same_bank_conflict_w;
+
+// ---------------- Bank 0 ----------------
+wire [31:0] act0_rd_data;
+wire        act0_rd_valid;
+
+wire [31:0] weight0_rd_data;
+wire        weight0_rd_valid;
+
+vector_bram_sdp #(
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .DATA_WIDTH(32)
+) u_act_bank0 (
+    .clk(clk),
+    .resetn(resetn),
+
+    .wr_en_i(
+        safe_act_write_w &amp;&amp;
+        (load_bank_i == 1'b0)
+    ),
+    .wr_addr_i(act_wr_addr_i),
+    .wr_data_i(act_wr_data_i),
+
+    .rd_en_i(
+        act_rd_en_i &amp;&amp;
+        (compute_bank_i == 1'b0)
+    ),
+    .rd_addr_i(act_rd_addr_i),
+    .rd_data_o(act0_rd_data),
+    .rd_valid_o(act0_rd_valid)
+);
+
+vector_bram_sdp #(
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .DATA_WIDTH(32)
+) u_weight_bank0 (
+    .clk(clk),
+    .resetn(resetn),
+
+    .wr_en_i(
+        safe_weight_write_w &amp;&amp;
+        (load_bank_i == 1'b0)
+    ),
+    .wr_addr_i(weight_wr_addr_i),
+    .wr_data_i(weight_wr_data_i),
+
+    .rd_en_i(
+        weight_rd_en_i &amp;&amp;
+        (compute_bank_i == 1'b0)
+    ),
+    .rd_addr_i(weight_rd_addr_i),
+    .rd_data_o(weight0_rd_data),
+    .rd_valid_o(weight0_rd_valid)
+);
+
+// ---------------- Bank 1 ----------------
+wire [31:0] act1_rd_data;
+wire        act1_rd_valid;
+
+wire [31:0] weight1_rd_data;
+wire        weight1_rd_valid;
+
+vector_bram_sdp #(
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .DATA_WIDTH(32)
+) u_act_bank1 (
+    .clk(clk),
+    .resetn(resetn),
+
+    .wr_en_i(
+        safe_act_write_w &amp;&amp;
+        (load_bank_i == 1'b1)
+    ),
+    .wr_addr_i(act_wr_addr_i),
+    .wr_data_i(act_wr_data_i),
+
+    .rd_en_i(
+        act_rd_en_i &amp;&amp;
+        (compute_bank_i == 1'b1)
+    ),
+    .rd_addr_i(act_rd_addr_i),
+    .rd_data_o(act1_rd_data),
+    .rd_valid_o(act1_rd_valid)
+);
+
+vector_bram_sdp #(
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .DATA_WIDTH(32)
+) u_weight_bank1 (
+    .clk(clk),
+    .resetn(resetn),
+
+    .wr_en_i(
+        safe_weight_write_w &amp;&amp;
+        (load_bank_i == 1'b1)
+    ),
+    .wr_addr_i(weight_wr_addr_i),
+    .wr_data_i(weight_wr_data_i),
+
+    .rd_en_i(
+        weight_rd_en_i &amp;&amp;
+        (compute_bank_i == 1'b1)
+    ),
+    .rd_addr_i(weight_rd_addr_i),
+    .rd_data_o(weight1_rd_data),
+    .rd_valid_o(weight1_rd_valid)
+);
+
+assign act_rd_data_o =
+    compute_bank_i
+    ? act1_rd_data
+    : act0_rd_data;
+
+assign act_rd_valid_o =
+    compute_bank_i
+    ? act1_rd_valid
+    : act0_rd_valid;
+
+assign weight_rd_data_o =
+    compute_bank_i
+    ? weight1_rd_data
+    : weight0_rd_data;
+
+assign weight_rd_valid_o =
+    compute_bank_i
+    ? weight1_rd_valid
+    : weight0_rd_valid;
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Integrated Accelerator RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Integrated Accelerator RTL · 소스 코드"><code>module prefetch_double_buffer_dot_accelerator #(
+    parameter integer ADDR_WIDTH = 8
+) (
+    input  wire                      clk,
+    input  wire                      resetn,
+
+    // ---------------- Load side ----------------
+    input  wire                      load_bank_i,
+    input  wire                      load_active_i,
+
+    input  wire                      act_wr_en_i,
+    input  wire [ADDR_WIDTH-1:0]     act_wr_addr_i,
+    input  wire [31:0]               act_wr_data_i,
+
+    input  wire                      weight_wr_en_i,
+    input  wire [ADDR_WIDTH-1:0]     weight_wr_addr_i,
+    input  wire [31:0]               weight_wr_data_i,
+
+    // ---------------- Compute command ----------------
+    input  wire                      compute_bank_i,
+    input  wire                      start_i,
+    input  wire [15:0]               vector_length_i,
+
+    // Teaching/test hook:
+    // when high, temporarily backpressure the stream between
+    // prefetch FIFO and the SoC26 vector controller.
+    input  wire                      feed_stall_i,
+
+    // ---------------- Result/status ----------------
+    output wire                      busy_o,
+    output wire                      done_o,
+    output wire                      result_valid_o,
+    output wire signed [31:0]        result_o,
+
+    output wire [15:0]               requested_groups_o,
+    output wire [15:0]               received_groups_o,
+    output wire [15:0]               delivered_groups_o,
+    output wire [15:0]               accepted_groups_o,
+    output wire [15:0]               completed_groups_o,
+
+    output wire [2:0]                fifo_count_o,
+    output wire [2:0]                outstanding_reads_o,
+
+    output wire                      bank_conflict_o,
+    output wire                      range_error_o,
+    output wire                      response_mismatch_error_o,
+    output wire                      fifo_overflow_error_o
+);
+
+// SoC 28 architecture:
+//
+// Ping-pong local memory
+//      ↓
+// BRAM prefetch + credit control
+//      ↓
+// 64-bit elastic FIFO
+//      ↓
+// optional backpressure gate
+//      ↓
+// SoC 26 vector controller + PE4
+//
+// The compute-bank selection is latched on a valid start command so the
+// memory bank cannot change in the middle of an operation.
+
+localparam [16:0] MAX_ELEMENTS_W =
+    (17'd4 &lt;&lt; ADDR_WIDTH);
+
+wire range_error_w;
+wire start_valid_w;
+
+assign range_error_w =
+    ({1'b0, vector_length_i} &gt; MAX_ELEMENTS_W);
+
+assign range_error_o =
+    start_i &amp;&amp;
+    range_error_w;
+
+assign start_valid_w =
+    start_i &amp;&amp;
+    !range_error_w;
+
+reg compute_bank_q;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        compute_bank_q &lt;= 1'b0;
+    end else if (start_valid_w) begin
+        compute_bank_q &lt;= compute_bank_i;
+    end
+end
+
+// ---------------- Ping-pong memory ----------------
+wire                      act_rd_en;
+wire [ADDR_WIDTH-1:0]     act_rd_addr;
+wire [31:0]               act_rd_data;
+wire                      act_rd_valid;
+
+wire                      weight_rd_en;
+wire [ADDR_WIDTH-1:0]     weight_rd_addr;
+wire [31:0]               weight_rd_data;
+wire                      weight_rd_valid;
+
+wire compute_active_w;
+
+assign compute_active_w =
+    busy_o ||
+    start_valid_w;
+
+pingpong_vector_memory #(
+    .ADDR_WIDTH(ADDR_WIDTH)
+) u_pingpong_memory (
+    .clk(clk),
+    .resetn(resetn),
+
+    .load_bank_i(load_bank_i),
+    .load_active_i(load_active_i),
+
+    .act_wr_en_i(act_wr_en_i),
+    .act_wr_addr_i(act_wr_addr_i),
+    .act_wr_data_i(act_wr_data_i),
+
+    .weight_wr_en_i(weight_wr_en_i),
+    .weight_wr_addr_i(weight_wr_addr_i),
+    .weight_wr_data_i(weight_wr_data_i),
+
+    .compute_bank_i(compute_bank_q),
+    .compute_active_i(compute_active_w),
+
+    .act_rd_en_i(act_rd_en),
+    .act_rd_addr_i(act_rd_addr),
+    .act_rd_data_o(act_rd_data),
+    .act_rd_valid_o(act_rd_valid),
+
+    .weight_rd_en_i(weight_rd_en),
+    .weight_rd_addr_i(weight_rd_addr),
+    .weight_rd_data_o(weight_rd_data),
+    .weight_rd_valid_o(weight_rd_valid),
+
+    .bank_conflict_o(bank_conflict_o)
+);
+
+// ---------------- Prefetch FIFO feeder ----------------
+wire        feeder_vec_valid;
+wire [31:0] feeder_a_vec;
+wire [31:0] feeder_b_vec;
+
+wire        controller_vec_ready;
+wire        feeder_downstream_ready;
+
+assign feeder_downstream_ready =
+    controller_vec_ready &amp;&amp;
+    !feed_stall_i;
+
+bram_prefetch_fifo_feeder #(
+    .ADDR_WIDTH(ADDR_WIDTH)
+) u_prefetch_feeder (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_valid_w),
+    .vector_length_i(vector_length_i),
+
+    .downstream_ready_i(feeder_downstream_ready),
+
+    .act_rd_en_o(act_rd_en),
+    .act_rd_addr_o(act_rd_addr),
+    .act_rd_data_i(act_rd_data),
+    .act_rd_valid_i(act_rd_valid),
+
+    .weight_rd_en_o(weight_rd_en),
+    .weight_rd_addr_o(weight_rd_addr),
+    .weight_rd_data_i(weight_rd_data),
+    .weight_rd_valid_i(weight_rd_valid),
+
+    .vec_valid_o(feeder_vec_valid),
+    .a_vec_o(feeder_a_vec),
+    .b_vec_o(feeder_b_vec),
+
+    .requested_groups_o(requested_groups_o),
+    .received_groups_o(received_groups_o),
+    .delivered_groups_o(delivered_groups_o),
+
+    .fifo_count_o(fifo_count_o),
+    .outstanding_reads_o(outstanding_reads_o),
+
+    .response_mismatch_error_o(
+        response_mismatch_error_o
+    ),
+    .fifo_overflow_error_o(
+        fifo_overflow_error_o
+    ),
+    .active_o()
+);
+
+// ---------------- SoC26 controller + PE4 ----------------
+wire controller_vec_valid;
+
+assign controller_vec_valid =
+    feeder_vec_valid &amp;&amp;
+    !feed_stall_i;
+
+vector_dot_controller_pe4 u_vector_controller (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_valid_w),
+    .vector_length_i(vector_length_i),
+
+    .vec_valid_i(controller_vec_valid),
+    .vec_ready_o(controller_vec_ready),
+    .a_vec_i(feeder_a_vec),
+    .b_vec_i(feeder_b_vec),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .result_valid_o(result_valid_o),
+    .result_o(result_o),
+
+    .accepted_groups_o(accepted_groups_o),
+    .completed_groups_o(completed_groups_o)
+);
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Board Demo</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Board Demo · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bank</th><th scope="col" role="columnheader">A</th><th scope="col" role="columnheader">B</th><th scope="col" role="columnheader">예상 결과</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Bank" role="cell">0</td><td data-label="A" role="cell">1~10</td><td data-label="B" role="cell">1</td><td data-label="예상 결과" role="cell">55 → 0x0037</td></tr>
+<tr role="row"><td data-label="Bank" role="cell">1</td><td data-label="A" role="cell">2,4,...,20</td><td data-label="B" role="cell">1</td><td data-label="예상 결과" role="cell">110 → 0x006E</td></tr>
+</tbody></table></div>
+<p>Bank 0을 계산하는 동안 Bank 1 세 Word를 Load하고, 첫 결과가 끝나면 Bank 1로 Swap하여 두 번째 계산을 수행한다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Self-Checking Testbench</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_prefetch_double_buffer_dot_accelerator;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+// Load side.
+logic        load_bank_i = 1'b0;
+logic        load_active_i = 1'b0;
+
+logic        act_wr_en_i = 1'b0;
+logic [7:0]  act_wr_addr_i = 8'd0;
+logic [31:0] act_wr_data_i = 32'h0;
+
+logic        weight_wr_en_i = 1'b0;
+logic [7:0]  weight_wr_addr_i = 8'd0;
+logic [31:0] weight_wr_data_i = 32'h0;
+
+// Compute side.
+logic        compute_bank_i = 1'b0;
+logic        start_i = 1'b0;
+logic [15:0] vector_length_i = 16'd0;
+
+logic        feed_stall_i = 1'b0;
+
+wire         busy_o;
+wire         done_o;
+wire         result_valid_o;
+wire signed [31:0] result_o;
+
+wire [15:0] requested_groups_o;
+wire [15:0] received_groups_o;
+wire [15:0] delivered_groups_o;
+wire [15:0] accepted_groups_o;
+wire [15:0] completed_groups_o;
+
+wire [2:0]  fifo_count_o;
+wire [2:0]  outstanding_reads_o;
+
+wire bank_conflict_o;
+wire range_error_o;
+wire response_mismatch_error_o;
+wire fifo_overflow_error_o;
+
+int error_count = 0;
+int check_count = 0;
+
+int stall_counter = 0;
+bit stall_enable = 0;
+int max_fifo_seen = 0;
+
+always #5 clk = ~clk;
+
+prefetch_double_buffer_dot_accelerator #(
+    .ADDR_WIDTH(8)
+) dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .load_bank_i(load_bank_i),
+    .load_active_i(load_active_i),
+
+    .act_wr_en_i(act_wr_en_i),
+    .act_wr_addr_i(act_wr_addr_i),
+    .act_wr_data_i(act_wr_data_i),
+
+    .weight_wr_en_i(weight_wr_en_i),
+    .weight_wr_addr_i(weight_wr_addr_i),
+    .weight_wr_data_i(weight_wr_data_i),
+
+    .compute_bank_i(compute_bank_i),
+    .start_i(start_i),
+    .vector_length_i(vector_length_i),
+
+    .feed_stall_i(feed_stall_i),
+
+    .busy_o(busy_o),
+    .done_o(done_o),
+    .result_valid_o(result_valid_o),
+    .result_o(result_o),
+
+    .requested_groups_o(requested_groups_o),
+    .received_groups_o(received_groups_o),
+    .delivered_groups_o(delivered_groups_o),
+    .accepted_groups_o(accepted_groups_o),
+    .completed_groups_o(completed_groups_o),
+
+    .fifo_count_o(fifo_count_o),
+    .outstanding_reads_o(outstanding_reads_o),
+
+    .bank_conflict_o(bank_conflict_o),
+    .range_error_o(range_error_o),
+    .response_mismatch_error_o(response_mismatch_error_o),
+    .fifo_overflow_error_o(fifo_overflow_error_o)
+);
+
+always @(posedge clk) begin
+    if (fifo_count_o &gt; max_fifo_seen) begin
+        max_fifo_seen &lt;= fifo_count_o;
+    end
+end
+
+// Deterministic consumer backpressure.
+// Pattern contains both single-cycle and two-cycle stalls.
+always @(negedge clk) begin
+    if (!resetn) begin
+        stall_counter &lt;= 0;
+        feed_stall_i &lt;= 1'b0;
+    end else if (stall_enable) begin
+        stall_counter &lt;= stall_counter + 1;
+
+        feed_stall_i &lt;=
+            ((stall_counter % 7) == 2) ||
+            ((stall_counter % 7) == 3) ||
+            ((stall_counter % 11) == 6);
+    end else begin
+        feed_stall_i &lt;= 1'b0;
+        stall_counter &lt;= 0;
+    end
+end
+
+function automatic integer ceil_div4(
+    input integer n
+);
+    ceil_div4 = (n + 3) / 4;
+endfunction
+
+function automatic integer signed signed8(
+    input integer value
+);
+    integer temp;
+    begin
+        temp = value &amp; 8'hFF;
+
+        if (temp &gt;= 128)
+            temp = temp - 256;
+
+        signed8 = temp;
+    end
+endfunction
+
+function automatic integer signed gen_a0(
+    input integer index
+);
+    gen_a0 = signed8((index * 29) + 17);
+endfunction
+
+function automatic integer signed gen_b0(
+    input integer index
+);
+    gen_b0 = signed8((index * 47) + 91);
+endfunction
+
+function automatic integer signed gen_a1(
+    input integer index
+);
+    gen_a1 = signed8((index * 13) + 33);
+endfunction
+
+function automatic integer signed gen_b1(
+    input integer index
+);
+    gen_b1 = signed8((index * 19) + 7);
+endfunction
+
+function automatic [31:0] pack4(
+    input integer x0,
+    input integer x1,
+    input integer x2,
+    input integer x3
+);
+    begin
+        pack4 = {
+            x3[7:0],
+            x2[7:0],
+            x1[7:0],
+            x0[7:0]
+        };
+    end
+endfunction
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count++;
+
+        if (!condition) begin
+            error_count++;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic signed [31:0] actual,
+    input logic signed [31:0] expected
+);
+    begin
+        check_count++;
+
+        if (actual !== expected) begin
+            error_count++;
+            $error(
+                "CHECK FAIL: %s actual=%0d expected=%0d",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = %0d",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+task automatic write_group(
+    input integer bank,
+    input integer group_index,
+    input integer length,
+    input integer pattern_id,
+    inout integer signed expected_acc
+);
+    integer lane;
+    integer scalar_index;
+
+    integer signed a_lane [0:3];
+    integer signed b_lane [0:3];
+
+    integer signed a_value;
+    integer signed b_value;
+
+    begin
+        // Intentional garbage first. Tail elements must be masked later.
+        for (lane = 0; lane &lt; 4; lane++) begin
+            a_lane[lane] = 127;
+            b_lane[lane] = -128;
+        end
+
+        for (lane = 0; lane &lt; 4; lane++) begin
+            scalar_index = (group_index * 4) + lane;
+
+            if (scalar_index &lt; length) begin
+                if (pattern_id == 0) begin
+                    a_value = gen_a0(scalar_index);
+                    b_value = gen_b0(scalar_index);
+                end else begin
+                    a_value = gen_a1(scalar_index);
+                    b_value = gen_b1(scalar_index);
+                end
+
+                a_lane[lane] = a_value;
+                b_lane[lane] = b_value;
+
+                expected_acc =
+                    expected_acc +
+                    (a_value * b_value);
+            end
+        end
+
+        @(negedge clk);
+
+        load_bank_i = bank[0];
+        load_active_i = 1'b1;
+
+        act_wr_addr_i = group_index[7:0];
+        act_wr_data_i = pack4(
+            a_lane[0],
+            a_lane[1],
+            a_lane[2],
+            a_lane[3]
+        );
+        act_wr_en_i = 1'b1;
+
+        weight_wr_addr_i = group_index[7:0];
+        weight_wr_data_i = pack4(
+            b_lane[0],
+            b_lane[1],
+            b_lane[2],
+            b_lane[3]
+        );
+        weight_wr_en_i = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+        act_wr_en_i = 1'b0;
+        weight_wr_en_i = 1'b0;
+        load_active_i = 1'b0;
+    end
+endtask
+
+task automatic load_vector(
+    input integer bank,
+    input integer length,
+    input integer pattern_id,
+    output integer signed expected_acc
+);
+    integer groups;
+    integer group_index;
+
+    begin
+        groups = ceil_div4(length);
+        expected_acc = 0;
+
+        for (
+            group_index = 0;
+            group_index &lt; groups;
+            group_index++
+        ) begin
+            write_group(
+                bank,
+                group_index,
+                length,
+                pattern_id,
+                expected_acc
+            );
+        end
+    end
+endtask
+
+task automatic pulse_start(
+    input integer bank,
+    input integer length
+);
+    begin
+        @(negedge clk);
+        compute_bank_i = bank[0];
+        vector_length_i = length[15:0];
+        start_i = 1'b1;
+
+        @(negedge clk);
+        start_i = 1'b0;
+    end
+endtask
+
+task automatic wait_and_check_result(
+    input string name,
+    input integer length,
+    input integer signed expected_acc
+);
+    integer groups;
+    integer timeout;
+
+    begin
+        groups = ceil_div4(length);
+        timeout = 0;
+
+        while (
+            (result_valid_o !== 1'b1) &amp;&amp;
+            (timeout &lt; 4000)
+        ) begin
+            @(posedge clk);
+            #1;
+            timeout++;
+        end
+
+        check_true(
+            {name, " result_valid"},
+            result_valid_o === 1'b1
+        );
+
+        check_true(
+            {name, " done"},
+            done_o === 1'b1
+        );
+
+        check_eq32(
+            {name, " result"},
+            result_o,
+            expected_acc
+        );
+
+        check_true(
+            {name, " requested"},
+            requested_groups_o == groups
+        );
+
+        check_true(
+            {name, " received"},
+            received_groups_o == groups
+        );
+
+        check_true(
+            {name, " delivered"},
+            delivered_groups_o == groups
+        );
+
+        check_true(
+            {name, " accepted"},
+            accepted_groups_o == groups
+        );
+
+        check_true(
+            {name, " completed"},
+            completed_groups_o == groups
+        );
+
+        check_true(
+            {name, " no response mismatch"},
+            response_mismatch_error_o === 1'b0
+        );
+
+        check_true(
+            {name, " no FIFO overflow"},
+            fifo_overflow_error_o === 1'b0
+        );
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic attempt_same_bank_write_conflict;
+    begin
+        check_true(
+            "compute still busy before conflict test",
+            busy_o === 1'b1
+        );
+
+        @(negedge clk);
+
+        load_bank_i = 1'b0;
+        load_active_i = 1'b1;
+
+        act_wr_addr_i = 8'd0;
+        act_wr_data_i = 32'hDEAD_BEEF;
+        act_wr_en_i = 1'b1;
+
+        weight_wr_addr_i = 8'd0;
+        weight_wr_data_i = 32'hCAFE_BABE;
+        weight_wr_en_i = 1'b1;
+
+        #1;
+
+        check_true(
+            "same-bank write conflict asserted",
+            bank_conflict_o === 1'b1
+        );
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+        act_wr_en_i = 1'b0;
+        weight_wr_en_i = 1'b0;
+        load_active_i = 1'b0;
+    end
+endtask
+
+task automatic run_range_error_case;
+    begin
+        @(negedge clk);
+
+        compute_bank_i = 1'b0;
+        vector_length_i = 16'd1025;
+        start_i = 1'b1;
+
+        #1;
+
+        check_true(
+            "length 1025 range error",
+            range_error_o === 1'b1
+        );
+
+        @(posedge clk);
+        #1;
+
+        @(negedge clk);
+        start_i = 1'b0;
+
+        repeat (4) @(posedge clk);
+        #1;
+
+        check_true(
+            "range error command not busy",
+            busy_o === 1'b0
+        );
+    end
+endtask
+
+initial begin
+    integer signed expected_bank0;
+    integer signed expected_bank1;
+    integer group_index;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. Load Bank 0 completely.
+    // --------------------------------------------------------
+    load_vector(
+        0,
+        64,
+        0,
+        expected_bank0
+    );
+
+    // --------------------------------------------------------
+    // 2. Start computing Bank 0 with backpressure enabled.
+    // --------------------------------------------------------
+    stall_enable = 1'b1;
+
+    pulse_start(
+        0,
+        64
+    );
+
+    // --------------------------------------------------------
+    // 3. While Bank 0 computes, load Bank 1.
+    // --------------------------------------------------------
+    expected_bank1 = 0;
+
+    for (group_index = 0; group_index &lt; ceil_div4(31); group_index++) begin
+        write_group(
+            1,
+            group_index,
+            31,
+            1,
+            expected_bank1
+        );
+    end
+
+    // Wrong-bank write must be rejected while Bank 0 is active.
+    attempt_same_bank_write_conflict();
+
+    wait_and_check_result(
+        "bank0",
+        64,
+        expected_bank0
+    );
+
+    check_true(
+        "prefetch FIFO exercised",
+        max_fifo_seen &gt;= 2
+    );
+
+    // --------------------------------------------------------
+    // 4. Compute the Bank 1 data loaded during Bank 0 compute.
+    // --------------------------------------------------------
+    stall_enable = 1'b1;
+
+    pulse_start(
+        1,
+        31
+    );
+
+    wait_and_check_result(
+        "bank1",
+        31,
+        expected_bank1
+    );
+
+    stall_enable = 1'b0;
+
+    // --------------------------------------------------------
+    // 5. Capacity guard.
+    // --------------------------------------------------------
+    run_range_error_case();
+
+    $display("");
+    $display("SOC28 MAX FIFO COUNT : %0d", max_fifo_seen);
+    $display("SOC28 CHECK COUNT    : %0d", check_count);
+    $display("SOC28 ERROR COUNT    : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC28 PREFETCH/DOUBLE-BUFFER TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC28 PREFETCH/DOUBLE-BUFFER TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+<p>Bank 0 Length 64 계산 중 Bank 1 Length 31을 Load하고, Consumer Stall Pattern과 Same-bank Conflict를 동시에 운동시킨다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Python Credit Model</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Credit Model · 소스 코드"><code>bank,length,groups,result_raw,max_fifo,cycles
+0,64,16,-35552,4,26
+1,31,8,11968,3,14
+
+credit rule: FIFO entries + outstanding reads &lt; 4 before issue
+bank0 compute may overlap bank1 load because memories are separate
+same-bank write during active compute must be blocked
+board demo first result = 55 -&gt; 0x0037
+board demo second result = 110 -&gt; 0x006E
+SOC28 PYTHON PREFETCH/DOUBLE-BUFFER REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
+</code></pre>
+<p>BRAM Response 1 Clock 모델과 동일 Stall Pattern으로 FIFO Occupancy 및 Credit Safety를 독립 검증했다.</p>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>FIFO Occupancy 검증</h2>
+<p>Python Reference에서 Bank 0은 FIFO 최대 4 Entry, Bank 1은 최대 3 Entry까지 사용했다. 두 경우 모두 requested = received = delivered가 유지되고 FIFO Depth 4를 넘지 않았다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>OOC Synthesis</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="OOC Synthesis · 소스 코드"><code># SoC 28 · Generic Prefetch/FIFO/Double-Buffer inference check
+#
+# This flow keeps the accelerator generic so that synthesis can be used
+# to inspect the complete two-bank memory subsystem, FIFO, and PE4.
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set out_dir    [file normalize [file join $root_dir "reports" "generic_ooc"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "mul_s8_dsp.v"]
+read_verilog [file join $rtl_dir "pe4_dot_accum_pipelined.v"]
+read_verilog [file join $rtl_dir "vector_dot_controller_pe4.v"]
+read_verilog [file join $rtl_dir "vector_bram_sdp.v"]
+read_verilog [file join $rtl_dir "stream_fifo_64x4.v"]
+read_verilog [file join $rtl_dir "bram_prefetch_fifo_feeder.v"]
+read_verilog [file join $rtl_dir "pingpong_vector_memory.v"]
+read_verilog [file join $rtl_dir "prefetch_double_buffer_dot_accelerator.v"]
+
+synth_design \
+    -mode out_of_context \
+    -top prefetch_double_buffer_dot_accelerator \
+    -part xc7a35tcpg236-1
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_ooc.rpt"]
+
+report_ram_utilization \
+    -include_lutram \
+    -file [file join $out_dir "02_ram_utilization_ooc.rpt"] \
+    -csv [file join $out_dir "02_ram_utilization_ooc.csv"]
+
+redirect -file [file join $out_dir "03_ramb_cells_ooc.rpt"] {
+    set ramb_cells [get_cells -hier -filter {REF_NAME =~ RAMB*}]
+    puts "RAMB primitive count: [llength $ramb_cells]"
+
+    foreach cell $ramb_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+redirect -file [file join $out_dir "04_dsp_cells_ooc.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "05_timing_summary_ooc.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "06_design_analysis_ooc.rpt"]
+
+puts ""
+puts "SoC 28 generic OOC synthesis complete."
+puts "Check:"
+puts "  - four local memory arrays"
+puts "  - RAMB mapping"
+puts "  - small FIFO implementation"
+puts "  - DSP48 mapping"
+puts "Do not claim primitive counts until these reports are generated."
+</code></pre>
+<p>Generic Accelerator를 Out-of-Context로 합성해 두 Bank의 네 Memory Array, Tiny FIFO, DSP Mapping을 고정 Demo 최적화와 분리해 확인한다.</p>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>RAM / FIFO Mapping 확인</h2>
+<p><code>report_ram_utilization -include_lutram</code>로 Local Buffer와 Tiny FIFO가 실제 어떤 Primitive에 Mapping됐는지 확인한다. 4-entry FIFO는 작기 때문에 Block RAM 사용을 강제하지 않았다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Post-route Timing</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Post-route Timing · 소스 코드"><code># SoC 28 · Basys3 ping-pong board demonstration
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set xdc_dir    [file join $root_dir "constraints"]
+set out_dir    [file normalize [file join $root_dir "reports" "board_demo"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "reset_active_high_to_active_low.v"]
+read_verilog [file join $rtl_dir "mul_s8_dsp.v"]
+read_verilog [file join $rtl_dir "pe4_dot_accum_pipelined.v"]
+read_verilog [file join $rtl_dir "vector_dot_controller_pe4.v"]
+read_verilog [file join $rtl_dir "vector_bram_sdp.v"]
+read_verilog [file join $rtl_dir "stream_fifo_64x4.v"]
+read_verilog [file join $rtl_dir "bram_prefetch_fifo_feeder.v"]
+read_verilog [file join $rtl_dir "pingpong_vector_memory.v"]
+read_verilog [file join $rtl_dir "prefetch_double_buffer_dot_accelerator.v"]
+read_verilog [file join $rtl_dir "double_buffer_demo_controller.v"]
+read_verilog [file join $rtl_dir "double_buffer_result_sink.v"]
+read_verilog [file join $rtl_dir "prefetch_double_buffer_basys3_top.v"]
+
+synth_design \
+    -top prefetch_double_buffer_basys3_top \
+    -part xc7a35tcpg236-1
+
+read_xdc [file join $xdc_dir "basys3_soc28_lab.xdc"]
+
+create_clock \
+    -name sys_clk \
+    -period 10.000 \
+    [get_ports clk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_post_synth.rpt"]
+
+report_ram_utilization \
+    -include_lutram \
+    -file [file join $out_dir "02_ram_utilization_post_synth.rpt"]
+
+opt_design
+place_design
+phys_opt_design
+route_design
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "03_utilization_post_route.rpt"]
+
+report_ram_utilization \
+    -include_lutram \
+    -file [file join $out_dir "04_ram_utilization_post_route.rpt"]
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "05_timing_summary_post_route.rpt"]
+
+report_timing \
+    -delay_type max \
+    -max_paths 20 \
+    -nworst 1 \
+    -sort_by group \
+    -input_pins \
+    -file [file join $out_dir "06_worst_setup_paths.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "07_design_analysis_post_route.rpt"]
+
+set_switching_activity \
+    -default_static_probability 0.5 \
+    -default_toggle_rate 12.5
+
+report_power \
+    -file [file join $out_dir "08_power_normalized_activity.rpt"] \
+    -rpx  [file join $out_dir "08_power_normalized_activity.rpx"]
+
+report_methodology \
+    -file [file join $out_dir "09_methodology_post_route.rpt"]
+
+write_checkpoint -force \
+    [file join $out_dir "soc28_board_demo_post_route.dcp"]
+
+puts ""
+puts "SoC 28 board implementation complete."
+puts "Expected board-demo sequence:"
+puts "  first result  = 55  = 0x0037"
+puts "  second result = 110 = 0x006E"
+</code></pre>
+<p>BRAM → Prefetch/FIFO → Controller 경로와 Bank Select/Conflict Logic이 추가되므로 Post-route WNS/TNS와 Worst Setup Path를 다시 확인한다.</p>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>Power 관점</h2>
+<p>Double Buffer는 Local BRAM 수를 늘리고 Prefetch는 불필요한 Stall을 줄여 Activity Pattern을 바꾼다. 따라서 “Buffer를 두 배로 만들었으니 Power도 두 배”라고 단정하지 않고 동일 Activity 조건의 Post-route Power Report로 비교한다.</p>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>Double Buffer의 한계</h2>
+<p>Double Buffer는 Load와 Compute를 겹칠 수 있지만, 다음 Tile Load 시간이 Compute 시간보다 길면 결국 Compute가 기다린다. 이후에는 Data Reuse와 Tiling으로 외부 Memory Traffic 자체를 줄여야 한다.</p>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>SoC 29 연결</h2>
+<div class="flow">SoC 28 → Memory Latency/Stall 숨기기<br>SoC 29 → 필요한 Memory Traffic 자체 줄이기</div>
+<p>다음 장에서는 Weight Stationary, Activation Broadcast, Tiling을 이용해 같은 Weight/Activation을 여러 연산에서 재사용한다.</p>
+</section>
+
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">FIFO Overflow</td><td data-label="원인" role="cell">Outstanding Read를 Credit에 미포함</td><td data-label="확인" role="cell">fifo + outstanding &lt; depth</td></tr>
+<tr role="row"><td data-label="증상" role="cell">STALL 중 Data 손실</td><td data-label="원인" role="cell">VALID/Data 유지 실패</td><td data-label="확인" role="cell">FIFO Pop은 READY에서만</td></tr>
+<tr role="row"><td data-label="증상" role="cell">A/B Pair가 어긋남</td><td data-label="원인" role="cell">Response Valid 불일치</td><td data-label="확인" role="cell">response_mismatch_error</td></tr>
+<tr role="row"><td data-label="증상" role="cell">같은 Bank Data가 깨짐</td><td data-label="원인" role="cell">Compute 중 Same-bank Write</td><td data-label="확인" role="cell">bank_conflict</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Bank Swap 후 잘못된 Memory Read</td><td data-label="원인" role="cell">Bank Select 미Latch</td><td data-label="확인" role="cell">compute_bank_q</td></tr>
+<tr role="row"><td data-label="증상" role="cell">FIFO가 전혀 차지 않음</td><td data-label="원인" role="cell">Prefetch가 Consumer와 동일 속도만 발행</td><td data-label="확인" role="cell">Stall Test</td></tr>
+<tr role="row"><td data-label="증상" role="cell">BRAM이 예상보다 많음/적음</td><td data-label="원인" role="cell">Mapping/Optimization</td><td data-label="확인" role="cell">OOC RAM Report</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Double Buffer인데 성능 향상 없음</td><td data-label="원인" role="cell">Load가 Compute보다 길거나 Reuse 부족</td><td data-label="확인" role="cell">SoC29 Tiling/Data Reuse</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 28 완료 체크리스트</h2>
+<ul>
+<li>[ ] Prefetch와 Demand Read의 차이를 설명한다.</li>
+<li>[ ] FIFO가 Consumer Backpressure를 흡수하는 이유를 이해한다.</li>
+<li>[ ] VALID와 READY가 모두 1일 때만 Item이 소비됨을 이해한다.</li>
+<li>[ ] FIFO Count와 Outstanding Read를 구분한다.</li>
+<li>[ ] <code>fifo + outstanding &lt; depth</code> Credit 규칙을 설명한다.</li>
+<li>[ ] BRAM Response Pair를 64-bit FIFO Entry로 저장한다.</li>
+<li>[ ] Consumer Stall 시 Read Issue가 자동 중단된다.</li>
+<li>[ ] READY 복귀 후 Prefetch Data부터 다시 소비한다.</li>
+<li>[ ] Ping-Pong Bank 0/1 구조를 구현한다.</li>
+<li>[ ] Compute Bank와 Load Bank를 분리한다.</li>
+<li>[ ] Same-bank Write를 차단하고 Conflict를 검출한다.</li>
+<li>[ ] Compute Bank를 Start 시점에 Latch한다.</li>
+<li>[ ] Compute 중 다음 Bank Load를 실제 Test한다.</li>
+<li>[ ] Generic OOC와 Board Post-route Report를 분리한다.</li>
+</ul>
+<div class="flow">SoC 28 완료 → SoC 29 Data Reuse / Weight Stationary / Tiling</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Memory-Inference-Capabilities" target="_blank" rel="noopener">AMD UG901 · Memory Inference Capabilities · 2026.1</a></td><td data-label="확인 항목" role="cell">Simple Dual Port, Enable, Optional Output Register</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Memory-Inference-Capabilities" target="_blank" rel="noopener">AMD UG901 · RAM HDL Coding Techniques · 2026.1</a></td><td data-label="확인 항목" role="cell">RAM Primitive 직접 Instantiation 대신 HDL Inference</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Performance-Considerations-When-Implementing-RAM" target="_blank" rel="noopener">AMD UG949 · RAM Performance · 2026.1</a></td><td data-label="확인 항목" role="cell">Dedicated/Distributed RAM 선택과 Output Pipeline 권장</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Optimizing-Paths-with-Dedicated-Blocks-and-Macro-Primitives" target="_blank" rel="noopener">AMD UG949 · Dedicated Block Timing · 2026.1</a></td><td data-label="확인 항목" role="cell">BRAM/DSP 경로 Pipeline과 Timing 주의</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-RAM-Utilization" target="_blank" rel="noopener">AMD UG906 · Report RAM Utilization · 2026.1</a></td><td data-label="확인 항목" role="cell">Memory Width/Depth/Pipeline/Enable/Primitive 분석</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Running-the-RAM-Utilization-Report" target="_blank" rel="noopener">AMD UG906 · Running RAM Utilization · 2026.1</a></td><td data-label="확인 항목" role="cell"><code>-include_lutram</code>와 CSV Report</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg103-v-tpg/READY/VALID-Handshake" target="_blank" rel="noopener">AMD PG103 · READY/VALID Handshake · 2026</a></td><td data-label="확인 항목" role="cell">READY와 VALID가 Rising Edge에서 동시에 High일 때 Transfer</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="27_local_bram_address_generator_data_feeding.html">← SoC 27</a><a href="../../index.html">전체 목차</a><a href="29_data_reuse_weight_stationary_tiling.html">SoC 29 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

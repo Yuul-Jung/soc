@@ -1,0 +1,33 @@
+sample,ch0_raw,ch1_raw
+0,495,119
+1,-153,54
+2,-226,-149
+3,138,108
+
+BATCH=4, OUT_CH=2, K=16, TILE_K=4
+K tiles = 4
+total MACs = 128
+weight scalar traffic naive = 128
+weight scalar traffic stationary = 32
+weight reuse factor = 4.0x
+activation scalar traffic naive = 128
+activation scalar traffic with broadcast = 64
+activation reuse factor = 2.0x
+input scalar traffic naive = 256
+input scalar traffic optimized = 96
+input traffic reduction = 2.667x
+
+board demo CH0 = [16, 32, 48, 64]
+board demo CH1 = [32, 64, 96, 128]
+board demo selected LED result = CH1 sample3 = 128 = 0x0080
+SOC29 PYTHON WEIGHT-STATIONARY REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.

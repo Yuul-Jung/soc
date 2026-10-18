@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="590" viewBox="0 0 1320 590">
+<rect width="1320" height="590" fill="white"/>
+<text x="660" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Pipelined PE4</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<g font-family="sans-serif">
+<rect x="50" y="175" width="240" height="170" rx="12" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="170" y="220" text-anchor="middle" font-size="20" font-weight="bold">Stage 1</text>
+<text x="170" y="260" text-anchor="middle" font-size="16">4 × signed 8×8</text>
+<text x="170" y="300" text-anchor="middle" font-size="16">Product Reg ×4</text>
+<text x="170" y="330" text-anchor="middle" font-size="15">valid_s1</text>
+
+<rect x="355" y="175" width="240" height="170" rx="12" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="475" y="220" text-anchor="middle" font-size="20" font-weight="bold">Stage 2</text>
+<text x="475" y="260" text-anchor="middle" font-size="16">Pair Sum 01 / 23</text>
+<text x="475" y="300" text-anchor="middle" font-size="16">17-bit Reg ×2</text>
+<text x="475" y="330" text-anchor="middle" font-size="15">valid_s2</text>
+
+<rect x="660" y="175" width="240" height="170" rx="12" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="780" y="220" text-anchor="middle" font-size="20" font-weight="bold">Stage 3</text>
+<text x="780" y="260" text-anchor="middle" font-size="16">Final Dot4 Sum</text>
+<text x="780" y="300" text-anchor="middle" font-size="16">18-bit Reg</text>
+<text x="780" y="330" text-anchor="middle" font-size="15">valid_s3</text>
+
+<rect x="965" y="175" width="260" height="170" rx="12" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1095" y="220" text-anchor="middle" font-size="20" font-weight="bold">Stage 4</text>
+<text x="1095" y="260" text-anchor="middle" font-size="16">32-bit Accumulator</text>
+<text x="1095" y="300" text-anchor="middle" font-size="16">acc_o</text>
+<text x="1095" y="330" text-anchor="middle" font-size="15">valid_o</text>
+</g>
+
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="290" y1="260" x2="355" y2="260"/>
+<line x1="595" y1="260" x2="660" y2="260"/>
+<line x1="900" y1="260" x2="965" y2="260"/>
+</g>
+
+<text x="660" y="425" text-anchor="middle" font-family="sans-serif" font-size="18">Latency는 증가하지만 Pipeline이 채워진 뒤에는 매 Clock 새 4-lane Vector를 받을 수 있다.</text>
+<text x="660" y="470" text-anchor="middle" font-family="sans-serif" font-size="16">Data와 valid는 반드시 같은 Stage 수만큼 이동해야 한다.</text>
+<text x="660" y="525" text-anchor="middle" font-family="sans-serif" font-size="16">실제 Fmax 개선 여부는 Post-route Timing Report에서 확인한다.</text>
+</svg>

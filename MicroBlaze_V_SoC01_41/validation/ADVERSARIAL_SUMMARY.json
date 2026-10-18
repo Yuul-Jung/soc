@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-16",
+  "chapters": 41,
+  "external_links": 157,
+  "external_http_errors": 0,
+  "self_checking_rtl_simulations_pass": 32,
+  "waveform_only_runs": 2,
+  "tool_limited_testbenches": 3,
+  "official_header_syntax_checks_pass": 50,
+  "signoff_negative_and_boundary_cases_pass": 11,
+  "existing_host_reference_mock_syntax_checks_pass": 27,
+  "script_lexical_checks_pass": 124,
+  "xdc_files": 23,
+  "pin_assignments_compared": 435,
+  "full_embedded_source_blocks_checked": 172,
+  "source_files_changed": [
+    "code/soc13/tb_axi_register_rw_path.v",
+    "code/soc13/working_files/tb_axi_register_rw_path.v",
+    "code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv",
+    "code/soc18/uart_tx_ip_1_0/testbench/tb_legacy_uart_tx_core.v",
+    "code/soc18/uart_tx_ip_1_0/hdl/uart_tx_axi4lite_ip.v",
+    "code/soc18/pwm_controller_ip_1_0/hdl/pwm_axi4lite_ip.v",
+    "code/soc39/parallel4_requant_optimization_lab/testbench/tb_soc39_parallel4_regression.sv",
+    "code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_soc40_overlap_regression.sv",
+    "code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v",
+    "code/soc37/performance_signoff_baseline_lab/testbench/tb_soc37_cycle_baseline.sv",
+    "code/soc41/group8_signoff_matrix_lab/scripts/evaluate_soc41_signoff.py",
+    "code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv",
+    "code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv",
+    "code/soc22/timing_lab/soc21_regression_reference/testbench/tb_soc21_csb_verification.sv",
+    "code/soc35/full_npu_accelerator_lab/testbench/tb_npu_full_accelerator.sv",
+    "code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv",
+    "code/soc38/pipelined_bram_read_optimization_lab/testbench/tb_soc38_fastread_regression.sv",
+    "code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv",
+    "code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v"
+  ],
+  "unchanged_rtl_logic_files": 277,
+  "changed_rtl_logic_files": [
+    {
+      "file": "code/soc13/tb_axi_register_rw_path.v",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc13/working_files/tb_axi_register_rw_path.v",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/testbench/tb_legacy_processing_core.v",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc18/pwm_controller_ip_1_0/hdl/pwm_axi4lite_ip.v",
+      "logic_identical": false,
+      "role": "RTL"
+    },
+    {
+      "file": "code/soc18/uart_tx_ip_1_0/hdl/uart_tx_axi4lite_ip.v",
+      "logic_identical": false,
+      "role": "RTL"
+    },
+    {
+      "file": "code/soc18/uart_tx_ip_1_0/testbench/tb_legacy_uart_tx_core.v",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc19/axi_control_status_bridge_1_0/testbench/tb_axi_control_status_bridge_demo_top.v",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc22/timing_lab/soc21_regression_reference/testbench/tb_soc21_csb_verification.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc29/weight_stationary_tiling_lab/testbench/tb_ws_tiled_batch_engine.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc31/npu_axi_register_map_lab/testbench/tb_npu_axi4lite_slave.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc32/npu_interrupt_lab/testbench/tb_npu_axi4lite_irq_slave.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc35/full_npu_accelerator_lab/testbench/tb_npu_full_accelerator.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc36/cpu_npu_end_to_end_lab/testbench/tb_soc36_cpu_npu_e2e.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc37/performance_signoff_baseline_lab/testbench/tb_soc37_cycle_baseline.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc38/pipelined_bram_read_optimization_lab/testbench/tb_soc38_fastread_regression.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc39/parallel4_requant_optimization_lab/testbench/tb_soc39_parallel4_regression.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    },
+    {
+      "file": "code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_soc40_overlap_regression.sv",
+      "logic_identical": false,
+      "role": "testbench"
+    }
+  ],
+  "target_build": "NOT_RUN",
+  "vivado_synthesis_implementation": "NOT_RUN",
+  "amd_xpm_simulation": "NOT_RUN",
+  "sva_and_functional_coverage_run": "NOT_RUN",
+  "board_run": "NOT_RUN",
+  "functional_subset_pass": 2
+}

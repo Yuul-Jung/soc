@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="620" viewBox="0 0 1360 620">
+<rect width="1360" height="620" fill="white"/>
+<text x="680" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">AXI4-Lite Write · AW와 W는 독립 채널</text>
+
+<rect x="80" y="120" width="300" height="160" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="230" y="165" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">AW Channel</text>
+<text x="230" y="215" text-anchor="middle" font-family="sans-serif" font-size="16">AWADDR + AWVALID</text>
+<text x="230" y="250" text-anchor="middle" font-family="sans-serif" font-size="16">→ aw_pending</text>
+
+<rect x="80" y="350" width="300" height="160" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="230" y="395" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">W Channel</text>
+<text x="230" y="445" text-anchor="middle" font-family="sans-serif" font-size="16">WDATA + WSTRB + WVALID</text>
+<text x="230" y="480" text-anchor="middle" font-family="sans-serif" font-size="16">→ w_pending</text>
+
+<rect x="535" y="220" width="300" height="200" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="685" y="270" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Write Commit</text>
+<text x="685" y="320" text-anchor="middle" font-family="sans-serif" font-size="16">aw_pending &amp;&amp; w_pending</text>
+<text x="685" y="365" text-anchor="middle" font-family="sans-serif" font-size="16">Register Write 1회</text>
+
+<rect x="990" y="220" width="290" height="200" rx="14" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1135" y="270" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">B Channel</text>
+<text x="1135" y="320" text-anchor="middle" font-family="sans-serif" font-size="16">BRESP = OKAY</text>
+<text x="1135" y="365" text-anchor="middle" font-family="sans-serif" font-size="16">BVALID until BREADY</text>
+
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<path d="M380 200 L470 200 L470 285 L535 285" fill="none" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<path d="M380 430 L470 430 L470 355 L535 355" fill="none" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="835" y1="320" x2="990" y2="320" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+
+<text x="680" y="560" text-anchor="middle" font-family="sans-serif" font-size="16">주소 먼저·데이터 먼저·동시 도착 모두 동일한 Register Write 한 번으로 처리한다.</text>
+</svg>

@@ -1,0 +1,25 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_requantize_batch2x4_serial -o validation-tools/rtl_runs/soc30_tb_requantize_batch2x4_serial.vvp code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv code/soc30/requantization_int8_lab/rtl/reset_active_high_to_active_low.v code/soc30/requantization_int8_lab/rtl/requantize_batch2x4_serial.v code/soc30/requantization_int8_lab/rtl/requantization_basys3_top.v code/soc30/requantization_int8_lab/rtl/requantize_s32_to_s8.v code/soc30/requantization_int8_lab/rtl/requant_result_sink.v code/soc30/requantization_int8_lab/rtl/soc29_result_demo_source.v
+code/soc30/requantization_int8_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv:1: ...: The inherited timescale is here.
+code/soc30/requantization_int8_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv:1: ...: The inherited timescale is here.
+code/soc30/requantization_int8_lab/rtl/requantization_basys3_top.v:1: warning: timescale for requantization_basys3_top inherited from another file.
+code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv:1: ...: The inherited timescale is here.
+code/soc30/requantization_int8_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv:1: ...: The inherited timescale is here.
+code/soc30/requantization_int8_lab/rtl/requant_result_sink.v:1: warning: timescale for requant_result_sink inherited from another file.
+code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv:1: ...: The inherited timescale is here.
+code/soc30/requantization_int8_lab/rtl/soc29_result_demo_source.v:1: warning: timescale for soc29_result_demo_source inherited from another file.
+code/soc30/requantization_int8_lab/testbench/tb_requantize_batch2x4_serial.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+CHECK PASS: result_valid arrived
+CHECK PASS: done aligned with result
+CHECK PASS: CH0 packed int8
+CHECK PASS: CH1 packed int8
+CHECK PASS: saturation count = 2
+
+CH0 quantized = 0x20181008
+CH1 quantized = 0x7f7f6333
+saturation count = 2
+SOC30 BATCH REQUANT TEST: PASS

@@ -1,0 +1,25 @@
+legacy_processing_ip_1_0/
+├── hdl/
+│   ├── legacy_processing_core.v
+│   ├── legacy_core_controller_adapter.v
+│   ├── axi4lite_slave_adapter.v
+│   ├── custom_register_bank.v
+│   ├── custom_axi4lite_ip.v
+│   └── custom_axi4lite_legacy_ip.v
+├── testbench/
+│   ├── tb_legacy_processing_core.v
+│   └── tb_custom_axi4lite_legacy_ip.v
+├── drivers/
+│   └── legacy_processing_v1_0/
+│       └── src/
+│           ├── custom_driver.c
+│           ├── custom_driver.h
+│           └── custom_regmap.h
+├── examples/
+│   ├── custom_driver_example.c
+│   └── test_custom_driver_mock.c
+├── doc/
+│   └── README_PACKAGE.md
+└── tcl/
+    ├── prepare_legacy_ip_project.tcl
+    └── add_ip_repo.tcl

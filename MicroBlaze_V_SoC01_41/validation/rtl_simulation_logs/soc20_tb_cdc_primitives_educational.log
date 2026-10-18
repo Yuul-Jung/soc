@@ -1,0 +1,29 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_cdc_primitives_educational -o validation-tools/rtl_runs/soc20_tb_cdc_primitives_educational.vvp code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_single_bit_sync.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/axi4lite_slave_adapter.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_control_status_bridge_demo.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/axi_control_status_bridge_ip.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_ready_valid_bus_bridge.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_reset_sync_active_low.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_bridge_cdc_adapter.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_example_core.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/control_status_bridge_core.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/cdc_pulse_toggle_educational.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/cdc_level_sync_educational.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_pulse_sync.v code/soc20/dual_clock_control_status_bridge_1_0/hdl/reset_sync_async_assert_educational.v
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_single_bit_sync.v:1: warning: timescale for xpm_single_bit_sync inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_control_status_bridge_demo.v:1: warning: timescale for dual_clock_control_status_bridge_demo inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/axi_control_status_bridge_ip.v:1: warning: timescale for axi_control_status_bridge_ip inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_ready_valid_bus_bridge.v:1: warning: timescale for xpm_ready_valid_bus_bridge inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_reset_sync_active_low.v:1: warning: timescale for xpm_reset_sync_active_low inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_bridge_cdc_adapter.v:1: warning: timescale for dual_clock_bridge_cdc_adapter inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/dual_clock_example_core.v:1: warning: timescale for dual_clock_example_core inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/control_status_bridge_core.v:1: warning: timescale for control_status_bridge_core inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/cdc_pulse_toggle_educational.v:1: warning: timescale for cdc_pulse_toggle_educational inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/cdc_level_sync_educational.v:1: warning: timescale for cdc_level_sync_educational inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/xpm_pulse_sync.v:1: warning: timescale for xpm_pulse_sync inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+code/soc20/dual_clock_control_status_bridge_1_0/hdl/reset_sync_async_assert_educational.v:1: warning: timescale for reset_sync_async_assert_educational inherited from another file.
+code/soc20/dual_clock_control_status_bridge_1_0/testbench/tb_cdc_primitives_educational.v:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---

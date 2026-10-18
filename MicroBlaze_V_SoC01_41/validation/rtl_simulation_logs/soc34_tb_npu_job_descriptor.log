@@ -1,0 +1,39 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_npu_job_descriptor -o validation-tools/rtl_runs/soc34_tb_npu_job_descriptor.vvp code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv code/soc34/npu_job_descriptor_lab/rtl/npu_job_descriptor_controller.v code/soc34/npu_job_descriptor_lab/rtl/requantize_batch2x4_serial.v code/soc34/npu_job_descriptor_lab/rtl/npu_job_descriptor_demo_top.v code/soc34/npu_job_descriptor_lab/rtl/tensor_bram_tdp_4k_model.v code/soc34/npu_job_descriptor_lab/rtl/requantize_s32_to_s8.v code/soc34/npu_job_descriptor_lab/rtl/tensor_job_engine.v
+code/soc34/npu_job_descriptor_lab/rtl/npu_job_descriptor_controller.v:1: warning: timescale for npu_job_descriptor_controller inherited from another file.
+code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv:1: ...: The inherited timescale is here.
+code/soc34/npu_job_descriptor_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv:1: ...: The inherited timescale is here.
+code/soc34/npu_job_descriptor_lab/rtl/npu_job_descriptor_demo_top.v:1: warning: timescale for npu_job_descriptor_demo_top inherited from another file.
+code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv:1: ...: The inherited timescale is here.
+code/soc34/npu_job_descriptor_lab/rtl/tensor_bram_tdp_4k_model.v:1: warning: timescale for tensor_bram_tdp_4k_model inherited from another file.
+code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv:1: ...: The inherited timescale is here.
+code/soc34/npu_job_descriptor_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv:1: ...: The inherited timescale is here.
+code/soc34/npu_job_descriptor_lab/rtl/tensor_job_engine.v:1: warning: timescale for tensor_job_engine inherited from another file.
+code/soc34/npu_job_descriptor_lab/testbench/tb_npu_job_descriptor.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+CHECK PASS: descriptor valid before START
+CHECK PASS: JOB_ID first accepted job = 0x00000001
+CHECK PASS: ACTIVE_INPUT snapshot = 0x00000200
+CHECK PASS: ACTIVE_OUTPUT snapshot = 0x00000300
+CHECK PASS: ACTIVE_INPUT stable while shadow changes = 0x00000200
+CHECK PASS: ACTIVE_OUTPUT stable while shadow changes = 0x00000300
+CHECK PASS: first job no error
+CHECK PASS: READ_WORD_COUNT = 0x00000008
+CHECK PASS: WRITE_WORD_COUNT = 0x00000002
+CHECK PASS: descriptor output CH0 = 0x20181008
+CHECK PASS: descriptor output CH1 = 0x7f7f6333
+CHECK PASS: unaligned descriptor rejected
+CHECK PASS: unaligned error code = 2
+CHECK PASS: rejected job does not increment JOB_ID = 0x00000001
+CHECK PASS: length 7 rejected
+CHECK PASS: length error code = 4
+CHECK PASS: overlap descriptor rejected
+CHECK PASS: overlap error code = 7
+CHECK PASS: input range descriptor rejected
+CHECK PASS: input range error code = 5
+
+SOC34 CHECK COUNT : 20
+SOC34 ERROR COUNT : 0
+SOC34 JOB DESCRIPTOR TEST: PASS

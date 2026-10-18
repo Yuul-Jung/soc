@@ -1,0 +1,21 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_pe4_dot_accum_compare -o validation-tools/rtl_runs/soc25_tb_pe4_dot_accum_compare.vvp code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_pipelined.v code/soc25/npu_pe4_lab/rtl/reset_active_high_to_active_low.v code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_basic.v code/soc25/npu_pe4_lab/rtl/pe4_pattern_source.v code/soc25/npu_pe4_lab/rtl/pe4_result_sink.v code/soc25/npu_pe4_lab/rtl/pe4_basic_basys3_top.v code/soc25/npu_pe4_lab/rtl/pe4_pipelined_basys3_top.v code/soc25/npu_pe4_lab/rtl/mul_s8_dsp.v
+code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_pipelined.v:1: warning: timescale for pe4_dot_accum_pipelined inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/pe4_dot_accum_basic.v:1: warning: timescale for pe4_dot_accum_basic inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/pe4_pattern_source.v:1: warning: timescale for pe4_pattern_source inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/pe4_result_sink.v:1: warning: timescale for pe4_result_sink inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/pe4_basic_basys3_top.v:1: warning: timescale for pe4_basic_basys3_top inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/pe4_pipelined_basys3_top.v:1: warning: timescale for pe4_pipelined_basys3_top inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/rtl/mul_s8_dsp.v:2: warning: timescale for mul_s8_dsp inherited from another file.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:1: ...: The inherited timescale is here.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:199: error: Cannot "return" from tasks.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:251: error: Enable of unknown task ``expected_basic_q.pop_front''.
+code/soc25/npu_pe4_lab/testbench/tb_pe4_dot_accum_compare.sv:276: error: Enable of unknown task ``expected_pipe_q.pop_front''.
+3 error(s) during elaboration.

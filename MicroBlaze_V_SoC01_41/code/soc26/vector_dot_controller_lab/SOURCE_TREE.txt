@@ -1,0 +1,23 @@
+vector_dot_controller_lab/
+├── rtl/
+│   ├── mul_s8_dsp.v
+│   ├── pe4_dot_accum_pipelined.v
+│   ├── vector_dot_controller_pe4.v
+│   ├── vector_demo_source_len10.v
+│   ├── vector_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   └── vector_dot_controller_basys3_top.v
+├── testbench/
+│   └── tb_vector_dot_controller_pe4.sv
+├── constraints/
+│   └── basys3_vector_controller_lab.xdc
+├── scripts/
+│   ├── prepare_soc26_simulation.tcl
+│   ├── run_vector_controller_analysis.tcl
+│   └── run_soc26_analysis.sh
+├── reference/
+│   ├── vector_controller_reference.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_VECTOR_CONTROLLER.md
+└── SOURCE_TREE.txt

@@ -1,0 +1,53 @@
+{
+  "chapter": 39,
+  "processor": "MicroBlaze V",
+  "content_conversion": "DONE",
+  "host_tests": [
+    {
+      "source": "code/soc39/parallel4_requant_optimization_lab/reference/soc39_static_comparison.py",
+      "kind": "host Python reference",
+      "status": "PASS",
+      "exit": 0
+    }
+  ],
+  "browser_viewports_px": [
+    1440,
+    1024,
+    390,
+    320
+  ],
+  "browser_no_horizontal_overflow_or_broken_images": true,
+  "rtl_logic_preserved": true,
+  "target_build": "NOT_RUN",
+  "rtl_simulation": "PASS",
+  "vivado_implementation": "NOT_RUN",
+  "board_run": "NOT_RUN",
+  "readability": {
+    "signal_whitespace": "PASS",
+    "figure_original_links": "PASS",
+    "scroll_region_keyboard_access": "PASS",
+    "text_zoom_200_percent": "PASS",
+    "source_bytes_unchanged_in_readability_edit": true
+  },
+  "adversarial_review": {
+    "manual_link_review": "DONE",
+    "self_checking_rtl_pass": 2,
+    "waveform_only": 0,
+    "tool_limited": 0,
+    "official_header_checks_pass": 0,
+    "source_corrections": [
+      "code/soc39/parallel4_requant_optimization_lab/testbench/tb_soc39_parallel4_regression.sv"
+    ],
+    "target_build": "NOT_RUN",
+    "board_run": "NOT_RUN",
+    "functional_subset_pass": 0
+  },
+  "finishing_review": {
+    "date": "2026-10-19",
+    "chapter_navigation": "PASS",
+    "source_bytes_unchanged": true,
+    "body_code_unchanged": true,
+    "viewport_and_text_zoom": "PASS",
+    "target_and_board_run": "NOT_RUN"
+  }
+}

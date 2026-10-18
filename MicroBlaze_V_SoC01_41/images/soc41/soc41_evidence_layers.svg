@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650">
+<rect width="1400" height="650" fill="white"/>
+<text x="700" y="45" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">Evidence Layers Must Stay Separate</text>
+<rect x="90" y="135" width="360" height="360" rx="16" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="270" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">RTL Static</text>
+<text x="270" y="250" text-anchor="middle" font-family="sans-serif" font-size="17">35 → 28 → 22 → 16 cycles</text>
+<text x="270" y="300" text-anchor="middle" font-family="sans-serif" font-size="17">350 → 160 ns @100 MHz</text>
+<text x="270" y="365" text-anchor="middle" font-family="sans-serif" font-size="15">구조상 계산</text>
+
+<rect x="520" y="135" width="360" height="360" rx="16" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="700" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Vivado Post-Route</text>
+<text x="700" y="250" text-anchor="middle" font-family="sans-serif" font-size="17">Timing / Resource</text>
+<text x="700" y="300" text-anchor="middle" font-family="sans-serif" font-size="17">Methodology / Power</text>
+<text x="700" y="365" text-anchor="middle" font-family="sans-serif" font-size="15">도구 분석</text>
+
+<rect x="950" y="135" width="360" height="360" rx="16" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="1130" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">Basys3 Runtime</text>
+<text x="1130" y="250" text-anchor="middle" font-family="sans-serif" font-size="17">START → ISR</text>
+<text x="1130" y="300" text-anchor="middle" font-family="sans-serif" font-size="17">Full End-to-End</text>
+<text x="1130" y="365" text-anchor="middle" font-family="sans-serif" font-size="15">실제 시스템 측정</text>
+
+<text x="700" y="580" text-anchor="middle" font-family="sans-serif" font-size="17">한 층의 PASS를 다른 층의 PASS로 대체하지 않는다.</text>
+</svg>

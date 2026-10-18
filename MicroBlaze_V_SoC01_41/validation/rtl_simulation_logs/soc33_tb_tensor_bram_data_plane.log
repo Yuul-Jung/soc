@@ -1,0 +1,61 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_tensor_bram_data_plane -o validation-tools/rtl_runs/soc33_tb_tensor_bram_data_plane.vvp code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv code/soc33/tensor_bram_data_plane_lab/rtl/requantize_batch2x4_serial.v code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_tdp_4k_model.v code/soc33/tensor_bram_data_plane_lab/rtl/requantize_s32_to_s8.v code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_data_plane_demo_top.v code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_data_plane_engine.v
+code/soc33/tensor_bram_data_plane_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv:1: ...: The inherited timescale is here.
+code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_tdp_4k_model.v:1: warning: timescale for tensor_bram_tdp_4k_model inherited from another file.
+code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv:1: ...: The inherited timescale is here.
+code/soc33/tensor_bram_data_plane_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv:1: ...: The inherited timescale is here.
+code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_data_plane_demo_top.v:1: warning: timescale for tensor_bram_data_plane_demo_top inherited from another file.
+code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv:1: ...: The inherited timescale is here.
+code/soc33/tensor_bram_data_plane_lab/rtl/tensor_bram_data_plane_engine.v:1: warning: timescale for tensor_bram_data_plane_engine inherited from another file.
+code/soc33/tensor_bram_data_plane_lab/testbench/tb_tensor_bram_data_plane.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+CHECK PASS: INPUT word0 readback = 0x00000010
+CHECK PASS: INPUT word7 readback = 0x00000080
+CHECK PASS: CPU idle while NPU owns tensor buffer
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: CPU remains idle during NPU BUSY
+CHECK PASS: NPU error low
+CHECK PASS: NPU read count = 8
+CHECK PASS: NPU write count = 2
+CHECK PASS: OUTPUT CH0 packed int8 = 0x20181008
+CHECK PASS: OUTPUT CH1 packed int8 = 0x7f7f6333
+CHECK PASS: INPUT word0 preserved = 0x00000010
+CHECK PASS: INPUT word7 preserved = 0x00000080
+
+SOC33 CHECK COUNT : 44
+SOC33 ERROR COUNT : 0
+SOC33 TENSOR BRAM DATA-PLANE TEST: PASS

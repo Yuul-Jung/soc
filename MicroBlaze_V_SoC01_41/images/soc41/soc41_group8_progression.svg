@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="650" viewBox="0 0 1440 650">
+<rect width="1440" height="650" fill="white"/>
+<text x="720" y="45" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="bold">Group 8 · Cumulative Static Performance</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<g font-family="sans-serif">
+<rect x="70" y="160" width="250" height="230" rx="16" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="195" y="210" text-anchor="middle" font-size="22" font-weight="bold">SoC 37</text>
+<text x="195" y="260" text-anchor="middle" font-size="18">Baseline</text>
+<text x="195" y="315" text-anchor="middle" font-size="23">35 cycles</text>
+<text x="195" y="355" text-anchor="middle" font-size="17">350 ns</text>
+
+<rect x="400" y="160" width="250" height="230" rx="16" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="525" y="210" text-anchor="middle" font-size="22" font-weight="bold">SoC 38</text>
+<text x="525" y="260" text-anchor="middle" font-size="18">BRAM Pipeline</text>
+<text x="525" y="315" text-anchor="middle" font-size="23">28 cycles</text>
+<text x="525" y="355" text-anchor="middle" font-size="17">280 ns</text>
+
+<rect x="730" y="160" width="250" height="230" rx="16" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="855" y="210" text-anchor="middle" font-size="22" font-weight="bold">SoC 39</text>
+<text x="855" y="260" text-anchor="middle" font-size="18">Parallel4</text>
+<text x="855" y="315" text-anchor="middle" font-size="23">22 cycles</text>
+<text x="855" y="355" text-anchor="middle" font-size="17">220 ns</text>
+
+<rect x="1060" y="160" width="250" height="230" rx="16" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1185" y="210" text-anchor="middle" font-size="22" font-weight="bold">SoC 40</text>
+<text x="1185" y="260" text-anchor="middle" font-size="18">Overlap</text>
+<text x="1185" y="315" text-anchor="middle" font-size="23">16 cycles</text>
+<text x="1185" y="355" text-anchor="middle" font-size="17">160 ns</text>
+</g>
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="320" y1="275" x2="400" y2="275"/>
+<line x1="650" y1="275" x2="730" y2="275"/>
+<line x1="980" y1="275" x2="1060" y2="275"/>
+</g>
+<text x="720" y="475" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">35 → 16 cycles · 19 cycles saved</text>
+<text x="720" y="520" text-anchor="middle" font-family="sans-serif" font-size="18">Static latency -54.3% · Static upper throughput +118.8%</text>
+<text x="720" y="570" text-anchor="middle" font-family="sans-serif" font-size="15">RTL schedule only · Vivado/board measurements remain separate</text>
+</svg>

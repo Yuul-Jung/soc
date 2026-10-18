@@ -1,0 +1,24 @@
+SoC37 STATIC RTL SCHEDULE
+clock = 100 MHz (10.0 ns)
+BRAM read phase = 16 cycles
+requant phase = 14 cycles
+finish/IRQ phase = 5 cycles
+engine START accept -> IRQ pending = 35 cycles
+static schedule time = 350.0 ns
+upper-bound jobs/s = 2,857,142.857
+upper-bound scalar outputs/s = 22,857,142.857
+
+IMPORTANT:
+- This excludes AXI START transaction latency.
+- This excludes CPU Tensor fill/read.
+- This excludes ISR/software overhead.
+- This is not WNS/TNS or post-route timing.
+- Actual performance must be measured in Vivado/board.
+SOC37 STATIC PERFORMANCE REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=<seconds> to increase the limit.

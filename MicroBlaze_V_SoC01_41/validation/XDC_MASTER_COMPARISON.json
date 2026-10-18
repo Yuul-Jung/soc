@@ -1,0 +1,2293 @@
+{
+  "files": [
+    {
+      "file": "code/soc07/basys3_axi_uartlite.xdc",
+      "pins": [
+        {
+          "pin": "B18",
+          "port": "RsRx",
+          "board_signal": "RsRx"
+        },
+        {
+          "pin": "A18",
+          "port": "RsTx",
+          "board_signal": "RsTx"
+        }
+      ]
+    },
+    {
+      "file": "code/soc10/basys3_soc10_integrated.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        },
+        {
+          "pin": "B18",
+          "port": "RsRx",
+          "board_signal": "RsRx"
+        },
+        {
+          "pin": "A18",
+          "port": "RsTx",
+          "board_signal": "RsTx"
+        }
+      ]
+    },
+    {
+      "file": "code/soc09/basys3_axi_interrupt_led.xdc",
+      "pins": [
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc08/basys3_axi_timer_led.xdc",
+      "pins": [
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc06/basys3_axi_gpio.xdc",
+      "pins": [
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc07/working_files/basys3_axi_uartlite.xdc",
+      "pins": [
+        {
+          "pin": "B18",
+          "port": "RsRx",
+          "board_signal": "RsRx"
+        },
+        {
+          "pin": "A18",
+          "port": "RsTx",
+          "board_signal": "RsTx"
+        }
+      ]
+    },
+    {
+      "file": "code/soc10/working_files/basys3_soc10_integrated.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        },
+        {
+          "pin": "B18",
+          "port": "RsRx",
+          "board_signal": "RsRx"
+        },
+        {
+          "pin": "A18",
+          "port": "RsTx",
+          "board_signal": "RsTx"
+        }
+      ]
+    },
+    {
+      "file": "code/soc25/npu_pe4_lab/constraints/basys3_pe4_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc18/demo/basys3_soc18_uart_pwm_demo.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "A18",
+          "port": "uart_tx_o",
+          "board_signal": "RsTx"
+        },
+        {
+          "pin": "L1",
+          "port": "pwm_o",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc23/resource_power_lab/constraints/basys3_resource_power_pins.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc24/npu_mac_lab/constraints/basys3_mac_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc09/working_files/basys3_axi_interrupt_led.xdc",
+      "pins": [
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc22/timing_lab/constraints/clock_100mhz.xdc",
+      "pins": []
+    },
+    {
+      "file": "code/soc22/timing_lab/constraints/timing_lab_basys3.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        }
+      ]
+    },
+    {
+      "file": "code/soc22/timing_lab/constraints/clock_stress_200mhz.xdc",
+      "pins": []
+    },
+    {
+      "file": "code/soc22/timing_lab/constraints/basys3_timing_lab_pins.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc27/local_bram_feeding_lab/constraints/basys3_local_bram_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc28/prefetch_fifo_double_buffer_lab/constraints/basys3_soc28_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc08/working_files/basys3_axi_timer_led.xdc",
+      "pins": [
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc29/weight_stationary_tiling_lab/constraints/basys3_soc29_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc06/working_files/basys3_axi_gpio.xdc",
+      "pins": [
+        {
+          "pin": "V17",
+          "port": "sw[0]",
+          "board_signal": "sw[0]"
+        },
+        {
+          "pin": "V16",
+          "port": "sw[1]",
+          "board_signal": "sw[1]"
+        },
+        {
+          "pin": "W16",
+          "port": "sw[2]",
+          "board_signal": "sw[2]"
+        },
+        {
+          "pin": "W17",
+          "port": "sw[3]",
+          "board_signal": "sw[3]"
+        },
+        {
+          "pin": "W15",
+          "port": "sw[4]",
+          "board_signal": "sw[4]"
+        },
+        {
+          "pin": "V15",
+          "port": "sw[5]",
+          "board_signal": "sw[5]"
+        },
+        {
+          "pin": "W14",
+          "port": "sw[6]",
+          "board_signal": "sw[6]"
+        },
+        {
+          "pin": "W13",
+          "port": "sw[7]",
+          "board_signal": "sw[7]"
+        },
+        {
+          "pin": "V2",
+          "port": "sw[8]",
+          "board_signal": "sw[8]"
+        },
+        {
+          "pin": "T3",
+          "port": "sw[9]",
+          "board_signal": "sw[9]"
+        },
+        {
+          "pin": "T2",
+          "port": "sw[10]",
+          "board_signal": "sw[10]"
+        },
+        {
+          "pin": "R3",
+          "port": "sw[11]",
+          "board_signal": "sw[11]"
+        },
+        {
+          "pin": "W2",
+          "port": "sw[12]",
+          "board_signal": "sw[12]"
+        },
+        {
+          "pin": "U1",
+          "port": "sw[13]",
+          "board_signal": "sw[13]"
+        },
+        {
+          "pin": "T1",
+          "port": "sw[14]",
+          "board_signal": "sw[14]"
+        },
+        {
+          "pin": "R2",
+          "port": "sw[15]",
+          "board_signal": "sw[15]"
+        },
+        {
+          "pin": "U16",
+          "port": "led[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc26/vector_dot_controller_lab/constraints/basys3_vector_controller_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    },
+    {
+      "file": "code/soc30/requantization_int8_lab/constraints/basys3_soc30_lab.xdc",
+      "pins": [
+        {
+          "pin": "W5",
+          "port": "clk",
+          "board_signal": "clk"
+        },
+        {
+          "pin": "U18",
+          "port": "btnC",
+          "board_signal": "btnC"
+        },
+        {
+          "pin": "U16",
+          "port": "led_o[0]",
+          "board_signal": "led[0]"
+        },
+        {
+          "pin": "E19",
+          "port": "led_o[1]",
+          "board_signal": "led[1]"
+        },
+        {
+          "pin": "U19",
+          "port": "led_o[2]",
+          "board_signal": "led[2]"
+        },
+        {
+          "pin": "V19",
+          "port": "led_o[3]",
+          "board_signal": "led[3]"
+        },
+        {
+          "pin": "W18",
+          "port": "led_o[4]",
+          "board_signal": "led[4]"
+        },
+        {
+          "pin": "U15",
+          "port": "led_o[5]",
+          "board_signal": "led[5]"
+        },
+        {
+          "pin": "U14",
+          "port": "led_o[6]",
+          "board_signal": "led[6]"
+        },
+        {
+          "pin": "V14",
+          "port": "led_o[7]",
+          "board_signal": "led[7]"
+        },
+        {
+          "pin": "V13",
+          "port": "led_o[8]",
+          "board_signal": "led[8]"
+        },
+        {
+          "pin": "V3",
+          "port": "led_o[9]",
+          "board_signal": "led[9]"
+        },
+        {
+          "pin": "W3",
+          "port": "led_o[10]",
+          "board_signal": "led[10]"
+        },
+        {
+          "pin": "U3",
+          "port": "led_o[11]",
+          "board_signal": "led[11]"
+        },
+        {
+          "pin": "P3",
+          "port": "led_o[12]",
+          "board_signal": "led[12]"
+        },
+        {
+          "pin": "N3",
+          "port": "led_o[13]",
+          "board_signal": "led[13]"
+        },
+        {
+          "pin": "P1",
+          "port": "led_o[14]",
+          "board_signal": "led[14]"
+        },
+        {
+          "pin": "L1",
+          "port": "led_o[15]",
+          "board_signal": "led[15]"
+        }
+      ]
+    }
+  ],
+  "unknown_board_pins": []
+}

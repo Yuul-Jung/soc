@@ -1,0 +1,645 @@
+[
+  {
+    "file": "code/soc07/basys3_axi_uartlite.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc10/basys3_soc10_integrated.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc09/basys3_axi_interrupt_led.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc08/basys3_axi_timer_led.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc06/basys3_axi_gpio.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc21/verification_harness/scripts/generate_coverage_report.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc21/verification_harness/scripts/run_soc21_verification.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc21/verification_harness/scripts/prepare_soc21_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/tcl/prepare_packaging_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc16/ip_repo/custom_processing_ip_1_0/tcl/add_ip_repo.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc07/working_files/basys3_axi_uartlite.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/tcl/run_cdc_reports.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc20/dual_clock_control_status_bridge_1_0/tcl/prepare_cdc_demo_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc10/working_files/basys3_soc10_integrated.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/scripts/run_pe4_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/scripts/run_all_pe4_cases.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/constraints/basys3_pe4_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc25/npu_pe4_lab/reference/pe4_reference_model.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc18/demo/basys3_soc18_uart_pwm_demo.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc18/uart_tx_ip_1_0/tcl/prepare_packaging_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc18/pwm_controller_ip_1_0/tcl/prepare_packaging_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/scripts/run_soc39_parallel4_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/scripts/prepare_soc39_batch_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/scripts/prepare_soc39_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/scripts/run_soc39_compare.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/scripts/run_soc39_soc38_serial_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc39/parallel4_requant_optimization_lab/reference/soc39_static_comparison.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/scripts/prepare_soc40_group_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/scripts/prepare_soc40_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/scripts/run_soc40_overlap_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/scripts/run_soc40_compare.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/scripts/run_soc40_soc39_baseline_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc40/prefetch_double_buffer_overlap_lab/reference/soc40_overlap_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc19/axi_control_status_bridge_1_0/tcl/prepare_packaging_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/scripts/run_resource_power_lab.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/scripts/run_all_resource_power_cases.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc23/resource_power_lab/scripts/OPTIONAL_power_optimization_notes.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc23/resource_power_lab/constraints/basys3_resource_power_pins.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/scripts/run_soc37_npu_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/scripts/run_soc37_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/scripts/prepare_soc37_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/scripts/collect_soc37_full_system_reports.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc37/performance_signoff_baseline_lab/reference/soc37_cycle_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/scripts/run_all_mac_cases.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/scripts/run_mac_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/constraints/basys3_mac_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc24/npu_mac_lab/reference/mac_reference_model.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/scripts/run_soc41_guide.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/scripts/collect_soc41_signoff_reports.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/scripts/evaluate_soc41_signoff.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc41/group8_signoff_matrix_lab/reference/soc41_group8_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/scripts/prepare_soc31_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/scripts/run_soc31_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/scripts/run_soc31_axi_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc31/npu_axi_register_map_lab/reference/soc31_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc09/working_files/basys3_axi_interrupt_led.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/scripts/run_host_reference.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/scripts/run_soc36_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/scripts/run_soc36_hardware_freeze_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/scripts/prepare_soc36_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc36/cpu_npu_end_to_end_lab/reference/soc36_e2e_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/scripts/run_timing_lab.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/scripts/run_all_timing_cases.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc22/timing_lab/constraints/clock_100mhz.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/constraints/timing_lab_basys3.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/constraints/clock_stress_200mhz.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/constraints/basys3_timing_lab_pins.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/scripts/generate_coverage_report.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/scripts/run_soc21_verification.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc22/timing_lab/soc21_regression_reference/scripts/prepare_soc21_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/scripts/run_soc33_data_plane_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/scripts/run_soc33_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/scripts/prepare_soc33_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc33/tensor_bram_data_plane_lab/reference/soc33_tensor_bram_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/scripts/run_soc35_full_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/scripts/prepare_soc35_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/scripts/run_soc35_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc35/full_npu_accelerator_lab/reference/soc35_full_integration_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/scripts/prepare_soc27_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/scripts/run_soc27_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/scripts/run_soc27_board_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/scripts/run_soc27_memory_inference.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/constraints/basys3_local_bram_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc27/local_bram_feeding_lab/reference/local_bram_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/scripts/run_soc32_irq_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/scripts/prepare_soc32_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/scripts/run_soc32_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc32/npu_interrupt_lab/reference/soc32_interrupt_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/scripts/run_soc28_board_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/scripts/prepare_soc28_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/scripts/run_soc28_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/scripts/run_soc28_generic_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/constraints/basys3_soc28_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc28/prefetch_fifo_double_buffer_lab/reference/soc28_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/scripts/run_soc34_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/scripts/prepare_soc34_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/scripts/run_soc34_job_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc34/npu_job_descriptor_lab/reference/soc34_descriptor_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc08/working_files/basys3_axi_timer_led.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/scripts/prepare_soc38_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/scripts/run_soc38_baseline_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/scripts/run_soc38_compare.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/scripts/run_soc38_fastread_post_route.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc38/pipelined_bram_read_optimization_lab/reference/soc38_static_comparison.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/scripts/run_soc29_board_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/scripts/prepare_soc29_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/scripts/run_soc29_generic_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/scripts/run_soc29_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/constraints/basys3_soc29_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc29/weight_stationary_tiling_lab/reference/soc29_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc06/working_files/basys3_axi_gpio.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/scripts/prepare_soc26_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/scripts/run_vector_controller_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/scripts/run_soc26_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/constraints/basys3_vector_controller_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc26/vector_dot_controller_lab/reference/vector_controller_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/scripts/prepare_soc30_simulation.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/scripts/run_soc30_generic_ooc.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/scripts/run_soc30_analysis.sh",
+    "kind": "bash -n",
+    "status": "PASS",
+    "diagnostic": ""
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/scripts/run_soc30_board_analysis.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/constraints/basys3_soc30_lab.xdc",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc30/requantization_int8_lab/reference/soc30_reference.py",
+    "kind": "Python AST parse",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/tcl/prepare_legacy_ip_project.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  },
+  {
+    "file": "code/soc17/ip_repo/legacy_processing_ip_1_0/tcl/add_ip_repo.tcl",
+    "kind": "Tcl lexical completeness",
+    "status": "PASS"
+  }
+]

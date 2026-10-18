@@ -1,0 +1,17 @@
+SoC37 STATIC RTL SCHEDULE
+clock = 100 MHz (10.0 ns)
+BRAM read phase = 16 cycles
+requant phase = 14 cycles
+finish/IRQ phase = 5 cycles
+engine START accept -> IRQ pending = 35 cycles
+static schedule time = 350.0 ns
+upper-bound jobs/s = 2,857,142.857
+upper-bound scalar outputs/s = 22,857,142.857
+
+IMPORTANT:
+- This excludes AXI START transaction latency.
+- This excludes CPU Tensor fill/read.
+- This excludes ISR/software overhead.
+- This is not WNS/TNS or post-route timing.
+- Actual performance must be measured in Vivado/board.
+SOC37 STATIC PERFORMANCE REFERENCE: PASS

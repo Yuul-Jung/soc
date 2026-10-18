@@ -1,0 +1,26 @@
+SoC39 STATIC PARALLEL-REQUANT COMPARISON
+clock = 100 MHz
+
+SoC38 read/requant/finish = 9/14/5
+SoC39 read/requant/finish = 9/8/5
+
+SoC38 total = 28 cycles (280.0 ns)
+SoC39 total = 22 cycles (220.0 ns)
+saved = 6 cycles
+static latency reduction vs SoC38 = 21.4%
+SoC38 upper jobs/s = 3,571,428.571
+SoC39 upper jobs/s = 4,545,454.545
+static upper throughput gain vs SoC38 = 27.3%
+
+SPATIAL TRADE-OFF:
+- requant core instances: 1 -> 4
+- actual DSP48 count is NOT assumed
+- 33x16 multiply is wider than one 25x18 DSP48E1 multiplier input
+- synthesis must report the actual DSP/LUT mapping
+
+NOT MEASURED:
+- WNS/TNS/WHS/THS
+- DSP48/LUT/FF delta
+- power delta
+- Basys3 runtime
+SOC39 STATIC PARALLEL4 REFERENCE: PASS

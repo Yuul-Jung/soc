@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="570" viewBox="0 0 1320 570">
+<rect width="1320" height="570" fill="white"/>
+<text x="660" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">FEED와 DRAIN을 분리하는 이유</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="70" y="145" width="310" height="260" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="225" y="190" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">Input Side</text>
+<text x="225" y="235" text-anchor="middle" font-family="sans-serif" font-size="16">accepted_groups</text>
+<text x="225" y="280" text-anchor="middle" font-family="sans-serif" font-size="16">vec_valid &amp;&amp; vec_ready</text>
+<text x="225" y="330" text-anchor="middle" font-family="sans-serif" font-size="16">마지막 Group 수락</text>
+<text x="225" y="370" text-anchor="middle" font-family="sans-serif" font-size="16">→ FEED 종료</text>
+
+<rect x="505" y="145" width="310" height="260" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="660" y="190" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">PE Pipeline</text>
+<text x="660" y="235" text-anchor="middle" font-family="sans-serif" font-size="16">Product</text>
+<text x="660" y="275" text-anchor="middle" font-family="sans-serif" font-size="16">Pair Sum</text>
+<text x="660" y="315" text-anchor="middle" font-family="sans-serif" font-size="16">Dot4</text>
+<text x="660" y="355" text-anchor="middle" font-family="sans-serif" font-size="16">Accumulator</text>
+
+<rect x="940" y="145" width="310" height="260" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1095" y="190" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">Output Side</text>
+<text x="1095" y="235" text-anchor="middle" font-family="sans-serif" font-size="16">completed_groups</text>
+<text x="1095" y="280" text-anchor="middle" font-family="sans-serif" font-size="16">pe_valid_o</text>
+<text x="1095" y="330" text-anchor="middle" font-family="sans-serif" font-size="16">마지막 Group 완료</text>
+<text x="1095" y="370" text-anchor="middle" font-family="sans-serif" font-size="16">→ FINALIZE</text>
+
+<line x1="380" y1="275" x2="505" y2="275" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="815" y1="275" x2="940" y2="275" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+
+<text x="660" y="485" text-anchor="middle" font-family="sans-serif" font-size="17">입력 전송이 끝난 순간에도 Pipeline 안에는 아직 계산 중인 Group이 남아 있을 수 있다.</text>
+<text x="660" y="525" text-anchor="middle" font-family="sans-serif" font-size="16">따라서 done을 입력 Group 수락 시점에 발생시키면 안 된다.</text>
+</svg>

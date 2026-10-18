@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1380" height="610" viewBox="0 0 1380 610">
+<rect width="1380" height="610" fill="white"/>
+<text x="690" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 30 · int32 → int8 Requantization Pipeline</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<g font-family="sans-serif">
+<rect x="55" y="180" width="220" height="180" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="165" y="225" text-anchor="middle" font-size="19" font-weight="bold">S1 · Bias</text>
+<text x="165" y="270" text-anchor="middle" font-size="16">int32 + int32</text>
+<text x="165" y="315" text-anchor="middle" font-size="16">→ signed 33 bit</text>
+
+<rect x="330" y="180" width="220" height="180" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="440" y="225" text-anchor="middle" font-size="19" font-weight="bold">S2 · Scale</text>
+<text x="440" y="270" text-anchor="middle" font-size="16">33 × 16 multiply</text>
+<text x="440" y="315" text-anchor="middle" font-size="16">→ signed 49 bit</text>
+
+<rect x="605" y="180" width="220" height="180" rx="14" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="715" y="225" text-anchor="middle" font-size="19" font-weight="bold">S3 · Round / Shift</text>
+<text x="715" y="270" text-anchor="middle" font-size="16">|x| + 2^(S-1)</text>
+<text x="715" y="315" text-anchor="middle" font-size="16">→ sign restore</text>
+
+<rect x="880" y="180" width="220" height="180" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="990" y="225" text-anchor="middle" font-size="19" font-weight="bold">S4 · Zero Point</text>
+<text x="990" y="270" text-anchor="middle" font-size="16">rounded + zp</text>
+<text x="990" y="315" text-anchor="middle" font-size="16">wide signed value</text>
+
+<rect x="1155" y="180" width="180" height="180" rx="14" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="1245" y="225" text-anchor="middle" font-size="19" font-weight="bold">Saturate</text>
+<text x="1245" y="270" text-anchor="middle" font-size="16">&gt;127 → 127</text>
+<text x="1245" y="310" text-anchor="middle" font-size="16">&lt;-128 → -128</text>
+</g>
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="275" y1="270" x2="330" y2="270"/>
+<line x1="550" y1="270" x2="605" y2="270"/>
+<line x1="825" y1="270" x2="880" y2="270"/>
+<line x1="1100" y1="270" x2="1155" y2="270"/>
+</g>
+<text x="690" y="465" text-anchor="middle" font-family="sans-serif" font-size="18">q = saturate_int8(round_away_from_zero((acc+bias)×mult / 2^shift) + zero_point)</text>
+<text x="690" y="520" text-anchor="middle" font-family="sans-serif" font-size="15">교육용 Fixed-point Multiplier/Shift 형태이며 실제 모델은 학습/변환 단계에서 Scale Parameter를 생성한다.</text>
+</svg>

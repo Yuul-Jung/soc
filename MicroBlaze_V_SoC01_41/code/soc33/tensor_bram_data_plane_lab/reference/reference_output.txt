@@ -1,0 +1,25 @@
+Tensor input addresses:
+  0x000 -> 16
+  0x004 -> 32
+  0x008 -> 48
+  0x00C -> 64
+  0x010 -> 32
+  0x014 -> 64
+  0x018 -> 96
+  0x01C -> 128
+
+OUTPUT_CH0 address = 0x100
+OUTPUT_CH1 address = 0x104
+OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+NPU BRAM reads = 8 words
+NPU BRAM writes = 2 words
+CPU/NPU ownership rule: no same-buffer access while NPU BUSY
+SOC33 PYTHON TENSOR-BRAM REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=<seconds> to increase the limit.

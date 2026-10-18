@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="610" viewBox="0 0 1280 610">
+<rect width="1280" height="610" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">1 MAC → 4-Lane PE → NPU Array</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="70" y="170" width="250" height="210" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="195" y="215" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">SoC 24</text>
+<text x="195" y="260" text-anchor="middle" font-family="sans-serif" font-size="18">1 MAC</text>
+<text x="195" y="305" text-anchor="middle" font-family="sans-serif" font-size="16">1 product / cycle</text>
+<text x="195" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">Sequential Dot Product</text>
+
+<rect x="510" y="140" width="280" height="270" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="650" y="185" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">SoC 25</text>
+<text x="650" y="230" text-anchor="middle" font-family="sans-serif" font-size="18">4-Lane PE</text>
+<text x="650" y="275" text-anchor="middle" font-family="sans-serif" font-size="16">4 products / cycle</text>
+<text x="650" y="315" text-anchor="middle" font-family="sans-serif" font-size="16">Balanced Adder Tree</text>
+<text x="650" y="355" text-anchor="middle" font-family="sans-serif" font-size="16">Partial Sum Accumulator</text>
+<text x="650" y="390" text-anchor="middle" font-family="sans-serif" font-size="15">100 MHz → 이론 400M products/s</text>
+
+<rect x="980" y="170" width="240" height="210" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="1100" y="215" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">Next</text>
+<text x="1100" y="260" text-anchor="middle" font-family="sans-serif" font-size="18">PE Array</text>
+<text x="1100" y="305" text-anchor="middle" font-family="sans-serif" font-size="16">Multiple PE</text>
+<text x="1100" y="345" text-anchor="middle" font-family="sans-serif" font-size="16">Memory Bandwidth</text>
+
+<line x1="320" y1="275" x2="510" y2="275" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="790" y1="275" x2="980" y2="275" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+
+<text x="640" y="500" text-anchor="middle" font-family="sans-serif" font-size="17">XC7A35T DSP48E1 90개를 Multiplier에만 쓴다고 가정하면 4-lane PE는 산술상 22개까지 구성 가능하다.</text>
+<text x="640" y="540" text-anchor="middle" font-family="sans-serif" font-size="15">22개는 DSP 개수만 고려한 이론값이며 Routing, BRAM, LUT, Timing, Power, 기타 DSP 사용은 포함하지 않는다.</text>
+</svg>

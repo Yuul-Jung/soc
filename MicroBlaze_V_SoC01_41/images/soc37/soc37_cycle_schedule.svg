@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1350" height="580" viewBox="0 0 1350 580">
+<rect width="1350" height="580" fill="white"/>
+<text x="675" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Frozen RTL · Static Cycle Schedule</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<rect x="75" y="175" width="320" height="150" rx="14" fill="#eef6ff" stroke="#111827"/>
+<text x="235" y="225" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">BRAM Read</text>
+<text x="235" y="275" text-anchor="middle" font-family="sans-serif" font-size="17">8 × (REQ + CAPTURE)</text>
+<text x="235" y="310" text-anchor="middle" font-family="sans-serif" font-size="18">16 cycles</text>
+<rect x="515" y="175" width="320" height="150" rx="14" fill="#fff7ed" stroke="#111827"/>
+<text x="675" y="225" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Requant</text>
+<text x="675" y="275" text-anchor="middle" font-family="sans-serif" font-size="17">launch + feed + drain</text>
+<text x="675" y="310" text-anchor="middle" font-family="sans-serif" font-size="18">14 cycles</text>
+<rect x="955" y="175" width="320" height="150" rx="14" fill="#f0fdf4" stroke="#111827"/>
+<text x="1115" y="225" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Finish / IRQ</text>
+<text x="1115" y="275" text-anchor="middle" font-family="sans-serif" font-size="17">write + done + pending</text>
+<text x="1115" y="310" text-anchor="middle" font-family="sans-serif" font-size="18">5 cycles</text>
+<line x1="395" y1="250" x2="515" y2="250" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="835" y1="250" x2="955" y2="250" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<text x="675" y="425" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">16 + 14 + 5 → 35 cycles → 350 ns @ 100 MHz</text>
+<text x="675" y="480" text-anchor="middle" font-family="sans-serif" font-size="15">AXI transaction / CPU / ISR / Tensor copy는 포함하지 않는다.</text>
+</svg>

@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 MicroBlaze V에서 AXI4-Lite register map으로 NPU accelerator를 제어하는 SoC integration 자료." name="description">
+<title>SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 31</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 31</p>
+<h1>NPU Register Map · MicroBlaze V Control · AXI4-Lite Integration</h1>
+<p class="hero-desc">SoC 30까지 만든 NPU Datapath를 MicroBlaze V가 Memory-Mapped Peripheral처럼 제어하도록 연결한다. AXI4-Lite Slave, Register Map, START/BUSY/DONE, Parameter/Input/Output Register, WSTRB Partial Write, MicroBlaze V Driver를 하나의 Software/Hardware 계약으로 묶는다.</p>
+<div class="hero-meta"><span class="chip">MicroBlaze V</span><span class="chip">AXI4-Lite</span><span class="chip">Register Map</span><span class="chip">MMIO</span><span class="chip">Xil_Out32</span><span class="chip">Xil_In32</span></div>
+</div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html" selected>SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc31_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc31">이 장 검증</a></div></div><p class="nav-title">SOC 31 · LEARNING FLOW</p><p class="nav-help">Address → Register → Control → Result</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>NPU를 Peripheral로 본다</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>전체 Architecture</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Register Map이 필요한 이유</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Register Map 전체</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>CONTROL</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>STATUS Sticky Bit</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>VERSION</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Parameter Registers</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Input / Output Registers</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Base Address와 Offset</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>AXI4-Lite 5개 채널</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>AW / W 독립성</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Write Commit</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>WSTRB</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Read Channel</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>Register Bank RTL</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>AXI4-Lite Slave RTL</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Module Reference Top</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>START Pulse</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>START while BUSY</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Cycle Counter</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>SoC30 Core 재사용</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>MicroBlaze V Driver</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Xil_Out32 / Xil_In32</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>MicroBlaze V Application</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Software Control Flow</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Address Editor</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Expected Result</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>AXI Self-Checking Test</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>Protocol Test Cases</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>Python Register Reference</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>OOC Synthesis</span></a></li>
+<li><a href="#s34"><span class="n">34</span><span>Timing / Resource</span></a></li>
+<li><a href="#s35"><span class="n">35</span><span>SoC 32 연결</span></a></li>
+<li><a href="#s36"><span class="n">36</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">37</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">38</span><span>공식 문서 및 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 29 Data Reuse</span><span class="arrow">→</span><span class="stage">SoC 30 Requantization</span><span class="arrow">→</span><span class="stage"><strong>SoC 31 AXI NPU Peripheral</strong></span><span class="arrow">→</span><span class="stage">SoC 32 NPU Interrupt</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc31/soc31_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="MicroBlaze V AXI4-Lite NPU architecture · 원본 보기 (새 탭)"><img src="../../images/soc31/soc31_architecture.svg" alt="MicroBlaze V AXI4-Lite NPU architecture"></a><figcaption>MicroBlaze V가 Register Read/Write만으로 NPU Accelerator를 시작하고 결과를 읽는다.<br><a href="../../images/soc31/soc31_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="MicroBlaze V AXI4-Lite NPU architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>NPU를 Peripheral로 본다</h2>
+<p>MicroBlaze V 입장에서는 NPU 내부의 Multiplier, Pipeline, Requantization 구조를 직접 알 필요가 없다. Processor는 주소가 할당된 Register만 읽고 쓴다.</p>
+<div class="flow">Software Command → Register Map → Hardware Pulse/Parameter → Accelerator → Status/Result Register</div>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>전체 Architecture</h2>
+<figure class="manual-figure"><a href="../../images/soc31/soc31_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC31 whole architecture · 원본 보기 (새 탭)"><img src="../../images/soc31/soc31_architecture.svg" alt="SoC31 whole architecture"></a><figcaption>SmartConnect가 MicroBlaze V AXI Master와 NPU AXI4-Lite Slave를 연결한다.<br><a href="../../images/soc31/soc31_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC31 whole architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Register Map이 필요한 이유</h2>
+<p>Register Map은 Software와 Hardware가 공유하는 고정 계약이다. Offset, Bit 의미, Read/Write 속성이 한번 정해지면 RTL과 C Driver가 같은 정의를 사용해야 한다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Register Map 전체</h2>
+<figure class="manual-figure"><a href="../../images/soc31/soc31_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="NPU register map · 원본 보기 (새 탭)"><img src="../../images/soc31/soc31_register_map.svg" alt="NPU register map"></a><figcaption>Base Address와 별개로 Peripheral 내부 Offset 0x00~0x68을 고정한다.<br><a href="../../images/soc31/soc31_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="NPU register map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map 전체 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Offset" role="cell">0x00</td><td data-label="Register" role="cell">CONTROL</td><td data-label="Access" role="cell">W1P</td><td data-label="역할" role="cell">START / CLEAR_DONE / CLEAR_ERROR</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x04</td><td data-label="Register" role="cell">STATUS</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">BUSY / DONE / ERROR / SATURATED</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x08</td><td data-label="Register" role="cell">VERSION</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">0x00010000</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x0C</td><td data-label="Register" role="cell">SAT_COUNT</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">Saturation 횟수</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x10~0x20</td><td data-label="Register" role="cell">PARAMETERS</td><td data-label="Access" role="cell">RW</td><td data-label="역할" role="cell">Bias / Multiplier / Shift / Zero Point</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x40~0x5C</td><td data-label="Register" role="cell">ACC_IN0..7</td><td data-label="Access" role="cell">RW</td><td data-label="역할" role="cell">int32 Input 8개</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x60</td><td data-label="Register" role="cell">OUT_CH0</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">int8 ×4 Packed</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x64</td><td data-label="Register" role="cell">OUT_CH1</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">int8 ×4 Packed</td></tr>
+<tr role="row"><td data-label="Offset" role="cell">0x68</td><td data-label="Register" role="cell">CYCLE_COUNT</td><td data-label="Access" role="cell">RO</td><td data-label="역할" role="cell">Operation Cycle Count</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>CONTROL</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="06절 신호 및 실행 흐름">bit0 START        → write 1 → one-clock pulse
+bit1 CLEAR_DONE   → write 1 → DONE sticky clear
+bit2 CLEAR_ERROR  → write 1 → ERROR sticky clear</div>
+<p>이런 Register를 여기서는 W1P(Write-One-Pulse, 1을 쓰면 Pulse 발생)로 사용한다. Register 값 자체를 계속 1로 보관하지 않는다.</p>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>STATUS Sticky Bit</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="07절 신호 및 실행 흐름">bit0 BUSY          → Accelerator 실시간 상태
+bit1 DONE_STICKY   → 완료 후 Software Clear 전까지 1
+bit2 ERROR_STICKY  → 오류 발생 후 Software Clear 전까지 1
+bit3 SATURATED_ANY → SAT_COUNT != 0</div>
+<p>DONE을 1 Clock Pulse만 제공하면 Software Polling이 놓칠 수 있으므로 Register Interface에서는 Sticky 상태로 변환한다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>VERSION</h2>
+<p><code>VERSION = 0x00010000</code>을 두어 Software가 예상하는 Peripheral Revision인지 먼저 확인한다. 이후 Register Map이 변경되면 Version 관리가 가능하다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Parameter Registers</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">0x10 BIAS_CH0
+0x14 BIAS_CH1
+0x18 SCALE_CH0 → multiplier[15:0] + shift[21:16]
+0x1C SCALE_CH1 → multiplier[15:0] + shift[21:16]
+0x20 ZERO_POINT → CH0[15:0] + CH1[31:16]</div>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Input / Output Registers</h2>
+<p>SoC 31에서는 SoC 29의 8개 int32 결과를 Register Buffer로 입력한다. 이는 AXI Register Control을 집중적으로 배우기 위한 작은 Input Buffer다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="10절 신호 및 실행 흐름">ACC_IN0..3 → CH0 sample0..3
+ACC_IN4..7 → CH1 sample0..3
+OUT_CH0    → signed int8 ×4
+OUT_CH1    → signed int8 ×4</div>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Base Address와 Offset</h2>
+<p>Register Offset은 RTL에서 고정하지만 Base Address는 Vivado Address Editor가 시스템 주소 공간에 할당한다.</p>
+<div class="flow">실제 MMIO 주소 → NPU_BASEADDR + Register Offset</div>
+<div class="warn">자료에서 0x4000_0000 같은 Base Address를 임의로 고정하지 않는다. 생성된 <code>xparameters.h</code>의 실제 Symbol을 사용한다.</div>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>AXI4-Lite 5개 채널</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="AXI4-Lite 5개 채널 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Channel</th><th scope="col" role="columnheader">핵심 신호</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Channel" role="cell">AW</td><td data-label="핵심 신호" role="cell">AWADDR / AWVALID / AWREADY</td><td data-label="역할" role="cell">Write Address</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">W</td><td data-label="핵심 신호" role="cell">WDATA / WSTRB / WVALID / WREADY</td><td data-label="역할" role="cell">Write Data</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">B</td><td data-label="핵심 신호" role="cell">BRESP / BVALID / BREADY</td><td data-label="역할" role="cell">Write Response</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">AR</td><td data-label="핵심 신호" role="cell">ARADDR / ARVALID / ARREADY</td><td data-label="역할" role="cell">Read Address</td></tr>
+<tr role="row"><td data-label="Channel" role="cell">R</td><td data-label="핵심 신호" role="cell">RDATA / RRESP / RVALID / RREADY</td><td data-label="역할" role="cell">Read Data</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>AW / W 독립성</h2>
+<figure class="manual-figure"><a href="../../images/soc31/soc31_axi_write_channels.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI independent address and data channels · 원본 보기 (새 탭)"><img src="../../images/soc31/soc31_axi_write_channels.svg" alt="AXI independent address and data channels"></a><figcaption>Write Address와 Write Data를 각각 저장한 뒤 둘 다 확보됐을 때 Write를 Commit한다.<br><a href="../../images/soc31/soc31_axi_write_channels.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI independent address and data channels · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Write Commit</h2>
+<div class="flow">AW handshake → aw_pending<br>W handshake → w_pending<br>aw_pending &amp;&amp; w_pending → Register Write 1회 → BVALID</div>
+<p>따라서 AW가 먼저 오거나 W가 먼저 와도 동일하게 동작한다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>WSTRB</h2>
+<p><code>WSTRB[0]</code>은 WDATA[7:0], <code>WSTRB[1]</code>은 WDATA[15:8]처럼 각 Byte Lane의 유효 여부를 나타낸다. RW Register는 <code>apply_wstrb32()</code>로 Byte Partial Write를 지원한다.</p>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Read Channel</h2>
+<div class="flow">ARVALID &amp;&amp; ARREADY → Address Decode → RDATA + RVALID → RREADY에서 완료</div>
+<p>SoC 31은 Side Effect가 없는 Register Read를 사용하고 한 번에 한 Read Transaction만 Outstanding으로 둔다.</p>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Register Bank RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Register Bank RTL · 소스 코드"><code>module npu_register_bank (
+    input  wire               clk,
+    input  wire               resetn,
+
+    // Register-write interface from AXI4-Lite shell.
+    input  wire               wr_en_i,
+    input  wire [7:0]         wr_addr_i,
+    input  wire [31:0]        wr_data_i,
+    input  wire [3:0]         wr_strb_i,
+
+    // Register-read interface from AXI4-Lite shell.
+    input  wire [7:0]         rd_addr_i,
+    output reg  [31:0]        rd_data_o,
+
+    // Optional debug/status outputs.
+    output wire               accel_busy_o,
+    output wire               accel_done_sticky_o,
+    output wire               accel_error_sticky_o,
+    output wire [7:0]         saturation_count_o
+);
+
+// ------------------------------------------------------------
+// SoC 31 NPU Register Map
+// ------------------------------------------------------------
+//
+// 0x00 CONTROL      RW/W1P
+//      bit 0 START        : write 1 -&gt; one-clock start pulse
+//      bit 1 CLEAR_DONE   : write 1 -&gt; clear DONE sticky
+//      bit 2 CLEAR_ERROR  : write 1 -&gt; clear ERROR sticky
+//
+// 0x04 STATUS       RO
+//      bit 0 BUSY
+//      bit 1 DONE_STICKY
+//      bit 2 ERROR_STICKY
+//      bit 3 SATURATED_ANY
+//
+// 0x08 VERSION      RO = 0x0001_0000
+// 0x0C SAT_COUNT    RO
+//
+// 0x10 BIAS_CH0     RW signed int32
+// 0x14 BIAS_CH1     RW signed int32
+//
+// 0x18 SCALE_CH0    RW
+//      [15:0]  signed multiplier
+//      [21:16] unsigned right shift
+//
+// 0x1C SCALE_CH1    RW
+//      [15:0]  signed multiplier
+//      [21:16] unsigned right shift
+//
+// 0x20 ZERO_POINT   RW
+//      [15:0]  signed zp_ch0
+//      [31:16] signed zp_ch1
+//
+// 0x40..0x5C ACC_IN[0..7] RW signed int32
+//      0..3 -&gt; CH0 sample0..3
+//      4..7 -&gt; CH1 sample0..3
+//
+// 0x60 OUT_CH0      RO four packed signed int8 values
+// 0x64 OUT_CH1      RO four packed signed int8 values
+// 0x68 CYCLE_COUNT  RO cycles from accepted START to accelerator DONE
+//
+// START while BUSY is rejected and sets ERROR_STICKY.
+//
+// Register bank and accelerator share one clock domain in SoC 31.
+
+localparam [31:0] VERSION_VALUE = 32'h0001_0000;
+
+// ------------------------------------------------------------
+// Byte-write helper.
+// ------------------------------------------------------------
+function [31:0] apply_wstrb32;
+    input [31:0] old_value;
+    input [31:0] new_value;
+    input [3:0]  strb;
+
+    integer byte_index;
+
+    begin
+        apply_wstrb32 = old_value;
+
+        for (
+            byte_index = 0;
+            byte_index &lt; 4;
+            byte_index = byte_index + 1
+        ) begin
+            if (strb[byte_index]) begin
+                apply_wstrb32[
+                    (byte_index * 8) +: 8
+                ] =
+                    new_value[
+                        (byte_index * 8) +: 8
+                    ];
+            end
+        end
+    end
+endfunction
+
+// ------------------------------------------------------------
+// Software-visible configuration registers.
+// ------------------------------------------------------------
+reg signed [31:0] bias_ch0_q;
+reg signed [31:0] bias_ch1_q;
+
+reg signed [15:0] mult_ch0_q;
+reg signed [15:0] mult_ch1_q;
+
+reg [5:0] shift_ch0_q;
+reg [5:0] shift_ch1_q;
+
+reg signed [15:0] zp_ch0_q;
+reg signed [15:0] zp_ch1_q;
+
+reg signed [31:0] acc_in_q [0:7];
+
+// ------------------------------------------------------------
+// Accelerator control/status.
+// ------------------------------------------------------------
+reg start_pulse_q;
+reg done_sticky_q;
+reg error_sticky_q;
+
+wire accel_busy_w;
+wire accel_done_w;
+wire accel_result_valid_w;
+
+wire [31:0] q_ch0_batch_w;
+wire [31:0] q_ch1_batch_w;
+
+wire [7:0] saturation_count_w;
+
+reg [31:0] cycle_count_q;
+
+wire control_write_w;
+
+assign control_write_w =
+    wr_en_i &amp;&amp;
+    (wr_addr_i[7:2] == 6'h00);
+
+wire start_request_w;
+
+assign start_request_w =
+    control_write_w &amp;&amp;
+    wr_strb_i[0] &amp;&amp;
+    wr_data_i[0];
+
+wire clear_done_request_w;
+
+assign clear_done_request_w =
+    control_write_w &amp;&amp;
+    wr_strb_i[0] &amp;&amp;
+    wr_data_i[1];
+
+wire clear_error_request_w;
+
+assign clear_error_request_w =
+    control_write_w &amp;&amp;
+    wr_strb_i[0] &amp;&amp;
+    wr_data_i[2];
+
+assign accel_busy_o =
+    accel_busy_w;
+
+assign accel_done_sticky_o =
+    done_sticky_q;
+
+assign accel_error_sticky_o =
+    error_sticky_q;
+
+assign saturation_count_o =
+    saturation_count_w;
+
+// ------------------------------------------------------------
+// Requantization accelerator from SoC 30.
+// ------------------------------------------------------------
+wire [127:0] acc_ch0_batch_w;
+wire [127:0] acc_ch1_batch_w;
+
+assign acc_ch0_batch_w = {
+    acc_in_q[3],
+    acc_in_q[2],
+    acc_in_q[1],
+    acc_in_q[0]
+};
+
+assign acc_ch1_batch_w = {
+    acc_in_q[7],
+    acc_in_q[6],
+    acc_in_q[5],
+    acc_in_q[4]
+};
+
+requantize_batch2x4_serial u_accelerator (
+    .clk(clk),
+    .resetn(resetn),
+
+    .start_i(start_pulse_q),
+
+    .acc_ch0_batch_i(acc_ch0_batch_w),
+    .acc_ch1_batch_i(acc_ch1_batch_w),
+
+    .bias_ch0_i(bias_ch0_q),
+    .bias_ch1_i(bias_ch1_q),
+
+    .mult_ch0_i(mult_ch0_q),
+    .mult_ch1_i(mult_ch1_q),
+
+    .shift_ch0_i(shift_ch0_q),
+    .shift_ch1_i(shift_ch1_q),
+
+    .zp_ch0_i(zp_ch0_q),
+    .zp_ch1_i(zp_ch1_q),
+
+    .busy_o(accel_busy_w),
+    .done_o(accel_done_w),
+    .result_valid_o(accel_result_valid_w),
+
+    .q_ch0_batch_o(q_ch0_batch_w),
+    .q_ch1_batch_o(q_ch1_batch_w),
+
+    .saturation_count_o(saturation_count_w)
+);
+
+// ------------------------------------------------------------
+// Register write/control process.
+// ------------------------------------------------------------
+integer i;
+
+reg [31:0] merged_w;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        bias_ch0_q &lt;= 32'sd0;
+        bias_ch1_q &lt;= 32'sd0;
+
+        mult_ch0_q &lt;= 16'sd1;
+        mult_ch1_q &lt;= 16'sd1;
+
+        shift_ch0_q &lt;= 6'd0;
+        shift_ch1_q &lt;= 6'd0;
+
+        zp_ch0_q &lt;= 16'sd0;
+        zp_ch1_q &lt;= 16'sd0;
+
+        for (i = 0; i &lt; 8; i = i + 1) begin
+            acc_in_q[i] &lt;= 32'sd0;
+        end
+
+        start_pulse_q  &lt;= 1'b0;
+        done_sticky_q  &lt;= 1'b0;
+        error_sticky_q &lt;= 1'b0;
+
+        cycle_count_q &lt;= 32'd0;
+    end else begin
+        // W1P behavior: pulse returns low automatically.
+        start_pulse_q &lt;= 1'b0;
+
+        // Sticky status clear requests.
+        if (clear_done_request_w) begin
+            done_sticky_q &lt;= 1'b0;
+        end
+
+        if (clear_error_request_w) begin
+            error_sticky_q &lt;= 1'b0;
+        end
+
+        // Accelerator completion wins after clear in the same clock.
+        if (accel_done_w) begin
+            done_sticky_q &lt;= 1'b1;
+        end
+
+        // START:
+        // - accepted only while idle
+        // - clears previous DONE
+        // - START while BUSY becomes sticky error
+        if (start_request_w) begin
+            if (accel_busy_w) begin
+                error_sticky_q &lt;= 1'b1;
+            end else begin
+                start_pulse_q &lt;= 1'b1;
+                done_sticky_q &lt;= 1'b0;
+                cycle_count_q &lt;= 32'd0;
+            end
+        end
+
+        if (accel_busy_w) begin
+            cycle_count_q &lt;= cycle_count_q + 32'd1;
+        end
+
+        // Configuration/input writes.
+        if (wr_en_i) begin
+            case (wr_addr_i[7:2])
+                6'h04: begin
+                    merged_w = apply_wstrb32(
+                        bias_ch0_q,
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    bias_ch0_q &lt;= $signed(merged_w);
+                end
+
+                6'h05: begin
+                    merged_w = apply_wstrb32(
+                        bias_ch1_q,
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    bias_ch1_q &lt;= $signed(merged_w);
+                end
+
+                6'h06: begin
+                    merged_w = apply_wstrb32(
+                        {
+                            10'd0,
+                            shift_ch0_q,
+                            mult_ch0_q
+                        },
+                        wr_data_i,
+                        wr_strb_i
+                    );
+
+                    mult_ch0_q &lt;=
+                        $signed(merged_w[15:0]);
+
+                    shift_ch0_q &lt;=
+                        merged_w[21:16];
+                end
+
+                6'h07: begin
+                    merged_w = apply_wstrb32(
+                        {
+                            10'd0,
+                            shift_ch1_q,
+                            mult_ch1_q
+                        },
+                        wr_data_i,
+                        wr_strb_i
+                    );
+
+                    mult_ch1_q &lt;=
+                        $signed(merged_w[15:0]);
+
+                    shift_ch1_q &lt;=
+                        merged_w[21:16];
+                end
+
+                6'h08: begin
+                    merged_w = apply_wstrb32(
+                        {
+                            zp_ch1_q,
+                            zp_ch0_q
+                        },
+                        wr_data_i,
+                        wr_strb_i
+                    );
+
+                    zp_ch0_q &lt;=
+                        $signed(merged_w[15:0]);
+
+                    zp_ch1_q &lt;=
+                        $signed(merged_w[31:16]);
+                end
+
+                6'h10: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[0],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[0] &lt;= $signed(merged_w);
+                end
+
+                6'h11: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[1],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[1] &lt;= $signed(merged_w);
+                end
+
+                6'h12: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[2],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[2] &lt;= $signed(merged_w);
+                end
+
+                6'h13: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[3],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[3] &lt;= $signed(merged_w);
+                end
+
+                6'h14: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[4],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[4] &lt;= $signed(merged_w);
+                end
+
+                6'h15: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[5],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[5] &lt;= $signed(merged_w);
+                end
+
+                6'h16: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[6],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[6] &lt;= $signed(merged_w);
+                end
+
+                6'h17: begin
+                    merged_w = apply_wstrb32(
+                        acc_in_q[7],
+                        wr_data_i,
+                        wr_strb_i
+                    );
+                    acc_in_q[7] &lt;= $signed(merged_w);
+                end
+
+                default: begin
+                end
+            endcase
+        end
+    end
+end
+
+// ------------------------------------------------------------
+// Register read mux.
+// ------------------------------------------------------------
+always @(*) begin
+    case (rd_addr_i[7:2])
+        6'h00: rd_data_o = 32'h0000_0000;
+
+        6'h01: rd_data_o = {
+            28'd0,
+            (saturation_count_w != 8'd0),
+            error_sticky_q,
+            done_sticky_q,
+            accel_busy_w
+        };
+
+        6'h02: rd_data_o = VERSION_VALUE;
+
+        6'h03: rd_data_o = {
+            24'd0,
+            saturation_count_w
+        };
+
+        6'h04: rd_data_o = bias_ch0_q;
+        6'h05: rd_data_o = bias_ch1_q;
+
+        6'h06: rd_data_o = {
+            10'd0,
+            shift_ch0_q,
+            mult_ch0_q
+        };
+
+        6'h07: rd_data_o = {
+            10'd0,
+            shift_ch1_q,
+            mult_ch1_q
+        };
+
+        6'h08: rd_data_o = {
+            zp_ch1_q,
+            zp_ch0_q
+        };
+
+        6'h10: rd_data_o = acc_in_q[0];
+        6'h11: rd_data_o = acc_in_q[1];
+        6'h12: rd_data_o = acc_in_q[2];
+        6'h13: rd_data_o = acc_in_q[3];
+
+        6'h14: rd_data_o = acc_in_q[4];
+        6'h15: rd_data_o = acc_in_q[5];
+        6'h16: rd_data_o = acc_in_q[6];
+        6'h17: rd_data_o = acc_in_q[7];
+
+        6'h18: rd_data_o = q_ch0_batch_w;
+        6'h19: rd_data_o = q_ch1_batch_w;
+        6'h1A: rd_data_o = cycle_count_q;
+
+        default: rd_data_o = 32'h0000_0000;
+    endcase
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>AXI4-Lite Slave RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="AXI4-Lite Slave RTL · 소스 코드"><code>module npu_axi4lite_slave #(
+    parameter integer C_S_AXI_ADDR_WIDTH = 8,
+    parameter integer C_S_AXI_DATA_WIDTH = 32
+) (
+    input  wire                            s_axi_aclk,
+    input  wire                            s_axi_aresetn,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0]   s_axi_awaddr,
+    input  wire                            s_axi_awvalid,
+    output wire                            s_axi_awready,
+
+    input  wire [C_S_AXI_DATA_WIDTH-1:0]   s_axi_wdata,
+    input  wire [(C_S_AXI_DATA_WIDTH/8)-1:0] s_axi_wstrb,
+    input  wire                            s_axi_wvalid,
+    output wire                            s_axi_wready,
+
+    output wire [1:0]                      s_axi_bresp,
+    output reg                             s_axi_bvalid,
+    input  wire                            s_axi_bready,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0]   s_axi_araddr,
+    input  wire                            s_axi_arvalid,
+    output wire                            s_axi_arready,
+
+    output reg  [C_S_AXI_DATA_WIDTH-1:0]   s_axi_rdata,
+    output wire [1:0]                      s_axi_rresp,
+    output reg                             s_axi_rvalid,
+    input  wire                            s_axi_rready,
+
+    output wire                            accel_busy_o,
+    output wire                            accel_done_sticky_o,
+    output wire                            accel_error_sticky_o,
+    output wire [7:0]                      saturation_count_o
+);
+
+// AXI4-Lite control/status shell.
+//
+// Important implementation point:
+// AXI write-address (AW) and write-data (W) are independent channels.
+// The slave therefore captures them independently and commits a register
+// write only after both are present.
+//
+// One write transaction and one read transaction may be outstanding.
+// BRESP/RRESP are OKAY in this introductory register peripheral.
+
+reg                            aw_pending_q;
+reg [C_S_AXI_ADDR_WIDTH-1:0]   awaddr_q;
+
+reg                            w_pending_q;
+reg [C_S_AXI_DATA_WIDTH-1:0]   wdata_q;
+reg [(C_S_AXI_DATA_WIDTH/8)-1:0] wstrb_q;
+
+assign s_axi_awready =
+    !aw_pending_q &amp;&amp;
+    !s_axi_bvalid;
+
+assign s_axi_wready =
+    !w_pending_q &amp;&amp;
+    !s_axi_bvalid;
+
+assign s_axi_bresp =
+    2'b00;
+
+wire aw_handshake_w;
+wire w_handshake_w;
+
+assign aw_handshake_w =
+    s_axi_awvalid &amp;&amp;
+    s_axi_awready;
+
+assign w_handshake_w =
+    s_axi_wvalid &amp;&amp;
+    s_axi_wready;
+
+wire register_write_fire_w;
+
+assign register_write_fire_w =
+    aw_pending_q &amp;&amp;
+    w_pending_q &amp;&amp;
+    !s_axi_bvalid;
+
+reg register_wr_en_q;
+
+wire [31:0] register_rd_data_w;
+
+npu_register_bank u_register_bank (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .wr_en_i(register_wr_en_q),
+    .wr_addr_i(awaddr_q[7:0]),
+    .wr_data_i(wdata_q),
+    .wr_strb_i(wstrb_q),
+
+    .rd_addr_i(s_axi_araddr[7:0]),
+    .rd_data_o(register_rd_data_w),
+
+    .accel_busy_o(accel_busy_o),
+    .accel_done_sticky_o(accel_done_sticky_o),
+    .accel_error_sticky_o(accel_error_sticky_o),
+    .saturation_count_o(saturation_count_o)
+);
+
+// ------------------------------------------------------------
+// Write channels.
+// ------------------------------------------------------------
+always @(posedge s_axi_aclk) begin
+    if (!s_axi_aresetn) begin
+        aw_pending_q    &lt;= 1'b0;
+        awaddr_q        &lt;= {C_S_AXI_ADDR_WIDTH{1'b0}};
+
+        w_pending_q     &lt;= 1'b0;
+        wdata_q         &lt;= {C_S_AXI_DATA_WIDTH{1'b0}};
+        wstrb_q         &lt;= {(C_S_AXI_DATA_WIDTH/8){1'b0}};
+
+        register_wr_en_q&lt;= 1'b0;
+
+        s_axi_bvalid    &lt;= 1'b0;
+    end else begin
+        register_wr_en_q &lt;= 1'b0;
+
+        if (aw_handshake_w) begin
+            aw_pending_q &lt;= 1'b1;
+            awaddr_q     &lt;= s_axi_awaddr;
+        end
+
+        if (w_handshake_w) begin
+            w_pending_q &lt;= 1'b1;
+            wdata_q     &lt;= s_axi_wdata;
+            wstrb_q     &lt;= s_axi_wstrb;
+        end
+
+        if (register_write_fire_w) begin
+            register_wr_en_q &lt;= 1'b1;
+
+            aw_pending_q &lt;= 1'b0;
+            w_pending_q  &lt;= 1'b0;
+
+            s_axi_bvalid &lt;= 1'b1;
+        end
+
+        if (
+            s_axi_bvalid &amp;&amp;
+            s_axi_bready
+        ) begin
+            s_axi_bvalid &lt;= 1'b0;
+        end
+    end
+end
+
+// ------------------------------------------------------------
+// Read channel.
+// ------------------------------------------------------------
+assign s_axi_arready =
+    !s_axi_rvalid;
+
+assign s_axi_rresp =
+    2'b00;
+
+wire ar_handshake_w;
+
+assign ar_handshake_w =
+    s_axi_arvalid &amp;&amp;
+    s_axi_arready;
+
+always @(posedge s_axi_aclk) begin
+    if (!s_axi_aresetn) begin
+        s_axi_rdata  &lt;= {C_S_AXI_DATA_WIDTH{1'b0}};
+        s_axi_rvalid &lt;= 1'b0;
+    end else begin
+        if (ar_handshake_w) begin
+            s_axi_rdata  &lt;= register_rd_data_w;
+            s_axi_rvalid &lt;= 1'b1;
+        end
+
+        if (
+            s_axi_rvalid &amp;&amp;
+            s_axi_rready
+        ) begin
+            s_axi_rvalid &lt;= 1'b0;
+        end
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Module Reference Top</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Module Reference Top · 소스 코드"><code>module npu_axi_accel_ip (
+    (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 s_axi_aclk CLK" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axi_aclk, ASSOCIATED_BUSIF S_AXI, ASSOCIATED_RESET s_axi_aresetn" *)
+    input  wire        s_axi_aclk,
+
+    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 s_axi_aresetn RST" *)
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axi_aresetn, POLARITY ACTIVE_LOW" *)
+    input  wire        s_axi_aresetn,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWADDR" *)
+    input  wire [7:0]  s_axi_awaddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWVALID" *)
+    input  wire        s_axi_awvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI AWREADY" *)
+    output wire        s_axi_awready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WDATA" *)
+    input  wire [31:0] s_axi_wdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WSTRB" *)
+    input  wire [3:0]  s_axi_wstrb,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WVALID" *)
+    input  wire        s_axi_wvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI WREADY" *)
+    output wire        s_axi_wready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BRESP" *)
+    output wire [1:0]  s_axi_bresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BVALID" *)
+    output wire        s_axi_bvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI BREADY" *)
+    input  wire        s_axi_bready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARADDR" *)
+    input  wire [7:0]  s_axi_araddr,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARVALID" *)
+    input  wire        s_axi_arvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI ARREADY" *)
+    output wire        s_axi_arready,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RDATA" *)
+    output wire [31:0] s_axi_rdata,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RRESP" *)
+    output wire [1:0]  s_axi_rresp,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RVALID" *)
+    output wire        s_axi_rvalid,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 S_AXI RREADY" *)
+    input  wire        s_axi_rready
+);
+
+// Pure AXI Shell / Wrapper.
+//
+// Vivado can use this RTL as a Module Reference in Block Design.
+// The functional register and accelerator logic remains in submodules.
+
+wire       accel_busy;
+wire       accel_done_sticky;
+wire       accel_error_sticky;
+wire [7:0] saturation_count;
+
+npu_axi4lite_slave u_axi_slave (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(s_axi_aresetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .accel_busy_o(accel_busy),
+    .accel_done_sticky_o(accel_done_sticky),
+    .accel_error_sticky_o(accel_error_sticky),
+    .saturation_count_o(saturation_count)
+);
+
+endmodule
+</code></pre>
+<p>Top은 AXI Port와 하위 Slave 연결만 담당한다. 기능 로직을 Top에 넣지 않는 기존 Shell/Wrapper 원칙을 유지한다.</p>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>START Pulse</h2>
+<p>Software가 CONTROL bit0에 1을 쓰면 Register Bank 내부에서 <code>start_pulse_q</code>를 정확히 한 Clock만 High로 만든다. Software가 Register를 다시 0으로 쓰는 절차는 필요하지 않다.</p>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>START while BUSY</h2>
+<p>Accelerator가 BUSY일 때 다시 START를 쓰면 명령은 무시하고 <code>ERROR_STICKY</code>를 1로 만든다. Software가 잘못된 재시작을 감지할 수 있다.</p>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Cycle Counter</h2>
+<p>START를 수락할 때 0으로 초기화하고 BUSY 동안 증가한다. 이번 단계에서는 고정 성능 기준값으로 판정하지 않고 Software가 Accelerator Latency를 관찰하는 Status Register로 사용한다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>SoC30 Core 재사용</h2>
+<p><code>requantize_s32_to_s8.v</code>와 <code>requantize_batch2x4_serial.v</code>는 SoC 30 파일을 수정 없이 재사용한다. SoC 31의 변경점은 계산 회로가 아니라 제어/주소 경계다.</p>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>MicroBlaze V Driver</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="MicroBlaze V Driver · 소스 코드"><code>#ifndef NPU_ACCEL_H
+#define NPU_ACCEL_H
+
+#include "xil_io.h"
+#include "xil_types.h"
+
+// ------------------------------------------------------------
+// SoC 31 NPU AXI4-Lite Register Map
+// ------------------------------------------------------------
+#define NPU_CONTROL_OFFSET       0x00U
+#define NPU_STATUS_OFFSET        0x04U
+#define NPU_VERSION_OFFSET       0x08U
+#define NPU_SAT_COUNT_OFFSET     0x0CU
+
+#define NPU_BIAS_CH0_OFFSET      0x10U
+#define NPU_BIAS_CH1_OFFSET      0x14U
+#define NPU_SCALE_CH0_OFFSET     0x18U
+#define NPU_SCALE_CH1_OFFSET     0x1CU
+#define NPU_ZERO_POINT_OFFSET    0x20U
+
+#define NPU_ACC_IN0_OFFSET       0x40U
+#define NPU_ACC_IN1_OFFSET       0x44U
+#define NPU_ACC_IN2_OFFSET       0x48U
+#define NPU_ACC_IN3_OFFSET       0x4CU
+#define NPU_ACC_IN4_OFFSET       0x50U
+#define NPU_ACC_IN5_OFFSET       0x54U
+#define NPU_ACC_IN6_OFFSET       0x58U
+#define NPU_ACC_IN7_OFFSET       0x5CU
+
+#define NPU_OUT_CH0_OFFSET       0x60U
+#define NPU_OUT_CH1_OFFSET       0x64U
+#define NPU_CYCLE_COUNT_OFFSET   0x68U
+
+#define NPU_CONTROL_START_MASK       0x00000001U
+#define NPU_CONTROL_CLEAR_DONE_MASK  0x00000002U
+#define NPU_CONTROL_CLEAR_ERROR_MASK 0x00000004U
+
+#define NPU_STATUS_BUSY_MASK         0x00000001U
+#define NPU_STATUS_DONE_MASK         0x00000002U
+#define NPU_STATUS_ERROR_MASK        0x00000004U
+#define NPU_STATUS_SATURATED_MASK    0x00000008U
+
+#define NPU_VERSION_EXPECTED         0x00010000U
+
+static inline void Npu_WriteReg(
+    UINTPTR BaseAddress,
+    u32 Offset,
+    u32 Value
+)
+{
+    Xil_Out32(BaseAddress + (UINTPTR)Offset, Value);
+}
+
+static inline u32 Npu_ReadReg(
+    UINTPTR BaseAddress,
+    u32 Offset
+)
+{
+    return Xil_In32(BaseAddress + (UINTPTR)Offset);
+}
+
+static inline u32 Npu_PackScale(
+    s16 Multiplier,
+    u8 Shift
+)
+{
+    return
+        ((u32)Multiplier &amp; 0x0000FFFFU) |
+        (((u32)Shift &amp; 0x3FU) &lt;&lt; 16U);
+}
+
+static inline u32 Npu_PackZeroPoint(
+    s16 ZpCh0,
+    s16 ZpCh1
+)
+{
+    return
+        ((u32)ZpCh0 &amp; 0x0000FFFFU) |
+        (((u32)ZpCh1 &amp; 0x0000FFFFU) &lt;&lt; 16U);
+}
+
+static inline void Npu_Start(UINTPTR BaseAddress)
+{
+    Npu_WriteReg(
+        BaseAddress,
+        NPU_CONTROL_OFFSET,
+        NPU_CONTROL_START_MASK
+    );
+}
+
+static inline void Npu_ClearDone(UINTPTR BaseAddress)
+{
+    Npu_WriteReg(
+        BaseAddress,
+        NPU_CONTROL_OFFSET,
+        NPU_CONTROL_CLEAR_DONE_MASK
+    );
+}
+
+static inline void Npu_ClearError(UINTPTR BaseAddress)
+{
+    Npu_WriteReg(
+        BaseAddress,
+        NPU_CONTROL_OFFSET,
+        NPU_CONTROL_CLEAR_ERROR_MASK
+    );
+}
+
+static inline u32 Npu_GetStatus(UINTPTR BaseAddress)
+{
+    return Npu_ReadReg(
+        BaseAddress,
+        NPU_STATUS_OFFSET
+    );
+}
+
+static inline int Npu_IsBusy(UINTPTR BaseAddress)
+{
+    return
+        (Npu_GetStatus(BaseAddress) &amp; NPU_STATUS_BUSY_MASK)
+        != 0U;
+}
+
+static inline int Npu_IsDone(UINTPTR BaseAddress)
+{
+    return
+        (Npu_GetStatus(BaseAddress) &amp; NPU_STATUS_DONE_MASK)
+        != 0U;
+}
+
+#endif
+</code></pre>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Xil_Out32 / Xil_In32</h2>
+<p>현재 AMD Embedded Software Driver들도 Base Address + Register Offset 형태로 <code>Xil_Out32()</code>, <code>Xil_In32()</code>를 사용한다. SoC 31 Driver도 동일한 최소 MMIO Pattern을 사용한다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>MicroBlaze V Application</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="MicroBlaze V Application · 소스 코드"><code>#include "xil_printf.h"
+#include "xparameters.h"
+
+#include "npu_accel.h"
+
+// Vivado Address Editor assigns the final base address.
+// Classic BSP commonly exports XPAR_NPU_AXI_0_BASEADDR.
+//
+// If your generated name differs, replace NPU_BASEADDR below
+// with the symbol from the generated xparameters.h.
+//
+// Example:
+// #define NPU_BASEADDR XPAR_NPU_AXI_0_BASEADDR
+
+#ifndef NPU_BASEADDR
+#ifdef XPAR_NPU_AXI_0_BASEADDR
+#define NPU_BASEADDR XPAR_NPU_AXI_0_BASEADDR
+#else
+#error "Define NPU_BASEADDR using the generated xparameters.h base address."
+#endif
+#endif
+
+static void npu_write_demo_inputs(UINTPTR base)
+{
+    // SoC 29 board-demo int32 outputs.
+    // CH0 = [16, 32, 48, 64]
+    // CH1 = [32, 64, 96, 128]
+
+    Npu_WriteReg(base, NPU_ACC_IN0_OFFSET, 16U);
+    Npu_WriteReg(base, NPU_ACC_IN1_OFFSET, 32U);
+    Npu_WriteReg(base, NPU_ACC_IN2_OFFSET, 48U);
+    Npu_WriteReg(base, NPU_ACC_IN3_OFFSET, 64U);
+
+    Npu_WriteReg(base, NPU_ACC_IN4_OFFSET, 32U);
+    Npu_WriteReg(base, NPU_ACC_IN5_OFFSET, 64U);
+    Npu_WriteReg(base, NPU_ACC_IN6_OFFSET, 96U);
+    Npu_WriteReg(base, NPU_ACC_IN7_OFFSET, 128U);
+}
+
+static void npu_write_demo_parameters(UINTPTR base)
+{
+    // CH0:
+    // q = round_away_from_zero(x / 2)
+    Npu_WriteReg(base, NPU_BIAS_CH0_OFFSET, 0U);
+    Npu_WriteReg(
+        base,
+        NPU_SCALE_CH0_OFFSET,
+        Npu_PackScale(1, 1U)
+    );
+
+    // CH1:
+    // q = round_away_from_zero((x + 4) * 3 / 2) - 3
+    Npu_WriteReg(base, NPU_BIAS_CH1_OFFSET, 4U);
+    Npu_WriteReg(
+        base,
+        NPU_SCALE_CH1_OFFSET,
+        Npu_PackScale(3, 1U)
+    );
+
+    Npu_WriteReg(
+        base,
+        NPU_ZERO_POINT_OFFSET,
+        Npu_PackZeroPoint(0, -3)
+    );
+}
+
+int main(void)
+{
+    const UINTPTR base = (UINTPTR)NPU_BASEADDR;
+
+    u32 version;
+    u32 status;
+    u32 out_ch0;
+    u32 out_ch1;
+    u32 sat_count;
+    u32 cycle_count;
+    u32 timeout;
+
+    xil_printf("\r\nSoC31 NPU AXI4-Lite demo\r\n");
+
+    version = Npu_ReadReg(
+        base,
+        NPU_VERSION_OFFSET
+    );
+
+    xil_printf(
+        "VERSION = 0x%08x\r\n",
+        (unsigned int)version
+    );
+
+    if (version != NPU_VERSION_EXPECTED) {
+        xil_printf("ERROR: unexpected NPU version\r\n");
+        return 1;
+    }
+
+    Npu_ClearDone(base);
+    Npu_ClearError(base);
+
+    npu_write_demo_inputs(base);
+    npu_write_demo_parameters(base);
+
+    Npu_Start(base);
+
+    timeout = 1000000U;
+    status = 0U;
+
+    while (
+        ((status &amp; NPU_STATUS_DONE_MASK) == 0U) &amp;&amp;
+        (timeout != 0U)
+    ) {
+        status = Npu_GetStatus(base);
+        timeout--;
+    }
+
+    if (timeout == 0U) {
+        xil_printf("ERROR: accelerator timeout\r\n");
+        return 1;
+    }
+
+    if ((status &amp; NPU_STATUS_ERROR_MASK) != 0U) {
+        xil_printf("ERROR: accelerator status error\r\n");
+        return 1;
+    }
+
+    out_ch0 = Npu_ReadReg(
+        base,
+        NPU_OUT_CH0_OFFSET
+    );
+
+    out_ch1 = Npu_ReadReg(
+        base,
+        NPU_OUT_CH1_OFFSET
+    );
+
+    sat_count = Npu_ReadReg(
+        base,
+        NPU_SAT_COUNT_OFFSET
+    );
+
+    cycle_count = Npu_ReadReg(
+        base,
+        NPU_CYCLE_COUNT_OFFSET
+    );
+
+    xil_printf(
+        "OUT_CH0 = 0x%08x\r\n",
+        (unsigned int)out_ch0
+    );
+
+    xil_printf(
+        "OUT_CH1 = 0x%08x\r\n",
+        (unsigned int)out_ch1
+    );
+
+    xil_printf(
+        "SAT_COUNT = %u\r\n",
+        (unsigned int)sat_count
+    );
+
+    xil_printf(
+        "CYCLE_COUNT = %u\r\n",
+        (unsigned int)cycle_count
+    );
+
+    // Expected from SoC 30:
+    // CH0 [8,16,24,32]   -&gt; 0x20181008
+    // CH1 [51,99,127,127]-&gt; 0x7F7F6333
+    if (
+        (out_ch0 != 0x20181008U) ||
+        (out_ch1 != 0x7F7F6333U) ||
+        ((sat_count &amp; 0xFFU) != 2U)
+    ) {
+        xil_printf("SOC31 RESULT: FAIL\r\n");
+        return 1;
+    }
+
+    xil_printf("SOC31 RESULT: PASS\r\n");
+
+    return 0;
+}
+</code></pre>
+<p>Polling에는 Timeout을 두어 Hardware 연결 오류가 있을 때 무한 Loop에 빠지지 않도록 했다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Software Control Flow</h2>
+<figure class="manual-figure"><a href="../../images/soc31/soc31_software_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="MicroBlaze V NPU software flow · 원본 보기 (새 탭)"><img src="../../images/soc31/soc31_software_flow.svg" alt="MicroBlaze V NPU software flow"></a><figcaption>VERSION → Parameter/Input → START → DONE Poll → Result Read 순서다.<br><a href="../../images/soc31/soc31_software_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="MicroBlaze V NPU software flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Address Editor</h2>
+<p>Vivado Block Design에서 NPU Slave를 SmartConnect에 연결한 뒤 Address Editor에서 주소 공간을 할당한다. 실제 Base Address Symbol은 Vitis/BSP가 생성한 <code>xparameters.h</code>를 확인한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="28절 신호 및 실행 흐름">MicroBlaze V M_AXI
+  ↓
+SmartConnect
+  ↓
+npu_axi_accel_ip/S_AXI
+  ↓
+Address Editor
+  ↓
+xparameters.h Base Address</div>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Expected Result</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="29절 신호 및 실행 흐름">OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+SAT_COUNT = 2
+CYCLE_COUNT = non-zero</div>
+<p>이는 SoC 30에서 검증한 동일 Requantization Demo를 AXI Register 경유로 실행한 결과다.</p>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>AXI Self-Checking Test</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="AXI Self-Checking Test · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_npu_axi4lite_slave;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic [7:0]  awaddr = 8'h00;
+logic        awvalid = 1'b0;
+wire         awready;
+
+logic [31:0] wdata = 32'h0000_0000;
+logic [3:0]  wstrb = 4'h0;
+logic        wvalid = 1'b0;
+wire         wready;
+
+wire [1:0]   bresp;
+wire         bvalid;
+logic        bready = 1'b1;
+
+logic [7:0]  araddr = 8'h00;
+logic        arvalid = 1'b0;
+wire         arready;
+
+wire [31:0]  rdata;
+wire [1:0]   rresp;
+wire         rvalid;
+logic        rready = 1'b1;
+
+wire accel_busy;
+wire accel_done_sticky;
+wire accel_error_sticky;
+wire [7:0] saturation_count;
+
+integer error_count = 0;
+integer check_count = 0;
+
+always #5 clk = ~clk;
+
+npu_axi4lite_slave dut (
+    .s_axi_aclk(clk),
+    .s_axi_aresetn(resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready),
+
+    .accel_busy_o(accel_busy),
+    .accel_done_sticky_o(accel_done_sticky),
+    .accel_error_sticky_o(accel_error_sticky),
+    .saturation_count_o(saturation_count)
+);
+
+task automatic check_true(
+    input string name,
+    input bit condition
+);
+    begin
+        check_count = check_count + 1;
+
+        if (!condition) begin
+            error_count = error_count + 1;
+            $error("CHECK FAIL: %s", name);
+        end else begin
+            $display("CHECK PASS: %s", name);
+        end
+    end
+endtask
+
+task automatic check_eq32(
+    input string name,
+    input logic [31:0] actual,
+    input logic [31:0] expected
+);
+    begin
+        check_count = check_count + 1;
+
+        if (actual !== expected) begin
+            error_count = error_count + 1;
+
+            $error(
+                "CHECK FAIL: %s actual=0x%08h expected=0x%08h",
+                name,
+                actual,
+                expected
+            );
+        end else begin
+            $display(
+                "CHECK PASS: %s = 0x%08h",
+                name,
+                actual
+            );
+        end
+    end
+endtask
+
+// order:
+//   0 = AW and W together
+//   1 = AW first, W later
+//   2 = W first, AW later
+task automatic axi_write(
+    input [7:0] address,
+    input [31:0] data,
+    input [3:0] strobe,
+    input integer order
+);
+    bit aw_done;
+    bit w_done;
+    integer timeout;
+
+    begin
+        aw_done = 0;
+        w_done = 0;
+
+        @(negedge clk);
+
+        awaddr = address;
+        wdata = data;
+        wstrb = strobe;
+
+        case (order)
+            0: begin
+                awvalid = 1'b1;
+                wvalid = 1'b1;
+            end
+
+            1: begin
+                awvalid = 1'b1;
+                wvalid = 1'b0;
+            end
+
+            default: begin
+                awvalid = 1'b0;
+                wvalid = 1'b1;
+            end
+        endcase
+
+        timeout = 0;
+
+        while (!(aw_done &amp;&amp; w_done)) begin
+            @(posedge clk);
+            // (변경) READY가 갱신되기 전 상승 에지의 handshake를 관측한다.
+
+            if (
+                awvalid &amp;&amp;
+                awready
+            ) begin
+                aw_done = 1;
+            end
+
+            if (
+                wvalid &amp;&amp;
+                wready
+            ) begin
+                w_done = 1;
+            end
+
+            @(negedge clk);
+
+            if (aw_done) begin
+                awvalid = 1'b0;
+            end
+
+            if (w_done) begin
+                wvalid = 1'b0;
+            end
+
+            if ((order == 1) &amp;&amp; aw_done &amp;&amp; !w_done) begin
+                wvalid = 1'b1;
+            end
+
+            if ((order == 2) &amp;&amp; w_done &amp;&amp; !aw_done) begin
+                awvalid = 1'b1;
+            end
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 30) begin
+                $fatal(1, "AXI write handshake timeout");
+            end
+        end
+
+        timeout = 0;
+
+        while (!bvalid) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 30) begin
+                $fatal(1, "AXI BVALID timeout");
+            end
+        end
+
+        check_true(
+            "AXI BRESP OKAY",
+            bresp == 2'b00
+        );
+
+        // Allow response handshake and register-side effect to settle.
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic axi_read(
+    input [7:0] address,
+    output [31:0] data
+);
+    integer timeout;
+
+    begin
+        @(negedge clk);
+
+        araddr = address;
+        arvalid = 1'b1;
+
+        timeout = 0;
+
+        while (!arready) begin
+            @(posedge clk);
+            #1;
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 30) begin
+                $fatal(1, "AXI ARREADY timeout");
+            end
+        end
+
+        @(posedge clk);
+        #1;
+
+        // The read data may be returned immediately after this edge.
+        if (!rvalid) begin
+            timeout = 0;
+
+            while (!rvalid) begin
+                @(posedge clk);
+                #1;
+
+                timeout = timeout + 1;
+
+                if (timeout &gt; 30) begin
+                    $fatal(1, "AXI RVALID timeout");
+                end
+            end
+        end
+
+        data = rdata;
+
+        check_true(
+            "AXI RRESP OKAY",
+            rresp == 2'b00
+        );
+
+        @(negedge clk);
+        arvalid = 1'b0;
+
+        @(posedge clk);
+        #1;
+    end
+endtask
+
+task automatic wait_busy;
+    reg [31:0] status;
+    integer timeout;
+
+    begin
+        timeout = 0;
+        status = 32'd0;
+
+        while ((status &amp; 32'h1) == 0) begin
+            axi_read(8'h04, status);
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 20) begin
+                $fatal(1, "BUSY did not assert");
+            end
+        end
+    end
+endtask
+
+task automatic wait_done;
+    reg [31:0] status;
+    integer timeout;
+
+    begin
+        timeout = 0;
+        status = 32'd0;
+
+        while ((status &amp; 32'h2) == 0) begin
+            axi_read(8'h04, status);
+
+            timeout = timeout + 1;
+
+            if (timeout &gt; 50) begin
+                $fatal(1, "DONE did not assert");
+            end
+        end
+    end
+endtask
+
+initial begin
+    reg [31:0] rd;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    // --------------------------------------------------------
+    // 1. Basic RO map.
+    // --------------------------------------------------------
+    axi_read(8'h08, rd);
+    check_eq32(
+        "VERSION",
+        rd,
+        32'h0001_0000
+    );
+
+    // --------------------------------------------------------
+    // 2. WSTRB partial-write test.
+    //    Full write, then update only byte lane 1.
+    // --------------------------------------------------------
+    axi_write(
+        8'h10,
+        32'h1122_3344,
+        4'b1111,
+        0
+    );
+
+    axi_write(
+        8'h10,
+        32'h0000_AA00,
+        4'b0010,
+        1
+    );
+
+    axi_read(8'h10, rd);
+    check_eq32(
+        "WSTRB partial BIAS_CH0",
+        rd,
+        32'h1122_AA44
+    );
+
+    // --------------------------------------------------------
+    // 3. Demo parameters.
+    //    Exercise simultaneous, AW-first, W-first ordering.
+    // --------------------------------------------------------
+    axi_write(8'h10, 32'd0,         4'hF, 0);
+    axi_write(8'h14, 32'd4,         4'hF, 1);
+    axi_write(8'h18, 32'h0001_0001, 4'hF, 2);
+    axi_write(8'h1C, 32'h0001_0003, 4'hF, 0);
+    axi_write(8'h20, 32'hFFFD_0000, 4'hF, 1);
+
+    axi_read(8'h18, rd);
+    check_eq32("SCALE_CH0", rd, 32'h0001_0001);
+
+    axi_read(8'h1C, rd);
+    check_eq32("SCALE_CH1", rd, 32'h0001_0003);
+
+    axi_read(8'h20, rd);
+    check_eq32("ZERO_POINT", rd, 32'hFFFD_0000);
+
+    // --------------------------------------------------------
+    // 4. SoC29 int32 input registers.
+    // --------------------------------------------------------
+    axi_write(8'h40, 32'd16,  4'hF, 0);
+    axi_write(8'h44, 32'd32,  4'hF, 1);
+    axi_write(8'h48, 32'd48,  4'hF, 2);
+    axi_write(8'h4C, 32'd64,  4'hF, 0);
+
+    axi_write(8'h50, 32'd32,  4'hF, 1);
+    axi_write(8'h54, 32'd64,  4'hF, 2);
+    axi_write(8'h58, 32'd96,  4'hF, 0);
+    axi_write(8'h5C, 32'd128, 4'hF, 1);
+
+    // Clear sticky flags before run.
+    axi_write(
+        8'h00,
+        32'h0000_0006,
+        4'b0001,
+        0
+    );
+
+    // --------------------------------------------------------
+    // 5. START and BUSY.
+    // --------------------------------------------------------
+    axi_write(
+        8'h00,
+        32'h0000_0001,
+        4'b0001,
+        2
+    );
+
+    wait_busy();
+
+    check_true(
+        "debug BUSY output",
+        accel_busy === 1'b1
+    );
+
+    // START while BUSY must be rejected and set ERROR sticky.
+    axi_write(
+        8'h00,
+        32'h0000_0001,
+        4'b0001,
+        0
+    );
+
+    wait_done();
+
+    // --------------------------------------------------------
+    // 6. Status and result.
+    // --------------------------------------------------------
+    axi_read(8'h04, rd);
+
+    check_true(
+        "DONE sticky set",
+        (rd &amp; 32'h2) != 0
+    );
+
+    check_true(
+        "ERROR sticky set by START while BUSY",
+        (rd &amp; 32'h4) != 0
+    );
+
+    check_true(
+        "SATURATED_ANY set",
+        (rd &amp; 32'h8) != 0
+    );
+
+    axi_read(8'h0C, rd);
+    check_eq32(
+        "SAT_COUNT",
+        rd,
+        32'd2
+    );
+
+    axi_read(8'h60, rd);
+    check_eq32(
+        "OUT_CH0",
+        rd,
+        32'h2018_1008
+    );
+
+    axi_read(8'h64, rd);
+    check_eq32(
+        "OUT_CH1",
+        rd,
+        32'h7F7F_6333
+    );
+
+    axi_read(8'h68, rd);
+    check_true(
+        "CYCLE_COUNT non-zero",
+        rd != 32'd0
+    );
+
+    // --------------------------------------------------------
+    // 7. Clear sticky flags.
+    // --------------------------------------------------------
+    axi_write(
+        8'h00,
+        32'h0000_0006,
+        4'b0001,
+        1
+    );
+
+    axi_read(8'h04, rd);
+
+    check_true(
+        "DONE sticky cleared",
+        (rd &amp; 32'h2) == 0
+    );
+
+    check_true(
+        "ERROR sticky cleared",
+        (rd &amp; 32'h4) == 0
+    );
+
+    $display("");
+    $display("SOC31 CHECK COUNT : %0d", check_count);
+    $display("SOC31 ERROR COUNT : %0d", error_count);
+
+    if (error_count == 0) begin
+        $display("SOC31 AXI4-LITE NPU REGISTER TEST: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC31 AXI4-LITE NPU REGISTER TEST: FAIL (%0d errors)",
+            error_count
+        );
+    end
+
+    #20;
+    $finish;
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>Protocol Test Cases</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Protocol Test Cases · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Test</th><th scope="col" role="columnheader">목적</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Test" role="cell">AW + W 동시</td><td data-label="목적" role="cell">일반 Write</td></tr>
+<tr role="row"><td data-label="Test" role="cell">AW 먼저</td><td data-label="목적" role="cell">Write Address/Data 독립성</td></tr>
+<tr role="row"><td data-label="Test" role="cell">W 먼저</td><td data-label="목적" role="cell">반대 순서 독립성</td></tr>
+<tr role="row"><td data-label="Test" role="cell">WSTRB 0010</td><td data-label="목적" role="cell">Byte Lane Partial Write</td></tr>
+<tr role="row"><td data-label="Test" role="cell">START</td><td data-label="목적" role="cell">W1P Pulse</td></tr>
+<tr role="row"><td data-label="Test" role="cell">START while BUSY</td><td data-label="목적" role="cell">Error Sticky</td></tr>
+<tr role="row"><td data-label="Test" role="cell">CLEAR_DONE/ERROR</td><td data-label="목적" role="cell">Sticky Clear</td></tr>
+<tr role="row"><td data-label="Test" role="cell">OUT Read</td><td data-label="목적" role="cell">SoC30 결과 유지</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>Python Register Reference</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Python Register Reference · 소스 코드"><code>Register map:
+CONTROL      0x00
+STATUS       0x04
+VERSION      0x08
+SAT_COUNT    0x0C
+BIAS_CH0     0x10
+BIAS_CH1     0x14
+SCALE_CH0    0x18
+SCALE_CH1    0x1C
+ZERO_POINT   0x20
+ACC_IN0      0x40
+ACC_IN1      0x44
+ACC_IN2      0x48
+ACC_IN3      0x4C
+ACC_IN4      0x50
+ACC_IN5      0x54
+ACC_IN6      0x58
+ACC_IN7      0x5C
+OUT_CH0      0x60
+OUT_CH1      0x64
+CYCLE_COUNT  0x68
+
+WSTRB partial-write model: PASS
+scale CH0 demo = 0x00010001
+scale CH1 demo = 0x00010003
+zero-point demo = 0xFFFD0000
+expected OUT_CH0 = 0x20181008
+expected OUT_CH1 = 0x7F7F6333
+expected SAT_COUNT = 2
+SOC31 PYTHON REGISTER-MAP REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
+</code></pre>
+<p>Offset 중복, 4-byte 정렬, WSTRB Byte Merge, Parameter Packing을 RTL과 독립적으로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>OOC Synthesis</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="OOC Synthesis · 소스 코드"><code># SoC 31 · AXI4-Lite NPU peripheral OOC synthesis
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir   [file normalize [file join $script_dir ".."]]
+set rtl_dir    [file join $root_dir "rtl"]
+set out_dir    [file normalize [file join $root_dir "reports" "generic_ooc"]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "requantize_s32_to_s8.v"]
+read_verilog [file join $rtl_dir "requantize_batch2x4_serial.v"]
+read_verilog [file join $rtl_dir "npu_register_bank.v"]
+read_verilog [file join $rtl_dir "npu_axi4lite_slave.v"]
+read_verilog [file join $rtl_dir "npu_axi_accel_ip.v"]
+
+synth_design \
+    -mode out_of_context \
+    -top npu_axi_accel_ip \
+    -part xc7a35tcpg236-1
+
+create_clock \
+    -name s_axi_aclk \
+    -period 10.000 \
+    [get_ports s_axi_aclk]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "01_utilization_ooc.rpt"]
+
+redirect -file [file join $out_dir "02_dsp48_cells_ooc.rpt"] {
+    set dsp_cells [get_cells -hier -filter {REF_NAME =~ DSP48*}]
+    puts "DSP48 primitive count: [llength $dsp_cells]"
+
+    foreach cell $dsp_cells {
+        puts "[get_property REF_NAME $cell]  $cell"
+    }
+}
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "03_timing_summary_ooc.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "04_design_analysis_ooc.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "05_methodology_ooc.rpt"]
+
+puts ""
+puts "SoC 31 AXI4-Lite NPU peripheral OOC synthesis complete."
+puts "Check DSP mapping, timing, and methodology reports."
+</code></pre>
+<p>AXI Shell + Register Bank + SoC30 Accelerator를 Out-of-Context로 합성하여 Resource, DSP Mapping, Timing, Methodology를 확인한다.</p>
+</section>
+
+<section class="step-card" id="s34"><span class="step">SECTION 34</span><h2>Timing / Resource</h2>
+<p>AXI4-Lite 자체는 고대역폭 Data Path가 아니라 Control Plane이다. Critical Path는 Address Decode, Register Control, Requantizer Wide Multiply/Shift 중 어디에 생기는지 실제 Report로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s35"><span class="step">SECTION 35</span><h2>SoC 32 연결</h2>
+<div class="flow">SoC 31 → Polling으로 DONE 확인<br>SoC 32 → DONE Pulse → AXI Interrupt Controller → MicroBlaze V ISR</div>
+<p>다음 장에서는 CPU가 계속 STATUS를 읽지 않아도 NPU 완료를 알 수 있도록 Interrupt-driven 제어로 확장한다.</p>
+</section>
+
+<section class="step-card" id="s36"><span class="step">SECTION 36</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">Write가 가끔 누락</td><td data-label="원인" role="cell">AW와 W를 같은 Cycle이라고 가정</td><td data-label="확인" role="cell">Independent Pending Register</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Byte Write 시 다른 Byte 손상</td><td data-label="원인" role="cell">WSTRB 무시</td><td data-label="확인" role="cell">apply_wstrb32</td></tr>
+<tr role="row"><td data-label="증상" role="cell">DONE Polling이 끝나지 않음</td><td data-label="원인" role="cell">Pulse를 Sticky로 변환하지 않음</td><td data-label="확인" role="cell">DONE_STICKY</td></tr>
+<tr role="row"><td data-label="증상" role="cell">두 번 START 후 결과 이상</td><td data-label="원인" role="cell">BUSY 중 재시작 허용</td><td data-label="확인" role="cell">ERROR_STICKY</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Software가 잘못된 주소 접근</td><td data-label="원인" role="cell">Base Address 하드코딩</td><td data-label="확인" role="cell">xparameters.h</td></tr>
+<tr role="row"><td data-label="증상" role="cell">OUT 값이 SoC30과 다름</td><td data-label="원인" role="cell">Parameter Packing/Offset 오류</td><td data-label="확인" role="cell">0x18/0x1C/0x20 Readback</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Module Reference에서 AXI가 안 묶임</td><td data-label="원인" role="cell">Interface Attribute/Port 이름 문제</td><td data-label="확인" role="cell">npu_axi_accel_ip</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 31 완료 체크리스트</h2>
+<ul>
+<li>[ ] NPU를 Memory-Mapped Peripheral로 설명한다.</li>
+<li>[ ] Base Address와 Register Offset을 구분한다.</li>
+<li>[ ] CONTROL/STATUS/PARAMETER/INPUT/OUTPUT Register를 정의한다.</li>
+<li>[ ] START를 Write-One-Pulse로 만든다.</li>
+<li>[ ] DONE/ERROR를 Sticky Bit로 만든다.</li>
+<li>[ ] AXI4-Lite AW와 W 채널이 독립적임을 처리한다.</li>
+<li>[ ] WSTRB Partial Write를 구현한다.</li>
+<li>[ ] MicroBlaze V에서 Xil_Out32/Xil_In32로 접근한다.</li>
+<li>[ ] Address Editor 결과를 xparameters.h와 연결한다.</li>
+<li>[ ] START while BUSY를 오류로 검출한다.</li>
+<li>[ ] SoC30 결과가 AXI Register 경유로 유지됨을 확인한다.</li>
+<li>[ ] Top은 AXI Shell/Wrapper 역할만 담당한다.</li>
+</ul>
+<div class="flow">SoC 31 완료 → SoC 32 NPU Done Interrupt / AXI Interrupt Controller</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 문서 및 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 문서 및 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">자료</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/ug1399-vitis-hls/AXI4-Lite-Interface" target="_blank" rel="noopener">AMD UG1399 · AXI4-Lite Interface · 2026.1</a></td><td data-label="확인 항목" role="cell">Embedded Processor가 AXI4-Lite Register를 통해 Kernel/Peripheral을 제어</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://docs.amd.com/r/en-US/pg138-axi-ethernet/AXI4-Lite-Interface" target="_blank" rel="noopener">AMD PG138 · AXI4-Lite Signals · 2026</a></td><td data-label="확인 항목" role="cell">AW/W/B/AR/R와 WSTRB Byte Lane 의미</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/vphy/src/xvphy_hw.h" target="_blank" rel="noopener">AMD embeddedsw · Register Access Pattern</a></td><td data-label="확인 항목" role="cell">BaseAddress + RegOffset, Xil_In32/Xil_Out32</td></tr>
+<tr role="row"><td data-label="자료" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_types.h" target="_blank" rel="noopener">AMD embeddedsw · xil_types.h</a></td><td data-label="확인 항목" role="cell">UINTPTR, u32, xparameters.h 연계</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="30_bias_requantization_rounding_saturation_int8.html">← SoC 30</a><a href="../../index.html">전체 목차</a><a href="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

@@ -1,0 +1,10 @@
+SoC41 SIGN-OFF EVALUATION
+design      : INCOMPLETE
+  missing: bitstream_id
+functional  : PASS
+timing      : PASS
+methodology : PASS
+resources   : PASS
+power       : PASS
+runtime     : RECORDED
+overall     : INCOMPLETE

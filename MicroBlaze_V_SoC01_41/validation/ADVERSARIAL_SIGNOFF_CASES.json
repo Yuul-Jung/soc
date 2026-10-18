@@ -1,0 +1,90 @@
+[
+  {
+    "case": "unmeasured",
+    "expected": "INCOMPLETE",
+    "expected_exit": 2,
+    "actual": "INCOMPLETE",
+    "exit": 2,
+    "status": "PASS"
+  },
+  {
+    "case": "valid_fixture",
+    "expected": "PASS",
+    "expected_exit": 0,
+    "actual": "PASS",
+    "exit": 0,
+    "status": "PASS"
+  },
+  {
+    "case": "missing_identity",
+    "expected": "INCOMPLETE",
+    "expected_exit": 2,
+    "actual": "INCOMPLETE",
+    "exit": 2,
+    "status": "PASS"
+  },
+  {
+    "case": "negative_resource",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  },
+  {
+    "case": "negative_power",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  },
+  {
+    "case": "blank_activity",
+    "expected": "INCOMPLETE",
+    "expected_exit": 2,
+    "actual": "INCOMPLETE",
+    "exit": 2,
+    "status": "PASS"
+  },
+  {
+    "case": "negative_runtime",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  },
+  {
+    "case": "failed_regression",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  },
+  {
+    "case": "negative_wns",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  },
+  {
+    "case": "over_capacity",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  },
+  {
+    "case": "nan_power",
+    "expected": "FAIL",
+    "expected_exit": 1,
+    "actual": "FAIL",
+    "exit": 1,
+    "status": "PASS"
+  }
+]

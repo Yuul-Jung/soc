@@ -1,0 +1,1814 @@
+[
+  {
+    "id": 104,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Utilization",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Utilization",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html",
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+      "pages/soc/24_npu_mac_datapath.html",
+      "pages/soc/37_performance_baseline_timing_resource_power_throughput.html"
+    ]
+  },
+  {
+    "id": 105,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-RAM-Utilization",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-RAM-Utilization",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html",
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "pages/soc/27_local_bram_address_generator_data_feeding.html"
+    ]
+  },
+  {
+    "id": 106,
+    "url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Vivado-Power-Analysis",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Vivado-Power-Analysis",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html",
+      "pages/soc/41_group8_cumulative_signoff_matrix.html"
+    ]
+  },
+  {
+    "id": 107,
+    "url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Netlist-Element-Activity",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Netlist-Element-Activity",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html",
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html"
+    ]
+  },
+  {
+    "id": 108,
+    "url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Junction-Temperature",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Junction-Temperature",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html"
+    ]
+  },
+  {
+    "id": 109,
+    "url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Device-Environment",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Device-Environment",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html"
+    ]
+  },
+  {
+    "id": 110,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Gate-Clock-or-Data-Paths",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Gate-Clock-or-Data-Paths",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html"
+    ]
+  },
+  {
+    "id": 111,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Running-Power-Optimization",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Running-Power-Optimization",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html"
+    ]
+  },
+  {
+    "id": 112,
+    "url": "https://docs.amd.com/r/en-US/ug835-vivado-tcl-commands/report_power",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug835-vivado-tcl-commands/report_power",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/23_resource_power_thermal.html"
+    ]
+  },
+  {
+    "id": 148,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Verifying-Timing-Signoff",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Verifying-Timing-Signoff",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/41_group8_cumulative_signoff_matrix.html",
+      "pages/soc/37_performance_baseline_timing_resource_power_throughput.html"
+    ]
+  },
+  {
+    "id": 153,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Checking-That-Your-Design-is-Properly-Constrained",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Checking-That-Your-Design-is-Properly-Constrained",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/41_group8_cumulative_signoff_matrix.html"
+    ]
+  },
+  {
+    "id": 149,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Running-Report-Methodology",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Running-Report-Methodology",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/41_group8_cumulative_signoff_matrix.html",
+      "pages/soc/37_performance_baseline_timing_resource_power_throughput.html"
+    ]
+  },
+  {
+    "id": 150,
+    "url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Setting-Up-Power-Analysis-from-the-Vivado-IDE",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug907-vivado-power-analysis-optimization/Setting-Up-Power-Analysis-from-the-Vivado-IDE",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/41_group8_cumulative_signoff_matrix.html",
+      "pages/soc/37_performance_baseline_timing_resource_power_throughput.html"
+    ]
+  },
+  {
+    "id": 113,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+      "pages/soc/30_bias_requantization_rounding_saturation_int8.html",
+      "pages/soc/24_npu_mac_datapath.html"
+    ]
+  },
+  {
+    "id": 118,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/USE_DSP",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/USE_DSP",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html"
+    ]
+  },
+  {
+    "id": 114,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multiply-Add-and-Multiply-Accumulate-Implementation",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multiply-Add-and-Multiply-Accumulate-Implementation",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+      "pages/soc/29_data_reuse_weight_stationary_tiling.html",
+      "pages/soc/24_npu_mac_datapath.html"
+    ]
+  },
+  {
+    "id": 119,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Coding-for-Optimal-DSP-and-Arithmetic-Inference",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Coding-for-Optimal-DSP-and-Arithmetic-Inference",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+      "pages/soc/30_bias_requantization_rounding_saturation_int8.html",
+      "pages/soc/40_prefetch_pingpong_data_compute_overlap.html",
+      "pages/soc/39_parallel4_requantization_optimization.html",
+      "pages/soc/26_vector_dot_product_controller.html"
+    ]
+  },
+  {
+    "id": 102,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+      "pages/soc/22_timing_critical_path_wns_tns.html",
+      "pages/soc/30_bias_requantization_rounding_saturation_int8.html",
+      "pages/soc/38_bottleneck_analysis_pipelined_bram_read.html",
+      "pages/soc/40_prefetch_pingpong_data_compute_overlap.html",
+      "pages/soc/39_parallel4_requantization_optimization.html",
+      "pages/soc/26_vector_dot_product_controller.html"
+    ]
+  },
+  {
+    "id": 117,
+    "url": "https://docs.amd.com/api/khub/documents/2LByHkO~nSZXcei2D55fTg/content",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/2LByHkO~nSZXcei2D55fTg/content",
+    "bytes": 749802,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+      "pages/soc/24_npu_mac_datapath.html"
+    ]
+  },
+  {
+    "id": 32,
+    "url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Register-Space",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Register-Space",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/06_axi_gpio.html",
+      "pages/soc/11_register_map_design_principles.html"
+    ]
+  },
+  {
+    "id": 34,
+    "url": "https://xilinx.github.io/embeddedsw.github.io/gpio/doc/html/api/group__gpio__api.html",
+    "status": 200,
+    "final_url": "https://xilinx.github.io/embeddedsw.github.io/gpio/doc/html/api/group__gpio__api.html",
+    "bytes": 90943,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/06_axi_gpio.html"
+    ]
+  },
+  {
+    "id": 41,
+    "url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content",
+    "bytes": 585897,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/18_uart_pwm_controller_ip.html",
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 43,
+    "url": "https://xilinx.github.io/embeddedsw.github.io/uartlite/doc/html/api/xuartlite__l_8h.html",
+    "status": 200,
+    "final_url": "https://xilinx.github.io/embeddedsw.github.io/uartlite/doc/html/api/xuartlite__l_8h.html",
+    "bytes": 14051,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 46,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/08_axi_timer.html",
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 54,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c",
+    "bytes": 500450,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/09_axi_interrupt_controller.html"
+    ]
+  },
+  {
+    "id": 57,
+    "url": "https://docs.amd.com/api/khub/documents/ESm7csywkGnmDhvqT3ZVDw/content",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/ESm7csywkGnmDhvqT3ZVDw/content",
+    "bytes": 2377030,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html"
+    ]
+  },
+  {
+    "id": 36,
+    "url": "https://digilent.com/reference/_media/basys3:basys3_rm.pdf",
+    "status": 200,
+    "final_url": "https://digilent.com/reference/_media/basys3:basys3_rm.pdf",
+    "bytes": 1303889,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/06_axi_gpio.html",
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 5,
+    "url": "https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc",
+    "status": 200,
+    "final_url": "https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc",
+    "bytes": 296104,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+      "pages/soc/06_axi_gpio.html",
+      "pages/soc/01_microblaze_bram_minimal_soc.html",
+      "pages/soc/02_clock_reset_processor_system_reset.html",
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 29,
+    "url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Functional-Description",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Functional-Description",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/06_axi_gpio.html",
+      "pages/soc/06_axi_gpio.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Customizing-and-Generating-the-Core?contentId=Hogz3EBb8ECcA2mB6UtOaw",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Customizing-and-Generating-the-Core?contentId=Hogz3EBb8ECcA2mB6UtOaw",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/06_axi_gpio.html"
+    ]
+  },
+  {
+    "id": 31,
+    "url": "https://docs.amd.com/r/en-US/pg144-axi-gpio",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg144-axi-gpio",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/06_axi_gpio.html"
+    ]
+  },
+  {
+    "id": 33,
+    "url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Programming-Sequence",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Programming-Sequence",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/06_axi_gpio.html"
+    ]
+  },
+  {
+    "id": 35,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/gpio/examples/xgpio_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/gpio/examples/xgpio_example.c",
+    "bytes": 306617,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/06_axi_gpio.html"
+    ]
+  },
+  {
+    "id": 52,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Interrupts",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Interrupts",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/09_axi_interrupt_controller.html",
+      "pages/soc/09_axi_interrupt_controller.html"
+    ]
+  },
+  {
+    "id": 53,
+    "url": "https://docs.amd.com/v/u/en-US/pg099-axi-intc",
+    "status": 200,
+    "final_url": "https://docs.amd.com/v/u/en-US/pg099-axi-intc",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/09_axi_interrupt_controller.html",
+      "pages/soc/09_axi_interrupt_controller.html"
+    ]
+  },
+  {
+    "id": 55,
+    "url": "https://xilinx.github.io/embeddedsw.github.io/tmrctr/doc/html/api/xtmrctr_8h.html",
+    "status": 200,
+    "final_url": "https://xilinx.github.io/embeddedsw.github.io/tmrctr/doc/html/api/xtmrctr_8h.html",
+    "bytes": 28269,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/09_axi_interrupt_controller.html"
+    ]
+  },
+  {
+    "id": 56,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/intr/xinterrupt_wrap.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/intr/xinterrupt_wrap.c",
+    "bytes": 562273,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/09_axi_interrupt_controller.html"
+    ]
+  },
+  {
+    "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/xil_exception.h",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/xil_exception.h",
+    "bytes": 302243,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/09_axi_interrupt_controller.html",
+      "pages/soc/36_cpu_npu_end_to_end_software_inference.html"
+    ]
+  },
+  {
+    "id": 96,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Timing-Analysis",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Timing-Analysis",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html"
+    ]
+  },
+  {
+    "id": 97,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Timing-Path-Summary",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Timing-Path-Summary",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html"
+    ]
+  },
+  {
+    "id": 98,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Setup-Area-Max-Delay-Analysis",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Setup-Area-Max-Delay-Analysis",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html"
+    ]
+  },
+  {
+    "id": 99,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Hold-Area-Min-Delay-Analysis",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Hold-Area-Min-Delay-Analysis",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html"
+    ]
+  },
+  {
+    "id": 100,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Design-Analysis",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Design-Analysis",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html",
+      "pages/soc/37_performance_baseline_timing_resource_power_throughput.html"
+    ]
+  },
+  {
+    "id": 101,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Timing-Closure",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Timing-Closure",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html"
+    ]
+  },
+  {
+    "id": 103,
+    "url": "https://docs.amd.com/r/en-US/ug903-vivado-using-constraints/Timing-Constraints",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug903-vivado-using-constraints/Timing-Constraints",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/22_timing_critical_path_wns_tns.html"
+    ]
+  },
+  {
+    "id": 139,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Handling-Interrupts",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Handling-Interrupts",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/32_npu_done_interrupt_axi_intc_isr.html",
+      "pages/soc/35_full_npu_accelerator_integration.html",
+      "pages/soc/36_cpu_npu_end_to_end_software_inference.html"
+    ]
+  },
+  {
+    "id": 140,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/intc/examples/xintc_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/intc/examples/xintc_example.c",
+    "bytes": 400711,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/32_npu_done_interrupt_axi_intc_isr.html",
+      "pages/soc/36_cpu_npu_end_to_end_software_inference.html"
+    ]
+  },
+  {
+    "id": 141,
+    "url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Interrupts",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg144-axi-gpio/Interrupts",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/32_npu_done_interrupt_axi_intc_isr.html"
+    ]
+  },
+  {
+    "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc.h",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/XilinxProcessorIPLib/drivers/intc/src/xintc.h",
+    "bytes": 450257,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/32_npu_done_interrupt_axi_intc_isr.html",
+      "pages/soc/35_full_npu_accelerator_integration.html"
+    ]
+  },
+  {
+    "id": 25,
+    "url": "https://docs.amd.com/r/en-US/pg292-ethernet-1-10-25g/AXI4-Lite-Interface-Ports",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg292-ethernet-1-10-25g/AXI4-Lite-Interface-Ports",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/12_custom_axi4lite_slave_basics.html",
+      "pages/soc/19_axi_control_status_bridge.html",
+      "pages/soc/05_axi4_axi4lite_axi4stream.html",
+      "pages/soc/13_axi_register_read_write_path.html"
+    ]
+  },
+  {
+    "id": 60,
+    "url": "https://docs.amd.com/r/en-US/pg016_v_tc/AXI4-Lite-Interface-Signals",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg016_v_tc/AXI4-Lite-Interface-Signals",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/12_custom_axi4lite_slave_basics.html"
+    ]
+  },
+  {
+    "id": 61,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Creating-a-New-AXI4-Peripheral",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Creating-a-New-AXI4-Peripheral",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/12_custom_axi4lite_slave_basics.html",
+      "pages/soc/14_register_bank_rtl_controller.html"
+    ]
+  },
+  {
+    "id": 62,
+    "url": "https://docs.amd.com/r/en-US/ug892-vivado-design-flows-overview/Packaging-Custom-IP-and-IP-Subsystems",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug892-vivado-design-flows-overview/Packaging-Custom-IP-and-IP-Subsystems",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/12_custom_axi4lite_slave_basics.html"
+    ]
+  },
+  {
+    "id": 16,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Addressing-Structure",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Addressing-Structure",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/04_memory_map_memory_mapped_io.html",
+      "pages/soc/04_memory_map_memory_mapped_io.html"
+    ]
+  },
+  {
+    "id": 17,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Address-Editor",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Address-Editor",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/04_memory_map_memory_mapped_io.html",
+      "pages/soc/04_memory_map_memory_mapped_io.html"
+    ]
+  },
+  {
+    "id": 18,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Editing-Addresses",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Editing-Addresses",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/04_memory_map_memory_mapped_io.html"
+    ]
+  },
+  {
+    "id": 19,
+    "url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Memory-Mapping-in-the-Address-Editor",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Memory-Mapping-in-the-Address-Editor",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/04_memory_map_memory_mapped_io.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Architecture",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Architecture",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/04_memory_map_memory_mapped_io.html"
+    ]
+  },
+  {
+    "id": 21,
+    "url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Mapped-Interfaces",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Mapped-Interfaces",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/04_memory_map_memory_mapped_io.html",
+      "pages/soc/13_axi_register_read_write_path.html"
+    ]
+  },
+  {
+    "id": 91,
+    "url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/SystemVerilog-Support-in-Vivado-Simulator",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/SystemVerilog-Support-in-Vivado-Simulator",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/21_self_checking_assertion_coverage.html"
+    ]
+  },
+  {
+    "id": 92,
+    "url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/Code-Coverage-Support",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/Code-Coverage-Support",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/21_self_checking_assertion_coverage.html"
+    ]
+  },
+  {
+    "id": 93,
+    "url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/write_xsim_coverage",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/write_xsim_coverage",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/21_self_checking_assertion_coverage.html"
+    ]
+  },
+  {
+    "id": 94,
+    "url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/Universal-Verification-Methodology-UVM-Support",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/Universal-Verification-Methodology-UVM-Support",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/21_self_checking_assertion_coverage.html"
+    ]
+  },
+  {
+    "id": 95,
+    "url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/Simulating-with-Vivado-Simulator",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug900-vivado-logic-simulation/Simulating-with-Vivado-Simulator",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/21_self_checking_assertion_coverage.html",
+      "pages/soc/24_npu_mac_datapath.html"
+    ]
+  },
+  {
+    "id": 132,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers-Implementation",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Multipliers-Implementation",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/30_bias_requantization_rounding_saturation_int8.html",
+      "pages/soc/29_data_reuse_weight_stationary_tiling.html"
+    ]
+  },
+  {
+    "id": 135,
+    "url": "https://openaccess.thecvf.com/content_cvpr_2018/html/Jacob_Quantization_and_Training_CVPR_2018_paper.html",
+    "status": 200,
+    "final_url": "https://openaccess.thecvf.com/content_cvpr_2018/html/Jacob_Quantization_and_Training_CVPR_2018_paper.html",
+    "bytes": 5255,
+    "content_type": "text/html; charset=UTF-8",
+    "files": [
+      "pages/soc/30_bias_requantization_rounding_saturation_int8.html"
+    ]
+  },
+  {
+    "id": 136,
+    "url": "https://github.com/google/gemmlowp/blob/master/public/output_stages.h",
+    "status": 200,
+    "final_url": "https://github.com/google/gemmlowp/blob/master/public/output_stages.h",
+    "bytes": 342421,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/30_bias_requantization_rounding_saturation_int8.html"
+    ]
+  },
+  {
+    "id": 0,
+    "url": "https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf",
+    "status": 200,
+    "final_url": "https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf",
+    "bytes": 1047939,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/01_microblaze_bram_minimal_soc.html",
+      "pages/soc/01_microblaze_bram_minimal_soc.html",
+      "pages/soc/02_clock_reset_processor_system_reset.html"
+    ]
+  },
+  {
+    "id": 1,
+    "url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/01_microblaze_bram_minimal_soc.html"
+    ]
+  },
+  {
+    "id": 2,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/01_microblaze_bram_minimal_soc.html"
+    ]
+  },
+  {
+    "id": 3,
+    "url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/01_microblaze_bram_minimal_soc.html"
+    ]
+  },
+  {
+    "id": 4,
+    "url": "https://docs.amd.com/v/u/en-US/pg164-proc-sys-reset",
+    "status": 200,
+    "final_url": "https://docs.amd.com/v/u/en-US/pg164-proc-sys-reset",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/01_microblaze_bram_minimal_soc.html",
+      "pages/soc/02_clock_reset_processor_system_reset.html"
+    ]
+  },
+  {
+    "id": 128,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Performance-Considerations-When-Implementing-RAM",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Performance-Considerations-When-Implementing-RAM",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/38_bottleneck_analysis_pipelined_bram_read.html",
+      "pages/soc/40_prefetch_pingpong_data_compute_overlap.html",
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "pages/soc/27_local_bram_address_generator_data_feeding.html"
+    ]
+  },
+  {
+    "id": 130,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Optimizing-Paths-with-Dedicated-Blocks-and-Macro-Primitives",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Optimizing-Paths-with-Dedicated-Blocks-and-Macro-Primitives",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/38_bottleneck_analysis_pipelined_bram_read.html",
+      "pages/soc/40_prefetch_pingpong_data_compute_overlap.html",
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html"
+    ]
+  },
+  {
+    "id": 124,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Inferring-RAM-and-ROM",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Inferring-RAM-and-ROM",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/38_bottleneck_analysis_pipelined_bram_read.html",
+      "pages/soc/27_local_bram_address_generator_data_feeding.html"
+    ]
+  },
+  {
+    "id": 65,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html",
+      "pages/soc/15_microblaze_software_driver.html"
+    ]
+  },
+  {
+    "id": 64,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Supported-IP-Packager-Inputs",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Supported-IP-Packager-Inputs",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html",
+      "pages/soc/14_register_bank_rtl_controller.html",
+      "pages/soc/15_microblaze_software_driver.html"
+    ]
+  },
+  {
+    "id": 66,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Using-the-Create-and-Package-New-IP-Wizard",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Using-the-Create-and-Package-New-IP-Wizard",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html",
+      "pages/soc/15_microblaze_software_driver.html"
+    ]
+  },
+  {
+    "id": 69,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Using-a-New-Interface-Definition",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Using-a-New-Interface-Definition",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html"
+    ]
+  },
+  {
+    "id": 70,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Inferring-Clock-and-Reset-Interfaces",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Inferring-Clock-and-Reset-Interfaces",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html"
+    ]
+  },
+  {
+    "id": 71,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Outputs-from-IP-Packager",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Outputs-from-IP-Packager",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html"
+    ]
+  },
+  {
+    "id": 72,
+    "url": "https://docs.amd.com/r/en-US/ug896-vivado-ip/Managing-IP-Repositories",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug896-vivado-ip/Managing-IP-Repositories",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html"
+    ]
+  },
+  {
+    "id": 73,
+    "url": "https://docs.amd.com/r/en-US/ug835-vivado-tcl-commands/update_ip_catalog",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug835-vivado-tcl-commands/update_ip_catalog",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/16_vivado_ip_packaging_reuse.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Control/Status-Register-0-TCSR0?contentId=ASGr4FLEGrG7tvSqKfTnkQ",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Control/Status-Register-0-TCSR0?contentId=ASGr4FLEGrG7tvSqKfTnkQ",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/11_register_map_design_principles.html",
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 58,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_io.h",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_io.h",
+    "bytes": 449105,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/11_register_map_design_principles.html",
+      "pages/soc/14_register_bank_rtl_controller.html",
+      "pages/soc/13_axi_register_read_write_path.html"
+    ]
+  },
+  {
+    "id": 59,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/vphy/src/xvphy_hw.h",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/vphy/src/xvphy_hw.h",
+    "bytes": 667946,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/11_register_map_design_principles.html",
+      "pages/soc/31_npu_register_map_microblaze_axi_integration.html"
+    ]
+  },
+  {
+    "id": 115,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/USE_DSP-Verilog-Example",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/USE_DSP-Verilog-Example",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/29_data_reuse_weight_stationary_tiling.html",
+      "pages/soc/24_npu_mac_datapath.html"
+    ]
+  },
+  {
+    "url": "https://research.nvidia.com/publication/2016-06_eyeriss-spatial-architecture-energy-efficient-dataflow-convolutional-neural",
+    "status": 200,
+    "final_url": "https://research.nvidia.com/publication/2016-06_eyeriss-spatial-architecture-energy-efficient-dataflow-convolutional-neural",
+    "bytes": 39044,
+    "content_type": "text/html; charset=UTF-8",
+    "files": [
+      "pages/soc/29_data_reuse_weight_stationary_tiling.html"
+    ]
+  },
+  {
+    "id": 134,
+    "url": "https://arxiv.org/abs/1703.09039",
+    "status": 200,
+    "final_url": "https://arxiv.org/abs/1703.09039",
+    "bytes": 44213,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/29_data_reuse_weight_stationary_tiling.html"
+    ]
+  },
+  {
+    "id": 146,
+    "url": "https://docs.amd.com/r/en-US/pg021_axi_dma/Direct-Register-Mode-Register-Address-Map",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg021_axi_dma/Direct-Register-Mode-Register-Address-Map",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/34_command_descriptor_job_control.html"
+    ]
+  },
+  {
+    "id": 147,
+    "url": "https://docs.amd.com/r/en-US/pg021_axi_dma/Scatter-Gather-Descriptor",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg021_axi_dma/Scatter-Gather-Descriptor",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/34_command_descriptor_job_control.html"
+    ]
+  },
+  {
+    "id": 127,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Memory-Inference-Capabilities",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Memory-Inference-Capabilities",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/34_command_descriptor_job_control.html",
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html",
+      "pages/soc/27_local_bram_address_generator_data_feeding.html",
+      "pages/soc/27_local_bram_address_generator_data_feeding.html"
+    ]
+  },
+  {
+    "id": 137,
+    "url": "https://docs.amd.com/r/en-US/ug1399-vitis-hls/AXI4-Lite-Interface",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1399-vitis-hls/AXI4-Lite-Interface",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/31_npu_register_map_microblaze_axi_integration.html"
+    ]
+  },
+  {
+    "id": 63,
+    "url": "https://docs.amd.com/r/en-US/pg138-axi-ethernet/AXI4-Lite-Interface",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg138-axi-ethernet/AXI4-Lite-Interface",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/31_npu_register_map_microblaze_axi_integration.html",
+      "pages/soc/13_axi_register_read_write_path.html"
+    ]
+  },
+  {
+    "id": 138,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_types.h",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/xil_types.h",
+    "bytes": 335858,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/31_npu_register_map_microblaze_axi_integration.html"
+    ]
+  },
+  {
+    "id": 129,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Running-the-RAM-Utilization-Report",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Running-the-RAM-Utilization-Report",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "pages/soc/27_local_bram_address_generator_data_feeding.html"
+    ]
+  },
+  {
+    "id": 131,
+    "url": "https://docs.amd.com/r/en-US/pg103-v-tpg/READY/VALID-Handshake",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg103-v-tpg/READY/VALID-Handshake",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html"
+    ]
+  },
+  {
+    "id": 116,
+    "url": "https://docs.amd.com/v/u/en-US/ug479_7Series_DSP48E1",
+    "status": 200,
+    "final_url": "https://docs.amd.com/v/u/en-US/ug479_7Series_DSP48E1",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/24_npu_mac_datapath.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/MicroBlaze-V-Design-without-a-Memory-IP-Core?contentId=dcJs6In8vDG1ZS__MmS5JQ",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/MicroBlaze-V-Design-without-a-Memory-IP-Core?contentId=dcJs6In8vDG1ZS__MmS5JQ",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/02_clock_reset_processor_system_reset.html"
+    ]
+  },
+  {
+    "id": 7,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Designer-Assistance-Feature",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Designer-Assistance-Feature",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/02_clock_reset_processor_system_reset.html"
+    ]
+  },
+  {
+    "id": 74,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Packaging-Your-Current-Project",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Packaging-Your-Current-Project",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/17_existing_verilog_rtl_to_ip.html",
+      "pages/soc/18_uart_pwm_controller_ip.html"
+    ]
+  },
+  {
+    "id": 75,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Ports-and-Interfaces",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Ports-and-Interfaces",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/17_existing_verilog_rtl_to_ip.html",
+      "pages/soc/18_uart_pwm_controller_ip.html",
+      "pages/soc/19_axi_control_status_bridge.html"
+    ]
+  },
+  {
+    "id": 76,
+    "url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Importing-Ports-from-a-Top-Level-HDL",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Importing-Ports-from-a-Top-Level-HDL",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/17_existing_verilog_rtl_to_ip.html"
+    ]
+  },
+  {
+    "id": 77,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Reusing-a-Block-Design-Containing-a-Module-Reference",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Reusing-a-Block-Design-Containing-a-Module-Reference",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/17_existing_verilog_rtl_to_ip.html"
+    ]
+  },
+  {
+    "id": 78,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Packaging-a-Block-Design",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Packaging-a-Block-Design",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/17_existing_verilog_rtl_to_ip.html"
+    ]
+  },
+  {
+    "id": 151,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Know-What-You-Infer",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Know-What-You-Infer",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/39_parallel4_requantization_optimization.html"
+    ]
+  },
+  {
+    "id": 152,
+    "url": "https://docs.amd.com/api/khub/documents/gu4oRPFEh_Pm2uaAlfY6Kg/content",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/gu4oRPFEh_Pm2uaAlfY6Kg/content",
+    "bytes": 2076444,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/39_parallel4_requantization_optimization.html"
+    ]
+  },
+  {
+    "id": 79,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Pulse-Width-Modulation-Mode",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Pulse-Width-Modulation-Mode",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/18_uart_pwm_controller_ip.html"
+    ]
+  },
+  {
+    "id": 80,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Operation-Overview",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Operation-Overview",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/18_uart_pwm_controller_ip.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Run-Connection-Automation?contentId=IxPWsMFdU_lj2UFNFL_LnQ",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Run-Connection-Automation?contentId=IxPWsMFdU_lj2UFNFL_LnQ",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html",
+      "pages/soc/35_full_npu_accelerator_integration.html",
+      "pages/soc/36_cpu_npu_end_to_end_software_inference.html"
+    ]
+  },
+  {
+    "id": 143,
+    "url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/BRAM_TDP_MACRO",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/BRAM_TDP_MACRO",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html"
+    ]
+  },
+  {
+    "id": 144,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Connecting-Ports-with-Different-Widths",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Connecting-Ports-with-Different-Widths",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html",
+      "pages/soc/35_full_npu_accelerator_integration.html"
+    ]
+  },
+  {
+    "id": 145,
+    "url": "https://docs.amd.com/v/u/en-US/pg078-axi-bram-ctrl",
+    "status": 200,
+    "final_url": "https://docs.amd.com/v/u/en-US/pg078-axi-bram-ctrl",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html"
+    ]
+  },
+  {
+    "id": 8,
+    "url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Program-Device",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Program-Device",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html",
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 9,
+    "url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Running-the-Application-Component",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Running-the-Application-Component",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html",
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 10,
+    "url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Reset",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Reset",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 11,
+    "url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Local-Memory-Bus-Interfaces",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Local-Memory-Bus-Interfaces",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 12,
+    "url": "https://docs.amd.com/r/en-US/pg112-lmb-bram-if-cntlr/General-Design-Guidelines",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg112-lmb-bram-if-cntlr/General-Design-Guidelines",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Linker-Scripts",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Linker-Scripts",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 14,
+    "url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/User-and-Program-Memory",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/User-and-Program-Memory",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 15,
+    "url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Creating-a-Hardware-Design-XSA-File",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Creating-a-Hardware-Design-XSA-File",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/boot.S",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/boot.S",
+    "bytes": 304092,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/03_microblaze_bram_program_execution.html"
+    ]
+  },
+  {
+    "id": 84,
+    "url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_SINGLE",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_SINGLE",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "id": 85,
+    "url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_ARRAY_SINGLE",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_ARRAY_SINGLE",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "id": 86,
+    "url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_PULSE",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_PULSE",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "id": 87,
+    "url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_ASYNC_RST",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/XPM_CDC_ASYNC_RST",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "id": 88,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Clock-Domain-Crossing",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Clock-Domain-Crossing",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "id": 89,
+    "url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Clock-Domain-Crossings",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Clock-Domain-Crossings",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "id": 90,
+    "url": "https://docs.amd.com/r/en-US/ug903-vivado-using-constraints/Completing-the-CDC-Analysis-and-Constraints",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug903-vivado-using-constraints/Completing-the-CDC-Analysis-and-Constraints",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ]
+  },
+  {
+    "url": "https://docs.amd.com/r/2022.2-English/ug953-vivado-7series-libraries/XPM_CDC_HANDSHAKE",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/2022.2-English/ug953-vivado-7series-libraries/XPM_CDC_HANDSHAKE",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/20_cdc_reset_safe_design.html"
+    ],
+    "manual_body_source": "AMD UG953 2022.2; complete handshake contract and parameter declarations retrieved"
+  },
+  {
+    "id": 81,
+    "url": "https://docs.amd.com/r/en-US/pg109-xfft/Basic-Handshake",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg109-xfft/Basic-Handshake",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/19_axi_control_status_bridge.html"
+    ]
+  },
+  {
+    "id": 82,
+    "url": "https://docs.amd.com/r/en-US/ug1483-model-composer-sys-gen-user-guide/AXI4-Stream-Support-in-Model-Composer",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1483-model-composer-sys-gen-user-guide/AXI4-Stream-Support-in-Model-Composer",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/19_axi_control_status_bridge.html"
+    ]
+  },
+  {
+    "id": 83,
+    "url": "https://docs.amd.com/r/en-US/ug1399-vitis-hls/How-AXI4-Stream-Works",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug1399-vitis-hls/How-AXI4-Stream-Works",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/19_axi_control_status_bridge.html"
+    ]
+  },
+  {
+    "id": 37,
+    "url": "https://digilent.com/reference/_media/basys3:basys3_rm.pdf#page=7",
+    "status": 200,
+    "final_url": "https://digilent.com/reference/_media/basys3:basys3_rm.pdf#page=7",
+    "bytes": 1303889,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 38,
+    "url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5",
+    "bytes": 585897,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 39,
+    "url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15",
+    "bytes": 585897,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 40,
+    "url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9",
+    "status": 200,
+    "final_url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9",
+    "bytes": 585897,
+    "content_type": "application/pdf",
+    "files": [
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 42,
+    "url": "https://xilinx.github.io/embeddedsw.github.io/uartlite/doc/html/api/index.html",
+    "status": 200,
+    "final_url": "https://xilinx.github.io/embeddedsw.github.io/uartlite/doc/html/api/index.html",
+    "bytes": 12288,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 44,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/uartlite/examples/xuartlite_low_level_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/uartlite/examples/xuartlite_low_level_example.c",
+    "bytes": 319907,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/07_axi_uart_lite.html"
+    ]
+  },
+  {
+    "id": 67,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/iic/examples/xiic_selftest_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/iic/examples/xiic_selftest_example.c",
+    "bytes": 311536,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/15_microblaze_software_driver.html"
+    ]
+  },
+  {
+    "id": 68,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/uartps/examples/xuartps_selftest_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/uartps/examples/xuartps_selftest_example.c",
+    "bytes": 302412,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/15_microblaze_software_driver.html"
+    ]
+  },
+  {
+    "id": 126,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Choosing-Between-Distributed-RAM-and-Dedicated-Block-RAM",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Choosing-Between-Distributed-RAM-and-Dedicated-Block-RAM",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/27_local_bram_address_generator_data_feeding.html"
+    ]
+  },
+  {
+    "id": 22,
+    "url": "https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/05_axi4_axi4lite_axi4stream.html",
+      "pages/soc/05_axi4_axi4lite_axi4stream.html",
+      "pages/soc/05_axi4_axi4lite_axi4stream.html"
+    ]
+  },
+  {
+    "id": 23,
+    "url": "https://docs.amd.com/r/en-US/pg256-sdfec-integrated-block/AXI4-Stream-Interface",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg256-sdfec-integrated-block/AXI4-Stream-Interface",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/05_axi4_axi4lite_axi4stream.html",
+      "pages/soc/05_axi4_axi4lite_axi4stream.html"
+    ]
+  },
+  {
+    "id": 24,
+    "url": "https://docs.amd.com/r/2025.2-English/ug1483-model-composer-sys-gen-user-guide/AXI-Interface",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/2025.2-English/ug1483-model-composer-sys-gen-user-guide/AXI-Interface",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/05_axi4_axi4lite_axi4stream.html"
+    ]
+  },
+  {
+    "id": 26,
+    "url": "https://docs.amd.com/r/en-US/pg453-axi-switch/Burst-Conversion",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg453-axi-switch/Burst-Conversion",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/05_axi4_axi4lite_axi4stream.html"
+    ]
+  },
+  {
+    "id": 27,
+    "url": "https://docs.amd.com/r/en-US/pg247-smartconnect/Conversion-to-AXI4-Lite",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg247-smartconnect/Conversion-to-AXI4-Lite",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/05_axi4_axi4lite_axi4stream.html"
+    ]
+  },
+  {
+    "id": 28,
+    "url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/When-to-Use-SmartConnect-IP",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/When-to-Use-SmartConnect-IP",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/05_axi4_axi4lite_axi4stream.html"
+    ]
+  },
+  {
+    "id": 45,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/08_axi_timer.html",
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 47,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 49,
+    "url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Generate-Mode",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/pg079-axi-timer/Generate-Mode",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 50,
+    "url": "https://xilinx.github.io/embeddedsw.github.io/tmrctr/doc/html/api/index.html",
+    "status": 200,
+    "final_url": "https://xilinx.github.io/embeddedsw.github.io/tmrctr/doc/html/api/index.html",
+    "bytes": 12937,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 51,
+    "url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_polled_example.c",
+    "status": 200,
+    "final_url": "https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_polled_example.c",
+    "bytes": 330367,
+    "content_type": "text/html; charset=utf-8",
+    "files": [
+      "pages/soc/08_axi_timer.html"
+    ]
+  },
+  {
+    "id": 120,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/FSM-Description",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/FSM-Description",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/26_vector_dot_product_controller.html"
+    ]
+  },
+  {
+    "id": 121,
+    "url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/FSM_ENCODING",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug901-vivado-synthesis/FSM_ENCODING",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/26_vector_dot_product_controller.html"
+    ]
+  },
+  {
+    "id": 122,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Using-the-UltraFast-Design-Methodology-DRCs",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Using-the-UltraFast-Design-Methodology-DRCs",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/26_vector_dot_product_controller.html"
+    ]
+  },
+  {
+    "id": 123,
+    "url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Baselining-the-Design",
+    "status": 200,
+    "final_url": "https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Baselining-the-Design",
+    "bytes": 2575,
+    "content_type": "text/html;charset=UTF-8",
+    "files": [
+      "pages/soc/26_vector_dot_product_controller.html"
+    ]
+  }
+]

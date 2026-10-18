@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1420" height="650" viewBox="0 0 1420 650">
+<rect width="1420" height="650" fill="white"/>
+<text x="710" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 40 · Prefetch + Ping/Pong + Compute Overlap</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<rect x="70" y="180" width="230" height="160" rx="14" fill="#eef6ff" stroke="#111827"/><text x="185" y="235" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">BRAM Stream</text><text x="185" y="285" text-anchor="middle" font-family="sans-serif" font-size="15">1 word / clock</text>
+<rect x="400" y="95" width="260" height="170" rx="14" fill="#f0fdf4" stroke="#111827"/><text x="530" y="145" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Ping Buffer</text><text x="530" y="195" text-anchor="middle" font-family="sans-serif" font-size="16">CH0 · Word0..3</text>
+<rect x="400" y="360" width="260" height="170" rx="14" fill="#fff7ed" stroke="#111827"/><text x="530" y="410" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Pong Buffer</text><text x="530" y="460" text-anchor="middle" font-family="sans-serif" font-size="16">CH1 · Word4..7</text>
+<rect x="790" y="180" width="310" height="210" rx="14" fill="#faf5ff" stroke="#111827"/><text x="945" y="235" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">4-Lane Requant</text><text x="945" y="285" text-anchor="middle" font-family="sans-serif" font-size="15">CH0 compute first</text><text x="945" y="325" text-anchor="middle" font-family="sans-serif" font-size="15">then CH1</text>
+<rect x="1190" y="205" width="170" height="160" rx="14" fill="#fef2f2" stroke="#111827"/><text x="1275" y="260" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Output</text><text x="1275" y="310" text-anchor="middle" font-family="sans-serif" font-size="15">write as ready</text>
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)"><line x1="300" y1="230" x2="400" y2="180"/><line x1="300" y1="300" x2="400" y2="445"/><line x1="660" y1="180" x2="790" y2="250"/><line x1="660" y1="445" x2="790" y2="325"/><line x1="1100" y1="285" x2="1190" y2="285"/></g>
+<text x="710" y="595" text-anchor="middle" font-family="sans-serif" font-size="18">CH0 계산 중 CH1 Prefetch를 계속 수행하여 Memory와 Compute의 대기시간을 겹친다.</text>
+</svg>

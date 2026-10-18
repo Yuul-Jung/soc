@@ -1,0 +1,24 @@
+requantization_int8_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── soc29_result_demo_source.v
+│   ├── requant_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   └── requantization_basys3_top.v
+├── testbench/
+│   ├── tb_requantize_s32_to_s8.sv
+│   └── tb_requantize_batch2x4_serial.sv
+├── constraints/
+│   └── basys3_soc30_lab.xdc
+├── scripts/
+│   ├── run_soc30_generic_ooc.tcl
+│   ├── run_soc30_board_analysis.tcl
+│   ├── prepare_soc30_simulation.tcl
+│   └── run_soc30_analysis.sh
+├── reference/
+│   ├── soc30_reference.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_SOC30.md
+└── SOURCE_TREE.txt

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620">
+<rect width="1100" height="620" fill="white"/>
+<text x="550" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">SoC 19 Register Map</text>
+<g font-family="sans-serif" font-size="17">
+<rect x="150" y="90" width="800" height="50" fill="#eef6ff" stroke="#111827"/><text x="190" y="121">0x00</text><text x="310" y="121">CONTROL</text><text x="600" y="121">RW → control_o[31:0]</text>
+<rect x="150" y="140" width="800" height="50" fill="#f8fafc" stroke="#111827"/><text x="190" y="171">0x04</text><text x="310" y="171">CORE_STATUS</text><text x="600" y="171">RO ← status_i[31:0]</text>
+<rect x="150" y="190" width="800" height="50" fill="#f8fafc" stroke="#111827"/><text x="190" y="221">0x08</text><text x="310" y="221">BRIDGE_STATUS</text><text x="600" y="221">ready/pending/error</text>
+<rect x="150" y="240" width="800" height="50" fill="#eef6ff" stroke="#111827"/><text x="190" y="271">0x0C</text><text x="310" y="271">IN_DATA</text><text x="600" y="271">RW Shadow</text>
+<rect x="150" y="290" width="800" height="50" fill="#fff7ed" stroke="#111827"/><text x="190" y="321">0x10</text><text x="310" y="321">COMMAND</text><text x="600" y="321">W1P SUBMIT / POP / CLEAR_ERROR</text>
+<rect x="150" y="340" width="800" height="50" fill="#f0fdf4" stroke="#111827"/><text x="190" y="371">0x14</text><text x="310" y="371">OUT_DATA</text><text x="600" y="371">RO Latched</text>
+<rect x="150" y="390" width="800" height="50" fill="#fff7ed" stroke="#111827"/><text x="190" y="421">0x18</text><text x="310" y="421">EVENT_STATUS</text><text x="600" y="421">W1C accepted/captured/error</text>
+<rect x="150" y="440" width="800" height="50" fill="#f8fafc" stroke="#111827"/><text x="190" y="471">0x1C</text><text x="310" y="471">VERSION</text><text x="600" y="471">RO 0x00010000</text>
+<rect x="150" y="490" width="800" height="50" fill="#f8fafc" stroke="#111827"/><text x="190" y="521">0x20</text><text x="310" y="521">ID</text><text x="600" y="521">RO "CSB1"</text>
+</g>
+<text x="550" y="585" text-anchor="middle" font-family="sans-serif" font-size="16">Register Map은 특정 UART/PWM 기능이 아니라 Bridge의 공통 계약을 표현한다.</text>
+</svg>

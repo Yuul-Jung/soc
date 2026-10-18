@@ -1,0 +1,24 @@
+full_npu_accelerator_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   ├── tensor_job_engine.v
+│   ├── npu_full_control_irq.v
+│   ├── axi4lite_reg_bridge.v
+│   ├── bram_clock_reset_adapter.v
+│   ├── npu_full_accelerator_ip.v
+│   └── npu_full_accelerator_sim_top.v
+├── testbench/
+│   └── tb_npu_full_accelerator.sv
+├── software/
+│   ├── npu_full.h
+│   └── main_full_npu.c
+├── scripts/
+├── reference/
+│   ├── soc35_full_integration_reference.py
+│   └── reference_output.txt
+├── doc/
+│   ├── README_SOC35.md
+│   └── VIVADO_FULL_INTEGRATION_GUIDE.md
+└── SOURCE_TREE.txt

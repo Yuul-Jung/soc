@@ -1,0 +1,9 @@
+PASS: PWM Initialize
+PASS: PWM Configure 25%
+PASS: PWM active period
+PASS: PWM active duty
+PASS: PWM active
+PASS: PWM invalid duty
+PASS: PWM Disable
+PASS: PWM inactive
+SOC18 PWM DRIVER MOCK TEST: PASS

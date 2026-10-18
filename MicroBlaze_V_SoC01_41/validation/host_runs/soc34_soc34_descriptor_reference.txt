@@ -1,0 +1,10 @@
+valid descriptor 0x200 -> 0x300, length=8: PASS
+unaligned input -> error 2
+unaligned output -> error 3
+unsupported length -> error 4
+input range -> error 5
+output range -> error 6
+buffer overlap -> error 7
+shadow changes do not modify active snapshot: PASS
+accepted job increments JOB_ID; rejected job does not
+SOC34 PYTHON JOB-DESCRIPTOR REFERENCE: PASS

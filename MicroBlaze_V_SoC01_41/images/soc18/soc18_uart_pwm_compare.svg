@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="610" viewBox="0 0 1280 610">
+<rect width="1280" height="610" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">UART와 PWM은 같은 방식으로 IP화하지 않는다</text>
+
+<rect x="70" y="105" width="500" height="400" rx="16" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="320" y="150" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold">UART TX · Command/Event형</text>
+<text x="125" y="210" font-family="sans-serif" font-size="18">TX_DATA 저장</text>
+<text x="125" y="255" font-family="sans-serif" font-size="18">SEND W1P 실행</text>
+<text x="125" y="300" font-family="sans-serif" font-size="18">BUSY Level</text>
+<text x="125" y="345" font-family="sans-serif" font-size="18">DONE Pulse → Retained DONE</text>
+<text x="125" y="390" font-family="sans-serif" font-size="18">DONE / ERROR IRQ_STATUS</text>
+<text x="125" y="450" font-family="sans-serif" font-size="17">핵심: Start → Run → Completion</text>
+
+<rect x="710" y="105" width="500" height="400" rx="16" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="960" y="150" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold">PWM · Continuous Configuration형</text>
+<text x="765" y="210" font-family="sans-serif" font-size="18">PERIOD_SHADOW 저장</text>
+<text x="765" y="255" font-family="sans-serif" font-size="18">DUTY_SHADOW 저장</text>
+<text x="765" y="300" font-family="sans-serif" font-size="18">UPDATE W1P</text>
+<text x="765" y="345" font-family="sans-serif" font-size="18">Active Period/Duty 일괄 Commit</text>
+<text x="765" y="390" font-family="sans-serif" font-size="18">출력은 계속 동작</text>
+<text x="765" y="450" font-family="sans-serif" font-size="17">핵심: Shadow → Commit → Continuous Output</text>
+
+<text x="640" y="565" text-anchor="middle" font-family="sans-serif" font-size="17">Bus는 같아도 Register Map은 Peripheral의 시간적 동작 의미에 맞게 설계한다.</text>
+</svg>

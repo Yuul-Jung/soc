@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="720" viewBox="0 0 1440 720">
+<rect width="1440" height="720" fill="white"/>
+<text x="720" y="44" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="bold">SoC 36 · CPU ↔ NPU End-to-End Inference Flow</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="55" y="235" width="220" height="185" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="165" y="285" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">MicroBlaze V</text>
+<text x="165" y="330" text-anchor="middle" font-family="sans-serif" font-size="15">Tensor Fill</text>
+<text x="165" y="365" text-anchor="middle" font-family="sans-serif" font-size="15">Descriptor / ISR</text>
+
+<rect x="360" y="95" width="300" height="190" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="510" y="145" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Control Plane</text>
+<text x="510" y="190" text-anchor="middle" font-family="sans-serif" font-size="16">AXI4-Lite</text>
+<text x="510" y="230" text-anchor="middle" font-family="sans-serif" font-size="15">Descriptor / Status / IRQ</text>
+
+<rect x="360" y="405" width="300" height="190" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="510" y="455" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Data Plane</text>
+<text x="510" y="500" text-anchor="middle" font-family="sans-serif" font-size="16">AXI BRAM Controller</text>
+<text x="510" y="540" text-anchor="middle" font-family="sans-serif" font-size="15">Tensor BRAM Port A</text>
+
+<rect x="765" y="205" width="350" height="300" rx="14" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="940" y="255" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">NPU Accelerator</text>
+<text x="940" y="310" text-anchor="middle" font-family="sans-serif" font-size="15">Active Snapshot</text>
+<text x="940" y="350" text-anchor="middle" font-family="sans-serif" font-size="15">Tensor Read / Requantize</text>
+<text x="940" y="390" text-anchor="middle" font-family="sans-serif" font-size="15">Tensor Write</text>
+<text x="940" y="430" text-anchor="middle" font-family="sans-serif" font-size="15">DONE / ERROR IRQ</text>
+
+<rect x="1210" y="245" width="170" height="185" rx="14" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="1295" y="295" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold">Reference</text>
+<text x="1295" y="340" text-anchor="middle" font-family="sans-serif" font-size="15">Expected</text>
+<text x="1295" y="380" text-anchor="middle" font-family="sans-serif" font-size="15">PASS / FAIL</text>
+
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="275" y1="280" x2="360" y2="190"/>
+<line x1="275" y1="375" x2="360" y2="500"/>
+<line x1="660" y1="190" x2="765" y2="285"/>
+<line x1="660" y1="500" x2="765" y2="425"/>
+<line x1="1115" y1="340" x2="1210" y2="340"/>
+</g>
+
+<path d="M940 205 L940 100 L165 100 L165 235" fill="none" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<text x="720" y="660" text-anchor="middle" font-family="sans-serif" font-size="17">Hardware는 SoC 35에서 동결하고, SoC 36은 Software·Interrupt·Result Verification을 End-to-End로 완성한다.</text>
+</svg>

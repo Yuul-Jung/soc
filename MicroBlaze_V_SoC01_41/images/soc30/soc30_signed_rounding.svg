@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="570" viewBox="0 0 1280 570">
+<rect width="1280" height="570" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">Signed Rounding · Midpoint를 대칭 처리</text>
+<g font-family="sans-serif">
+<rect x="80" y="130" width="500" height="310" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="330" y="180" text-anchor="middle" font-size="21" font-weight="bold">Magnitude-domain 방식</text>
+<text x="330" y="235" text-anchor="middle" font-size="17">1. sign 분리</text>
+<text x="330" y="280" text-anchor="middle" font-size="17">2. |x| + 2^(shift-1)</text>
+<text x="330" y="325" text-anchor="middle" font-size="17">3. right shift</text>
+<text x="330" y="370" text-anchor="middle" font-size="17">4. sign 복원</text>
+
+<rect x="700" y="130" width="500" height="310" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="950" y="180" text-anchor="middle" font-size="21" font-weight="bold">shift = 1 예</text>
+<text x="950" y="235" text-anchor="middle" font-size="17">+3 / 2 → +1.5 → +2</text>
+<text x="950" y="280" text-anchor="middle" font-size="17">-3 / 2 → -1.5 → -2</text>
+<text x="950" y="325" text-anchor="middle" font-size="17">+1 / 2 → +0.5 → +1</text>
+<text x="950" y="370" text-anchor="middle" font-size="17">-1 / 2 → -0.5 → -1</text>
+</g>
+<text x="640" y="505" text-anchor="middle" font-family="sans-serif" font-size="16">음수에 양수와 같은 rounding offset을 그대로 더하는 단순 구현은 원하는 대칭 반올림과 달라질 수 있다.</text>
+</svg>

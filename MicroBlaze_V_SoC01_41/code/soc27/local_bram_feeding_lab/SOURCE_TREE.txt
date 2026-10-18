@@ -1,0 +1,27 @@
+local_bram_feeding_lab/
+├── rtl/
+│   ├── mul_s8_dsp.v
+│   ├── pe4_dot_accum_pipelined.v
+│   ├── vector_dot_controller_pe4.v
+│   ├── vector_bram_sdp.v
+│   ├── bram_vector_feeder.v
+│   ├── local_bram_dot_accelerator.v
+│   ├── local_bram_demo_loader_len10.v
+│   ├── local_bram_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   └── local_bram_dot_basys3_top.v
+├── testbench/
+│   └── tb_local_bram_dot_accelerator.sv
+├── constraints/
+│   └── basys3_local_bram_lab.xdc
+├── scripts/
+│   ├── run_soc27_memory_inference.tcl
+│   ├── run_soc27_board_analysis.tcl
+│   ├── prepare_soc27_simulation.tcl
+│   └── run_soc27_analysis.sh
+├── reference/
+│   ├── local_bram_reference.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_LOCAL_BRAM_FEEDING.md
+└── SOURCE_TREE.txt

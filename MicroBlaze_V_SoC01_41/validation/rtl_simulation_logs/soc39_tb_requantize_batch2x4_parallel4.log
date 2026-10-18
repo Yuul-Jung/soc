@@ -1,0 +1,38 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_requantize_batch2x4_parallel4 -o validation-tools/rtl_runs/soc39_tb_requantize_batch2x4_parallel4.vvp code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_fastread_ip.v code/soc39/parallel4_requant_optimization_lab/rtl/requantize_batch2x4_serial.v code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine_pipelined_read.v code/soc39/parallel4_requant_optimization_lab/rtl/axi4lite_reg_bridge.v code/soc39/parallel4_requant_optimization_lab/rtl/bram_clock_reset_adapter.v code/soc39/parallel4_requant_optimization_lab/rtl/tensor_bram_tdp_4k_model.v code/soc39/parallel4_requant_optimization_lab/rtl/requantize_s32_to_s8.v code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_fastread_sim_top.v code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_ip.v code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_parallel4_ip.v code/soc39/parallel4_requant_optimization_lab/rtl/requantize_batch2x4_parallel4.v code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_parallel4_sim_top.v code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine_parallel4_requant.v code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_control_irq.v code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_sim_top.v code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine.v
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_fastread_ip.v:1: warning: timescale for npu_full_accelerator_fastread_ip inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/requantize_batch2x4_serial.v:1: warning: timescale for requantize_batch2x4_serial inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine_pipelined_read.v:1: warning: timescale for tensor_job_engine_pipelined_read inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/axi4lite_reg_bridge.v:1: warning: timescale for axi4lite_reg_bridge inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/bram_clock_reset_adapter.v:1: warning: timescale for bram_clock_reset_adapter inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/tensor_bram_tdp_4k_model.v:1: warning: timescale for tensor_bram_tdp_4k_model inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_fastread_sim_top.v:1: warning: timescale for npu_full_accelerator_fastread_sim_top inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_ip.v:1: warning: timescale for npu_full_accelerator_ip inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_parallel4_ip.v:1: warning: timescale for npu_full_accelerator_parallel4_ip inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/requantize_batch2x4_parallel4.v:1: warning: timescale for requantize_batch2x4_parallel4 inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_parallel4_sim_top.v:1: warning: timescale for npu_full_accelerator_parallel4_sim_top inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine_parallel4_requant.v:1: warning: timescale for tensor_job_engine_parallel4_requant inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_control_irq.v:1: warning: timescale for npu_full_control_irq inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/npu_full_accelerator_sim_top.v:1: warning: timescale for npu_full_accelerator_sim_top inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+code/soc39/parallel4_requant_optimization_lab/rtl/tensor_job_engine.v:1: warning: timescale for tensor_job_engine inherited from another file.
+code/soc39/parallel4_requant_optimization_lab/testbench/tb_requantize_batch2x4_parallel4.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+PASS CH0 = 0x20181008
+PASS CH1 = 0x7f7f6333
+SOC39 PARALLEL4 BATCH TEST: PASS

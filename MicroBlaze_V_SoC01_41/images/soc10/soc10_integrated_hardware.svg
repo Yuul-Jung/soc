@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<rect width="1280" height="720" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 10 통합 Hardware 구조</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+<rect x="475" y="90" width="300" height="110" rx="12" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="625" y="137" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold">MicroBlaze V</text>
+<text x="625" y="173" text-anchor="middle" font-family="sans-serif" font-size="17">AXI Master + Interrupt Input</text>
+<rect x="470" y="250" width="310" height="95" rx="12" fill="#f3f4f6" stroke="#111827" stroke-width="2"/>
+<text x="625" y="292" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold">SmartConnect</text>
+<text x="625" y="322" text-anchor="middle" font-family="sans-serif" font-size="16">AXI4-Lite Address Decode</text>
+<rect x="55" y="430" width="235" height="145" rx="12" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="172" y="470" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">AXI GPIO</text>
+<text x="172" y="507" text-anchor="middle" font-family="sans-serif" font-size="17">Ch1 → LED[15:0]</text><text x="172" y="540" text-anchor="middle" font-family="sans-serif" font-size="17">Ch2 ← SW[15:0]</text>
+<rect x="350" y="430" width="235" height="145" rx="12" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="467" y="470" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">AXI UART Lite</text>
+<text x="467" y="507" text-anchor="middle" font-family="sans-serif" font-size="17">RsRx B18</text><text x="467" y="540" text-anchor="middle" font-family="sans-serif" font-size="17">RsTx A18</text>
+<rect x="645" y="430" width="235" height="145" rx="12" fill="#fef2f2" stroke="#111827" stroke-width="2"/>
+<text x="762" y="470" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">AXI Timer</text>
+<text x="762" y="507" text-anchor="middle" font-family="sans-serif" font-size="17">100 MHz</text><text x="762" y="540" text-anchor="middle" font-family="sans-serif" font-size="17">0.5 s Interrupt</text>
+<rect x="940" y="430" width="250" height="145" rx="12" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1065" y="455" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold"><tspan x="1065" y="455">AXI Interrupt</tspan><tspan x="1065" y="480">Controller</tspan></text>
+<text x="1065" y="507" text-anchor="middle" font-family="sans-serif" font-size="17">intr[0] ← Timer</text><text x="1065" y="540" text-anchor="middle" font-family="sans-serif" font-size="17">irq → MicroBlaze V</text>
+<line x1="625" y1="200" x2="625" y2="250" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<line x1="625" y1="345" x2="172" y2="430" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="625" y1="345" x2="467" y2="430" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="625" y1="345" x2="762" y2="430" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="625" y1="345" x2="1065" y2="430" stroke="#111827" stroke-width="3" marker-end="url(#a)"/>
+<line x1="880" y1="500" x2="940" y2="500" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<text x="910" y="484" text-anchor="middle" font-family="sans-serif" font-size="15">interrupt</text>
+<path d="M1065 430 L1065 240 L775 240 L775 145" fill="none" stroke="#111827" stroke-width="4" marker-end="url(#a)"/>
+<text x="1025" y="230" font-family="sans-serif" font-size="16">irq</text>
+<text x="640" y="665" text-anchor="middle" font-family="sans-serif" font-size="16">AMD AXI GPIO / UART Lite / Timer / INTC 구조와 SoC 06~09 연결을 통합한 교육용 구조도</text>
+</svg>

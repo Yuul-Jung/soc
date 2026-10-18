@@ -1,0 +1,348 @@
+{
+  "course": "Basys3 SoC + NPU",
+  "range": "SoC 01~41",
+  "groups": [
+    {
+      "id": 1,
+      "slug": "microblaze_minimal_soc",
+      "title": "MicroBlaze V 기반 최소 SoC",
+      "range": [
+        1,
+        5
+      ],
+      "desc": "MicroBlaze V, BRAM, Clock/Reset, Memory Map, AXI 구조를 이용해 최소 SoC의 뼈대를 만든다.",
+      "chapters": [
+        {
+          "num": 1,
+          "title": "MicroBlaze V + BRAM 최소 SoC",
+          "html": "pages/soc/01_microblaze_bram_minimal_soc.html",
+          "manifest": "manifests/soc01_manifest.html"
+        },
+        {
+          "num": 2,
+          "title": "Clock / Reset 구조와 Processor System Reset",
+          "html": "pages/soc/02_clock_reset_processor_system_reset.html",
+          "manifest": "manifests/soc02_manifest.html"
+        },
+        {
+          "num": 3,
+          "title": "MicroBlaze V 실행 구조와 BRAM 프로그램 실행",
+          "html": "pages/soc/03_microblaze_bram_program_execution.html",
+          "manifest": "manifests/soc03_manifest.html"
+        },
+        {
+          "num": 4,
+          "title": "Memory Map과 Memory-Mapped I/O",
+          "html": "pages/soc/04_memory_map_memory_mapped_io.html",
+          "manifest": "manifests/soc04_manifest.html"
+        },
+        {
+          "num": 5,
+          "title": "AXI4 / AXI4-Lite / AXI4-Stream 구조",
+          "html": "pages/soc/05_axi4_axi4lite_axi4stream.html",
+          "manifest": "manifests/soc05_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "slug": "amd_ip_peripheral_soc",
+      "title": "AMD IP 기반 주변장치 SoC",
+      "range": [
+        6,
+        10
+      ],
+      "desc": "AXI GPIO, UART Lite, Timer, Interrupt Controller를 연결하고 MicroBlaze V 주변장치 시스템으로 통합한다.",
+      "chapters": [
+        {
+          "num": 6,
+          "title": "AXI GPIO - Switch 입력을 LED 출력으로",
+          "html": "pages/soc/06_axi_gpio.html",
+          "manifest": "manifests/soc06_manifest.html"
+        },
+        {
+          "num": 7,
+          "title": "AXI UART Lite - PC 터미널 Echo 통신",
+          "html": "pages/soc/07_axi_uart_lite.html",
+          "manifest": "manifests/soc07_manifest.html"
+        },
+        {
+          "num": 8,
+          "title": "AXI Timer - 0.5초 Polling과 LED Blink",
+          "html": "pages/soc/08_axi_timer.html",
+          "manifest": "manifests/soc08_manifest.html"
+        },
+        {
+          "num": 9,
+          "title": "AXI Interrupt Controller - Timer Interrupt와 ISR",
+          "html": "pages/soc/09_axi_interrupt_controller.html",
+          "manifest": "manifests/soc09_manifest.html"
+        },
+        {
+          "num": 10,
+          "title": "MicroBlaze V + GPIO + UART + Timer 통합",
+          "html": "pages/soc/10_microblaze_gpio_uart_timer_integration.html",
+          "manifest": "manifests/soc10_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "slug": "register_map_custom_axi_ip",
+      "title": "Register Map · Custom AXI IP",
+      "range": [
+        11,
+        16
+      ],
+      "desc": "Register Map에서 Custom AXI4-Lite Slave, RTL Controller, Software Driver, IP Packaging까지 완성한다.",
+      "chapters": [
+        {
+          "num": 11,
+          "title": "Register Map 설계 원칙",
+          "html": "pages/soc/11_register_map_design_principles.html",
+          "manifest": "manifests/soc11_manifest.html"
+        },
+        {
+          "num": 12,
+          "title": "Custom AXI4-Lite Slave 기초",
+          "html": "pages/soc/12_custom_axi4lite_slave_basics.html",
+          "manifest": "manifests/soc12_manifest.html"
+        },
+        {
+          "num": 13,
+          "title": "AXI Register Read / Write 경로",
+          "html": "pages/soc/13_axi_register_read_write_path.html",
+          "manifest": "manifests/soc13_manifest.html"
+        },
+        {
+          "num": 14,
+          "title": "Register Bank + RTL Controller 연결",
+          "html": "pages/soc/14_register_bank_rtl_controller.html",
+          "manifest": "manifests/soc14_manifest.html"
+        },
+        {
+          "num": 15,
+          "title": "MicroBlaze V Software Driver",
+          "html": "pages/soc/15_microblaze_software_driver.html",
+          "manifest": "manifests/soc15_manifest.html"
+        },
+        {
+          "num": 16,
+          "title": "Vivado IP Packaging과 재사용",
+          "html": "pages/soc/16_vivado_ip_packaging_reuse.html",
+          "manifest": "manifests/soc16_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "slug": "rtl_ip_verification_qor",
+      "title": "기존 RTL IP화 · Verification · Timing/Power",
+      "range": [
+        17,
+        23
+      ],
+      "desc": "기존 RTL을 재사용 가능한 IP로 만들고 CDC/Reset, Self-Checking 검증, Timing, Resource, Power까지 확장한다.",
+      "chapters": [
+        {
+          "num": 17,
+          "title": "기존 Verilog RTL을 IP로 변환",
+          "html": "pages/soc/17_existing_verilog_rtl_to_ip.html",
+          "manifest": "manifests/soc17_manifest.html"
+        },
+        {
+          "num": 18,
+          "title": "UART / PWM Controller IP화",
+          "html": "pages/soc/18_uart_pwm_controller_ip.html",
+          "manifest": "manifests/soc18_manifest.html"
+        },
+        {
+          "num": 19,
+          "title": "AXI Control / Status Bridge",
+          "html": "pages/soc/19_axi_control_status_bridge.html",
+          "manifest": "manifests/soc19_manifest.html"
+        },
+        {
+          "num": 20,
+          "title": "CDC / Reset 안전 설계",
+          "html": "pages/soc/20_cdc_reset_safe_design.html",
+          "manifest": "manifests/soc20_manifest.html"
+        },
+        {
+          "num": 21,
+          "title": "Self-Checking Testbench / Assertion / Coverage",
+          "html": "pages/soc/21_self_checking_assertion_coverage.html",
+          "manifest": "manifests/soc21_manifest.html"
+        },
+        {
+          "num": 22,
+          "title": "Timing / Critical Path / WNS / TNS",
+          "html": "pages/soc/22_timing_critical_path_wns_tns.html",
+          "manifest": "manifests/soc22_manifest.html"
+        },
+        {
+          "num": 23,
+          "title": "Resource / Power / Thermal",
+          "html": "pages/soc/23_resource_power_thermal.html",
+          "manifest": "manifests/soc23_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "npu_compute_datapath",
+      "title": "NPU Compute Datapath",
+      "range": [
+        24,
+        26
+      ],
+      "desc": "MAC에서 PE/Parallel MAC, Vector Dot Product Controller로 NPU 계산 데이터패스를 단계적으로 구축한다.",
+      "chapters": [
+        {
+          "num": 24,
+          "title": "NPU Datapath 시작 · MAC 기본 구조",
+          "html": "pages/soc/24_npu_mac_datapath.html",
+          "manifest": "manifests/soc24_manifest.html"
+        },
+        {
+          "num": 25,
+          "title": "PE / Parallel MAC / Vector Dot Product",
+          "html": "pages/soc/25_pe_parallel_mac_vector_dot_product.html",
+          "manifest": "manifests/soc25_manifest.html"
+        },
+        {
+          "num": 26,
+          "title": "Vector Dot Product Controller",
+          "html": "pages/soc/26_vector_dot_product_controller.html",
+          "manifest": "manifests/soc26_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "slug": "npu_memory_dataflow_quantization",
+      "title": "NPU Memory · Dataflow · Quantization",
+      "range": [
+        27,
+        30
+      ],
+      "desc": "Local BRAM, Prefetch/FIFO/Double Buffer, Weight Stationary/Tiling, Bias/Requantization/int8 Output을 연결한다.",
+      "chapters": [
+        {
+          "num": 27,
+          "title": "Local BRAM / Address Generator / Data Feeding",
+          "html": "pages/soc/27_local_bram_address_generator_data_feeding.html",
+          "manifest": "manifests/soc27_manifest.html"
+        },
+        {
+          "num": 28,
+          "title": "Prefetch / FIFO / Double Buffer / Stall-safe Feeding",
+          "html": "pages/soc/28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+          "manifest": "manifests/soc28_manifest.html"
+        },
+        {
+          "num": 29,
+          "title": "Data Reuse · Weight Stationary · Activation Broadcast · Tiling",
+          "html": "pages/soc/29_data_reuse_weight_stationary_tiling.html",
+          "manifest": "manifests/soc29_manifest.html"
+        },
+        {
+          "num": 30,
+          "title": "Bias · Requantization · Rounding · Saturation · int8 Output",
+          "html": "pages/soc/30_bias_requantization_rounding_saturation_int8.html",
+          "manifest": "manifests/soc30_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "slug": "npu_soc_integration",
+      "title": "NPU SoC Integration",
+      "range": [
+        31,
+        36
+      ],
+      "desc": "NPU Register Map, Interrupt, Tensor Buffer, Job Descriptor, Full Accelerator, CPU↔NPU End-to-End Software를 통합한다.",
+      "chapters": [
+        {
+          "num": 31,
+          "title": "NPU Register Map · MicroBlaze V Control · AXI4-Lite Integration",
+          "html": "pages/soc/31_npu_register_map_microblaze_axi_integration.html",
+          "manifest": "manifests/soc31_manifest.html"
+        },
+        {
+          "num": 32,
+          "title": "NPU Done Interrupt · AXI Interrupt Controller · ISR",
+          "html": "pages/soc/32_npu_done_interrupt_axi_intc_isr.html",
+          "manifest": "manifests/soc32_manifest.html"
+        },
+        {
+          "num": 33,
+          "title": "AXI BRAM Tensor Buffer · Control Plane / Data Plane",
+          "html": "pages/soc/33_axi_bram_tensor_buffer_control_data_plane.html",
+          "manifest": "manifests/soc33_manifest.html"
+        },
+        {
+          "num": 34,
+          "title": "Command · Descriptor · Job Control",
+          "html": "pages/soc/34_command_descriptor_job_control.html",
+          "manifest": "manifests/soc34_manifest.html"
+        },
+        {
+          "num": 35,
+          "title": "Full NPU Accelerator Integration",
+          "html": "pages/soc/35_full_npu_accelerator_integration.html",
+          "manifest": "manifests/soc35_manifest.html"
+        },
+        {
+          "num": 36,
+          "title": "CPU ↔ NPU End-to-End Software / Inference Flow",
+          "html": "pages/soc/36_cpu_npu_end_to_end_software_inference.html",
+          "manifest": "manifests/soc36_manifest.html"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "slug": "performance_optimization_signoff",
+      "title": "Performance · Optimization · Sign-off",
+      "range": [
+        37,
+        41
+      ],
+      "desc": "Baseline 측정에서 BRAM/Compute/Dataflow 최적화, 최종 Sign-off Matrix까지 성능·품질 검증을 완성한다.",
+      "chapters": [
+        {
+          "num": 37,
+          "title": "Performance Baseline · Timing · Resource · Power · Throughput",
+          "html": "pages/soc/37_performance_baseline_timing_resource_power_throughput.html",
+          "manifest": "manifests/soc37_manifest.html"
+        },
+        {
+          "num": 38,
+          "title": "Bottleneck Analysis · Pipelined BRAM Read Optimization",
+          "html": "pages/soc/38_bottleneck_analysis_pipelined_bram_read.html",
+          "manifest": "manifests/soc38_manifest.html"
+        },
+        {
+          "num": 39,
+          "title": "4-Lane Parallel Requantization Optimization",
+          "html": "pages/soc/39_parallel4_requantization_optimization.html",
+          "manifest": "manifests/soc39_manifest.html"
+        },
+        {
+          "num": 40,
+          "title": "Prefetch · Ping-Pong Buffer · Data-Compute Overlap",
+          "html": "pages/soc/40_prefetch_pingpong_data_compute_overlap.html",
+          "manifest": "manifests/soc40_manifest.html"
+        },
+        {
+          "num": 41,
+          "title": "Group 8 Cumulative Sign-off Matrix",
+          "html": "pages/soc/41_group8_cumulative_signoff_matrix.html",
+          "manifest": "manifests/soc41_manifest.html"
+        }
+      ]
+    }
+  ]
+}

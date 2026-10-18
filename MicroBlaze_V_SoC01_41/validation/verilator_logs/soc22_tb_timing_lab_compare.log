@@ -1,0 +1,62 @@
+make: Entering directory 'validation-tools/verilator_runs/soc22_tb_timing_lab_compare'
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated.o validation-tools/tools/usr/share/verilator/include/verilated.cpp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated_timing.o validation-tools/tools/usr/share/verilator/include/verilated_timing.cpp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o verilated_threads.o validation-tools/tools/usr/share/verilator/include/verilated_threads.cpp
+/usr/bin/python3 validation-tools/tools/usr/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtb_timing_lab_compare.cpp Vtb_timing_lab_compare___024root__DepSet_h3da696ac__0.cpp Vtb_timing_lab_compare___024root__DepSet_hc2bca026__0.cpp Vtb_timing_lab_compare__main.cpp Vtb_timing_lab_compare___024root__Slow.cpp Vtb_timing_lab_compare___024root__DepSet_h3da696ac__0__Slow.cpp Vtb_timing_lab_compare___024root__DepSet_hc2bca026__0__Slow.cpp Vtb_timing_lab_compare__Syms.cpp > Vtb_timing_lab_compare__ALL.cpp
+echo "" > Vtb_timing_lab_compare__ALL.verilator_deplist.tmp
+g++  -I.  -MMD -Ivalidation-tools/tools/usr/share/verilator/include -Ivalidation-tools/tools/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-sign-compare -Wno-uninitialized -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-shadow     -DVL_TIME_CONTEXT   -fcoroutines -Os -c -o Vtb_timing_lab_compare__ALL.o Vtb_timing_lab_compare__ALL.cpp
+Archive ar -rcs Vtb_timing_lab_compare__ALL.a Vtb_timing_lab_compare__ALL.o
+g++    verilated.o verilated_timing.o verilated_threads.o Vtb_timing_lab_compare__ALL.a    -pthread -lpthread -latomic   -o Vtb_timing_lab_compare
+rm Vtb_timing_lab_compare__ALL.verilator_deplist.tmp
+make: Leaving directory 'validation-tools/verilator_runs/soc22_tb_timing_lab_compare'
+
+--- SIMULATION ---
+PASS: unpipelined result=cedb7593
+PASS: unpipelined result=28a39133
+PASS: pipelined result=cedb7593
+PASS: unpipelined result=c7173729
+PASS: pipelined result=28a39133
+PASS: unpipelined result=44b7d817
+PASS: pipelined result=c7173729
+PASS: unpipelined result=bb3e2e47
+PASS: pipelined result=44b7d817
+PASS: unpipelined result=c812c69b
+PASS: pipelined result=bb3e2e47
+PASS: unpipelined result=bc1f66fe
+PASS: pipelined result=c812c69b
+PASS: unpipelined result=d88e64f7
+PASS: pipelined result=bc1f66fe
+PASS: unpipelined result=296bf738
+PASS: pipelined result=d88e64f7
+PASS: unpipelined result=6200bd2d
+PASS: pipelined result=296bf738
+PASS: unpipelined result=403b977d
+PASS: pipelined result=6200bd2d
+PASS: unpipelined result=ee02547c
+PASS: pipelined result=403b977d
+PASS: unpipelined result=84e1257e
+PASS: pipelined result=ee02547c
+PASS: unpipelined result=0c663985
+PASS: pipelined result=84e1257e
+PASS: unpipelined result=947e990c
+PASS: pipelined result=0c663985
+PASS: unpipelined result=b4abc063
+PASS: pipelined result=947e990c
+PASS: unpipelined result=7e413dbc
+PASS: pipelined result=b4abc063
+PASS: unpipelined result=a16835f4
+PASS: pipelined result=7e413dbc
+PASS: unpipelined result=1e32774c
+PASS: pipelined result=a16835f4
+PASS: unpipelined result=92c43903
+PASS: pipelined result=1e32774c
+PASS: unpipelined result=11f5ad8b
+PASS: pipelined result=92c43903
+PASS: unpipelined result=014a21bd
+PASS: pipelined result=11f5ad8b
+PASS: pipelined result=014a21bd
+
+SOC22 CHECK COUNT : 44
+SOC22 ERROR COUNT : 0
+SOC22 FUNCTIONAL REGRESSION: PASS
+- code/soc22/timing_lab/testbench/tb_timing_lab_compare.sv:262: Verilog $finish

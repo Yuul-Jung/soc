@@ -1,0 +1,18 @@
+Control Plane: AXI4-Lite descriptor + IRQ
+Data Plane: Tensor BRAM native Port B
+active INPUT_BASE = 0x200
+active OUTPUT_BASE = 0x300
+shadow change during BUSY does not affect active snapshot: PASS
+OUT_CH0 = 0x20181008
+OUT_CH1 = 0x7F7F6333
+DONE pending + enable -> level IRQ: PASS
+W1C DONE -> IRQ deassert: PASS
+descriptor reject -> ERROR IRQ path: required by RTL/TB
+SOC35 PYTHON FULL-INTEGRATION REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 772, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/connection.py", line 37, in get_or_create_client
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/daemon.py", line 124, in start_daemon
+TimeoutError: Timed out waiting for artifact tool daemon socket. Set ARTIFACT_TOOL_RPC_DAEMON_STARTUP_TIMEOUT_S=<seconds> to increase the limit.

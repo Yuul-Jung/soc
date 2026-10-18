@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="Basys3 MicroBlaze V SoC에서 Clock Constraint, Setup/Hold, Critical Path, WNS/TNS/WHS/THS, Pipeline과 Timing Closure를 실습하는 자료." name="description">
+<title>SoC 22 · Timing / Critical Path / WNS / TNS</title>
+<style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style>
+<style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
+<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 22</strong></div>
+<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+</div></div>
+
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 22</p>
+<h1>Timing / Critical Path / WNS / TNS</h1>
+<p class="hero-desc">기능적으로 맞는 RTL이 실제 Clock Period 안에서도 동작하는지 분석한다. Clock Constraint부터 Setup/Hold, Critical Path, WNS/TNS, Logic Delay/Route Delay를 읽고, 긴 Data Path를 Pipeline으로 분할한 뒤 기능 Regression과 Post-route Timing Signoff를 연결한다.</p>
+<div class="hero-meta">
+<span class="chip">Timing Constraint</span><span class="chip">Setup / Hold</span><span class="chip">Critical Path</span><span class="chip">WNS / TNS</span><span class="chip">WHS / THS</span><span class="chip">Pipeline</span>
+</div></div></header>
+
+<div class="wrap">
+<aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html" selected>SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc22_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc22">이 장 검증</a></div></div><p class="nav-title">SOC 22 · LEARNING FLOW</p><p class="nav-help">Constrain → Analyze → Pipeline → Regress → Signoff</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>Timing Closure란 무엇인가</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Constraint가 먼저다</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Clock Constraint</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Timing Path 종류</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Register-to-Register Path</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Setup 분석</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Hold 분석</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Slack 읽는 법</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>WNS</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>TNS</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>WHS / THS</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Synthesis Timing과 Post-route Timing</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Critical Path</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Cell Delay와 Route Delay</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Logic Levels</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>실습용 긴 Data Path</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Unpipelined RTL</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Pipelined RTL</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>Latency와 Throughput</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Basys3 Implementation 구조</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>100 MHz Baseline</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>200 MHz Stress Constraint</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>자동 Timing Report</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>Post-route Timing Signoff</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>Report Design Analysis</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>QoR Suggestions</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>False Path 주의</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>Multicycle Path 주의</span></a></li>
+<li><a href="#s30"><span class="n">30</span><span>Hold Fix 주의</span></a></li>
+<li><a href="#s31"><span class="n">31</span><span>SoC 21 Regression과 연결</span></a></li>
+<li><a href="#s32"><span class="n">32</span><span>NPU / DSP 연결</span></a></li>
+<li><a href="#s33"><span class="n">33</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">34</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">35</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside>
+<main id="main-content" tabindex="-1">
+
+<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="stage-flow"><span class="stage">SoC 20 CDC / Reset</span><span class="arrow">→</span><span class="stage">SoC 21 Verification</span><span class="arrow">→</span><span class="stage"><strong>SoC 22 Timing Closure</strong></span><span class="arrow">→</span><span class="stage">SoC 23 Resource / Power</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2>
+<figure class="manual-figure"><a href="../../images/soc22/soc22_timing_closure_flow.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Timing closure flow · 원본 보기 (새 탭)"><img src="../../images/soc22/soc22_timing_closure_flow.svg" alt="Timing closure flow"></a><figcaption>Timing 문제는 Constraint → 분석 → 원인 → 구조 개선 → 재검증 순서로 해결한다.<br><a href="../../images/soc22/soc22_timing_closure_flow.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Timing closure flow · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Timing Closure란 무엇인가</h2>
+<p>Timing Closure(타이밍 클로저, 모든 Timing 요구를 만족시키는 상태)는 단순히 WNS 하나를 양수로 만드는 작업이 아니다. Clock/CDC/I/O Constraint가 정확해야 하고 Setup/Hold 위반이 없어야 하며, 실제 Place/Route 결과에서 요구 Clock을 만족해야 한다.</p>
+<div class="flow">Correct RTL + Correct Constraints + Successful Implementation + Timing Signoff</div>
+</section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Constraint가 먼저다</h2>
+<p>Constraint가 틀린 상태에서 Slack 숫자를 개선하면 잘못된 문제를 최적화하게 된다. 먼저 Clock 정의, Generated Clock, Clock 관계, I/O Delay, CDC Exception을 검토한다.</p>
+<div class="warn">Negative Slack을 숨기기 위해 <code>set_false_path</code> 또는 <code>set_multicycle_path</code>를 추가하면 안 된다.</div>
+</section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Clock Constraint</h2>
+<p>Basys3의 W5 100 MHz Clock은 Period 10 ns이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Clock Constraint · 소스 코드"><code>create_clock \
+    -name sys_clk \
+    -period 10.000 \
+    -waveform {0.000 5.000} \
+    [get_ports clk]</code></pre>
+<p>MMCM/PLL 등으로 생성한 Clock은 Master Clock과의 관계를 <code>create_generated_clock</code>으로 표현한다.</p>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Timing Path 종류</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Timing Path 종류 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Path</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Path" role="cell">Input → Register</td><td data-label="의미" role="cell">외부 Device에서 FPGA 내부 Register까지</td></tr>
+<tr role="row"><td data-label="Path" role="cell">Register → Register</td><td data-label="의미" role="cell">내부 동기회로의 핵심 Timing Path</td></tr>
+<tr role="row"><td data-label="Path" role="cell">Register → Output</td><td data-label="의미" role="cell">FPGA Register에서 외부 Device까지</td></tr>
+<tr role="row"><td data-label="Path" role="cell">Input → Output</td><td data-label="의미" role="cell">조합 I/O Path</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Register-to-Register Path</h2>
+<figure class="manual-figure"><a href="../../images/soc22/soc22_timing_path.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Register to register timing path · 원본 보기 (새 탭)"><img src="../../images/soc22/soc22_timing_path.svg" alt="Register to register timing path"></a><figcaption>Source Clock Path, Data Path, Destination Clock Path의 관계를 기준으로 Timing을 해석한다.<br><a href="../../images/soc22/soc22_timing_path.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Register to register timing path · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+</section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Setup 분석</h2>
+<p>Setup은 Data가 다음 Capture Edge 전에 충분히 일찍 도착하는지 보는 Max Delay 분석이다.</p>
+<div class="flow">Setup Slack → Required Time − Arrival Time</div>
+<p>Slack이 음수라면 Data Path가 주어진 Clock Budget보다 늦었다는 뜻이다.</p>
+</section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Hold 분석</h2>
+<p>Hold는 Data가 Capture Edge 직후 너무 빨리 바뀌지 않는지 보는 Min Delay 분석이다.</p>
+<div class="flow">Hold Slack → Arrival Time − Required Time</div>
+<p>Setup과 Hold는 같은 Path라도 Delay 계산 방향과 Clock Delay 선택이 다르므로 별도로 확인한다.</p>
+</section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Slack 읽는 법</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Slack 읽는 법 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Slack</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Slack" role="cell"><code>&gt; 0 ns</code></td><td data-label="의미" role="cell">해당 Timing Requirement 만족</td></tr>
+<tr role="row"><td data-label="Slack" role="cell"><code>= 0 ns</code></td><td data-label="의미" role="cell">Margin 없이 경계</td></tr>
+<tr role="row"><td data-label="Slack" role="cell"><code>&lt; 0 ns</code></td><td data-label="의미" role="cell">Timing Violation</td></tr>
+</tbody></table></div>
+<p>Slack이 양수라고 해서 전체 Design이 Timing Closure된 것은 아니다. 모든 관련 Clock/Path를 확인해야 한다.</p>
+</section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>WNS</h2>
+<p>WNS(Worst Negative Slack, 최악의 음수 여유)는 Setup/Recovery Max Delay 분석에서 가장 나쁜 Slack이다. 이름에 Negative가 들어가지만 Timing을 만족하면 값 자체는 양수가 될 수 있다.</p>
+</section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>TNS</h2>
+<figure class="manual-figure"><a href="../../images/soc22/soc22_wns_tns.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="WNS and TNS explanation · 원본 보기 (새 탭)"><img src="../../images/soc22/soc22_wns_tns.svg" alt="WNS and TNS explanation"></a><figcaption>WNS는 최악 Path, TNS는 위반이 Endpoint 전체에 얼마나 퍼져 있는지를 본다.<br><a href="../../images/soc22/soc22_wns_tns.svg" target="_blank" rel="noopener" class="figure-original" aria-label="WNS and TNS explanation · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>모든 Setup 관련 Constraint가 만족되면 TNS는 0 ns이다. AMD는 Timing Closure 시 각 Clock의 WNS를 우선 개선하면 다수의 연관 Path가 함께 좋아져 TNS가 줄어드는 경우가 많다고 설명한다.</p>
+</section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>WHS / THS</h2>
+<p>Hold 영역에서는 WHS(Worst Hold Slack, 최악 Hold 여유)와 THS(Total Hold Slack, Hold 위반 누적)를 본다.</p>
+<div class="flow">Setup → WNS / TNS<br>Hold → WHS / THS</div>
+</section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Synthesis Timing과 Post-route Timing</h2>
+<p>Synthesis 직후 Timing Report의 Net Delay는 Placement/Route가 완료되지 않았기 때문에 추정값이다. Route 완료 후에는 실제 Routing 정보를 기반으로 Delay가 계산된다.</p>
+<div class="warn">최종 Timing Signoff는 Post-route <code>report_timing_summary</code>를 기준으로 한다.</div>
+</section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Critical Path</h2>
+<p>Critical Path는 현재 요구 조건에서 Slack이 가장 나쁜 Path다. Startpoint와 Endpoint 이름만 보지 말고 Path Requirement, Datapath Delay, Cell Delay, Route Delay, Clock Skew, Clock Uncertainty를 함께 본다.</p>
+</section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Cell Delay와 Route Delay</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Cell Delay와 Route Delay · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">주요 원인</th><th scope="col" role="columnheader">접근</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="주요 원인" role="cell">Logic Delay 비중 큼</td><td data-label="접근" role="cell">Logic Levels, 연산 구조, Pipeline 검토</td></tr>
+<tr role="row"><td data-label="주요 원인" role="cell">Route Delay 비중 큼</td><td data-label="접근" role="cell">Fanout, Placement, Congestion, Physical Optimization 검토</td></tr>
+<tr role="row"><td data-label="주요 원인" role="cell">Clock Skew 큼</td><td data-label="접근" role="cell">Clocking 구조와 Constraint 검토</td></tr>
+<tr role="row"><td data-label="주요 원인" role="cell">Uncertainty 큼</td><td data-label="접근" role="cell">Clock 정의와 실제 Clock 품질 검토</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Logic Levels</h2>
+<p><code>report_design_analysis -setup -logic_level_distribution</code>으로 Worst Path의 Logic Level 분포를 볼 수 있다. Logic Level이 많으면 Placement 전에 RTL 구조 자체를 먼저 개선하는 것이 효율적인 경우가 많다.</p>
+</section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>실습용 긴 Data Path</h2>
+<p>이번 Timing Lab은 Input Register와 Output Register 사이에 8개의 의존 연산을 둔다. 연산 하나의 결과가 다음 연산 입력으로 이어지므로 한 Clock Period의 Logic Depth가 길어진다.</p>
+<div class="flow">Input Registers → Op1 → Op2 → Op3 → Op4 → Op5 → Op6 → Op7 → Op8 → Output Register</div>
+</section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Unpipelined RTL</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Unpipelined RTL · 소스 코드"><code>module timing_chain_unpipelined (
+    input  wire        clk,
+    input  wire        resetn,
+
+    input  wire [31:0] a_i,
+    input  wire [31:0] b_i,
+    input  wire [31:0] c_i,
+    input  wire [31:0] d_i,
+    input  wire [31:0] e_i,
+    input  wire [31:0] f_i,
+    input  wire [31:0] g_i,
+    input  wire [31:0] h_i,
+    input  wire        valid_i,
+
+    output reg  [31:0] result_o,
+    output reg         valid_o
+);
+
+// Input registers create a true internal register-to-register timing path.
+reg [31:0] a_q;
+reg [31:0] b_q;
+reg [31:0] c_q;
+reg [31:0] d_q;
+reg [31:0] e_q;
+reg [31:0] f_q;
+reg [31:0] g_q;
+reg [31:0] h_q;
+reg        valid_q;
+
+// Dependent logic chain.
+// Each result feeds the next operation, so logic depth matters.
+wire [31:0] t1;
+wire [31:0] t2;
+wire [31:0] t3;
+wire [31:0] t4;
+wire [31:0] t5;
+wire [31:0] t6;
+wire [31:0] t7;
+wire [31:0] t8;
+
+assign t1 = a_q + b_q;
+assign t2 = t1 ^ {c_q[15:0], c_q[31:16]};
+assign t3 = t2 + d_q;
+assign t4 = {t3[30:0], t3[31]} ^ e_q;
+assign t5 = t4 + f_q;
+assign t6 = t5 ^ {g_q[7:0], g_q[31:8]};
+assign t7 = t6 + h_q;
+assign t8 = (t7 ^ {t7[3:0], t7[31:4]}) + 32'h1357_9BDF;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        a_q      &lt;= 32'h0000_0000;
+        b_q      &lt;= 32'h0000_0000;
+        c_q      &lt;= 32'h0000_0000;
+        d_q      &lt;= 32'h0000_0000;
+        e_q      &lt;= 32'h0000_0000;
+        f_q      &lt;= 32'h0000_0000;
+        g_q      &lt;= 32'h0000_0000;
+        h_q      &lt;= 32'h0000_0000;
+        valid_q  &lt;= 1'b0;
+
+        result_o &lt;= 32'h0000_0000;
+        valid_o  &lt;= 1'b0;
+    end else begin
+        a_q     &lt;= a_i;
+        b_q     &lt;= b_i;
+        c_q     &lt;= c_i;
+        d_q     &lt;= d_i;
+        e_q     &lt;= e_i;
+        f_q     &lt;= f_i;
+        g_q     &lt;= g_i;
+        h_q     &lt;= h_i;
+        valid_q &lt;= valid_i;
+
+        result_o &lt;= t8;
+        valid_o  &lt;= valid_q;
+    end
+end
+
+endmodule
+</code></pre>
+<p>이 구조는 Latency가 짧지만 모든 연산 Delay를 한 Clock Period 안에서 만족해야 한다.</p>
+</section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Pipelined RTL</h2>
+<figure class="manual-figure"><a href="../../images/soc22/soc22_pipeline_compare.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Pipelined and unpipelined data path · 원본 보기 (새 탭)"><img src="../../images/soc22/soc22_pipeline_compare.svg" alt="Pipelined and unpipelined data path"></a><figcaption>중간 Register를 넣어 긴 조합 경로를 두 Clock Stage로 분할한다.<br><a href="../../images/soc22/soc22_pipeline_compare.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Pipelined and unpipelined data path · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Pipelined RTL · 소스 코드"><code>module timing_chain_pipelined (
+    input  wire        clk,
+    input  wire        resetn,
+
+    input  wire [31:0] a_i,
+    input  wire [31:0] b_i,
+    input  wire [31:0] c_i,
+    input  wire [31:0] d_i,
+    input  wire [31:0] e_i,
+    input  wire [31:0] f_i,
+    input  wire [31:0] g_i,
+    input  wire [31:0] h_i,
+    input  wire        valid_i,
+
+    output reg  [31:0] result_o,
+    output reg         valid_o
+);
+
+// Stage 0 input registers.
+reg [31:0] a_q;
+reg [31:0] b_q;
+reg [31:0] c_q;
+reg [31:0] d_q;
+reg [31:0] e_q;
+reg [31:0] f_q;
+reg [31:0] g_q;
+reg [31:0] h_q;
+reg        valid_q;
+
+// First half of the original dependent chain.
+wire [31:0] s1_t1;
+wire [31:0] s1_t2;
+wire [31:0] s1_t3;
+wire [31:0] s1_t4;
+
+assign s1_t1 = a_q + b_q;
+assign s1_t2 = s1_t1 ^ {c_q[15:0], c_q[31:16]};
+assign s1_t3 = s1_t2 + d_q;
+assign s1_t4 = {s1_t3[30:0], s1_t3[31]} ^ e_q;
+
+// Pipeline registers split the long combinational path.
+reg [31:0] mid_data_q;
+reg [31:0] f_mid_q;
+reg [31:0] g_mid_q;
+reg [31:0] h_mid_q;
+reg        mid_valid_q;
+
+// Second half of the chain.
+wire [31:0] s2_t5;
+wire [31:0] s2_t6;
+wire [31:0] s2_t7;
+wire [31:0] s2_t8;
+
+assign s2_t5 = mid_data_q + f_mid_q;
+assign s2_t6 = s2_t5 ^ {g_mid_q[7:0], g_mid_q[31:8]};
+assign s2_t7 = s2_t6 + h_mid_q;
+assign s2_t8 = (s2_t7 ^ {s2_t7[3:0], s2_t7[31:4]}) + 32'h1357_9BDF;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        a_q         &lt;= 32'h0000_0000;
+        b_q         &lt;= 32'h0000_0000;
+        c_q         &lt;= 32'h0000_0000;
+        d_q         &lt;= 32'h0000_0000;
+        e_q         &lt;= 32'h0000_0000;
+        f_q         &lt;= 32'h0000_0000;
+        g_q         &lt;= 32'h0000_0000;
+        h_q         &lt;= 32'h0000_0000;
+        valid_q     &lt;= 1'b0;
+
+        mid_data_q  &lt;= 32'h0000_0000;
+        f_mid_q     &lt;= 32'h0000_0000;
+        g_mid_q     &lt;= 32'h0000_0000;
+        h_mid_q     &lt;= 32'h0000_0000;
+        mid_valid_q &lt;= 1'b0;
+
+        result_o    &lt;= 32'h0000_0000;
+        valid_o     &lt;= 1'b0;
+    end else begin
+        a_q     &lt;= a_i;
+        b_q     &lt;= b_i;
+        c_q     &lt;= c_i;
+        d_q     &lt;= d_i;
+        e_q     &lt;= e_i;
+        f_q     &lt;= f_i;
+        g_q     &lt;= g_i;
+        h_q     &lt;= h_i;
+        valid_q &lt;= valid_i;
+
+        mid_data_q  &lt;= s1_t4;
+        f_mid_q     &lt;= f_q;
+        g_mid_q     &lt;= g_q;
+        h_mid_q     &lt;= h_q;
+        mid_valid_q &lt;= valid_q;
+
+        result_o &lt;= s2_t8;
+        valid_o  &lt;= mid_valid_q;
+    end
+end
+
+endmodule
+</code></pre>
+</section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Latency와 Throughput</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Latency와 Throughput · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">Unpipelined</th><th scope="col" role="columnheader">Pipelined</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="항목" role="cell">조합 경로</td><td data-label="Unpipelined" role="cell">길다</td><td data-label="Pipelined" role="cell">분할됨</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Clock 요구 대응</td><td data-label="Unpipelined" role="cell">불리할 수 있음</td><td data-label="Pipelined" role="cell">유리할 수 있음</td></tr>
+<tr role="row"><td data-label="항목" role="cell">최초 결과 Latency</td><td data-label="Unpipelined" role="cell">짧음</td><td data-label="Pipelined" role="cell">증가</td></tr>
+<tr role="row"><td data-label="항목" role="cell">Steady-state Throughput</td><td data-label="Unpipelined" role="cell">매 Clock 가능</td><td data-label="Pipelined" role="cell">매 Clock 가능</td></tr>
+<tr role="row"><td data-label="항목" role="cell">제어 복잡도</td><td data-label="Unpipelined" role="cell">낮음</td><td data-label="Pipelined" role="cell">Valid/Data 정렬 필요</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Basys3 Implementation 구조</h2>
+<div class="signal-map" tabindex="0" role="region" aria-label="21절 신호 및 실행 흐름">W5 100 MHz
+   ↓
+timing_pattern_source
+   ↓
+timing_chain_[un]pipelined
+   ↓
+timing_result_sink
+   ↓
+LED[15:0]</div>
+<p>Data를 수백 개 외부 Pin으로 만들지 않고 내부 Pattern Source를 사용한다. Board Top은 Reset Polarity Adapter와 Implementation Top을 연결만 한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 Implementation 구조 · 소스 코드"><code>## SoC 22 Basys3 implementation pin constraints
+
+## 100 MHz clock
+set_property -dict { PACKAGE_PIN W5 IOSTANDARD LVCMOS33 } [get_ports clk]
+
+## Center push button, active high.
+## reset_active_high_to_active_low converts btnC to internal resetn.
+set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]
+
+## LEDs 0..15
+set_property -dict { PACKAGE_PIN U16 IOSTANDARD LVCMOS33 } [get_ports {led_o[0]}]
+set_property -dict { PACKAGE_PIN E19 IOSTANDARD LVCMOS33 } [get_ports {led_o[1]}]
+set_property -dict { PACKAGE_PIN U19 IOSTANDARD LVCMOS33 } [get_ports {led_o[2]}]
+set_property -dict { PACKAGE_PIN V19 IOSTANDARD LVCMOS33 } [get_ports {led_o[3]}]
+set_property -dict { PACKAGE_PIN W18 IOSTANDARD LVCMOS33 } [get_ports {led_o[4]}]
+set_property -dict { PACKAGE_PIN U15 IOSTANDARD LVCMOS33 } [get_ports {led_o[5]}]
+set_property -dict { PACKAGE_PIN U14 IOSTANDARD LVCMOS33 } [get_ports {led_o[6]}]
+set_property -dict { PACKAGE_PIN V14 IOSTANDARD LVCMOS33 } [get_ports {led_o[7]}]
+set_property -dict { PACKAGE_PIN V13 IOSTANDARD LVCMOS33 } [get_ports {led_o[8]}]
+set_property -dict { PACKAGE_PIN V3 IOSTANDARD LVCMOS33 } [get_ports {led_o[9]}]
+set_property -dict { PACKAGE_PIN W3 IOSTANDARD LVCMOS33 } [get_ports {led_o[10]}]
+set_property -dict { PACKAGE_PIN U3 IOSTANDARD LVCMOS33 } [get_ports {led_o[11]}]
+set_property -dict { PACKAGE_PIN P3 IOSTANDARD LVCMOS33 } [get_ports {led_o[12]}]
+set_property -dict { PACKAGE_PIN N3 IOSTANDARD LVCMOS33 } [get_ports {led_o[13]}]
+set_property -dict { PACKAGE_PIN P1 IOSTANDARD LVCMOS33 } [get_ports {led_o[14]}]
+set_property -dict { PACKAGE_PIN L1 IOSTANDARD LVCMOS33 } [get_ports {led_o[15]}]
+</code></pre>
+</section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>100 MHz Baseline</h2>
+<p>정상 Basys3 기준은 10 ns Clock이다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="100 MHz Baseline · 소스 코드"><code>vivado -mode batch \
+  -source scripts/run_timing_lab.tcl \
+  -tclargs unpipelined 10.0
+
+vivado -mode batch \
+  -source scripts/run_timing_lab.tcl \
+  -tclargs pipelined 10.0</code></pre>
+<p>두 구조가 모두 100 MHz에서 만족할 수도 있다. 실제 결과를 보고 판단한다.</p>
+</section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>200 MHz Stress Constraint</h2>
+<p>5 ns Constraint는 구조 차이를 더 분명하게 관찰하기 위한 Stress 실험이다.</p>
+<div class="warn">5 ns Constraint를 적용했다고 Basys3 W5 Oscillator가 물리적으로 200 MHz로 바뀌는 것은 아니다. 실제 200 MHz 동작에는 적절한 Clocking 구조가 별도로 필요하다.</div>
+</section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>자동 Timing Report</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="자동 Timing Report · 소스 코드"><code># SoC 22 - Basys3 Timing Lab
+#
+# Usage examples:
+#   vivado -mode batch -source scripts/run_timing_lab.tcl \
+#          -tclargs unpipelined 10.0
+#
+#   vivado -mode batch -source scripts/run_timing_lab.tcl \
+#          -tclargs pipelined 5.0
+#
+# arg0 : unpipelined | pipelined
+# arg1 : clock period in ns
+
+if {$argc &lt; 2} {
+    puts "ERROR: usage: run_timing_lab.tcl &lt;unpipelined|pipelined&gt; &lt;period_ns&gt;"
+    exit 1
+}
+
+set variant [lindex $argv 0]
+set period_ns [lindex $argv 1]
+
+if {$variant eq "unpipelined"} {
+    set top_name timing_lab_unpipelined_basys3_top
+    set core_file timing_chain_unpipelined.v
+} elseif {$variant eq "pipelined"} {
+    set top_name timing_lab_pipelined_basys3_top
+    set core_file timing_chain_pipelined.v
+} else {
+    puts "ERROR: unknown variant '$variant'"
+    exit 1
+}
+
+set script_dir [file dirname [file normalize [info script]]]
+set root_dir [file normalize [file join $script_dir ".."]]
+set rtl_dir [file join $root_dir "rtl"]
+set xdc_dir [file join $root_dir "constraints"]
+
+set run_tag "${variant}_${period_ns}ns"
+set out_dir [file normalize [file join $root_dir "reports" $run_tag]]
+
+file mkdir $out_dir
+
+create_project -in_memory -part xc7a35tcpg236-1
+
+read_verilog [file join $rtl_dir "reset_active_high_to_active_low.v"]
+read_verilog [file join $rtl_dir "timing_pattern_source.v"]
+read_verilog [file join $rtl_dir "timing_result_sink.v"]
+read_verilog [file join $rtl_dir $core_file]
+
+if {$variant eq "unpipelined"} {
+    read_verilog [file join $rtl_dir "timing_lab_unpipelined_impl_top.v"]
+    read_verilog [file join $rtl_dir "timing_lab_unpipelined_basys3_top.v"]
+} else {
+    read_verilog [file join $rtl_dir "timing_lab_pipelined_impl_top.v"]
+    read_verilog [file join $rtl_dir "timing_lab_pipelined_basys3_top.v"]
+}
+
+synth_design \
+    -top $top_name \
+    -part xc7a35tcpg236-1
+
+read_xdc [file join $xdc_dir "basys3_timing_lab_pins.xdc"]
+
+create_clock \
+    -name sys_clk \
+    -period $period_ns \
+    [get_ports clk]
+
+report_methodology \
+    -file [file join $out_dir "01_methodology_synth.rpt"]
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 10 \
+    -file [file join $out_dir "02_timing_summary_post_synth.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "03_design_analysis_post_synth.rpt"]
+
+opt_design
+place_design
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 10 \
+    -file [file join $out_dir "04_timing_summary_post_place.rpt"]
+
+phys_opt_design
+route_design
+
+report_timing_summary \
+    -delay_type min_max \
+    -report_unconstrained \
+    -max_paths 20 \
+    -file [file join $out_dir "05_timing_summary_post_route.rpt"]
+
+report_timing \
+    -delay_type max \
+    -max_paths 20 \
+    -nworst 1 \
+    -sort_by group \
+    -input_pins \
+    -file [file join $out_dir "06_worst_setup_paths.rpt"]
+
+report_timing \
+    -delay_type min \
+    -max_paths 20 \
+    -nworst 1 \
+    -sort_by group \
+    -input_pins \
+    -file [file join $out_dir "07_worst_hold_paths.rpt"]
+
+report_design_analysis \
+    -max_paths 50 \
+    -setup \
+    -logic_level_distribution \
+    -file [file join $out_dir "08_design_analysis_post_route.rpt"]
+
+report_qor_suggestions \
+    -file [file join $out_dir "09_qor_suggestions.rpt"]
+
+report_utilization \
+    -hierarchical \
+    -file [file join $out_dir "10_utilization.rpt"]
+
+report_clock_interaction \
+    -file [file join $out_dir "11_clock_interaction.rpt"]
+
+report_methodology \
+    -file [file join $out_dir "12_methodology_post_route.rpt"]
+
+write_checkpoint -force \
+    [file join $out_dir "${run_tag}_post_route.dcp"]
+
+puts ""
+puts "SoC 22 timing run complete."
+puts "Variant      : $variant"
+puts "Clock period : $period_ns ns"
+puts "Reports      : $out_dir"
+puts ""
+puts "Use the post-route Timing Summary for final comparison."
+</code></pre>
+<p>각 Case는 Synthesis → Opt → Place → Phys Opt → Route 후 Timing Summary, Worst Setup/Hold, Design Analysis, QoR Suggestions, Utilization, Clock Interaction, Methodology Report를 저장한다.</p>
+</section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Post-route Timing Signoff</h2>
+<p>최종 비교 파일은 각 Case의 다음 Report다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Post-route Timing Signoff · 소스 코드"><code>reports/&lt;variant&gt;_&lt;period&gt;ns/
+└── 05_timing_summary_post_route.rpt</code></pre>
+<p>Setup WNS/TNS, Hold WHS/THS, Failing Endpoint, Unconstrained Paths를 먼저 확인한다.</p>
+</section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>Report Design Analysis</h2>
+<p>Timing Summary가 “얼마나 실패했는가”를 보여준다면 Report Design Analysis는 Worst Path의 Logic Level, Delay 특성, Routing Complexity를 분석해 “왜 실패했는가”를 찾는 데 유용하다.</p>
+</section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>QoR Suggestions</h2>
+<p><code>report_qor_suggestions</code>는 Timing/Clocking/Congestion/Netlist 문제를 분석해 개선 후보를 제시한다. 하지만 제안 적용 전에 RTL과 Constraint의 본질적인 문제를 먼저 확인한다.</p>
+</section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>False Path 주의</h2>
+<p><code>set_false_path</code>는 기능적으로 Timing 관계가 없는 Path를 Timing Analysis에서 제외하는 Constraint다.</p>
+<div class="warn">실제로 한 Clock 안에서 Data가 전달되어야 하는 Critical Path에 False Path를 넣으면 문제를 해결한 것이 아니라 분석에서 숨긴 것이다.</div>
+</section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>Multicycle Path 주의</h2>
+<p><code>set_multicycle_path</code>는 설계 기능상 Data가 한 Clock이 아니라 여러 Clock 후 Capture되어도 되는 경우에만 사용한다.</p>
+<div class="flow">RTL Protocol이 2 Cycle 허용 → Multicycle 검토 가능<br>단순히 WNS가 음수 → Multicycle 사용 금지</div>
+</section>
+
+<section class="step-card" id="s30"><span class="step">SECTION 30</span><h2>Hold Fix 주의</h2>
+<p>Hold는 Data가 너무 빨리 도착하는 문제다. Pipeline은 주로 긴 Setup Path 개선 기법이며 Hold 문제를 같은 방식으로 해석하면 안 된다. Hold Fix가 Setup을 악화시키지 않는지도 함께 확인한다.</p>
+</section>
+
+<section class="step-card" id="s31"><span class="step">SECTION 31</span><h2>SoC 21 Regression과 연결</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="SoC 21 Regression과 연결 · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_timing_lab_compare;
+
+logic clk = 1'b0;
+logic resetn = 1'b0;
+
+logic [31:0] a_i;
+logic [31:0] b_i;
+logic [31:0] c_i;
+logic [31:0] d_i;
+logic [31:0] e_i;
+logic [31:0] f_i;
+logic [31:0] g_i;
+logic [31:0] h_i;
+logic        valid_i;
+
+wire [31:0] unpipelined_result_o;
+wire        unpipelined_valid_o;
+
+wire [31:0] pipelined_result_o;
+wire        pipelined_valid_o;
+
+int errors = 0;
+int checks = 0;
+
+logic [31:0] expected_unpipelined_q[$];
+logic [31:0] expected_pipelined_q[$];
+
+always #5 clk = ~clk;
+
+timing_lab_compare_top dut (
+    .clk(clk),
+    .resetn(resetn),
+
+    .a_i(a_i),
+    .b_i(b_i),
+    .c_i(c_i),
+    .d_i(d_i),
+    .e_i(e_i),
+    .f_i(f_i),
+    .g_i(g_i),
+    .h_i(h_i),
+    .valid_i(valid_i),
+
+    .unpipelined_result_o(unpipelined_result_o),
+    .unpipelined_valid_o(unpipelined_valid_o),
+
+    .pipelined_result_o(pipelined_result_o),
+    .pipelined_valid_o(pipelined_valid_o)
+);
+
+function automatic logic [31:0] reference_model(
+    input logic [31:0] a,
+    input logic [31:0] b,
+    input logic [31:0] c,
+    input logic [31:0] d,
+    input logic [31:0] e,
+    input logic [31:0] f,
+    input logic [31:0] g,
+    input logic [31:0] h
+);
+    logic [31:0] t1;
+    logic [31:0] t2;
+    logic [31:0] t3;
+    logic [31:0] t4;
+    logic [31:0] t5;
+    logic [31:0] t6;
+    logic [31:0] t7;
+    logic [31:0] t8;
+
+    begin
+        t1 = a + b;
+        t2 = t1 ^ {c[15:0], c[31:16]};
+        t3 = t2 + d;
+        t4 = {t3[30:0], t3[31]} ^ e;
+        t5 = t4 + f;
+        t6 = t5 ^ {g[7:0], g[31:8]};
+        t7 = t6 + h;
+        t8 = (t7 ^ {t7[3:0], t7[31:4]}) + 32'h1357_9BDF;
+
+        reference_model = t8;
+    end
+endfunction
+
+task automatic drive_case(
+    input logic [31:0] a,
+    input logic [31:0] b,
+    input logic [31:0] c,
+    input logic [31:0] d,
+    input logic [31:0] e,
+    input logic [31:0] f,
+    input logic [31:0] g,
+    input logic [31:0] h
+);
+    begin
+        @(negedge clk);
+
+        a_i = a;
+        b_i = b;
+        c_i = c;
+        d_i = d;
+        e_i = e;
+        f_i = f;
+        g_i = g;
+        h_i = h;
+        valid_i = 1'b1;
+
+        expected_unpipelined_q.push_back(
+            reference_model(a, b, c, d, e, f, g, h)
+        );
+
+        expected_pipelined_q.push_back(
+            reference_model(a, b, c, d, e, f, g, h)
+        );
+    end
+endtask
+
+task automatic stop_input;
+    begin
+        @(negedge clk);
+        valid_i = 1'b0;
+    end
+endtask
+
+always @(posedge clk) begin
+    if (resetn &amp;&amp; unpipelined_valid_o) begin
+        checks++;
+
+        if (expected_unpipelined_q.size() == 0) begin
+            errors++;
+            $error("UNPIPELINED: unexpected valid");
+        end else if (
+            unpipelined_result_o !== expected_unpipelined_q[0]
+        ) begin
+            errors++;
+            $error(
+                "UNPIPELINED mismatch actual=%08h expected=%08h",
+                unpipelined_result_o,
+                expected_unpipelined_q[0]
+            );
+            expected_unpipelined_q.pop_front();
+        end else begin
+            $display(
+                "PASS: unpipelined result=%08h",
+                unpipelined_result_o
+            );
+            expected_unpipelined_q.pop_front();
+        end
+    end
+
+    if (resetn &amp;&amp; pipelined_valid_o) begin
+        checks++;
+
+        if (expected_pipelined_q.size() == 0) begin
+            errors++;
+            $error("PIPELINED: unexpected valid");
+        end else if (
+            pipelined_result_o !== expected_pipelined_q[0]
+        ) begin
+            errors++;
+            $error(
+                "PIPELINED mismatch actual=%08h expected=%08h",
+                pipelined_result_o,
+                expected_pipelined_q[0]
+            );
+            expected_pipelined_q.pop_front();
+        end else begin
+            $display(
+                "PASS: pipelined result=%08h",
+                pipelined_result_o
+            );
+            expected_pipelined_q.pop_front();
+        end
+    end
+end
+
+initial begin
+    a_i = 0;
+    b_i = 0;
+    c_i = 0;
+    d_i = 0;
+    e_i = 0;
+    f_i = 0;
+    g_i = 0;
+    h_i = 0;
+    valid_i = 0;
+
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+
+    drive_case(
+        32'h0000_0001,
+        32'h0000_0002,
+        32'h1234_5678,
+        32'h0000_0010,
+        32'hA5A5_5A5A,
+        32'h0102_0304,
+        32'h89AB_CDEF,
+        32'h0000_1000
+    );
+
+    drive_case(
+        32'hFFFF_FFFF,
+        32'h0000_0001,
+        32'h0F0F_F0F0,
+        32'h1111_1111,
+        32'h2222_2222,
+        32'h3333_3333,
+        32'h4444_4444,
+        32'h5555_5555
+    );
+
+    repeat (20) begin
+        drive_case(
+            $urandom(),
+            $urandom(),
+            $urandom(),
+            $urandom(),
+            $urandom(),
+            $urandom(),
+            $urandom(),
+            $urandom()
+        );
+    end
+
+    stop_input();
+
+    repeat (8) @(posedge clk);
+
+    if (expected_unpipelined_q.size() != 0) begin
+        errors++;
+        $error(
+            "Unpipelined expected queue not empty: %0d entries",
+            expected_unpipelined_q.size()
+        );
+    end
+
+    if (expected_pipelined_q.size() != 0) begin
+        errors++;
+        $error(
+            "Pipelined expected queue not empty: %0d entries",
+            expected_pipelined_q.size()
+        );
+    end
+
+    $display("");
+    $display("SOC22 CHECK COUNT : %0d", checks);
+    $display("SOC22 ERROR COUNT : %0d", errors);
+
+    if (errors == 0) begin
+        $display("SOC22 FUNCTIONAL REGRESSION: PASS");
+    end else begin
+        $fatal(
+            1,
+            "SOC22 FUNCTIONAL REGRESSION: FAIL (%0d errors)",
+            errors
+        );
+    end
+
+    #30;
+    $finish;
+end
+
+endmodule
+</code></pre>
+<p>Pipeline 추가 후 결과 Latency는 달라졌지만 Reference Model 기준 기능은 동일해야 한다. 따라서 Timing 최적화와 Functional Regression을 반드시 같이 수행한다.</p>
+</section>
+
+<section class="step-card" id="s32"><span class="step">SECTION 32</span><h2>NPU / DSP 연결</h2>
+<p>향후 MAC Array, Accumulator Tree, Activation, Address Generation 같은 NPU Datapath에서도 동일한 원칙을 사용한다.</p>
+<div class="flow">Long Combinational Path 발견 → Logic Level 분석 → Pipeline Stage 분할 → Valid/Data 정렬 → Regression → Timing 재측정</div>
+</section>
+
+<section class="step-card" id="s33"><span class="step">SECTION 33</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">WNS가 음수</td><td data-label="원인 후보" role="cell">긴 Logic/Route/Clock 문제</td><td data-label="확인" role="cell">Worst Setup Path</td></tr>
+<tr role="row"><td data-label="증상" role="cell">TNS가 매우 큼</td><td data-label="원인 후보" role="cell">여러 Endpoint가 연쇄 실패</td><td data-label="확인" role="cell">Clock별 WNS부터 개선</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Post-synth는 PASS, Post-route는 FAIL</td><td data-label="원인 후보" role="cell">실제 Route Delay 증가</td><td data-label="확인" role="cell">Route Delay 비율</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Logic Delay 비율 큼</td><td data-label="원인 후보" role="cell">Logic Level 과다</td><td data-label="확인" role="cell">Pipeline/RTL 구조</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Route Delay 비율 큼</td><td data-label="원인 후보" role="cell">Fanout/Placement/Congestion</td><td data-label="확인" role="cell">Design Analysis/QoR</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Hold만 실패</td><td data-label="원인 후보" role="cell">Min Delay 문제</td><td data-label="확인" role="cell">WHS/THS</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Exception 추가 후 PASS</td><td data-label="원인 후보" role="cell">실제 요구를 숨겼을 가능성</td><td data-label="확인" role="cell">False/Multicycle 정당성</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Pipeline 후 기능 실패</td><td data-label="원인 후보" role="cell">Latency/Valid 정렬 오류</td><td data-label="확인" role="cell">SoC 21 방식 Regression</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 22 완료 체크리스트</h2>
+<ul>
+<li>[ ] Clock Constraint를 먼저 정의한다.</li>
+<li>[ ] Setup과 Hold의 Slack 식을 구분한다.</li>
+<li>[ ] WNS와 TNS의 의미를 구분한다.</li>
+<li>[ ] Hold는 WHS와 THS를 확인한다.</li>
+<li>[ ] Synthesis Timing을 최종 Signoff로 사용하지 않는다.</li>
+<li>[ ] Post-route Timing Summary를 최종 기준으로 사용한다.</li>
+<li>[ ] Critical Path의 Cell Delay와 Route Delay를 구분한다.</li>
+<li>[ ] Logic Level이 많은 Path는 RTL 구조 개선을 검토한다.</li>
+<li>[ ] 긴 Data Path를 Pipeline으로 분할할 수 있다.</li>
+<li>[ ] Pipeline의 Latency 증가와 Throughput을 구분한다.</li>
+<li>[ ] False Path로 Negative Slack을 숨기지 않는다.</li>
+<li>[ ] Multicycle은 기능적으로 정당한 Path에만 적용한다.</li>
+<li>[ ] Timing 변경 후 Functional Regression을 다시 실행한다.</li>
+</ul>
+<div class="flow">SoC 22 완료 → SoC 23 Resource / Power / Thermal</div>
+</section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Timing-Analysis" target="_blank" rel="noopener">AMD UG906 · Timing Analysis · 2026.1</a></td><td data-label="확인 항목" role="cell">Timing Signoff와 Timing Report 기본</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Timing-Path-Summary" target="_blank" rel="noopener">AMD UG906 · Timing Path Summary · 2026.1</a></td><td data-label="확인 항목" role="cell">Setup/Hold Slack 공식</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Setup-Area-Max-Delay-Analysis" target="_blank" rel="noopener">AMD UG906 · Setup Area · 2026.1</a></td><td data-label="확인 항목" role="cell">WNS/TNS 정의</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Hold-Area-Min-Delay-Analysis" target="_blank" rel="noopener">AMD UG906 · Hold Area · 2026.1</a></td><td data-label="확인 항목" role="cell">WHS/THS 정의</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug906-vivado-design-analysis/Report-Design-Analysis" target="_blank" rel="noopener">AMD UG906 · Report Design Analysis · 2026.1</a></td><td data-label="확인 항목" role="cell">Logic Level, Timing/Complexity/Congestion 분석</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Timing-Closure" target="_blank" rel="noopener">AMD UG949 · Timing Closure · 2026.1</a></td><td data-label="확인 항목" role="cell">WNS 우선 개선과 Post-route Signoff</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Pipelining-Considerations" target="_blank" rel="noopener">AMD UG949 · Pipelining Considerations · 2026.1</a></td><td data-label="확인 항목" role="cell">Long Datapath 분할과 Latency Trade-off</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug903-vivado-using-constraints/Timing-Constraints" target="_blank" rel="noopener">AMD UG903 · Timing Constraints · 2026.1</a></td><td data-label="확인 항목" role="cell">Clock/Generated Clock/Timing Exception Constraint</td></tr>
+</tbody></table></div>
+</section>
+
+<nav class="chapter-nav">
+<a href="21_self_checking_assertion_coverage.html">← SoC 21</a><a href="../../index.html">전체 목차</a><a href="23_resource_power_thermal.html">SoC 23 →</a></nav>
+</main></div>
+
+<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+
+</body></html>

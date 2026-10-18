@@ -1,0 +1,29 @@
+
+:root{
+  --bg:#f4f7fb; --card:#fff; --ink:#182230; --muted:#667085;
+  --line:#d9e2ec; --blue:#174ea6; --navy:#0b2447; --green:#0f766e;
+  --orange:#b45309; --shadow:0 12px 30px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Pretendard,"Noto Sans KR",Arial,sans-serif;line-height:1.65}
+a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+.hero{background:linear-gradient(135deg,#081f3d,#174ea6);color:white;padding:54px 24px}
+.hero .inner,.container{max-width:1220px;margin:auto}
+.hero h1{font-size:38px;margin:0 0 12px}.hero p{max-width:960px;color:#dbeafe}
+.container{padding:30px 22px 70px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:-30px}
+.metric,.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.metric{padding:18px}.metric b{display:block;font-size:25px;color:var(--navy)}
+.group{margin:34px 0}.group-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.badge{background:var(--navy);color:white;border-radius:999px;padding:6px 12px;font-weight:700;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{padding:19px}.num{font-size:13px;color:var(--muted);font-weight:800;letter-spacing:.08em}
+.card h3{margin:6px 0 10px;font-size:19px}.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.linkbtn{display:inline-block;border:1px solid var(--line);border-radius:9px;padding:6px 10px;background:#f8fafc;font-size:13px}
+table{width:100%;border-collapse:collapse;background:white;border-radius:14px;overflow:hidden}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#eef4ff}.small{font-size:13px;color:var(--muted)}
+pre{overflow:auto;background:#0b1220;color:#dbeafe;padding:16px;border-radius:12px}
+.path{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.footer{text-align:center;color:var(--muted);padding:35px}
+@media(max-width:640px){.hero h1{font-size:28px}}

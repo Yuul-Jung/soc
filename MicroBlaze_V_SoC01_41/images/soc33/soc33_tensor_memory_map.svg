@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="690" viewBox="0 0 1280 690">
+<rect width="1280" height="690" fill="white"/>
+<text x="640" y="42" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold">SoC 33 · Tensor BRAM Memory Map</text>
+<g font-family="sans-serif" font-size="16">
+<rect x="250" y="95" width="780" height="60" fill="#eef6ff" stroke="#111827"/><text x="300" y="132">0x000</text><text x="470" y="132">CH0 sample0</text><text x="790" y="132">int32</text>
+<rect x="250" y="155" width="780" height="60" fill="#f8fafc" stroke="#111827"/><text x="300" y="192">0x004</text><text x="470" y="192">CH0 sample1</text><text x="790" y="192">int32</text>
+<rect x="250" y="215" width="780" height="60" fill="#eef6ff" stroke="#111827"/><text x="300" y="252">0x008~0x00C</text><text x="470" y="252">CH0 sample2..3</text><text x="790" y="252">int32</text>
+<rect x="250" y="275" width="780" height="60" fill="#fff7ed" stroke="#111827"/><text x="300" y="312">0x010~0x01C</text><text x="470" y="312">CH1 sample0..3</text><text x="790" y="312">int32</text>
+<rect x="250" y="335" width="780" height="80" fill="#ffffff" stroke="#111827"/><text x="300" y="380">...</text><text x="470" y="380">reserved</text><text x="790" y="380">future tensor</text>
+<rect x="250" y="415" width="780" height="70" fill="#f0fdf4" stroke="#111827"/><text x="300" y="458">0x100</text><text x="470" y="458">OUT_CH0</text><text x="790" y="458">int8 ×4 packed</text>
+<rect x="250" y="485" width="780" height="70" fill="#f0fdf4" stroke="#111827"/><text x="300" y="528">0x104</text><text x="470" y="528">OUT_CH1</text><text x="790" y="528">int8 ×4 packed</text>
+</g>
+<text x="640" y="620" text-anchor="middle" font-family="sans-serif" font-size="17">SoC 34에서 INPUT_BASE / OUTPUT_BASE / LENGTH로 고정 주소를 제거</text>
+</svg>

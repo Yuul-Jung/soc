@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="AXI4-Lite Register Space와 독립 RTL의 control/status 및 ready/valid data interface 사이를 연결하는 재사용 가능한 Control/Status Bridge 설계 자료." name="description">
+<title>SoC 19 · AXI Control / Status Bridge</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 19</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner"><p class="hero-kicker">Basys3 SoC + NPU · SoC 19</p><h1>AXI Control / Status Bridge</h1>
+<p class="hero-desc">Peripheral마다 Register Bank를 새로 만드는 대신 AXI4-Lite와 기능 RTL 사이에 재사용 가능한 Bridge를 둔다. Software는 CONTROL/STATUS/IN_DATA/OUT_DATA Register를 사용하고, 기능 RTL은 control/status와 READY/VALID Data Interface만 사용한다.</p>
+<div class="hero-meta"><span class="chip">AXI4-Lite</span><span class="chip">Control / Status</span><span class="chip">READY / VALID</span><span class="chip">1-Word Buffer</span><span class="chip">Backpressure</span><span class="chip">Reusable Bridge</span></div></div></header>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html" selected>SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc19_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc19">이 장 검증</a></div></div><p class="nav-title">SOC 19 · LEARNING FLOW</p><p class="nav-help">AXI Register ↔ Bridge ↔ Functional RTL</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>이번 장의 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>SoC 18에서 왜 Bridge로 넘어가는가</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>전체 구조</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>표준 Endpoint Interface</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>READY/VALID 핵심 규칙</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Register Map</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>CONTROL / CORE_STATUS</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>IN_DATA Shadow</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>SUBMIT와 Input Pending Buffer</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Input Handshake</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Output Capture Buffer</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>OUT_DATA와 POP</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Backpressure</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>EVENT_STATUS와 IRQ</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Error 정책</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Bridge Core RTL</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>AXI Bridge Top</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Example READY/VALID Core</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Driver API</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>RunBlocking 흐름</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>실제 Driver Mock Test</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Self-Checking AXI Testbench</span></a></li>
+<li><a href="#s23"><span class="n">23</span><span>UART 연결 예</span></a></li>
+<li><a href="#s24"><span class="n">24</span><span>PWM 연결 시 주의</span></a></li>
+<li><a href="#s25"><span class="n">25</span><span>NPU/FFT 연결 방향</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>AXI4-Stream과의 차이</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>Packaging Source</span></a></li>
+<li><a href="#s28"><span class="n">28</span><span>Vivado Packaging</span></a></li>
+<li><a href="#s29"><span class="n">29</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">30</span><span>완료 체크리스트</span></a></li>
+<li><a href="#sources"><span class="n">31</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside><main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 17 RTL IP화</span><span class="arrow">→</span><span class="stage">SoC 18 UART/PWM IP</span><span class="arrow">→</span><span class="stage"><strong>SoC 19 Control/Status Bridge</strong></span><span class="arrow">→</span><span class="stage">SoC 20 CDC / Reset 안전 설계</span></div></div>
+
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>이번 장의 목표</h2><div class="flow">MicroBlaze V → AXI4-Lite → Generic Bridge → READY/VALID Endpoint → Functional RTL</div><p>기능 RTL마다 AXI Register 코드를 반복하지 않고 공통 Bridge를 재사용할 수 있는 경계를 만든다.</p></section>
+
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>SoC 18에서 왜 Bridge로 넘어가는가</h2><p>UART와 PWM처럼 Register 의미가 크게 다른 Peripheral에는 전용 Register Bank가 적절하다. 하지만 NPU, DSP, 간단한 Accelerator처럼 “설정값 + 입력 Word + 결과 Word” 구조가 반복되면 공통 Bridge가 효율적이다.</p></section>
+
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>전체 구조</h2><figure class="manual-figure"><a href="../../images/soc19/soc19_bridge_architecture.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI control status bridge architecture · 원본 보기 (새 탭)"><img src="../../images/soc19/soc19_bridge_architecture.svg" alt="AXI control status bridge architecture"></a><figcaption>AXI Protocol과 기능 RTL 사이를 공통 Control/Status/Data Contract로 분리한다.<br><a href="../../images/soc19/soc19_bridge_architecture.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI control status bridge architecture · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>표준 Endpoint Interface</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="표준 Endpoint Interface · 소스 코드"><code>control_o[31:0]        // Software → RTL 지속 설정
+status_i[31:0]         // RTL → Software 상태
+
+in_data_o[31:0]
+in_valid_o
+in_ready_i
+
+out_data_i[31:0]
+out_valid_i
+out_ready_o</code></pre><p>이 인터페이스는 AXI4-Stream 전체 규격이 아니라 같은 READY/VALID Handshake 의미를 차용한 내부 표준이다.</p></section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>READY/VALID 핵심 규칙</h2><figure class="manual-figure"><a href="../../images/soc19/soc19_ready_valid_buffers.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Ready valid one word buffers · 원본 보기 (새 탭)"><img src="../../images/soc19/soc19_ready_valid_buffers.svg" alt="Ready valid one word buffers"></a><figcaption>VALID와 READY가 동시에 1인 Clock에서만 Data가 실제 전달된다.<br><a href="../../images/soc19/soc19_ready_valid_buffers.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Ready valid one word buffers · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure><div class="flow">VALID &amp;&amp; READY → Transfer</div><p>VALID가 1인데 READY가 0이면 Producer는 Data와 VALID를 유지해야 한다.</p></section>
+
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Register Map</h2><figure class="manual-figure"><a href="../../images/soc19/soc19_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="SoC19 register map · 원본 보기 (새 탭)"><img src="../../images/soc19/soc19_register_map.svg" alt="SoC19 register map"></a><figcaption>기능별 Register가 아니라 Bridge 자체의 공통 Contract를 표현한다.<br><a href="../../images/soc19/soc19_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="SoC19 register map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>CONTROL / CORE_STATUS</h2><p><code>CONTROL</code>은 32-bit RW Word를 그대로 <code>control_o</code>로 내보내고, <code>CORE_STATUS</code>는 기능 RTL의 <code>status_i</code>를 그대로 Software가 읽는다. Bit 의미는 연결되는 기능 RTL이 정의한다.</p></section>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>IN_DATA Shadow</h2><p>Software는 먼저 <code>IN_DATA</code> Shadow Register에 값을 쓴다. 이 Write만으로 Functional RTL에 Data를 보내지 않는다.</p><div class="flow">Write IN_DATA → Shadow 저장 → 아직 valid=0</div></section>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>SUBMIT와 Input Pending Buffer</h2><div class="flow">COMMAND.SUBMIT W1P → Shadow를 Pending Data에 Capture → in_valid=1</div><p>SUBMIT 이후 Software가 IN_DATA Shadow를 바꾸어도 이미 Pending 중인 Data는 변하지 않는다.</p></section>
+
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Input Handshake</h2><div class="signal-map" tabindex="0" role="region" aria-label="10절 신호 및 실행 흐름">in_valid_o = 1
+in_ready_i = 0  → Data 유지
+
+in_valid_o = 1
+in_ready_i = 1  → Clock edge에서 Transfer
+                  → in_valid_o clear
+                  → EVENT.IN_ACCEPTED set</div></section>
+
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Output Capture Buffer</h2><p>Bridge Output Buffer가 비어 있으면 <code>out_ready_o=1</code>이다. Functional RTL의 <code>out_valid_i=1</code>과 만나면 결과를 Capture하고 <code>OUT_PENDING</code>을 세운다.</p></section>
+
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>OUT_DATA와 POP</h2><div class="flow">OUT_PENDING 확인 → OUT_DATA Read → COMMAND.POP_OUT → Buffer Empty</div><p>Read 자체가 결과를 자동 삭제하지 않는다. 명시적인 POP으로 Software의 Read와 Buffer 소비를 분리한다.</p></section>
+
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Backpressure</h2><p>Output Buffer가 차면 out_ready_o가 0이 되어 기능 RTL의 출력을 대기시킨다. Bridge 입력 버퍼에는 1개 요청만 대기할 수 있으며, IN_PENDING이 1인 동안 추가 SUBMIT은 거부한다. Core 내부 처리·출력 저장 공간은 Bridge 버퍼와 별도로 계산한다.<code>out_ready_o=0</code>이 되어 Functional RTL에 Backpressure를 건다. Input 쪽도 Pending Word가 존재하면 두 번째 Pending까지만 허용하고 추가 SUBMIT은 Error로 처리한다.</p></section>
+
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>EVENT_STATUS와 IRQ</h2><div class="table-wrap" tabindex="0" role="region" aria-label="EVENT_STATUS와 IRQ · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">Event</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="Event" role="cell">IN_ACCEPTED</td></tr><tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="Event" role="cell">OUT_CAPTURED</td></tr><tr role="row"><td data-label="Bit" role="cell">2</td><td data-label="Event" role="cell">ERROR</td></tr></tbody></table></div><p>EVENT_STATUS는 W1C이며 하나라도 남아 있으면 <code>irq_o=1</code>이다.</p></section>
+
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Error 정책</h2><ul><li>Input Pending 상태에서 다시 SUBMIT → ERROR</li><li>Output Pending이 없는데 POP → ERROR</li><li>CLEAR_ERROR는 Bridge Error Level만 지움</li><li>EVENT_STATUS.ERROR는 별도 W1C</li></ul></section>
+
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Bridge Core RTL</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Bridge Core RTL · 소스 코드"><code>module control_status_bridge_core (
+    input  wire        clk,
+    input  wire        resetn,
+
+    // Bus-independent register access
+    input  wire        wr_en,
+    input  wire [7:0]  wr_offset,
+    input  wire [31:0] wr_data,
+    input  wire [3:0]  wr_strb,
+
+    input  wire [7:0]  rd_offset,
+    output reg  [31:0] rd_data,
+
+    // Generic control / status interface
+    output reg  [31:0] control_o,
+    input  wire [31:0] status_i,
+
+    // Software -&gt; functional RTL
+    output reg  [31:0] in_data_o,
+    output reg         in_valid_o,
+    input  wire        in_ready_i,
+
+    // Functional RTL -&gt; software
+    input  wire [31:0] out_data_i,
+    input  wire        out_valid_i,
+    output wire        out_ready_o,
+
+    // Event/interrupt visibility
+    output wire        irq_o
+);
+
+localparam [7:0] REG_CONTROL       = 8'h00;
+localparam [7:0] REG_CORE_STATUS   = 8'h04;
+localparam [7:0] REG_BRIDGE_STATUS = 8'h08;
+localparam [7:0] REG_IN_DATA       = 8'h0C;
+localparam [7:0] REG_COMMAND       = 8'h10;
+localparam [7:0] REG_OUT_DATA      = 8'h14;
+localparam [7:0] REG_EVENT_STATUS  = 8'h18;
+localparam [7:0] REG_VERSION       = 8'h1C;
+localparam [7:0] REG_ID            = 8'h20;
+
+localparam [31:0] VERSION_VALUE = 32'h0001_0000;
+localparam [31:0] ID_VALUE      = 32'h4353_4231; // ASCII "CSB1"
+
+reg [31:0] in_data_shadow;
+reg [31:0] out_data_latched;
+reg        out_pending;
+reg        error_status;
+reg [2:0]  event_status;
+
+integer byte_index;
+
+wire command_write;
+wire command_submit;
+wire command_pop_out;
+wire command_clear_error;
+
+wire event_write;
+wire event_clear_in_accepted;
+wire event_clear_out_captured;
+wire event_clear_error;
+
+wire in_handshake;
+wire out_handshake;
+
+wire submit_error;
+wire pop_error;
+wire error_event;
+
+assign command_write =
+    wr_en &amp;&amp;
+    (wr_offset == REG_COMMAND) &amp;&amp;
+    wr_strb[0];
+
+assign command_submit      = command_write &amp;&amp; wr_data[0];
+assign command_pop_out     = command_write &amp;&amp; wr_data[1];
+assign command_clear_error = command_write &amp;&amp; wr_data[2];
+
+assign event_write =
+    wr_en &amp;&amp;
+    (wr_offset == REG_EVENT_STATUS) &amp;&amp;
+    wr_strb[0];
+
+assign event_clear_in_accepted = event_write &amp;&amp; wr_data[0];
+assign event_clear_out_captured = event_write &amp;&amp; wr_data[1];
+assign event_clear_error = event_write &amp;&amp; wr_data[2];
+
+assign in_handshake  = in_valid_o &amp;&amp; in_ready_i;
+assign out_ready_o   = !out_pending;
+assign out_handshake = out_valid_i &amp;&amp; out_ready_o;
+
+assign submit_error = command_submit &amp;&amp; in_valid_o;
+assign pop_error    = command_pop_out &amp;&amp; !out_pending;
+assign error_event  = submit_error || pop_error;
+
+assign irq_o = |event_status;
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        control_o        &lt;= 32'h0000_0000;
+        in_data_shadow   &lt;= 32'h0000_0000;
+        in_data_o        &lt;= 32'h0000_0000;
+        in_valid_o       &lt;= 1'b0;
+        out_data_latched &lt;= 32'h0000_0000;
+        out_pending      &lt;= 1'b0;
+        error_status     &lt;= 1'b0;
+    end else begin
+        // General RW control word.
+        if (wr_en &amp;&amp; (wr_offset == REG_CONTROL)) begin
+            for (byte_index = 0; byte_index &lt; 4; byte_index = byte_index + 1) begin
+                if (wr_strb[byte_index]) begin
+                    control_o[byte_index*8 +: 8] &lt;=
+                        wr_data[byte_index*8 +: 8];
+                end
+            end
+        end
+
+        // Software writes a shadow value first.
+        // SUBMIT copies this stable value into the pending transfer register.
+        if (wr_en &amp;&amp; (wr_offset == REG_IN_DATA)) begin
+            for (byte_index = 0; byte_index &lt; 4; byte_index = byte_index + 1) begin
+                if (wr_strb[byte_index]) begin
+                    in_data_shadow[byte_index*8 +: 8] &lt;=
+                        wr_data[byte_index*8 +: 8];
+                end
+            end
+        end
+
+        // Existing pending input is released only after READY/VALID handshake.
+        if (in_handshake) begin
+            in_valid_o &lt;= 1'b0;
+        end
+
+        // SUBMIT is rejected if one input word is already pending.
+        if (command_submit &amp;&amp; !in_valid_o) begin
+            in_data_o  &lt;= in_data_shadow;
+            in_valid_o &lt;= 1'b1;
+        end
+
+        // Software explicitly POPs an already captured output word.
+        if (command_pop_out &amp;&amp; out_pending) begin
+            out_pending &lt;= 1'b0;
+        end
+
+        // A new output transfer is captured whenever the bridge buffer is empty.
+        // Hardware capture has priority over a same-cycle empty POP.
+        if (out_handshake) begin
+            out_data_latched &lt;= out_data_i;
+            out_pending      &lt;= 1'b1;
+        end
+
+        // Software clear has lower priority than a new bridge error.
+        if (command_clear_error) begin
+            error_status &lt;= 1'b0;
+        end
+
+        if (error_event) begin
+            error_status &lt;= 1'b1;
+        end
+    end
+end
+
+// Event status uses hardware-set priority over software W1C clear.
+always @(posedge clk) begin
+    if (!resetn) begin
+        event_status &lt;= 3'b000;
+    end else begin
+        if (in_handshake) begin
+            event_status[0] &lt;= 1'b1;
+        end else if (event_clear_in_accepted) begin
+            event_status[0] &lt;= 1'b0;
+        end
+
+        if (out_handshake) begin
+            event_status[1] &lt;= 1'b1;
+        end else if (event_clear_out_captured) begin
+            event_status[1] &lt;= 1'b0;
+        end
+
+        if (error_event) begin
+            event_status[2] &lt;= 1'b1;
+        end else if (event_clear_error) begin
+            event_status[2] &lt;= 1'b0;
+        end
+    end
+end
+
+always @(*) begin
+    case (rd_offset)
+        REG_CONTROL:
+            rd_data = control_o;
+
+        REG_CORE_STATUS:
+            rd_data = status_i;
+
+        REG_BRIDGE_STATUS:
+            rd_data = {
+                27'h0,
+                out_valid_i,
+                error_status,
+                out_pending,
+                in_valid_o,
+                in_ready_i
+            };
+
+        REG_IN_DATA:
+            rd_data = in_data_shadow;
+
+        REG_COMMAND:
+            rd_data = 32'h0000_0000;
+
+        REG_OUT_DATA:
+            rd_data = out_data_latched;
+
+        REG_EVENT_STATUS:
+            rd_data = {29'h0, event_status};
+
+        REG_VERSION:
+            rd_data = VERSION_VALUE;
+
+        REG_ID:
+            rd_data = ID_VALUE;
+
+        default:
+            rd_data = 32'h0000_0000;
+    endcase
+end
+
+endmodule
+</code></pre></section>
+
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>AXI Bridge Top</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="AXI Bridge Top · 소스 코드"><code>module axi_control_status_bridge_ip #(
+    parameter integer C_S_AXI_ADDR_WIDTH = 32
+)(
+    input  wire                          s_axi_aclk,
+    input  wire                          s_axi_aresetn,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_awaddr,
+    input  wire [2:0]                    s_axi_awprot,
+    input  wire                          s_axi_awvalid,
+    output wire                          s_axi_awready,
+
+    input  wire [31:0]                   s_axi_wdata,
+    input  wire [3:0]                    s_axi_wstrb,
+    input  wire                          s_axi_wvalid,
+    output wire                          s_axi_wready,
+
+    output wire [1:0]                    s_axi_bresp,
+    output wire                          s_axi_bvalid,
+    input  wire                          s_axi_bready,
+
+    input  wire [C_S_AXI_ADDR_WIDTH-1:0] s_axi_araddr,
+    input  wire [2:0]                    s_axi_arprot,
+    input  wire                          s_axi_arvalid,
+    output wire                          s_axi_arready,
+
+    output wire [31:0]                   s_axi_rdata,
+    output wire [1:0]                    s_axi_rresp,
+    output wire                          s_axi_rvalid,
+    input  wire                          s_axi_rready,
+
+    // Generic functional-RTL interface
+    output wire [31:0]                   control_o,
+    input  wire [31:0]                   status_i,
+
+    output wire [31:0]                   in_data_o,
+    output wire                          in_valid_o,
+    input  wire                          in_ready_i,
+
+    input  wire [31:0]                   out_data_i,
+    input  wire                          out_valid_i,
+    output wire                          out_ready_o,
+
+    output wire                          irq_o
+);
+
+// Pure connection wrapper:
+// AXI transport and bridge semantics stay in independent modules.
+
+wire        wr_en;
+wire [7:0]  wr_offset;
+wire [31:0] wr_data;
+wire [3:0]  wr_strb;
+wire [7:0]  rd_offset;
+wire [31:0] rd_data;
+
+axi4lite_slave_adapter #(
+    .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
+) u_axi4lite_slave_adapter (
+    .s_axi_aclk(s_axi_aclk),
+    .s_axi_aresetn(s_axi_aresetn),
+
+    .s_axi_awaddr(s_axi_awaddr),
+    .s_axi_awprot(s_axi_awprot),
+    .s_axi_awvalid(s_axi_awvalid),
+    .s_axi_awready(s_axi_awready),
+
+    .s_axi_wdata(s_axi_wdata),
+    .s_axi_wstrb(s_axi_wstrb),
+    .s_axi_wvalid(s_axi_wvalid),
+    .s_axi_wready(s_axi_wready),
+
+    .s_axi_bresp(s_axi_bresp),
+    .s_axi_bvalid(s_axi_bvalid),
+    .s_axi_bready(s_axi_bready),
+
+    .s_axi_araddr(s_axi_araddr),
+    .s_axi_arprot(s_axi_arprot),
+    .s_axi_arvalid(s_axi_arvalid),
+    .s_axi_arready(s_axi_arready),
+
+    .s_axi_rdata(s_axi_rdata),
+    .s_axi_rresp(s_axi_rresp),
+    .s_axi_rvalid(s_axi_rvalid),
+    .s_axi_rready(s_axi_rready),
+
+    .wr_en(wr_en),
+    .wr_offset(wr_offset),
+    .wr_data(wr_data),
+    .wr_strb(wr_strb),
+
+    .rd_offset(rd_offset),
+    .rd_data(rd_data)
+);
+
+control_status_bridge_core u_control_status_bridge_core (
+    .clk(s_axi_aclk),
+    .resetn(s_axi_aresetn),
+
+    .wr_en(wr_en),
+    .wr_offset(wr_offset),
+    .wr_data(wr_data),
+    .wr_strb(wr_strb),
+
+    .rd_offset(rd_offset),
+    .rd_data(rd_data),
+
+    .control_o(control_o),
+    .status_i(status_i),
+
+    .in_data_o(in_data_o),
+    .in_valid_o(in_valid_o),
+    .in_ready_i(in_ready_i),
+
+    .out_data_i(out_data_i),
+    .out_valid_i(out_valid_i),
+    .out_ready_o(out_ready_o),
+
+    .irq_o(irq_o)
+);
+
+endmodule
+</code></pre><p>Top은 검증된 AXI4-Lite Adapter와 Bridge Core를 연결만 한다.</p></section>
+
+<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Example READY/VALID Core</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Example READY/VALID Core · 소스 코드"><code>module example_ready_valid_core #(
+    parameter integer PROCESS_CYCLES = 4
+)(
+    input  wire        clk,
+    input  wire        resetn,
+
+    input  wire [31:0] control_i,
+    output wire [31:0] status_o,
+
+    input  wire [31:0] in_data_i,
+    input  wire        in_valid_i,
+    output wire        in_ready_o,
+
+    output reg  [31:0] out_data_o,
+    output reg         out_valid_o,
+    input  wire        out_ready_i
+);
+
+localparam [1:0] ST_IDLE = 2'd0;
+localparam [1:0] ST_RUN  = 2'd1;
+localparam [1:0] ST_OUT  = 2'd2;
+
+reg [1:0]  state;
+reg [7:0]  cycles_left;
+reg [31:0] data_latched;
+reg [1:0]  mode_latched;
+
+wire input_handshake;
+wire output_handshake;
+
+assign in_ready_o = (state == ST_IDLE);
+assign input_handshake = in_valid_i &amp;&amp; in_ready_o;
+assign output_handshake = out_valid_o &amp;&amp; out_ready_i;
+
+assign status_o = {
+    28'h0,
+    out_valid_o,
+    (state == ST_RUN),
+    (state == ST_IDLE),
+    in_ready_o
+};
+
+function [31:0] process_value;
+    input [31:0] value;
+    input [1:0] mode;
+    begin
+        case (mode)
+            2'b00: process_value = value;
+            2'b01: process_value = value + 32'd1;
+            2'b10: process_value = value &lt;&lt; 1;
+            2'b11: process_value = ~value;
+            default: process_value = value;
+        endcase
+    end
+endfunction
+
+always @(posedge clk) begin
+    if (!resetn) begin
+        state         &lt;= ST_IDLE;
+        cycles_left   &lt;= 8'd0;
+        data_latched  &lt;= 32'h0000_0000;
+        mode_latched  &lt;= 2'b00;
+        out_data_o    &lt;= 32'h0000_0000;
+        out_valid_o   &lt;= 1'b0;
+    end else begin
+        case (state)
+            ST_IDLE: begin
+                out_valid_o &lt;= 1'b0;
+
+                if (input_handshake) begin
+                    data_latched &lt;= in_data_i;
+                    mode_latched &lt;= control_i[1:0];
+
+                    if (PROCESS_CYCLES &lt;= 1) begin
+                        cycles_left &lt;= 8'd0;
+                    end else begin
+                        cycles_left &lt;= PROCESS_CYCLES - 1;
+                    end
+
+                    state &lt;= ST_RUN;
+                end
+            end
+
+            ST_RUN: begin
+                if (cycles_left != 0) begin
+                    cycles_left &lt;= cycles_left - 1'b1;
+                end else begin
+                    out_data_o  &lt;= process_value(data_latched, mode_latched);
+                    out_valid_o &lt;= 1'b1;
+                    state       &lt;= ST_OUT;
+                end
+            end
+
+            ST_OUT: begin
+                if (output_handshake) begin
+                    out_valid_o &lt;= 1'b0;
+                    state       &lt;= ST_IDLE;
+                end
+            end
+
+            default: begin
+                state       &lt;= ST_IDLE;
+                out_valid_o &lt;= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+</code></pre><p>Mode 0~3의 단순 연산을 수행하며 Output READY가 내려가면 결과 VALID/Data를 유지한다.</p></section>
+
+<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Driver API</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Driver API · 소스 코드"><code>#include "axi_control_status_bridge_driver.h"
+
+static int CsbDrv_CheckReady(const CsbDrv *InstancePtr)
+{
+    if (InstancePtr == 0) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    if (InstancePtr-&gt;IsReady != CSBDRV_READY_MAGIC) {
+        return CSBDRV_ERR_NOT_READY;
+    }
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_Initialize(CsbDrv *InstancePtr, UINTPTR BaseAddress)
+{
+    if (InstancePtr == 0) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    if ((BaseAddress &amp; 0x3U) != 0U) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    InstancePtr-&gt;BaseAddress = BaseAddress;
+    InstancePtr-&gt;IsReady = 0U;
+
+    if (Csb_ReadReg(BaseAddress, CSB_ID_OFFSET) != CSB_ID_VALUE) {
+        return CSBDRV_ERR_ID;
+    }
+
+    if (Csb_ReadReg(BaseAddress, CSB_VERSION_OFFSET) != CSB_VERSION_VALUE) {
+        return CSBDRV_ERR_ID;
+    }
+
+    InstancePtr-&gt;IsReady = CSBDRV_READY_MAGIC;
+    return CSBDRV_OK;
+}
+
+int CsbDrv_SetControl(CsbDrv *InstancePtr, u32 ControlWord)
+{
+    int rc = CsbDrv_CheckReady(InstancePtr);
+
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    Csb_WriteReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_CONTROL_OFFSET,
+        ControlWord
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_GetCoreStatus(CsbDrv *InstancePtr, u32 *StatusWord)
+{
+    int rc = CsbDrv_CheckReady(InstancePtr);
+
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    if (StatusWord == 0) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    *StatusWord = Csb_ReadReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_CORE_STATUS_OFFSET
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_GetBridgeStatus(CsbDrv *InstancePtr, u32 *StatusWord)
+{
+    int rc = CsbDrv_CheckReady(InstancePtr);
+
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    if (StatusWord == 0) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    *StatusWord = Csb_ReadReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_BRIDGE_STATUS_OFFSET
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_GetEvents(CsbDrv *InstancePtr, u32 *EventWord)
+{
+    int rc = CsbDrv_CheckReady(InstancePtr);
+
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    if (EventWord == 0) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    *EventWord = Csb_ReadReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_EVENT_STATUS_OFFSET
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_ClearEvents(CsbDrv *InstancePtr, u32 EventMask)
+{
+    int rc = CsbDrv_CheckReady(InstancePtr);
+    u32 valid_mask;
+
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    valid_mask =
+        CSB_EVENT_IN_ACCEPTED_MASK |
+        CSB_EVENT_OUT_CAPTURED_MASK |
+        CSB_EVENT_ERROR_MASK;
+
+    Csb_WriteReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_EVENT_STATUS_OFFSET,
+        EventMask &amp; valid_mask
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_ClearError(CsbDrv *InstancePtr)
+{
+    int rc = CsbDrv_CheckReady(InstancePtr);
+
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    Csb_WriteReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_COMMAND_OFFSET,
+        CSB_COMMAND_CLEAR_ERROR_MASK
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_Submit(CsbDrv *InstancePtr, u32 InputWord)
+{
+    int rc;
+    u32 status;
+
+    rc = CsbDrv_GetBridgeStatus(InstancePtr, &amp;status);
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    if ((status &amp; CSB_BRIDGE_ERROR_MASK) != 0U) {
+        return CSBDRV_ERR_HW;
+    }
+
+    if ((status &amp; CSB_BRIDGE_IN_PENDING_MASK) != 0U) {
+        return CSBDRV_ERR_BUSY;
+    }
+
+    Csb_WriteReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_IN_DATA_OFFSET,
+        InputWord
+    );
+
+    Csb_WriteReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_COMMAND_OFFSET,
+        CSB_COMMAND_SUBMIT_MASK
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_OutputAvailable(CsbDrv *InstancePtr)
+{
+    int rc;
+    u32 status;
+
+    rc = CsbDrv_GetBridgeStatus(InstancePtr, &amp;status);
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    if ((status &amp; CSB_BRIDGE_ERROR_MASK) != 0U) {
+        return CSBDRV_ERR_HW;
+    }
+
+    return ((status &amp; CSB_BRIDGE_OUT_PENDING_MASK) != 0U) ? 1 : 0;
+}
+
+int CsbDrv_GetOutput(CsbDrv *InstancePtr, u32 *OutputWord)
+{
+    int available;
+
+    if (OutputWord == 0) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    available = CsbDrv_OutputAvailable(InstancePtr);
+    if (available &lt; 0) {
+        return available;
+    }
+
+    if (available == 0) {
+        return CSBDRV_ERR_NO_OUTPUT;
+    }
+
+    *OutputWord = Csb_ReadReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_OUT_DATA_OFFSET
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_PopOutput(CsbDrv *InstancePtr)
+{
+    int available;
+
+    available = CsbDrv_OutputAvailable(InstancePtr);
+    if (available &lt; 0) {
+        return available;
+    }
+
+    if (available == 0) {
+        return CSBDRV_ERR_NO_OUTPUT;
+    }
+
+    Csb_WriteReg(
+        InstancePtr-&gt;BaseAddress,
+        CSB_COMMAND_OFFSET,
+        CSB_COMMAND_POP_OUT_MASK
+    );
+
+    return CSBDRV_OK;
+}
+
+int CsbDrv_RunBlocking(
+    CsbDrv *InstancePtr,
+    u32 ControlWord,
+    u32 InputWord,
+    u32 PollLimit,
+    u32 *OutputWord
+)
+{
+    u32 k;
+    int rc;
+    int available;
+
+    if ((OutputWord == 0) || (PollLimit == 0U)) {
+        return CSBDRV_ERR_PARAM;
+    }
+
+    rc = CsbDrv_ClearError(InstancePtr);
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    rc = CsbDrv_ClearEvents(
+        InstancePtr,
+        CSB_EVENT_IN_ACCEPTED_MASK |
+        CSB_EVENT_OUT_CAPTURED_MASK |
+        CSB_EVENT_ERROR_MASK
+    );
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    rc = CsbDrv_SetControl(
+        InstancePtr,
+        ControlWord
+    );
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    rc = CsbDrv_Submit(
+        InstancePtr,
+        InputWord
+    );
+    if (rc != CSBDRV_OK) {
+        return rc;
+    }
+
+    for (k = 0U; k &lt; PollLimit; k++) {
+        available = CsbDrv_OutputAvailable(InstancePtr);
+
+        if (available &lt; 0) {
+            return available;
+        }
+
+        if (available != 0) {
+            rc = CsbDrv_GetOutput(
+                InstancePtr,
+                OutputWord
+            );
+            if (rc != CSBDRV_OK) {
+                return rc;
+            }
+
+            return CsbDrv_PopOutput(InstancePtr);
+        }
+    }
+
+    return CSBDRV_ERR_TIMEOUT;
+}
+</code></pre></section>
+
+<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>RunBlocking 흐름</h2><div class="flow">Clear Error/Event → CONTROL → IN_DATA → SUBMIT → OUT_PENDING Poll → OUT_DATA Read → POP_OUT</div><p>Polling API이지만 Bridge Interface 자체는 READY/VALID이므로 이후 Interrupt 방식으로 확장해도 Functional RTL은 변경할 필요가 없다.</p></section>
+
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>실제 Driver Mock Test</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="실제 Driver Mock Test · 소스 코드"><code>PASS: CSB Initialize
+PASS: CSB RunBlocking ADD1
+PASS: CSB output 9 -&gt; 10
+PASS: CSB GetEvents
+PASS: CSB input/output events
+PASS: CSB output already popped by RunBlocking
+PASS: CSB pending input BUSY
+PASS: CSB hardware error
+SOC19 BRIDGE DRIVER MOCK TEST: PASS</code></pre></section>
+
+<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Self-Checking AXI Testbench</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Self-Checking AXI Testbench · 소스 코드"><code>`timescale 1ns / 1ps
+
+module tb_axi_control_status_bridge_demo_top;
+
+localparam integer ADDR_W = 32;
+
+reg clk = 1'b0;
+reg resetn = 1'b0;
+always #5 clk = ~clk;
+
+reg  [ADDR_W-1:0] awaddr = 0;
+reg  [2:0]        awprot = 0;
+reg               awvalid = 0;
+wire              awready;
+
+reg  [31:0]       wdata = 0;
+reg  [3:0]        wstrb = 0;
+reg               wvalid = 0;
+wire              wready;
+
+wire [1:0]        bresp;
+wire              bvalid;
+reg               bready = 0;
+
+reg  [ADDR_W-1:0] araddr = 0;
+reg  [2:0]        arprot = 0;
+reg               arvalid = 0;
+wire              arready;
+
+wire [31:0]       rdata;
+wire [1:0]        rresp;
+wire              rvalid;
+reg               rready = 0;
+
+wire irq_o;
+
+integer errors = 0;
+integer k;
+reg [31:0] rd;
+
+axi_control_status_bridge_demo_top #(
+    .C_S_AXI_ADDR_WIDTH(ADDR_W),
+    .PROCESS_CYCLES(6)
+) dut (
+    .s_axi_aclk(clk),
+    .s_axi_aresetn(resetn),
+
+    .s_axi_awaddr(awaddr),
+    .s_axi_awprot(awprot),
+    .s_axi_awvalid(awvalid),
+    .s_axi_awready(awready),
+
+    .s_axi_wdata(wdata),
+    .s_axi_wstrb(wstrb),
+    .s_axi_wvalid(wvalid),
+    .s_axi_wready(wready),
+
+    .s_axi_bresp(bresp),
+    .s_axi_bvalid(bvalid),
+    .s_axi_bready(bready),
+
+    .s_axi_araddr(araddr),
+    .s_axi_arprot(arprot),
+    .s_axi_arvalid(arvalid),
+    .s_axi_arready(arready),
+
+    .s_axi_rdata(rdata),
+    .s_axi_rresp(rresp),
+    .s_axi_rvalid(rvalid),
+    .s_axi_rready(rready),
+
+    .irq_o(irq_o)
+);
+
+task automatic axi_write;
+    input [31:0] addr;
+    input [31:0] data;
+    begin
+        @(negedge clk);
+        awaddr = addr;
+        awvalid = 1'b1;
+
+        wait (awready === 1'b1);
+        @(negedge clk);
+        awvalid = 1'b0;
+
+        @(negedge clk);
+        wdata = data;
+        wstrb = 4'b1111;
+        wvalid = 1'b1;
+
+        wait (wready === 1'b1);
+        @(negedge clk);
+        wvalid = 1'b0;
+
+        bready = 1'b1;
+        wait (bvalid === 1'b1);
+        @(posedge clk);
+        @(negedge clk);
+        bready = 1'b0;
+    end
+endtask
+
+task automatic axi_read;
+    input [31:0] addr;
+    output [31:0] data;
+    begin
+        @(negedge clk);
+        araddr = addr;
+        arvalid = 1'b1;
+
+        wait (arready === 1'b1);
+        @(negedge clk);
+        arvalid = 1'b0;
+
+        rready = 1'b1;
+        wait (rvalid === 1'b1);
+        data = rdata;
+
+        @(posedge clk);
+        @(negedge clk);
+        rready = 1'b0;
+    end
+endtask
+
+task automatic expect32;
+    input [31:0] actual;
+    input [31:0] expected;
+    input [8*64-1:0] label;
+    begin
+        if (actual !== expected) begin
+            $display("FAIL: %0s actual=%08h expected=%08h",
+                     label, actual, expected);
+            errors = errors + 1;
+        end else begin
+            $display("PASS: %0s = %08h", label, actual);
+        end
+    end
+endtask
+
+task automatic wait_out_pending;
+    begin
+        rd = 0;
+
+        for (k = 0; k &lt; 100; k = k + 1) begin
+            axi_read(32'h00000008, rd);
+
+            if (rd[2]) begin
+                k = 100;
+            end
+        end
+
+        if (!rd[2]) begin
+            $display("FAIL: timeout waiting for OUT_PENDING");
+            errors = errors + 1;
+        end
+    end
+endtask
+
+initial begin
+    repeat (5) @(posedge clk);
+    resetn = 1'b1;
+    repeat (3) @(posedge clk);
+
+    // Identification
+    axi_read(32'h00000020, rd);
+    expect32(rd, 32'h43534231, "CSB ID");
+
+    axi_read(32'h0000001C, rd);
+    expect32(rd, 32'h00010000, "CSB VERSION");
+
+    // Mode 1: add 1
+    axi_write(32'h00000000, 32'h00000001);
+    axi_write(32'h0000000C, 32'h00000009);
+    axi_write(32'h00000010, 32'h00000001);
+
+    wait_out_pending();
+
+    axi_read(32'h00000014, rd);
+    expect32(rd, 32'h0000000A, "First output");
+
+    axi_read(32'h00000018, rd);
+    if ((rd &amp; 32'h00000003) != 32'h00000003) begin
+        $display("FAIL: IN_ACCEPTED and OUT_CAPTURED events expected");
+        errors = errors + 1;
+    end else begin
+        $display("PASS: input/output events latched");
+    end
+
+    if (!irq_o) begin
+        $display("FAIL: irq_o should be high while events are pending");
+        errors = errors + 1;
+    end
+
+    // Queue a second input while first output is still pending.
+    axi_write(32'h0000000C, 32'h00000003);
+    axi_write(32'h00000010, 32'h00000001);
+
+    // (변경) Core가 두 번째 입력을 수락한 뒤 출력에서 정지할 때까지 기다린다.
+    // 첫 결과는 Bridge 출력 버퍼, 두 번째 결과는 Core에 보관된다.
+    repeat (12) @(negedge clk);
+
+    // (추가) 세 번째 입력을 Bridge 입력 버퍼에 대기시킨다.
+    axi_write(32'h0000000C, 32'h00000007);
+    axi_write(32'h00000010, 32'h00000001);
+
+    // (변경) 네 번째 SUBMIT은 이미 대기 중인 세 번째 입력 때문에 거부된다.
+    axi_write(32'h0000000C, 32'h00000007);
+    axi_write(32'h00000010, 32'h00000001);
+
+    axi_read(32'h00000008, rd);
+    if (!rd[3]) begin
+        $display("FAIL: bridge error expected after submit while pending");
+        errors = errors + 1;
+    end else begin
+        $display("PASS: submit while pending sets bridge error");
+    end
+
+    // Release first output.
+    axi_write(32'h00000010, 32'h00000002);
+
+    // Clear bridge error/event, then allow queued second request to complete.
+    axi_write(32'h00000010, 32'h00000004);
+    axi_write(32'h00000018, 32'h00000007);
+
+    wait_out_pending();
+
+    axi_read(32'h00000014, rd);
+    expect32(rd, 32'h00000004, "Queued second output");
+
+    // POP second result.
+    axi_write(32'h00000010, 32'h00000002);
+    // (추가) 세 번째 요청도 보관되므로 마지막 결과를 먼저 회수한다.
+    wait_out_pending();
+    axi_read(32'h00000014, rd);
+    expect32(rd, 32'h00000008, "Queued third output");
+    axi_write(32'h00000010, 32'h00000002);
+
+    // (변경) 모든 수락된 결과를 POP한 뒤 Empty를 검사한다.
+    axi_read(32'h00000008, rd);
+
+    if (rd[2]) begin
+        $display("FAIL: OUT_PENDING should clear after POP");
+        errors = errors + 1;
+    end else begin
+        $display("PASS: OUT_PENDING cleared");
+    end
+
+    // POP on empty output buffer must set ERROR.
+    axi_write(32'h00000010, 32'h00000002);
+    axi_read(32'h00000008, rd);
+
+    if (!rd[3]) begin
+        $display("FAIL: POP on empty buffer should set ERROR");
+        errors = errors + 1;
+    end else begin
+        $display("PASS: empty POP sets ERROR");
+    end
+
+    if (errors == 0) begin
+        $display("SOC19 AXI CONTROL/STATUS BRIDGE TEST: PASS");
+    end else begin
+        $display("SOC19 AXI CONTROL/STATUS BRIDGE TEST: FAIL (%0d)",
+                 errors);
+    end
+
+    #50;
+    $finish;
+end
+
+endmodule
+</code></pre><p>첫 결과를 POP하지 않은 상태에서 두 번째 입력을 Queue하고, 세 번째 SUBMIT으로 Pending Error를 발생시키는 Backpressure 시나리오까지 포함한다.</p></section>
+
+<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>UART 연결 예</h2><p>UART TX처럼 Byte Command형 RTL은 전용 Register Bank가 더 직관적일 수 있다. Bridge를 사용하려면 <code>in_data[7:0]</code>를 TX Byte로, <code>in_valid/ready</code>를 SEND/BUSY 관계로 Adapter하면 된다.</p></section>
+
+<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>PWM 연결 시 주의</h2><p>PWM은 지속 설정값과 Atomic Update가 핵심이므로 SoC 18의 전용 Shadow Register 구조가 더 적절하다. 범용 Bridge를 쓸 수 있다는 이유만으로 모든 Peripheral에 적용하지 않는다.</p></section>
+
+<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>NPU/FFT 연결 방향</h2><p>한두 Word의 Command/Result는 SoC 19 Bridge로 충분하다. Tensor나 연속 Sample처럼 대량 Data가 필요하면 <code>CONTROL/STATUS는 AXI4-Lite</code>, <code>Data Path는 AXI4-Stream</code>으로 분리하는 구조가 자연스럽다.</p></section>
+
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>AXI4-Stream과의 차이</h2><div class="table-wrap" tabindex="0" role="region" aria-label="AXI4-Stream과의 차이 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">SoC 19 내부 Interface</th><th scope="col" role="columnheader">AXI4-Stream</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="SoC 19 내부 Interface" role="cell">data/valid/ready 핵심만 사용</td><td data-label="AXI4-Stream" role="cell">TDATA/TVALID/TREADY + optional TLAST/TKEEP/TUSER 등</td></tr><tr role="row"><td data-label="SoC 19 내부 Interface" role="cell">1-Word Software Bridge</td><td data-label="AXI4-Stream" role="cell">연속 고속 Data 전송</td></tr><tr role="row"><td data-label="SoC 19 내부 Interface" role="cell">AXI4-Lite Register가 전면</td><td data-label="AXI4-Stream" role="cell">주소 없는 Stream Channel</td></tr></tbody></table></div></section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>Packaging Source</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Packaging Source · 소스 코드"><code>axi_control_status_bridge_1_0/
+├── hdl/
+│   ├── axi4lite_slave_adapter.v
+│   ├── control_status_bridge_core.v
+│   ├── axi_control_status_bridge_ip.v
+│   ├── example_ready_valid_core.v
+│   └── axi_control_status_bridge_demo_top.v
+├── testbench/
+│   └── tb_axi_control_status_bridge_demo_top.v
+├── drivers/axi_control_status_bridge_v1_0/src/
+│   ├── axi_control_status_bridge_regmap.h
+│   ├── axi_control_status_bridge_driver.h
+│   └── axi_control_status_bridge_driver.c
+├── examples/
+│   └── test_axi_control_status_bridge_driver_mock.c
+├── doc/
+│   └── README_PACKAGE.md
+└── tcl/
+    └── prepare_packaging_project.tcl
+</code></pre></section>
+
+<section class="step-card" id="s28"><span class="step">SECTION 28</span><h2>Vivado Packaging</h2><p>Packaging Top은 <code>axi_control_status_bridge_ip</code>이다. Demo Core는 검증용이며 Packaged Bridge의 필수 기능이 아니다. Vivado IP Packager가 Top HDL을 Parsing해 AXI Port/Interface를 구성한다.</p></section>
+
+<section class="step-card" id="s29"><span class="step">SECTION 29</span><h2>오류 점검</h2><div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">입력 Data가 중간에 바뀜</td><td data-label="원인" role="cell">Shadow를 Pending에 Capture하지 않음</td><td data-label="확인" role="cell">SUBMIT 시 in_data_o Capture</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Functional RTL이 결과를 덮어씀</td><td data-label="원인" role="cell">Backpressure 무시</td><td data-label="확인" role="cell">out_ready_o</td></tr>
+<tr role="row"><td data-label="증상" role="cell">결과 Read 후 자동 소실</td><td data-label="원인" role="cell">Read와 Consume 혼합</td><td data-label="확인" role="cell">OUT_DATA + POP 분리</td></tr>
+<tr role="row"><td data-label="증상" role="cell">두 번째 SUBMIT이 첫 Pending을 덮음</td><td data-label="원인" role="cell">Pending Guard 누락</td><td data-label="확인" role="cell">IN_PENDING Error</td></tr>
+<tr role="row"><td data-label="증상" role="cell">IRQ가 계속 High</td><td data-label="원인" role="cell">EVENT_STATUS W1C 미처리</td><td data-label="확인" role="cell">Event Clear</td></tr>
+<tr role="row"><td data-label="증상" role="cell">고속 Tensor를 Bridge로 전송</td><td data-label="원인" role="cell">용도 선택 오류</td><td data-label="확인" role="cell">AXI4-Stream 사용 검토</td></tr>
+</tbody></table></div></section>
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 19 완료 체크리스트</h2><ul>
+<li>[ ] AXI4-Lite와 기능 RTL 사이에 공통 Bridge를 분리했다.</li>
+<li>[ ] control/status와 input/output READY/VALID Interface를 정의했다.</li>
+<li>[ ] IN_DATA Shadow와 Pending Buffer를 분리했다.</li>
+<li>[ ] VALID는 READY Handshake까지 유지된다.</li>
+<li>[ ] Output을 1-Word Buffer에 Capture하고 Software POP까지 유지한다.</li>
+<li>[ ] Output Buffer가 차면 Backpressure를 건다.</li>
+<li>[ ] EVENT_STATUS를 W1C로 유지하고 irq_o를 생성한다.</li>
+<li>[ ] 잘못된 SUBMIT/POP을 Bridge Error로 처리한다.</li>
+<li>[ ] 기존 AXI4-Lite Adapter를 바이트 단위 재사용한다.</li>
+<li>[ ] Driver Mock Test를 실제 Compile/Run했다.</li>
+<li>[ ] Bridge를 AXI4-Stream 전체 규격과 혼동하지 않는다.</li>
+<li>[ ] 고속 Data Path는 향후 AXI4-Stream으로 분리한다.</li>
+</ul><div class="flow">SoC 19 완료 → SoC 20 CDC / Reset 안전 설계</div></section>
+
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2><div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1118-vivado-creating-packaging-custom-ip/Ports-and-Interfaces" target="_blank" rel="noopener">AMD UG1118 · Ports and Interfaces · 2026.1</a></td><td data-label="확인 항목" role="cell">Custom IP Top HDL Parsing과 Interface 추론</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg292-ethernet-1-10-25g/AXI4-Lite-Interface-Ports" target="_blank" rel="noopener">AMD PG292 · AXI4-Lite Interface Ports · 2026</a></td><td data-label="확인 항목" role="cell">AW/W/B/AR/R 및 WSTRB 정의</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg109-xfft/Basic-Handshake" target="_blank" rel="noopener">AMD PG109 · Basic Handshake · 2026</a></td><td data-label="확인 항목" role="cell">TVALID/TREADY 동시 High에서 전송 성립</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1483-model-composer-sys-gen-user-guide/AXI4-Stream-Support-in-Model-Composer" target="_blank" rel="noopener">AMD UG1483 · AXI4-Stream Support · 2026.1</a></td><td data-label="확인 항목" role="cell">TDATA/TVALID/TREADY 기본 신호와 방향</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1399-vitis-hls/How-AXI4-Stream-Works" target="_blank" rel="noopener">AMD UG1399 · How AXI4-Stream Works · 2026.1</a></td><td data-label="확인 항목" role="cell">고속 Stream Data Path와 Handshake 개념 비교</td></tr>
+</tbody></table></div></section>
+
+<nav class="chapter-nav"><a href="18_uart_pwm_controller_ip.html">← SoC 18</a><a href="../../index.html">전체 목차</a><a href="20_cdc_reset_safe_design.html">SoC 20 →</a></nav>
+</main></div><footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+</body></html>

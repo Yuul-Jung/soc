@@ -1,0 +1,22 @@
+npu_mac_lab/
+├── rtl/
+│   ├── mac_s8_acc32_basic.v
+│   ├── mac_s8_acc32_pipelined.v
+│   ├── mac_pattern_source.v
+│   ├── mac_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   ├── mac_basic_basys3_top.v
+│   └── mac_pipelined_basys3_top.v
+├── testbench/
+│   └── tb_mac_s8_acc32_compare.sv
+├── constraints/
+│   └── basys3_mac_lab.xdc
+├── scripts/
+│   ├── run_mac_analysis.tcl
+│   └── run_all_mac_cases.sh
+├── reference/
+│   ├── mac_reference_model.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_MAC_LAB.md
+└── SOURCE_TREE.txt

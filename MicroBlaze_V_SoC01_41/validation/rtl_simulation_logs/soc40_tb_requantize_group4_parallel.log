@@ -1,0 +1,30 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_requantize_group4_parallel -o validation-tools/rtl_runs/soc40_tb_requantize_group4_parallel.vvp code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_job_engine_overlap.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_group4_parallel.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/axi4lite_reg_bridge.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_overlap_sim_top.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/bram_clock_reset_adapter.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_bram_tdp_4k_model.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_s32_to_s8.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_parallel4_ip.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_batch2x4_parallel4.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_parallel4_sim_top.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_job_engine_parallel4_requant.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_control_irq.v code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_overlap_ip.v
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_job_engine_overlap.v:1: warning: timescale for tensor_job_engine_overlap inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_group4_parallel.v:1: warning: timescale for requantize_group4_parallel inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/axi4lite_reg_bridge.v:1: warning: timescale for axi4lite_reg_bridge inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_overlap_sim_top.v:1: warning: timescale for npu_full_accelerator_overlap_sim_top inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/bram_clock_reset_adapter.v:1: warning: timescale for bram_clock_reset_adapter inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_bram_tdp_4k_model.v:1: warning: timescale for tensor_bram_tdp_4k_model inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_s32_to_s8.v:1: warning: timescale for requantize_s32_to_s8 inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_parallel4_ip.v:1: warning: timescale for npu_full_accelerator_parallel4_ip inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/requantize_batch2x4_parallel4.v:1: warning: timescale for requantize_batch2x4_parallel4 inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_parallel4_sim_top.v:1: warning: timescale for npu_full_accelerator_parallel4_sim_top inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/tensor_job_engine_parallel4_requant.v:1: warning: timescale for tensor_job_engine_parallel4_requant inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_control_irq.v:1: warning: timescale for npu_full_control_irq inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+code/soc40/prefetch_double_buffer_overlap_lab/rtl/npu_full_accelerator_overlap_ip.v:1: warning: timescale for npu_full_accelerator_overlap_ip inherited from another file.
+code/soc40/prefetch_double_buffer_overlap_lab/testbench/tb_requantize_group4_parallel.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+SOC40 GROUP4 TEST: PASS

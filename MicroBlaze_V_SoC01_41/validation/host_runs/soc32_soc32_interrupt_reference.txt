@@ -1,0 +1,10 @@
+IRQ_STATUS W1C model: PASS
+disabled DONE event -> pending=1, irq=0
+enable pending DONE -> irq=1
+W1C DONE -> pending=0, irq=0
+ERROR enable/status path: PASS
+same-cycle clear + set -> event-set wins
+expected OUT_CH0 = 0x20181008
+expected OUT_CH1 = 0x7F7F6333
+expected SAT_COUNT = 2
+SOC32 PYTHON INTERRUPT REFERENCE: PASS

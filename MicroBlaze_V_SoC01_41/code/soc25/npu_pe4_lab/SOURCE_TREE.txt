@@ -1,0 +1,23 @@
+npu_pe4_lab/
+├── rtl/
+│   ├── mul_s8_dsp.v
+│   ├── pe4_dot_accum_basic.v
+│   ├── pe4_dot_accum_pipelined.v
+│   ├── pe4_pattern_source.v
+│   ├── pe4_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   ├── pe4_basic_basys3_top.v
+│   └── pe4_pipelined_basys3_top.v
+├── testbench/
+│   └── tb_pe4_dot_accum_compare.sv
+├── constraints/
+│   └── basys3_pe4_lab.xdc
+├── scripts/
+│   ├── run_pe4_analysis.tcl
+│   └── run_all_pe4_cases.sh
+├── reference/
+│   ├── pe4_reference_model.py
+│   └── reference_output.txt
+├── doc/
+│   └── README_PE4_LAB.md
+└── SOURCE_TREE.txt

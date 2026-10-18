@@ -1,0 +1,63 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_soc21_csb_verification -o validation-tools/rtl_runs/soc21_tb_soc21_csb_verification.vvp code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv code/soc21/verification_harness/rtl/axi4lite_slave_adapter.v code/soc21/verification_harness/rtl/axi_control_status_bridge_ip.v code/soc21/verification_harness/rtl/control_status_bridge_core.v code/soc21/verification_harness/rtl/example_ready_valid_core.v code/soc21/verification_harness/rtl/axi_control_status_bridge_demo_top.v code/soc21/verification_harness/verification/csb_assertions.sv
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:67: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:67: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:68: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:68: error: Invalid module instantiation
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:70: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:71: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:72: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:72: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:73: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:73: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:74: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:74: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:75: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:78: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:79: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:79: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:80: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:80: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:81: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:81: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:82: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:84: error: invalid module item.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:85: syntax error
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:87: error: invalid module item.
+code/soc21/verification_harness/rtl/axi4lite_slave_adapter.v:1: warning: timescale for axi4lite_slave_adapter inherited from another file.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:1: ...: The inherited timescale is here.
+code/soc21/verification_harness/rtl/axi_control_status_bridge_ip.v:1: warning: timescale for axi_control_status_bridge_ip inherited from another file.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:1: ...: The inherited timescale is here.
+code/soc21/verification_harness/rtl/control_status_bridge_core.v:1: warning: timescale for control_status_bridge_core inherited from another file.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:1: ...: The inherited timescale is here.
+code/soc21/verification_harness/rtl/example_ready_valid_core.v:1: warning: timescale for example_ready_valid_core inherited from another file.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:1: ...: The inherited timescale is here.
+code/soc21/verification_harness/rtl/axi_control_status_bridge_demo_top.v:1: warning: timescale for axi_control_status_bridge_demo_top inherited from another file.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:1: ...: The inherited timescale is here.
+code/soc21/verification_harness/verification/csb_assertions.sv:1: warning: timescale for csb_assertions inherited from another file.
+code/soc21/verification_harness/testbench/tb_soc21_csb_verification.sv:1: ...: The inherited timescale is here.
+code/soc21/verification_harness/verification/csb_assertions.sv:20: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:20: error: invalid module item.
+code/soc21/verification_harness/verification/csb_assertions.sv:21: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:23: error: invalid module item.
+code/soc21/verification_harness/verification/csb_assertions.sv:26: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:26: error: invalid module item.
+code/soc21/verification_harness/verification/csb_assertions.sv:27: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:27: error: Invalid module instantiation
+code/soc21/verification_harness/verification/csb_assertions.sv:33: error: invalid module item.
+code/soc21/verification_harness/verification/csb_assertions.sv:37: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:37: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:42: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:42: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:47: sorry: concurrent_assertion_item not supported. Try -gno-assertions or -gsupported-assertions to turn this message off.
+code/soc21/verification_harness/verification/csb_assertions.sv:52: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:52: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:57: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:57: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:62: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:62: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:65: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:65: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:68: syntax error
+code/soc21/verification_harness/verification/csb_assertions.sv:68: error: Error in property_spec of concurrent assertion item.
+code/soc21/verification_harness/verification/csb_assertions.sv:75: syntax error
+I give up.

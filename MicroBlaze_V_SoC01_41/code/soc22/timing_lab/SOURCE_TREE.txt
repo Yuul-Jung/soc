@@ -1,0 +1,26 @@
+timing_lab/
+├── rtl/
+│   ├── timing_chain_unpipelined.v
+│   ├── timing_chain_pipelined.v
+│   ├── timing_lab_compare_top.v
+│   ├── timing_pattern_source.v
+│   ├── timing_result_sink.v
+│   ├── reset_active_high_to_active_low.v
+│   ├── timing_lab_unpipelined_impl_top.v
+│   ├── timing_lab_pipelined_impl_top.v
+│   ├── timing_lab_unpipelined_basys3_top.v
+│   └── timing_lab_pipelined_basys3_top.v
+├── testbench/
+│   └── tb_timing_lab_compare.sv
+├── constraints/
+│   ├── basys3_timing_lab_pins.xdc
+│   ├── clock_100mhz.xdc
+│   └── clock_stress_200mhz.xdc
+├── scripts/
+│   ├── run_timing_lab.tcl
+│   └── run_all_timing_cases.sh
+├── doc/
+│   ├── README_TIMING_LAB.md
+│   └── TEST_PLAN.md
+├── soc21_regression_reference/
+└── SOURCE_TREE.txt

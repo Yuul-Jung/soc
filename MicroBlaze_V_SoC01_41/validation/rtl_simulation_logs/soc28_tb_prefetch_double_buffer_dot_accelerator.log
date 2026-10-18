@@ -1,0 +1,57 @@
+$ validation-tools/tools/usr/bin/iverilog -B validation-tools/tools/usr/lib/x86_64-linux-gnu/ivl -g2012 -Wall -s tb_prefetch_double_buffer_dot_accelerator -o validation-tools/rtl_runs/soc28_tb_prefetch_double_buffer_dot_accelerator.vvp code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv code/soc28/prefetch_fifo_double_buffer_lab/rtl/double_buffer_demo_controller.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/vector_dot_controller_pe4.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/pe4_dot_accum_pipelined.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/reset_active_high_to_active_low.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/pingpong_vector_memory.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/stream_fifo_64x4.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/vector_bram_sdp.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/prefetch_double_buffer_basys3_top.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/prefetch_double_buffer_dot_accelerator.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/mul_s8_dsp.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/double_buffer_result_sink.v code/soc28/prefetch_fifo_double_buffer_lab/rtl/bram_prefetch_fifo_feeder.v
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/double_buffer_demo_controller.v:1: warning: timescale for double_buffer_demo_controller inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/vector_dot_controller_pe4.v:1: warning: timescale for vector_dot_controller_pe4 inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/pe4_dot_accum_pipelined.v:1: warning: timescale for pe4_dot_accum_pipelined inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/reset_active_high_to_active_low.v:1: warning: timescale for reset_active_high_to_active_low inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/pingpong_vector_memory.v:1: warning: timescale for pingpong_vector_memory inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/stream_fifo_64x4.v:1: warning: timescale for stream_fifo_64x4 inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/vector_bram_sdp.v:1: warning: timescale for vector_bram_sdp inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/prefetch_double_buffer_basys3_top.v:1: warning: timescale for prefetch_double_buffer_basys3_top inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/prefetch_double_buffer_dot_accelerator.v:1: warning: timescale for prefetch_double_buffer_dot_accelerator inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/mul_s8_dsp.v:2: warning: timescale for mul_s8_dsp inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/double_buffer_result_sink.v:1: warning: timescale for double_buffer_result_sink inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+code/soc28/prefetch_fifo_double_buffer_lab/rtl/bram_prefetch_fifo_feeder.v:1: warning: timescale for bram_prefetch_fifo_feeder inherited from another file.
+code/soc28/prefetch_fifo_double_buffer_lab/testbench/tb_prefetch_double_buffer_dot_accelerator.sv:1: ...: The inherited timescale is here.
+
+--- SIMULATION ---
+CHECK PASS: compute still busy before conflict test
+CHECK PASS: same-bank write conflict asserted
+CHECK PASS: bank0 result_valid
+CHECK PASS: bank0 done
+CHECK PASS: bank0 result = -35552
+CHECK PASS: bank0 requested
+CHECK PASS: bank0 received
+CHECK PASS: bank0 delivered
+CHECK PASS: bank0 accepted
+CHECK PASS: bank0 completed
+CHECK PASS: bank0 no response mismatch
+CHECK PASS: bank0 no FIFO overflow
+CHECK PASS: prefetch FIFO exercised
+CHECK PASS: bank1 result_valid
+CHECK PASS: bank1 done
+CHECK PASS: bank1 result = 11968
+CHECK PASS: bank1 requested
+CHECK PASS: bank1 received
+CHECK PASS: bank1 delivered
+CHECK PASS: bank1 accepted
+CHECK PASS: bank1 completed
+CHECK PASS: bank1 no response mismatch
+CHECK PASS: bank1 no FIFO overflow
+CHECK PASS: length 1025 range error
+CHECK PASS: range error command not busy
+
+SOC28 MAX FIFO COUNT : 4
+SOC28 CHECK COUNT    : 25
+SOC28 ERROR COUNT    : 0
+SOC28 PREFETCH/DOUBLE-BUFFER TEST: PASS

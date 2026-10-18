@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1420" height="650" viewBox="0 0 1420 650">
+<rect width="1420" height="650" fill="white"/>
+<text x="710" y="42" text-anchor="middle" font-family="sans-serif" font-size="29" font-weight="bold">SoC 31 · MicroBlaze V → AXI4-Lite → NPU Accelerator</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#111827"/></marker></defs>
+
+<rect x="55" y="160" width="250" height="220" rx="14" fill="#eef6ff" stroke="#111827" stroke-width="2"/>
+<text x="180" y="210" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">MicroBlaze V</text>
+<text x="180" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">Xil_Out32</text>
+<text x="180" y="300" text-anchor="middle" font-family="sans-serif" font-size="16">Xil_In32</text>
+<text x="180" y="345" text-anchor="middle" font-family="sans-serif" font-size="15">Software Driver</text>
+
+<rect x="380" y="160" width="250" height="220" rx="14" fill="#fff7ed" stroke="#111827" stroke-width="2"/>
+<text x="505" y="210" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">SmartConnect</text>
+<text x="505" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">AXI4-Lite</text>
+<text x="505" y="305" text-anchor="middle" font-family="sans-serif" font-size="15">Memory-Mapped</text>
+
+<rect x="705" y="110" width="300" height="320" rx="14" fill="#f0fdf4" stroke="#111827" stroke-width="2"/>
+<text x="855" y="160" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">NPU AXI Peripheral</text>
+<text x="855" y="215" text-anchor="middle" font-family="sans-serif" font-size="16">AXI4-Lite Slave</text>
+<text x="855" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">Register Bank</text>
+<text x="855" y="305" text-anchor="middle" font-family="sans-serif" font-size="16">START / STATUS</text>
+<text x="855" y="350" text-anchor="middle" font-family="sans-serif" font-size="16">Input / Output Registers</text>
+<text x="855" y="395" text-anchor="middle" font-family="sans-serif" font-size="15">Bias / Scale / Zero Point</text>
+
+<rect x="1080" y="160" width="285" height="220" rx="14" fill="#faf5ff" stroke="#111827" stroke-width="2"/>
+<text x="1222" y="210" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold">SoC 30 Core</text>
+<text x="1222" y="260" text-anchor="middle" font-family="sans-serif" font-size="16">int32 → int8</text>
+<text x="1222" y="305" text-anchor="middle" font-family="sans-serif" font-size="16">Requantization</text>
+<text x="1222" y="345" text-anchor="middle" font-family="sans-serif" font-size="15">Packed CH0 / CH1 Result</text>
+
+<g stroke="#111827" stroke-width="4" marker-end="url(#a)">
+<line x1="305" y1="270" x2="380" y2="270"/>
+<line x1="630" y1="270" x2="705" y2="270"/>
+<line x1="1005" y1="270" x2="1080" y2="270"/>
+</g>
+
+<text x="710" y="510" text-anchor="middle" font-family="sans-serif" font-size="18">Software가 주소를 Write/Read하면 Register Map이 Hardware Control Pulse와 Status로 변환된다.</text>
+<text x="710" y="555" text-anchor="middle" font-family="sans-serif" font-size="15">Base Address는 Vivado Address Editor가 결정하고 Register Offset은 RTL/Driver가 고정한다.</text>
+</svg>

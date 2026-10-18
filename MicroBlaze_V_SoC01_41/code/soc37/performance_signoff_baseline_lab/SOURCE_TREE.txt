@@ -1,0 +1,26 @@
+performance_signoff_baseline_lab/
+├── rtl/
+│   ├── requantize_s32_to_s8.v
+│   ├── requantize_batch2x4_serial.v
+│   ├── tensor_bram_tdp_4k_model.v
+│   ├── tensor_job_engine.v
+│   ├── npu_full_control_irq.v
+│   ├── axi4lite_reg_bridge.v
+│   ├── bram_clock_reset_adapter.v
+│   ├── npu_full_accelerator_ip.v
+│   └── npu_full_accelerator_sim_top.v
+├── testbench/
+│   └── tb_soc37_cycle_baseline.sv
+├── reference/
+│   ├── soc37_cycle_reference.py
+│   └── cycle_reference_output.txt
+├── scripts/
+│   ├── prepare_soc37_simulation.tcl
+│   ├── run_soc37_npu_post_route.tcl
+│   ├── collect_soc37_full_system_reports.tcl
+│   └── run_soc37_analysis.sh
+├── doc/
+│   ├── README_SOC37.md
+│   ├── MEASUREMENT_RECORD.md
+│   └── AXI_TIMER_MEASUREMENT_GUIDE.md
+└── SOURCE_TREE.txt

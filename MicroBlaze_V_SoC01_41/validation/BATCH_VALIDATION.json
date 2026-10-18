@@ -1,0 +1,396 @@
+{
+  "chapters": [
+    {
+      "chapter": 1,
+      "file": "01_microblaze_bram_minimal_soc.html",
+      "sections": 17,
+      "images": 4,
+      "title": "MicroBlaze V + BRAM 최소 SoC",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 2,
+      "file": "02_clock_reset_processor_system_reset.html",
+      "sections": 19,
+      "images": 3,
+      "title": "Clock / Reset 구조와 Processor System Reset",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 3,
+      "file": "03_microblaze_bram_program_execution.html",
+      "sections": 22,
+      "images": 3,
+      "title": "MicroBlaze V 실행 구조와 BRAM 프로그램 실행",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 4,
+      "file": "04_memory_map_memory_mapped_io.html",
+      "sections": 22,
+      "images": 3,
+      "title": "Memory Map과 Memory-Mapped I/O",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 5,
+      "file": "05_axi4_axi4lite_axi4stream.html",
+      "sections": 24,
+      "images": 3,
+      "title": "AXI4 / AXI4-Lite / AXI4-Stream 구조",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 6,
+      "file": "06_axi_gpio.html",
+      "sections": 26,
+      "images": 2,
+      "title": "AXI GPIO - Switch 입력을 LED 출력으로",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 7,
+      "file": "07_axi_uart_lite.html",
+      "sections": 27,
+      "images": 3,
+      "title": "AXI UART Lite - PC 터미널 Echo 통신",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 8,
+      "file": "08_axi_timer.html",
+      "sections": 27,
+      "images": 3,
+      "title": "AXI Timer - 0.5초 Polling과 LED Blink",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 9,
+      "file": "09_axi_interrupt_controller.html",
+      "sections": 27,
+      "images": 3,
+      "title": "AXI Interrupt Controller - Timer Interrupt와 ISR",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 10,
+      "file": "10_microblaze_gpio_uart_timer_integration.html",
+      "sections": 30,
+      "images": 3,
+      "title": "MicroBlaze V + GPIO + UART + Timer 통합",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 11,
+      "file": "11_register_map_design_principles.html",
+      "sections": 30,
+      "images": 3,
+      "title": "Register Map 설계 원칙",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 12,
+      "file": "12_custom_axi4lite_slave_basics.html",
+      "sections": 30,
+      "images": 3,
+      "title": "Custom AXI4-Lite Slave 기초",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 13,
+      "file": "13_axi_register_read_write_path.html",
+      "sections": 28,
+      "images": 3,
+      "title": "AXI Register Read / Write 경로",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 14,
+      "file": "14_register_bank_rtl_controller.html",
+      "sections": 30,
+      "images": 3,
+      "title": "Register Bank + RTL Controller 연결",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 15,
+      "file": "15_microblaze_software_driver.html",
+      "sections": 28,
+      "images": 3,
+      "title": "MicroBlaze V Software Driver",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 16,
+      "file": "16_vivado_ip_packaging_reuse.html",
+      "sections": 31,
+      "images": 3,
+      "title": "Vivado IP Packaging과 재사용",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 17,
+      "file": "17_existing_verilog_rtl_to_ip.html",
+      "sections": 32,
+      "images": 3,
+      "title": "기존 Verilog RTL을 IP로 변환",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 18,
+      "file": "18_uart_pwm_controller_ip.html",
+      "sections": 32,
+      "images": 3,
+      "title": "UART / PWM Controller IP화",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 19,
+      "file": "19_axi_control_status_bridge.html",
+      "sections": 31,
+      "images": 3,
+      "title": "AXI Control / Status Bridge",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 20,
+      "file": "20_cdc_reset_safe_design.html",
+      "sections": 33,
+      "images": 4,
+      "title": "CDC / Reset 안전 설계",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 21,
+      "file": "21_self_checking_assertion_coverage.html",
+      "sections": 33,
+      "images": 3,
+      "title": "Self-Checking Testbench / Assertion / Coverage",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 22,
+      "file": "22_timing_critical_path_wns_tns.html",
+      "sections": 35,
+      "images": 4,
+      "title": "Timing / Critical Path / WNS / TNS",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 23,
+      "file": "23_resource_power_thermal.html",
+      "sections": 34,
+      "images": 5,
+      "title": "Resource / Power / Thermal",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 24,
+      "file": "24_npu_mac_datapath.html",
+      "sections": 34,
+      "images": 5,
+      "title": "NPU Datapath 시작 · MAC 기본 구조",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 25,
+      "file": "25_pe_parallel_mac_vector_dot_product.html",
+      "sections": 37,
+      "images": 5,
+      "title": "PE / Parallel MAC / Vector Dot Product",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 26,
+      "file": "26_vector_dot_product_controller.html",
+      "sections": 36,
+      "images": 4,
+      "title": "Vector Dot Product Controller",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 27,
+      "file": "27_local_bram_address_generator_data_feeding.html",
+      "sections": 36,
+      "images": 3,
+      "title": "Local BRAM / Address Generator / Data Feeding",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 28,
+      "file": "28_prefetch_fifo_double_buffer_stall_safe_feeding.html",
+      "sections": 38,
+      "images": 5,
+      "title": "Prefetch / FIFO / Double Buffer / Stall-safe Feeding",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 29,
+      "file": "29_data_reuse_weight_stationary_tiling.html",
+      "sections": 36,
+      "images": 5,
+      "title": "Data Reuse · Weight Stationary · Activation Broadcast · Tiling",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 30,
+      "file": "30_bias_requantization_rounding_saturation_int8.html",
+      "sections": 35,
+      "images": 4,
+      "title": "Bias · Requantization · Rounding · Saturation · int8 Output",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 31,
+      "file": "31_npu_register_map_microblaze_axi_integration.html",
+      "sections": 38,
+      "images": 5,
+      "title": "NPU Register Map · MicroBlaze V Control · AXI4-Lite Integration",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 32,
+      "file": "32_npu_done_interrupt_axi_intc_isr.html",
+      "sections": 39,
+      "images": 4,
+      "title": "NPU Done Interrupt · AXI Interrupt Controller · ISR",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 33,
+      "file": "33_axi_bram_tensor_buffer_control_data_plane.html",
+      "sections": 40,
+      "images": 5,
+      "title": "AXI BRAM Tensor Buffer · Control Plane / Data Plane",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 34,
+      "file": "34_command_descriptor_job_control.html",
+      "sections": 41,
+      "images": 3,
+      "title": "Command · Descriptor · Job Control",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 35,
+      "file": "35_full_npu_accelerator_integration.html",
+      "sections": 38,
+      "images": 3,
+      "title": "Full NPU Accelerator Integration",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 36,
+      "file": "36_cpu_npu_end_to_end_software_inference.html",
+      "sections": 43,
+      "images": 5,
+      "title": "CPU ↔ NPU End-to-End Software / Inference Flow",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 37,
+      "file": "37_performance_baseline_timing_resource_power_throughput.html",
+      "sections": 42,
+      "images": 4,
+      "title": "Performance Baseline · Timing · Resource · Power · Throughput",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 38,
+      "file": "38_bottleneck_analysis_pipelined_bram_read.html",
+      "sections": 41,
+      "images": 4,
+      "title": "Bottleneck Analysis · Pipelined BRAM Read Optimization",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 39,
+      "file": "39_parallel4_requantization_optimization.html",
+      "sections": 42,
+      "images": 4,
+      "title": "4-Lane Parallel Requantization Optimization",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 40,
+      "file": "40_prefetch_pingpong_data_compute_overlap.html",
+      "sections": 42,
+      "images": 3,
+      "title": "Prefetch · Ping-Pong Buffer · Data-Compute Overlap",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    },
+    {
+      "chapter": 41,
+      "file": "41_group8_cumulative_signoff_matrix.html",
+      "sections": 42,
+      "images": 4,
+      "title": "Group 8 Cumulative Sign-off Matrix",
+      "local_links": "PASS",
+      "body_converted": "DONE"
+    }
+  ],
+  "html_count": 92,
+  "image_references": 148,
+  "local_reference_errors": [],
+  "all_image_slots_preserved": true,
+  "svg_xml_valid": true,
+  "browser_cases": 164,
+  "browser_horizontal_overflow": 0,
+  "browser_broken_images": 0,
+  "target_build": "NOT_RUN",
+  "rtl_simulation": "PARTIAL_PASS: 32 full self-checking + 2 functional-only subsets; 3 full benches tool-limited",
+  "vivado_synthesis_implementation": "NOT_RUN",
+  "board_run": "NOT_RUN",
+  "browser_viewports_px": [
+    1440,
+    1024,
+    390,
+    320
+  ],
+  "text_zoom_200_percent_cases": 41,
+  "adversarial_report": "ADVERSARIAL_REVIEW.md",
+  "official_header_syntax_checks": 50,
+  "external_links": 157,
+  "external_link_http_errors": 0
+}

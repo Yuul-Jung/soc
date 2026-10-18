@@ -1,0 +1,25 @@
+length,groups,tail,result_raw,last_group_masked_a
+0,0,0,0,[]
+1,1,1,1547,[17, 0, 0, 0]
+2,1,2,-3881,[17, 46, 0, 0]
+3,1,3,-9206,[17, 46, 75, 0]
+4,1,4,-11702,[17, 46, 75, 104]
+5,2,1,-14531,[-123, 0, 0, 0]
+10,3,2,-25045,[-7, 22, 0, 0]
+16,4,4,-19384,[109, -118, -89, -60]
+17,5,1,-21709,[-31, 0, 0, 0]
+31,8,3,-19552,[61, 90, 119, 0]
+
+demo length 10 -> 3 groups, tail lanes = 2
+demo expected raw result = 55 (LED lower 16 bits = 0x0037)
+SOC26 PYTHON CONTROLLER REFERENCE: PASS
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
