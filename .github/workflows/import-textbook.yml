@@ -1,0 +1,53 @@
+name: Import verified 41-chapter textbook
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Extract the reviewed archive
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib
+          import stat
+          import zipfile
+          root = Path.cwd().resolve()
+          archive = root / '03_html_soc_베이시스3_260922(1).zip'
+          expected = '98e4b423656e6f08fe7ebbca2b98cea2b712b74e2062d19f285d216e4ec10eb6'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected, 'Archive hash mismatch'
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None, 'Archive CRC failure'
+              for info in z.infolist():
+                  p = PurePosixPath(info.filename)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  assert p.parts[0] in ('index.html', 'MicroBlaze_V_SoC01_41')
+                  assert not stat.S_ISLNK(info.external_attr >> 16)
+              z.extractall(root)
+          (root / '.nojekyll').touch()
+          (root / 'README.md').write_text(
+              '# Basys3 · MicroBlaze V SoC + NPU\n\n'
+              '41장 단계별 설계·검증 교재입니다.\n\n'
+              '- 시작 파일: `index.html`\n'
+              '- [공통 사양·실습 순서](MicroBlaze_V_SoC01_41/00_overview/START_HERE.html)\n'
+              '- [교재 안내](MicroBlaze_V_SoC01_41/README.md)\n'
+              '- [장별 검증 결과](MicroBlaze_V_SoC01_41/validation/verification.html)\n\n'
+              '본문·그림·실습 소스·장별 검증 기록을 포함합니다. '
+              '실제 타깃 빌드·Vivado 구현·Basys3 보드 실행은 미검증 범위입니다.\n', encoding='utf-8')
+          PY
+      - name: Verify extracted distribution
+        run: python3 MicroBlaze_V_SoC01_41/validation/verify_distribution.py
+      - name: Commit textbook files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- MicroBlaze_V_SoC01_41 index.html README.md .nojekyll
+          if git diff --cached --quiet; then
+            echo 'Reviewed textbook is already imported.'
+          else
+            git commit -m 'Publish verified MicroBlaze V SoC and NPU textbook (41 chapters)'
+            git push origin HEAD:main
+          fi
