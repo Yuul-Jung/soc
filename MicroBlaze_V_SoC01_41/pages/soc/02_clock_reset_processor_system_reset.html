@@ -353,6 +353,16 @@ create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk
 set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk]
 ## Methodology 확인 후 해제 - 크리티컬 워닝 2건 발생
 #create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]</code></pre>
+<div class="note" role="note" aria-label="선택 검증안: create_clock -add 옵션만 제거">
+<h3>선택 검증안 — <code>-add</code> 옵션만 제거</h3>
+<p><code>create_clock</code> 전체를 주석 처리하는 대신, <strong><code>-add</code>만 제거</strong>해 Basys3 외부 <code>clk</code>의 100 MHz(10 ns) Primary Clock 제약을 명시적으로 유지하는 방법이다. <strong>아직 실제 Vivado 2024.2에서 재검증하지 않은 대체 수정안</strong>으로, 위의 검증된 경고 감소 결과와 구분한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="선택 검증안 XDC, add 옵션 제거"><code>## Clock signal
+set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk]
+
+# (변경) -add 옵션만 제거 — Primary Clock 100 MHz 정의 유지
+create_clock -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]</code></pre>
+<p><strong>확인 순서:</strong> XDC 저장 → Run Synthesis → Run Implementation → Generate Bitstream → <code>report_clocks</code>에서 <code>sys_clk_pin</code>의 10 ns 확인 → <code>check_timing -verbose</code>로 미제약 경로 확인 → <code>report_methodology</code>로 <code>TIMING-6</code> 재발 여부 확인. 이전보다 경고가 줄어드는지뿐 아니라 <strong>실제 Clock 제약이 유효한지</strong>도 확인한다.</p>
+</div>
 <h3>2. 변경 후 남은 Warning 4건</h3>
 <div class="table-wrap" tabindex="0" role="region" aria-label="변경 후 Methodology Warning 상세"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Warning</th><th scope="col" role="columnheader">건수</th><th scope="col" role="columnheader">의미와 확인 지점</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td role="cell"><code>LUTAR-1</code></td><td role="cell">2건</td><td role="cell"><code>Serial_Dbg_Intf</code> 내부 LUT가 플립플롭의 비동기 Preset/Clear를 구동. 글리치가 의도치 않은 Reset을 발생시킬 위험이 있으므로 해당 경로와 Debug IP 구성을 점검한다.</td></tr>
