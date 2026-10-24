@@ -240,7 +240,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s17"><span class="n">17</span><span>Output · Wrapper</span></a></li>
 <li><a href="#s18"><span class="n">18</span><span>Synthesis · Implementation</span></a></li>
 <li><a href="#s19"><span class="n">19</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">20</span><span>완료 체크리스트</span></a></li>
+<li><a href="#summary"><span class="n">20</span><span>완료 확인</span></a></li>
 <li><a href="#sources"><span class="n">21</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol>
 </aside>
 
@@ -467,22 +467,22 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 </tbody></table></div>
 </section>
 
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 02 완료 체크리스트</h2>
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 02 완료 확인</h2>
 <ul>
-<li>[ ] Basys3 100 MHz Clock가 <code>W5</code>로 정의되어 있다.</li>
-<li>[ ] XDC의 Clock Period가 <code>10.00 ns</code>이다.</li>
-<li>[ ] Clocking Wizard 입력과 출력 Clock을 구분할 수 있다.</li>
-<li>[ ] <code>clk_wiz_1/locked → proc_sys_reset/dcm_locked</code>가 연결되어 있다.</li>
-<li>[ ] <code>clk_wiz_1/clk_out1 → proc_sys_reset/slowest_sync_clk</code>가 연결되어 있다.</li>
-<li>[ ] <code>btnC(U18) → ext_reset_in</code>이 연결되어 있다.</li>
-<li>[ ] <code>mb_reset</code>이 Active-High임을 이해한다.</li>
-<li>[ ] <code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 Active-Low임을 이해한다.</li>
-<li>[ ] Reset 해제 순서가 Bus/Interconnect → Peripheral → MicroBlaze V임을 이해한다.</li>
-<li>[ ] 100 MHz에서 16 clocks가 약 160 ns임을 계산할 수 있다.</li>
-<li>[ ] Block Design에서 다섯 핵심 Signal Path를 실제로 추적했다.</li>
-<li>[ ] SoC 02 SECTION 16에서 첫 Validate Design이 오류 없이 성공하여 Gate 1 PASS를 확인했다.</li>
-<li>[ ] Gate 1 PASS 이후 Generate Output Products 및 HDL Wrapper 생성을 완료했다.</li>
-<li>[ ] Synthesis와 Implementation을 실행하고 결과 및 100 MHz Clock 제약을 확인했다.</li>
+<li>Basys3 100 MHz Clock가 <code>W5</code>로 정의되어 있다.</li>
+<li>XDC의 Clock Period가 <code>10.00 ns</code>이다.</li>
+<li>Clocking Wizard 입력과 출력 Clock을 구분할 수 있다.</li>
+<li><code>clk_wiz_1/locked → proc_sys_reset/dcm_locked</code>가 연결되어 있다.</li>
+<li><code>clk_wiz_1/clk_out1 → proc_sys_reset/slowest_sync_clk</code>가 연결되어 있다.</li>
+<li><code>btnC(U18) → ext_reset_in</code>이 연결되어 있다.</li>
+<li><code>mb_reset</code>이 Active-High임을 이해한다.</li>
+<li><code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 Active-Low임을 이해한다.</li>
+<li>Reset 해제 순서가 Bus/Interconnect → Peripheral → MicroBlaze V임을 이해한다.</li>
+<li>100 MHz에서 16 clocks가 약 160 ns임을 계산할 수 있다.</li>
+<li>Block Design에서 다섯 핵심 Signal Path를 실제로 추적했다.</li>
+<li>SoC 02 SECTION 16에서 첫 Validate Design이 오류 없이 성공하여 Gate 1 PASS를 확인했다.</li>
+<li>Gate 1 PASS 이후 Generate Output Products 및 HDL Wrapper 생성을 완료했다.</li>
+<li>Synthesis와 Implementation을 실행하고 결과 및 100 MHz Clock 제약을 확인했다.</li>
 </ul>
 <div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
 </section>
