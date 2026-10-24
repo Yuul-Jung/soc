@@ -315,14 +315,14 @@ main[tabindex="-1"]:focus{outline:none}
 </section>
 
 <section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Generate Output Products · HDL Wrapper</h2>
-<div class="note"><strong>실행 조건:</strong> SECTION 06에서 첫 Validate Design이 오류 없이 통과한 뒤 수행한다.</div>
 <ol class="step-seq">
-<li><h3>Generate Output Products</h3><p>Sources에서 <code>soc01_mb_bram.bd</code>를 우클릭하고 <strong>Generate Output Products</strong>를 실행한다.</p></li>
-<li><h3>Create HDL Wrapper</h3><p>Block Design을 우클릭 → <strong>Create HDL Wrapper</strong>.</p></li>
-<li><h3>Vivado 관리 방식 선택</h3><p><strong>Let Vivado tools manage wrapper and auto-update</strong>를 권장한다. Top은 Block Design을 감싸는 Shell/Wrapper로 유지한다.</p></li>
-<li><h3>Top 확인</h3><p>생성된 <code>soc01_mb_bram_wrapper</code>가 Top으로 지정되었는지 Sources에서 확인한다.</p></li>
+<li><h3>Generate Output Products</h3><p>Sources에서 <code>soc01_mb_bram.bd</code>를 우클릭 → <strong>Generate Output Products</strong>를 실행한다. 기존 설정인 <strong>Out of context per IP</strong>를 사용한다.</p></li>
+<li><h3>생성 결과 확인</h3><p>Log에 합성용/시뮬레이션용 <code>soc01_mb_bram.v</code>, <code>soc01_mb_bram_wrapper.v</code>, <code>soc01_mb_bram.hwh</code>, <code>soc01_mb_bram.hwdef</code> 생성 메시지가 있는지 확인한다.</p></li>
+<li><h3>HDL Wrapper · Top 확인</h3><p><strong>Sources → Design Sources</strong>에서 <code>soc01_mb_bram_wrapper</code>가 프로젝트에 등록되어 Top으로 지정되었는지 확인한다. 생성 폴더에 <code>soc01_mb_bram_wrapper.v</code> 파일이 존재하는 것만으로는 Top 설정이 확인되지 않는다.</p></li>
+<li><h3>필요한 경우 Create HDL Wrapper</h3><p>Sources에 Wrapper가 없다면 <code>soc01_mb_bram.bd</code> 우클릭 → <strong>Create HDL Wrapper</strong> → <strong>Let Vivado tools manage wrapper and auto-update</strong>를 선택한다. 생성 후 Top 지정 여부를 다시 확인한다.</p></li>
 </ol>
-<div class="note">Wrapper에는 계산, 상태 판단, Register Map 정책, 기능 FSM을 직접 추가하지 않는다. Custom RTL은 별도 모듈/IP로 구성하고 Top은 연결 중심으로 유지한다.</div>
+<div class="ok"><strong>실습 확인 · 2026-10-24:</strong> <code>generate_target all</code> 실행 로그에서 합성/시뮬레이션 RTL과 HDL Wrapper 파일, <code>.hwh</code>, <code>.hwdef</code> 출력 생성이 확인되었다. <code>filemgmt 56-443</code> ECC 기본값 경고가 표시되었으며, Top 등록과 개별 IP 합성 완료 여부는 아직 확인하지 않았다.</div>
+<div class="note">HDL Wrapper는 Block Design을 감싸는 Shell/Wrapper로 유지한다. 계산, 상태 판단, Register Map 정책, FSM은 별도 RTL/IP에서 구현한다.</div>
 </section>
 
 <section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Synthesis · Implementation</h2>
@@ -355,7 +355,8 @@ main[tabindex="-1"]:focus{outline:none}
 <li>기존 XDC의 <code>get_ports</code>가 실제 BD 외부 포트명과 일치한다.</li>
 <li>W5 · U18 · 10 ns · LVCMOS33 제약을 확인했다.</li>
 <li>Validate Design이 오류 및 Critical Warning 없이 완료되었다. 일반 Warning 3건은 별도로 확인했다.</li>
-<li>Output Products · HDL Wrapper · Synthesis · Implementation은 다음 단계에서 진행한다.</li>
+<li>Generate Output Products에서 합성/시뮬레이션 RTL 및 하드웨어 정의 파일 생성을 확인했다.</li>
+<li>HDL Wrapper의 Top 등록과 Synthesis · Implementation은 다음 단계에서 확인한다.</li>
 </ul>
 <div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
 </section>
