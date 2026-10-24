@@ -228,7 +228,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s05"><span class="n">05</span><span>ELF 프로그램 구조</span></a></li>
 <li><a href="#s06"><span class="n">06</span><span>Linker Script와 Memory Section</span></a></li>
 
-<li><a href="#s07"><span class="n">07</span><span>Bitstream 포함 XSA</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Vivado 2024.2 · XSA Export</span></a></li>
 <li><a href="#s08"><span class="n">08</span><span>Vitis Platform 생성</span></a></li>
 <li><a href="#s09"><span class="n">09</span><span>Standalone Domain</span></a></li>
 <li><a href="#s10"><span class="n">10</span><span>Application Component</span></a></li>
@@ -332,24 +332,16 @@ High Address = 0x00000000 + 0x4000 - 1
 
 
 
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Bitstream 포함 XSA Hardware Export</h2>
-<p>Vitis는 Vivado에서 만든 Hardware 구성을 직접 추측하지 않는다. Vivado Hardware Design을 XSA(Xilinx Support Archive, 하드웨어 플랫폼 정보 파일)로 Export하고 이를 Vitis가 읽는다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="08절 신호 및 실행 흐름">Vivado 2024.2
-  │
-  ├─ soc01_mb_bram_wrapper (Top)
-  ├─ MicroBlaze V · Local BRAM
-  ├─ Clock / Reset
-  └─ Bitstream
-  │
-  ▼
-File → Export → Export Hardware
-  │
-  ▼
-*.xsa (Include bitstream)
-  │
-  ▼
-Vitis Platform</div>
-<p>Vivado 2024.2에서 <strong>File → Export → Export Hardware</strong>를 실행한다. 앞에서 만든 Bitstream을 포함하도록 선택하고 XSA를 저장한 다음, <strong>실제 파일 경로와 파일명</strong>을 확인한다. 이 XSA를 Vitis Platform 생성 시 사용한다.</p>
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Vivado 2024.2 · XSA Hardware Export</h2>
+<p>02장에서 <strong>Generate Bitstream</strong>까지 완료한 동일한 Vivado 프로젝트에서 XSA(Xilinx Support Archive, 하드웨어 플랫폼 파일)를 내보낸다.</p>
+<ol class="step-seq">
+<li><h3>Export Hardware 실행</h3><p>Vivado 2024.2의 <strong>File → Export → Export Hardware</strong>를 선택한다.</p></li>
+<li><h3>Export Hardware Platform 진행</h3><p>마법사에서 <strong>Next</strong>를 클릭한다. MicroBlaze V 소프트웨어 개발용이므로 <strong>Fixed Platform</strong>을 사용한다.</p></li>
+<li><h3>Bitstream 포함</h3><p>Output 단계에서 <strong>Include bitstream</strong>을 선택하고 <strong>Next</strong>를 클릭한다.</p></li>
+<li><h3>XSA 저장</h3><p>자동 입력된 XSA 파일명과 저장 경로를 확인한 뒤 <strong>Finish</strong>를 클릭한다. 실제 생성된 <code>*.xsa</code> 파일을 확인한다.</p></li>
+</ol>
+<div class="flow">Vivado 2024.2 → File → Export → Export Hardware → Include bitstream → XSA → Vitis 2024.2</div>
+<p><a href="https://docs.amd.com/r/2024.2-English/Vitis-Tutorials-Embedded-Software/Exporting-the-XSA" target="_blank" rel="noopener">AMD XD260 · Exporting the XSA (2024.2)</a> · <a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Creating-a-Hardware-Design-XSA-File" target="_blank" rel="noopener">AMD UG1400 · XSA 파일 생성 (2024.2)</a></p>
 </section>
 
 <section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Vitis Platform 생성</h2>
