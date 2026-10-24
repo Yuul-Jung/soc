@@ -206,14 +206,14 @@ main[tabindex="-1"]:focus{outline:none}
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 02</p>
 <h1>Clock / Reset 구조와 Processor System Reset</h1>
-<p class="hero-desc">01장에서 만든 Block Design을 이어서 Clocking Wizard 설정, Clock/Reset 외부 포트 연결, 기존 XDC 수정, Validate Design 및 빌드를 진행한다.</p>
+<p class="hero-desc">01장에서 만든 Block Design을 이어서 Clocking Wizard 설정, Clock/Reset 연결, 기존 XDC 확인, Validate Design 및 빌드를 진행한다.</p>
 <div class="hero-meta">
 <span class="chip">Basys3 100 MHz</span><span class="chip">Clocking Wizard</span><span class="chip">Processor System Reset</span><span class="chip">locked</span><span class="chip">dcm_locked</span><span class="chip">Active-Low Reset</span>
 </div>
 <div class="hero-brief">
 <article><h2>Clock</h2><p>W5의 100 MHz를 SoC 내부 동기 기준으로 사용한다.</p></article>
 <article><h2>Reset</h2><p>외부 Reset과 Clock lock 상태를 이용해 CPU·Bus Reset을 생성한다.</p></article>
-<article><h2>검증</h2><p>기존 XDC를 실제 BD 외부 포트명에 맞추고 Validate Design을 수행한다.</p></article>
+<article><h2>검증</h2><p>01장에서 설정한 XDC와 실제 BD 포트명을 대조한 뒤 Validate Design을 수행한다.</p></article>
 </div>
 </div></header>
 
@@ -225,7 +225,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s01"><span class="n">01</span><span>기존 BD · Clocking Wizard</span></a></li>
 <li><a href="#s02"><span class="n">02</span><span>외부 Clock / Reset 연결</span></a></li>
 <li><a href="#s03"><span class="n">03</span><span>Processor System Reset 설정</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>기존 XDC 수정</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>01장 XDC 확인</span></a></li>
 <li><a href="#s05"><span class="n">05</span><span>연결 경로 확인</span></a></li>
 <li><a href="#s06"><span class="n">06</span><span>Validate Design</span></a></li>
 <li><a href="#s07"><span class="n">07</span><span>Output Products · Wrapper</span></a></li>
@@ -255,11 +255,11 @@ main[tabindex="-1"]:focus{outline:none}
 </section>
 
 <section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Clock / Reset 외부 포트 연결</h2>
-<p>01장에서 생성된 Clock/Reset IP를 Basys3의 외부 Clock 및 버튼 신호에 연결한다. <strong>현재 Diagram의 외부 포트명을 기준으로 XDC를 수정</strong>한다.</p>
+<p>01장에서 생성된 Clock/Reset IP를 Basys3의 외부 Clock 및 버튼 신호에 연결한다. <strong>현재 Diagram의 외부 포트명과 01장의 XDC를 대조</strong>한다.</p>
 <ol class="step-seq">
 <li><h3>Clock 외부 포트</h3><p>단일 입력으로 설정된 <code>clk_wiz_1</code>의 Clock 입력을 우클릭 → <strong>Make External</strong>로 외부 포트를 만든다. 생성된 외부 포트명을 확인한다.</p></li>
 <li><h3>Reset 외부 포트</h3><p><code>clk_wiz_1/reset</code>의 기존 배선을 확인한 후 필요하면 <strong>Make External</strong>을 실행한다. 동일한 외부 Reset 신호를 <code>rst_clk_wiz_1_100M/ext_reset_in</code>에 연결한다.</p></li>
-<li><h3>중복 포트 확인</h3><p>이미 외부 포트가 생성되어 있다면 새로 만들지 않는다. 실제 외부 Clock과 Reset 포트명을 기록하여 SECTION 04의 XDC 수정에 사용한다.</p></li>
+<li><h3>중복 포트 확인</h3><p>이미 외부 포트가 생성되어 있다면 새로 만들지 않는다. 실제 외부 Clock과 Reset 포트명을 SECTION 04에서 기존 XDC와 대조한다.</p></li>
 </ol>
 <figure class="manual-figure">
 <a href="../../images/common/v_clock_after.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD 원본 MicroBlaze V Clock Reset 회로도 열기"><img loading="lazy" src="../../images/common/v_clock_after.png" alt="AMD 원본 MicroBlaze V Clock Reset 연결 회로도"></a>
@@ -280,24 +280,16 @@ main[tabindex="-1"]:focus{outline:none}
 <p>외부 Push Button은 FPGA Clock과 비동기이며 기계적 바운스가 발생할 수 있다. Processor System Reset은 Reset 입력 검출과 동기화 기능을 제공하지만, 이를 일반적인 Push Button Debouncer로 간주하지 않는다.</p>
 <p>MDM V의 <code>Debug_SYS_Rst</code>는 <code>mb_debug_sys_rst</code>로 연결한다. <code>aux_reset_in</code>을 사용하지 않으면 Active-High 설정에서 0으로 고정한다.</p></section>
 
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>01장 XDC를 실제 외부 포트명에 맞춰 수정</h2>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>01장 XDC 설정 확인</h2>
+<p>01장에서 등록한 <code>Basys-3-Master.xdc</code>를 다시 설정하지 않고, 현재 Block Design의 외부 포트와 일치하는지만 확인한다.</p>
 <ol class="step-seq">
-<li><h3>기존 XDC 열기</h3><p>Sources → Constraints에서 01장에 등록한 <code>Basys-3-Master.xdc</code>를 연다.</p></li>
-<li><h3>포트명 대조</h3><p>Vivado Diagram의 <strong>BD 외부 Clock 포트명</strong>과 <strong>BD 외부 Reset 포트명</strong>을 확인한다. <code>clk_wiz_1/clk_in1</code>과 같은 IP 내부 포트명과 구분한다.</p></li>
-<li><h3>XDC 수정</h3><p>아래 01장 코드는 기존 기준이다. <code>get_ports clk</code>의 <code>clk</code>, <code>get_ports btnC</code>의 <code>btnC</code>가 실제 BD 외부 포트와 다르다면 <strong>get_ports 안의 이름만</strong> 현재 회로도에 맞춰 변경한다. 이미 같으면 유지한다.</p></li>
-<li><h3>고정 제약 유지</h3><p>Clock <code>W5</code> · <code>10.00 ns</code>, Reset <code>U18</code>, <code>LVCMOS33</code>은 유지하고 XDC를 저장한다.</p></li>
+<li><h3>기존 XDC 확인</h3><p>Sources → Constraints에서 <code>Basys-3-Master.xdc</code>를 열어 활성화된 Clock 및 Reset 제약을 확인한다.</p></li>
+<li><h3>BD 포트 대조</h3><p>외부 포트 <code>clk</code>, <code>btnC</code>가 XDC의 <code>get_ports</code>와 일치하는지 확인한다. 해당 포트가 이미 일치하므로 변경하지 않는다.</p></li>
 </ol>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 XDC · 소스 코드"><code>## Clock signal
-set_property -dict { PACKAGE_PIN W5 IOSTANDARD LVCMOS33 } [get_ports clk]
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
-
-## Center Button : Reset
-set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</code></pre>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Basys3 XDC · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">포트</th><th scope="col" role="columnheader">핀</th><th scope="col" role="columnheader">기능</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="포트" role="cell"><code>clk</code></td><td data-label="핀" role="cell"><code>W5</code></td><td data-label="기능" role="cell">100 MHz Primary Clock</td></tr>
-<tr role="row"><td data-label="포트" role="cell"><code>btnC</code></td><td data-label="핀" role="cell"><code>U18</code></td><td data-label="기능" role="cell">Active-High 외부 Reset 입력</td></tr>
+<div class="table-wrap" tabindex="0" role="region" aria-label="01장 XDC 대조 결과"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">BD 외부 포트</th><th scope="col" role="columnheader">Basys3 핀</th><th scope="col" role="columnheader">제약</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="BD 외부 포트" role="cell"><code>clk</code></td><td data-label="Basys3 핀" role="cell"><code>W5</code></td><td data-label="제약" role="cell"><code>LVCMOS33</code> · 100 MHz · 10 ns</td></tr>
+<tr role="row"><td data-label="BD 외부 포트" role="cell"><code>btnC</code></td><td data-label="Basys3 핀" role="cell"><code>U18</code></td><td data-label="제약" role="cell"><code>LVCMOS33</code></td></tr>
 </tbody></table></div>
-<div class="note">아래 XDC의 <code>clk</code>, <code>btnC</code>는 01장에서 등록한 이름이다. 실제 회로도와 다르면 <code>get_ports</code> 이름만 변경한다. 차동 클럭 설정 자체는 XDC 이름 변경으로 해결되지 않으므로 SECTION 01에서 단일 입력 구성을 먼저 확인한다.</div>
 </section>
 
 <section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>신호 경로 추적</h2>
@@ -314,7 +306,7 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 
 <section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Validate Design — 첫 번째 Stage Gate</h2>
 <ol class="step-seq">
-<li><h3>첫 Validate Design</h3><p>외부 Clock/Reset 연결 및 XDC 수정 후 <code>Ctrl+S</code>로 Block Design을 저장하고 <strong>Validate Design</strong>을 실행한다.</p></li>
+<li><h3>첫 Validate Design</h3><p>외부 Clock/Reset 연결 및 기존 XDC와의 일치 확인 후 <code>Ctrl+S</code>로 Block Design을 저장하고 <strong>Validate Design</strong>을 실행한다.</p></li>
 <li><h3>Clock Association</h3><p>MicroBlaze V, Local Memory, Processor System Reset이 동일한 100 MHz Clock에 연결되었는지 확인한다.</p></li>
 <li><h3>Reset Association</h3><p>AXI 계층이 아직 최소 구성이라도 <code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 올바른 극성으로 생성되는지 확인한다.</p></li>
 </ol>
