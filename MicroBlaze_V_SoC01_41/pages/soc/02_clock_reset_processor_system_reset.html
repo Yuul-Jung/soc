@@ -322,6 +322,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><h3>필요한 경우 Create HDL Wrapper</h3><p>Sources에 Wrapper가 없다면 <code>soc01_mb_bram.bd</code> 우클릭 → <strong>Create HDL Wrapper</strong> → <strong>Let Vivado tools manage wrapper and auto-update</strong>를 선택한다. 생성 후 Top 지정 여부를 다시 확인한다.</p></li>
 </ol>
 <div class="ok"><strong>실습 확인 · 2026-10-24:</strong> <code>generate_target all</code> 실행 로그에서 합성/시뮬레이션 RTL과 HDL Wrapper 파일, <code>.hwh</code>, <code>.hwdef</code> 출력 생성이 확인되었다. <code>filemgmt 56-443</code> ECC 기본값 경고가 표시되었으며, Top 등록과 개별 IP 합성 완료 여부는 아직 확인하지 않았다.</div>
+<div class="ok"><strong>실습 확인 · 2026-10-24:</strong> <code>soc01_mb_bram_wrapper</code>가 Sources → Design Sources 최상위에 나타나고, 그 아래 <code>soc01_mb_bram_i</code> 인스턴스와 MicroBlaze V, BRAM, Clock/Reset IP 계층이 포함된 것을 확인했다. Wrapper 생성 및 Top 지정 완료.</div>
 <div class="note">HDL Wrapper는 Block Design을 감싸는 Shell/Wrapper로 유지한다. 계산, 상태 판단, Register Map 정책, FSM은 별도 RTL/IP에서 구현한다.</div>
 </section>
 
@@ -356,7 +357,8 @@ main[tabindex="-1"]:focus{outline:none}
 <li>W5 · U18 · 10 ns · LVCMOS33 제약을 확인했다.</li>
 <li>Validate Design이 오류 및 Critical Warning 없이 완료되었다. 일반 Warning 3건은 별도로 확인했다.</li>
 <li>Generate Output Products에서 합성/시뮬레이션 RTL 및 하드웨어 정의 파일 생성을 확인했다.</li>
-<li>HDL Wrapper의 Top 등록과 Synthesis · Implementation은 다음 단계에서 확인한다.</li>
+<li><code>soc01_mb_bram_wrapper</code>를 프로젝트 Top으로 등록했다.</li>
+<li>Synthesis · Implementation은 후속 절차에서 검증한다.</li>
 </ul>
 <div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
 </section>
