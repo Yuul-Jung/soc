@@ -229,9 +229,6 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s10"><span class="n">10</span><span>Clock · Reset 연결 준비</span></a></li>
 <li><a href="#s11"><span class="n">11</span><span>XDC 기준</span></a></li>
 <li><a href="#s12"><span class="n">12</span><span>Diagram 저장 · 구성 확인</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>Output · Wrapper</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>Synthesis · Implementation</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>오류 점검</span></a></li>
 <li><a href="#summary"><span class="n">S</span><span>완료 체크</span></a></li>
 <li><a href="#sources"><span class="n">R</span><span>공식 매뉴얼</span></a></li>
 </ol></aside>
@@ -240,7 +237,7 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="stage-flow"><span class="stage">FPGA/SoC 선수개념</span><span class="arrow">→</span><span class="stage"><strong>SoC 01 최소 시스템</strong></span><span class="arrow">→</span><span class="stage">Clock/Reset</span><span class="arrow">→</span><span class="stage">AXI Peripheral</span><span class="arrow">→</span><span class="stage">Custom IP</span><span class="arrow">→</span><span class="stage">NPU</span></div>
 </div>
 <section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>최소 SoC 구성 범위</h2>
-<p>SoC 01은 이후 모든 확장의 기준이 되는 <strong>최소 실행 하드웨어</strong>를 구성한다. GPIO·UART·Timer·Interrupt·Custom AXI IP·NPU는 포함하지 않는다.</p>
+<p>SoC 01은 이후 확장의 기준이 되는 <strong>MicroBlaze V · Local BRAM IP 기본 구성</strong>을 생성하고 저장한다. Clock/Reset의 외부 연결과 빌드는 SoC 02에서 완료하며, GPIO·UART·Timer·Interrupt·Custom AXI IP·NPU는 포함하지 않는다.</p>
 <div class="lesson-goal">
 <article><strong>① CPU</strong><p><code>MicroBlaze V</code>를 FPGA 내부에 구성한다.</p></article>
 <article><strong>② Local Memory</strong><p>명령과 데이터를 저장할 BRAM을 붙인다.</p></article>
@@ -374,37 +371,6 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <li><h3>Clock/Reset IP 확인</h3><p>자동 생성된 Clocking Wizard 및 Processor System Reset이 존재하는지 확인한다. 외부 Clock/Reset 미연결 상태는 이 단계에서 정상적인 <strong>중간 구성 상태</strong>로 분류한다.</p></li>
 </ol>
 <div class="note"><strong>SoC 01 저장 기준:</strong> 필요한 IP와 Local Memory 계층이 생성되고 Block Design이 저장되었다. 외부 Clock/Reset 연결은 SoC 02 SECTION 12~15에서 완료하며, <strong>첫 Validate Design 및 Gate 1 PASS 판정은 SoC 02 SECTION 16</strong>에서 진행한다.</div>
-</section>
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Generate Output Products · HDL Wrapper</h2>
-<div class="warn"><strong>후속 실행 절차:</strong> SoC 01 단계에서는 실행하지 않는다. SoC 02에서 외부 Clock/Reset 연결과 첫 Validate Design이 통과한 뒤 아래 작업을 수행한다.</div>
-<ol class="step-seq">
-<li><h3>Generate Output Products</h3><p>Sources에서 <code>soc01_mb_bram.bd</code>를 우클릭하고 <strong>Generate Output Products</strong>를 실행한다.</p></li>
-<li><h3>Create HDL Wrapper</h3><p>Block Design을 우클릭 → <strong>Create HDL Wrapper</strong>.</p></li>
-<li><h3>Vivado 관리 방식 선택</h3><p><strong>Let Vivado tools manage wrapper and auto-update</strong>를 권장한다. Top은 Block Design을 감싸는 Shell/Wrapper로 유지한다.</p></li>
-<li><h3>Top 확인</h3><p>생성된 <code>soc01_mb_bram_wrapper</code>가 Top으로 지정되었는지 Sources에서 확인한다.</p></li>
-</ol>
-<div class="note">Wrapper에는 계산, 상태 판단, Register Map 정책, 기능 FSM을 직접 추가하지 않는다. Custom RTL은 별도 모듈/IP로 구성하고 Top은 연결 중심으로 유지한다.</div>
-</section>
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Synthesis · Implementation</h2>
-<div class="warn"><strong>후속 실행 절차:</strong> SoC 02의 Gate 1 PASS 및 HDL Wrapper 생성 이후 수행한다. SoC 01의 완료 조건으로 요구하지 않는다.</div>
-<ol class="step-seq">
-<li><h3>Run Synthesis</h3><p>Synthesis가 완료되면 Critical Warning과 unconstrained clock/I/O 관련 메시지를 확인한다.</p></li>
-<li><h3>Open Synthesized Design</h3><p>Clock 포트와 Reset 포트가 예상한 Pin/IOSTANDARD 제약을 받았는지 확인한다.</p></li>
-<li><h3>Run Implementation</h3><p>Implementation을 실행해 Placement/Routing 단계까지 통과시킨다.</p></li>
-<li><h3>Timing Summary</h3><p>100 MHz Primary Clock가 인식되는지, WNS/TNS가 비정상적으로 보고되지 않는지 확인한다. 상세 Timing Closure는 후속 장에서 확장한다.</p></li>
-</ol>
-
-</section>
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>오류 점검</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">우선 의심</th><th scope="col" role="columnheader">확인 방법</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="증상" role="cell">Run Block Automation이 안 보임</td><td data-label="우선 의심" role="cell">MicroBlaze V가 제대로 추가되지 않았거나 Designer Assistance 조건 미충족</td><td data-label="확인 방법" role="cell">IP 종류가 MicroBlaze V인지, BD가 활성 Diagram인지 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Local Memory가 없음</td><td data-label="우선 의심" role="cell">Block Automation에서 Local Memory 미구성</td><td data-label="확인 방법" role="cell"><code>microblaze_*_local_memory</code> hierarchy 존재 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Validate에서 Reset 오류</td><td data-label="우선 의심" role="cell"><code>dcm_locked</code>, <code>ext_reset_in</code>, Clock 누락</td><td data-label="확인 방법" role="cell">Clocking Wizard ↔ Processor System Reset 연결 추적</td></tr>
-<tr role="row"><td data-label="증상" role="cell">XDC가 적용되지 않음</td><td data-label="우선 의심" role="cell">외부 포트명 불일치</td><td data-label="확인 방법" role="cell"><code>get_ports clk</code>, <code>get_ports btnC</code>와 실제 BD external port 이름 비교</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Clock가 unconstrained</td><td data-label="우선 의심" role="cell"><code>create_clock</code> 누락/포트명 오류</td><td data-label="확인 방법" role="cell">Timing Constraints/Report Clocks에서 100 MHz 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">CPU가 계속 Reset 상태</td><td data-label="우선 의심" role="cell">Clock Wizard lock 또는 Reset polarity 문제</td><td data-label="확인 방법" role="cell"><code>locked → dcm_locked</code>, BTNC active level 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">보드에서 눈에 보이는 변화가 없음</td><td data-label="우선 의심" role="cell">정상일 수 있음</td><td data-label="확인 방법" role="cell">SoC 01에는 LED/UART Peripheral이 없음</td></tr>
-</tbody></table></div>
 </section>
 <section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 01 완료 체크리스트</h2>
 <ul>
