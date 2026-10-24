@@ -206,42 +206,34 @@ main[tabindex="-1"]:focus{outline:none}
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 02</p>
 <h1>Clock / Reset 구조와 Processor System Reset</h1>
-<p class="hero-desc">Basys3의 100 MHz 기준 Clock이 MicroBlaze V 시스템 Clock이 되고, Clock 안정 상태와 외부 Reset을 이용해 CPU·Bus·Peripheral Reset이 어떤 순서로 생성되고 해제되는지 실제 Vivado 신호를 기준으로 정리한다.</p>
+<p class="hero-desc">01장에서 만든 Block Design을 이어서 Clocking Wizard 설정, Clock/Reset 외부 포트 연결, 기존 XDC 수정, Validate Design 및 빌드를 진행한다.</p>
 <div class="hero-meta">
 <span class="chip">Basys3 100 MHz</span><span class="chip">Clocking Wizard</span><span class="chip">Processor System Reset</span><span class="chip">locked</span><span class="chip">dcm_locked</span><span class="chip">Active-Low Reset</span>
 </div>
 <div class="hero-brief">
 <article><h2>Clock</h2><p>W5의 100 MHz를 SoC 내부 동기 기준으로 사용한다.</p></article>
 <article><h2>Reset</h2><p>외부 Reset과 Clock lock 상태를 이용해 CPU·Bus Reset을 생성한다.</p></article>
-<article><h2>검증</h2><p>Block Design의 실제 신호 연결과 Reset polarity를 추적한다.</p></article>
+<article><h2>검증</h2><p>기존 XDC를 실제 BD 외부 포트명에 맞추고 Validate Design을 수행한다.</p></article>
 </div>
 </div></header>
 
 <div class="wrap">
 <aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html" selected>SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc02_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc02">이 장 검증</a></div></div>
-<p class="nav-title">SOC 02 · LEARNING FLOW</p>
-<p class="nav-help">Clock → Lock → Reset → Release Sequence</p>
-<ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>Clock과 Reset의 역할</span></a></li>
-<li><a href="#s02"><span class="n">02</span><span>Basys3 100 MHz Clock</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>Clocking Wizard</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>Processor System Reset</span></a></li>
-<li><a href="#s05"><span class="n">05</span><span>Reset 입력과 출력</span></a></li>
-<li><a href="#s06"><span class="n">06</span><span>Active-High · Active-Low</span></a></li>
-<li><a href="#s07"><span class="n">07</span><span>locked → dcm_locked</span></a></li>
-<li><a href="#s08"><span class="n">08</span><span>slowest_sync_clk</span></a></li>
-<li><a href="#s09"><span class="n">09</span><span>Reset 해제 순서</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>Block Automation 설정 확인</span></a></li>
-<li><a href="#s11"><span class="n">11</span><span>자동 생성 구조 확인</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>외부 Clock · Reset 연결</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>Basys3 XDC</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>Processor System Reset 설정</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>신호 경로 추적</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>Validate · Gate 1</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>Output · Wrapper</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>Synthesis · Implementation</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">20</span><span>완료 확인</span></a></li>
-<li><a href="#sources"><span class="n">21</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol>
+<p class="nav-title">SOC 02 · PRACTICE FLOW</p>
+<p class="nav-help">기존 BD → Clock / Reset → XDC → Validate</p>
+<ol class="timeline">
+<li><a href="#s01"><span class="n">01</span><span>기존 BD · Clocking Wizard</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>외부 Clock / Reset 연결</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Processor System Reset 설정</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>기존 XDC 수정</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>연결 경로 확인</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>Validate Design</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Output Products · Wrapper</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Synthesis · Implementation</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>오류 점검</span></a></li>
+<li><a href="#summary"><span class="n">S</span><span>완료 확인</span></a></li>
+<li><a href="#sources"><span class="n">R</span><span>공식 매뉴얼</span></a></li>
+</ol>
 </aside>
 
 <main id="main-content" tabindex="-1">
@@ -249,168 +241,34 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="stage-flow"><span class="stage">SoC 01 최소 시스템</span><span class="arrow">→</span><span class="stage"><strong>SoC 02 Clock / Reset</strong></span><span class="arrow">→</span><span class="stage">SoC 03 BRAM 프로그램 실행</span><span class="arrow">→</span><span class="stage">Memory Map</span><span class="arrow">→</span><span class="stage">AXI</span></div>
 </div>
 
-<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>Clock과 Reset의 역할</h2>
-<p>MicroBlaze V, BRAM Controller, AXI Interconnect, Peripheral은 모두 Clock을 기준으로 상태가 변한다. Reset은 이 회로들을 알려진 초기 상태로 만들고, Clock이 안정된 뒤 정해진 순서로 동작을 시작하게 한다.</p>
-<div class="flow">Basys3 100 MHz → Clocking Wizard → System Clock → Processor System Reset → MicroBlaze V / Bus / Peripheral</div>
-<div class="lesson-goal">
-<article><strong>① 기준 Clock</strong><p>FPGA 내부 모든 동기 회로의 시간 기준을 만든다.</p></article>
-<article><strong>② Clock Lock</strong><p>Clocking Wizard가 안정화되었는지 <code>locked</code>로 알린다.</p></article>
-<article><strong>③ Reset 생성</strong><p>Processor System Reset이 용도별 Reset을 생성한다.</p></article>
-<article><strong>④ 순차 해제</strong><p>Bus → Peripheral → CPU 순으로 Reset을 해제한다.</p></article>
-</div>
-</section>
-
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Basys3 100 MHz Clock</h2>
-<p>Basys3 Reference Manual은 보드에 단일 100 MHz oscillator가 있고 FPGA의 <code>W5</code> 핀으로 들어간다고 설명한다. W5는 Bank 34의 MRCC(Multi-Region Clock Capable, 여러 Clock 영역으로 전달 가능한 Clock 입력)이다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Basys3 100 MHz Clock · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">Basys3 기준</th><th scope="col" role="columnheader">SoC 02에서의 역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="항목" role="cell">Oscillator</td><td data-label="Basys3 기준" role="cell">100 MHz</td><td data-label="SoC 02에서의 역할" role="cell">Clocking Wizard의 입력 Clock</td></tr>
-<tr role="row"><td data-label="항목" role="cell">FPGA Pin</td><td data-label="Basys3 기준" role="cell"><code>W5</code></td><td data-label="SoC 02에서의 역할" role="cell">XDC의 Primary Clock 입력</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Clock Period</td><td data-label="Basys3 기준" role="cell">10 ns</td><td data-label="SoC 02에서의 역할" role="cell">Vivado Timing 기준</td></tr>
-<tr role="row"><td data-label="항목" role="cell">IOSTANDARD</td><td data-label="Basys3 기준" role="cell"><code>LVCMOS33</code></td><td data-label="SoC 02에서의 역할" role="cell">Basys3 Clock 입력 전기 규격</td></tr>
-</tbody></table></div>
-<div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">f = 100 MHz
-T = 1 / f
-T = 10 ns</div>
-<p>따라서 XDC에서 <code>create_clock</code>의 period는 <code>10.00 ns</code>로 지정한다.</p>
-</section>
-
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Clocking Wizard</h2>
-<p>Clocking Wizard는 FPGA 내부 MMCM/PLL 자원을 이용해 입력 Clock으로부터 필요한 주파수와 위상의 Clock을 만든다. SoC 02에서는 입력과 출력 모두 100 MHz를 사용하더라도, 시스템 Clock 생성과 <code>locked</code> 상태 관리를 위해 Clocking Wizard를 그대로 유지한다.</p>
-<div class="flow">W5 · 100 MHz → clk_wiz_1 → clk_out1 · 100 MHz → MicroBlaze V / LMB / proc_sys_reset</div>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Clocking Wizard · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">신호</th><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="신호" role="cell"><code>clk_in1</code></td><td data-label="방향" role="cell">입력</td><td data-label="의미" role="cell">Basys3 100 MHz 기준 Clock</td></tr>
-<tr role="row"><td data-label="신호" role="cell"><code>clk_out1</code></td><td data-label="방향" role="cell">출력</td><td data-label="의미" role="cell">MicroBlaze V SoC 내부 System Clock</td></tr>
-<tr role="row"><td data-label="신호" role="cell"><code>reset</code></td><td data-label="방향" role="cell">입력</td><td data-label="의미" role="cell">Clocking Wizard 자체 Reset</td></tr>
-<tr role="row"><td data-label="신호" role="cell"><code>locked</code></td><td data-label="방향" role="cell">출력</td><td data-label="의미" role="cell">Clock 회로가 안정되어 출력 Clock을 사용할 수 있음을 알리는 상태</td></tr>
-</tbody></table></div>
-<div class="note"><code>locked</code>는 일반적인 동작 완료 신호가 아니라 <strong>Clock 생성 회로가 안정된 상태</strong>를 의미한다. CPU Reset 해제 판단에 사용한다.</div>
-</section>
-
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Processor System Reset</h2>
-<p>Processor System Reset은 외부 Reset, Debug Reset, Clock lock 상태를 받아 MicroBlaze V·Bus·AXI Peripheral에 필요한 여러 종류의 Reset을 만든다. 하나의 버튼 Reset을 모든 블록에 직접 연결하는 대신 각 회로의 극성과 해제 순서를 맞추는 역할을 담당한다.</p>
-<div class="signal-map signal-table" role="region" aria-label="Processor System Reset 입력 및 출력 신호" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="방향">입력</td><td role="cell" data-label="신호">slowest_sync_clk / ext_reset_in / aux_reset_in / mb_debug_sys_rst / dcm_locked</td></tr><tr role="row"><td role="cell" data-label="방향">출력</td><td role="cell" data-label="신호">mb_reset / bus_struct_reset / peripheral_reset / interconnect_aresetn / peripheral_aresetn</td></tr></tbody></table></div>
-<p>AMD PG164는 이 IP를 Processor/Bus/Peripheral이 한 Clock 체계 안에서 안전하게 Reset되도록 하는 전용 Reset 모듈로 설명한다.</p>
-</section>
-
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Reset 입력과 출력</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Reset 입력과 출력 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Signal</th><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">극성</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Signal" role="cell"><code>slowest_sync_clk</code></td><td data-label="방향" role="cell">Input</td><td data-label="극성" role="cell">Clock</td><td data-label="역할" role="cell">Reset 동기화와 해제 순서의 기준 Clock</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>ext_reset_in</code></td><td data-label="방향" role="cell">Input</td><td data-label="극성" role="cell">설정 가능</td><td data-label="역할" role="cell">보드의 외부 Reset 입력</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>aux_reset_in</code></td><td data-label="방향" role="cell">Input</td><td data-label="극성" role="cell">설정 가능</td><td data-label="역할" role="cell">시스템 내부의 보조 Reset 입력</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>mb_debug_sys_rst</code></td><td data-label="방향" role="cell">Input</td><td data-label="극성" role="cell">Active-High</td><td data-label="역할" role="cell">MDM V(MicroBlaze Debug Module V)의 Debug Reset</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>dcm_locked</code></td><td data-label="방향" role="cell">Input</td><td data-label="극성" role="cell">상태</td><td data-label="역할" role="cell">Clock 생성 회로가 안정되었는지 확인</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>mb_reset</code></td><td data-label="방향" role="cell">Output</td><td data-label="극성" role="cell">Active-High</td><td data-label="역할" role="cell">MicroBlaze V Core Reset</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>bus_struct_reset</code></td><td data-label="방향" role="cell">Output</td><td data-label="극성" role="cell">Active-High</td><td data-label="역할" role="cell">Bus 구조용 Reset</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>peripheral_reset</code></td><td data-label="방향" role="cell">Output</td><td data-label="극성" role="cell">Active-High</td><td data-label="역할" role="cell">Active-High Peripheral용 Reset</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>interconnect_aresetn</code></td><td data-label="방향" role="cell">Output</td><td data-label="극성" role="cell">Active-Low</td><td data-label="역할" role="cell">AXI Interconnect 계층 Reset</td></tr>
-<tr role="row"><td data-label="Signal" role="cell"><code>peripheral_aresetn</code></td><td data-label="방향" role="cell">Output</td><td data-label="극성" role="cell">Active-Low</td><td data-label="역할" role="cell">AXI Peripheral 계층 Reset</td></tr>
-</tbody></table></div>
-</section>
-
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Active-High · Active-Low</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Active-High · Active-Low · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">표기</th><th scope="col" role="columnheader">Reset이 걸린 상태</th><th scope="col" role="columnheader">Reset이 풀린 상태</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="표기" role="cell"><code>mb_reset</code></td><td data-label="Reset이 걸린 상태" role="cell"><code>1</code></td><td data-label="Reset이 풀린 상태" role="cell"><code>0</code></td></tr>
-<tr role="row"><td data-label="표기" role="cell"><code>bus_struct_reset</code></td><td data-label="Reset이 걸린 상태" role="cell"><code>1</code></td><td data-label="Reset이 풀린 상태" role="cell"><code>0</code></td></tr>
-<tr role="row"><td data-label="표기" role="cell"><code>peripheral_reset</code></td><td data-label="Reset이 걸린 상태" role="cell"><code>1</code></td><td data-label="Reset이 풀린 상태" role="cell"><code>0</code></td></tr>
-<tr role="row"><td data-label="표기" role="cell"><code>interconnect_aresetn</code></td><td data-label="Reset이 걸린 상태" role="cell"><code>0</code></td><td data-label="Reset이 풀린 상태" role="cell"><code>1</code></td></tr>
-<tr role="row"><td data-label="표기" role="cell"><code>peripheral_aresetn</code></td><td data-label="Reset이 걸린 상태" role="cell"><code>0</code></td><td data-label="Reset이 풀린 상태" role="cell"><code>1</code></td></tr>
-</tbody></table></div>
-<div class="signal-map" tabindex="0" role="region" aria-label="06절 신호 및 실행 흐름">reset      : 1 → RESET
-aresetn    : 0 → RESET
-
-suffix "_n" 또는 "aresetn"
-→ 보통 Low일 때 Reset이 활성화됨</div>
-<p>AXI 계열 IP는 <code>aresetn</code>이라는 Active-Low Reset을 많이 사용한다. 따라서 <code>peripheral_aresetn</code>을 AXI Peripheral의 <code>s_axi_aresetn</code> 등에 연결할 때 별도의 반전기를 임의로 넣지 않는다.</p>
-</section>
-
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>locked → dcm_locked</h2>
-<p>AMD UG1711는 Board Flow를 사용하지 않는 경우에도 Clocking Wizard의 <code>locked</code> 출력을 Processor System Reset의 <code>dcm_locked</code> 입력에 연결해야 한다고 명시한다.</p>
-<div class="flow">clk_wiz_1/locked → rst_clk_wiz_1_100M/dcm_locked</div>
-<p>PG164에 따르면 <code>dcm_locked</code>가 동작 중 Low로 내려가면 Processor System Reset은 모든 Reset 출력을 다시 활성화한다. 따라서 Clock이 불안정한 동안 CPU와 Bus가 동작을 계속하지 않도록 막는다.</p>
-<div class="danger"><strong>필수 확인:</strong> <code>locked</code>와 <code>dcm_locked</code>가 끊겨 있으면 CPU가 Reset에서 정상적으로 빠져나오지 못하거나, Clock 안정 상태와 무관하게 Reset이 제어될 수 있다.</div>
-</section>
-
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>slowest_sync_clk</h2>
-<p><code>slowest_sync_clk</code>는 Processor System Reset 내부의 동기화 및 Reset 해제 시퀀스가 기준으로 삼는 Clock이다. PG164는 시스템에서 사용하는 동기 Clock 중 가장 느린 Clock에 연결하도록 설명하며, 일반적으로 AXI4-Lite Clock을 예로 든다.</p>
-<p>SoC 02는 하나의 100 MHz Clock Domain만 사용하므로 다음과 같이 연결한다.</p>
-<div class="flow">clk_wiz_1/clk_out1 · 100 MHz → rst_clk_wiz_1_100M/slowest_sync_clk</div>
-<div class="note">나중에 서로 다른 Clock Domain이 추가되면 Reset도 각 Clock Domain에 맞게 다시 설계해야 한다. 하나의 <code>peripheral_aresetn</code>을 모든 비동기 Clock Domain에 무조건 공유하면 안 된다.</div>
-</section>
-
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Reset 해제 순서</h2>
-<p>PG164는 Reset이 활성화될 때는 출력들이 함께 활성화되지만, Reset 해제는 순서를 두어 진행한다고 설명한다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Reset 해제 순서 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">순서</th><th scope="col" role="columnheader">해제되는 Reset</th><th scope="col" role="columnheader">100 MHz 기준</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="순서" role="cell">1</td><td data-label="해제되는 Reset" role="cell"><code>bus_struct_reset</code>, <code>interconnect_aresetn</code></td><td data-label="100 MHz 기준" role="cell">기준 시점</td><td data-label="의미" role="cell">Bus/Interconnect를 먼저 준비</td></tr>
-<tr role="row"><td data-label="순서" role="cell">2</td><td data-label="해제되는 Reset" role="cell"><code>peripheral_reset</code>, <code>peripheral_aresetn</code></td><td data-label="100 MHz 기준" role="cell">16 clocks 후 ≈ 160 ns</td><td data-label="의미" role="cell">Peripheral 동작 허용</td></tr>
-<tr role="row"><td data-label="순서" role="cell">3</td><td data-label="해제되는 Reset" role="cell"><code>mb_reset</code></td><td data-label="100 MHz 기준" role="cell">추가 16 clocks 후 ≈ 320 ns</td><td data-label="의미" role="cell">CPU가 마지막에 실행 시작</td></tr>
-</tbody></table></div>
-<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">Clock Stable
-    ↓
-Bus / Interconnect Reset 해제
-    ↓ 16 clocks
-Peripheral Reset 해제
-    ↓ 16 clocks
-MicroBlaze V Reset 해제
-    ↓
-CPU 실행 시작</div>
-<p>이 160 ns, 320 ns 값은 <strong>Reset 해제 시퀀스 구간만 100 MHz로 환산한 값</strong>이다. 외부 Reset 입력 검출, Clock lock 획득 시간까지 포함한 전체 Reset 시간은 이 값보다 길 수 있다.</p>
-</section>
-
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Block Automation 설정 확인</h2>
-<figure class="manual-figure">
-<a href="../../images/common/v_automation.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1711 2026.1 · MicroBlaze V Run Block Automation. 본문 설정표에 맞춰 구성한다. · 원본 보기 (새 탭)"><img alt="AMD UG1711 2026.1 · MicroBlaze V Run Block Automation. 본문 설정표에 맞춰 구성한다." loading="lazy" src="../../images/common/v_automation.png">
-</a><figcaption>AMD UG1711 2026.1 · MicroBlaze V Run Block Automation. 본문 설정표에 맞춰 구성한다.<br><a href="../../images/common/v_automation.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1711 2026.1 · MicroBlaze V Run Block Automation. 본문 설정표에 맞춰 구성한다. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
-</figure>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Block Automation 설정 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">SoC 02 확인값</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="항목" role="cell">Local Memory</td><td data-label="SoC 02 확인값" role="cell">SoC 01과 동일</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Cache</td><td data-label="SoC 02 확인값" role="cell">None</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Debug</td><td data-label="SoC 02 확인값" role="cell">Debug Enabled</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Peripheral AXI Port</td><td data-label="SoC 02 확인값" role="cell">Enabled</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Interrupt Controller</td><td data-label="SoC 02 확인값" role="cell">Off</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Clock Connection</td><td data-label="SoC 02 확인값" role="cell"><code>New Clocking Wizard (100 MHz)</code></td></tr>
-</tbody></table></div>
-</section>
-
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>자동 생성 구조 확인</h2>
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>01장 Block Design에서 계속 진행</h2>
+<ol class="step-seq">
+<li><h3>기존 Block Design 열기</h3><p>Vivado의 <strong>Sources → Design Sources</strong>에서 01장에 저장한 <code>soc01_mb_bram.bd</code>를 연다. MicroBlaze V, 16 KB Local BRAM, Clocking Wizard, Processor System Reset은 다시 생성하지 않는다.</p></li>
+<li><h3>Clocking Wizard 설정 열기</h3><p>Diagram에서 <code>clk_wiz_1</code>을 더블클릭 → <strong>Clocking Options</strong>를 확인한다.</p></li>
+<li><h3>Basys3 클럭 입력 확인</h3><p>Basys3 W5는 단일 100 MHz 클럭 입력이므로 Primary Input Source는 <strong>Single ended clock capable pin</strong>, Primary Input Frequency는 <strong>100.000 MHz</strong>로 맞춘다. <code>clk_out1</code>도 설정값 100 MHz인지 확인한다.</p></li>
+<li><h3>입력 포트 형태 확인</h3><p><code>CLK_IN1_D</code>가 있다면 차동 입력 설정인지 확인하고 단일 입력으로 변경한다. <code>Ctrl+S</code>로 저장한다.</p></li>
+</ol>
 <figure class="manual-figure">
 <a href="../../images/common/v_clock_before.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset. · 원본 보기 (새 탭)"><img alt="AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset." loading="lazy" src="../../images/common/v_clock_before.png">
 </a><figcaption>AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset.<br><a href="../../images/common/v_clock_before.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
 </figure>
-<p>이 AMD 그림은 IP 구성 참고용이다. Basys3 외부 Clock/Reset 포트와 XDC의 실제 이름은 SECTION 12의 연결 기준도를 따른다.</p>
-<div class="signal-map signal-table" role="region" aria-label="내부 클록 및 리셋 배선" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">출발 신호</th><th scope="col" role="columnheader">도착 신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">microblaze_riscv_0/Clk</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">local_memory/LMB_Clk</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/slowest_sync_clk</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/locked</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/dcm_locked</td></tr><tr role="row"><td role="cell" data-label="출발 신호">rst_clk_wiz_1_100M/mb_reset</td><td role="cell" data-label="도착 신호">microblaze_riscv_0/Reset</td></tr></tbody></table></div>
 </section>
 
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>외부 Clock · Reset 연결</h2>
-<p>Basys3의 W5는 100 MHz <strong>단일 클럭 입력</strong>이다. 먼저 Clocking Wizard의 입력 방식을 맞춘 다음 XDC와 같은 외부 포트명으로 연결한다.</p>
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Clock / Reset 외부 포트 연결</h2>
+<p>01장에서 생성된 Clock/Reset IP를 Basys3의 외부 Clock 및 버튼 신호에 연결한다. <strong>현재 Diagram의 외부 포트명을 기준으로 XDC를 수정</strong>한다.</p>
 <ol class="step-seq">
-<li><h3>Clocking Wizard 입력 확인</h3><p><code>clk_wiz_1</code>을 더블클릭하여 입력 Clock을 <strong>Single-ended 100 MHz</strong>로 구성한다. 입력 포트가 <code>CLK_IN1_D</code>이면 차동 입력 구성이다. <code>clk_in1</code>로 바뀌는지 확인하고 출력 <code>clk_out1</code>도 100 MHz로 설정한다.</p></li>
-<li><h3>Clock 외부 포트 생성</h3><p><code>clk_wiz_1/clk_in1</code>에서 <strong>Make External</strong>을 선택하고 외부 포트명을 <code>clk</code>로 지정한다.</p></li>
-<li><h3>Reset 외부 포트 생성</h3><p><code>clk_wiz_1/reset</code>에서 <strong>Make External</strong>을 선택하고 외부 포트명을 <code>btnC</code>로 지정한다. 동일한 <code>btnC</code>를 <code>rst_clk_wiz_1_100M/ext_reset_in</code>에도 연결한다.</p></li>
-<li><h3>내부 연결 확인</h3><p>Clock Wizard의 <code>clk_out1</code>, <code>locked</code>와 Reset IP의 <code>slowest_sync_clk</code>, <code>dcm_locked</code> 및 MicroBlaze V Reset 경로를 확인한다.</p></li>
+<li><h3>Clock 외부 포트</h3><p>단일 입력으로 설정된 <code>clk_wiz_1</code>의 Clock 입력을 우클릭 → <strong>Make External</strong>로 외부 포트를 만든다. 생성된 외부 포트명을 확인한다.</p></li>
+<li><h3>Reset 외부 포트</h3><p><code>clk_wiz_1/reset</code>의 기존 배선을 확인한 후 필요하면 <strong>Make External</strong>을 실행한다. 동일한 외부 Reset 신호를 <code>rst_clk_wiz_1_100M/ext_reset_in</code>에 연결한다.</p></li>
+<li><h3>중복 포트 확인</h3><p>이미 외부 포트가 생성되어 있다면 새로 만들지 않는다. 실제 외부 Clock과 Reset 포트명을 기록하여 SECTION 04의 XDC 수정에 사용한다.</p></li>
 </ol>
 <figure class="manual-figure">
-<a href="../../images/soc02_basys3_clock_reset_xdc.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Basys3 Clock Reset 연결 기준도 원본 크기로 보기"><img alt="Basys3 clk(W5) 및 btnC(U18)와 실제 IP 포트 이름을 일치시킨 연결 기준도" loading="lazy" src="../../images/soc02_basys3_clock_reset_xdc.svg"></a>
-<figcaption>Basys3 · 100 MHz 단일 Clock / Reset 연결 기준도<br><a href="../../images/soc02_basys3_clock_reset_xdc.svg" target="_blank" rel="noopener" class="figure-original">그림 확대 ↗</a></figcaption>
+<a href="../../images/common/v_clock_after.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD 원본 MicroBlaze V Clock Reset 회로도 열기"><img loading="lazy" src="../../images/common/v_clock_after.png" alt="AMD 원본 MicroBlaze V Clock Reset 연결 회로도"></a>
+<figcaption>AMD 원본 Vivado Block Design 참고 그림 · Basys3 입력과 외부 포트 이름은 현재 회로도 기준으로 확인<br><a href="../../images/common/v_clock_after.png" target="_blank" rel="noopener" class="figure-original">원본 보기 ↗</a></figcaption>
 </figure>
-<div class="signal-map signal-table" role="region" aria-label="보드 입력 및 클록 잠금 배선" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">출발 신호</th><th scope="col" role="columnheader">도착 신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="출발 신호"><code>clk</code> · W5 · 100 MHz</td><td role="cell" data-label="도착 신호">clk_wiz_1/clk_in1</td></tr><tr role="row"><td role="cell" data-label="출발 신호"><code>btnC</code> · U18</td><td role="cell" data-label="도착 신호">clk_wiz_1/reset</td></tr><tr role="row"><td role="cell" data-label="출발 신호"><code>btnC</code> · U18</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/ext_reset_in</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/locked</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/dcm_locked</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/slowest_sync_clk</td></tr></tbody></table></div>
+<div class="signal-map signal-table" role="region" aria-label="보드 입력 및 클록 잠금 배선" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">출발 신호</th><th scope="col" role="columnheader">도착 신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="출발 신호">외부 Clock 포트 · W5 · 100 MHz</td><td role="cell" data-label="도착 신호">clk_wiz_1/clk_in1</td></tr><tr role="row"><td role="cell" data-label="출발 신호">외부 Reset 포트 · U18</td><td role="cell" data-label="도착 신호">clk_wiz_1/reset</td></tr><tr role="row"><td role="cell" data-label="출발 신호">외부 Reset 포트 · U18</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/ext_reset_in</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/locked</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/dcm_locked</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/slowest_sync_clk</td></tr></tbody></table></div>
 </section>
 
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Basys3 XDC</h2>
-<p>Digilent Master XDC의 Clock과 Center Button 줄만 활성화하고, Block Design에서 만든 외부 포트 이름과 일치시킨다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 XDC · 소스 코드"><code>## Clock signal
-set_property -dict { PACKAGE_PIN W5 IOSTANDARD LVCMOS33 } [get_ports clk]
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
-
-## Center Button : Reset
-set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</code></pre>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Basys3 XDC · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">포트</th><th scope="col" role="columnheader">핀</th><th scope="col" role="columnheader">기능</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="포트" role="cell"><code>clk</code></td><td data-label="핀" role="cell"><code>W5</code></td><td data-label="기능" role="cell">100 MHz Primary Clock</td></tr>
-<tr role="row"><td data-label="포트" role="cell"><code>btnC</code></td><td data-label="핀" role="cell"><code>U18</code></td><td data-label="기능" role="cell">Active-High 외부 Reset 입력</td></tr>
-</tbody></table></div>
-<div class="warn"><code>sys_diff_clock</code> / <code>CLK_IN1_D</code>는 차동 입력 예시이며 Basys3 W5에 그대로 사용하지 않는다. Clocking Wizard 설정을 Single-ended로 변경한 뒤 외부 포트명 <code>clk</code>를 적용한다. 외부 포트가 <code>clk_0</code>, <code>reset_0</code>처럼 자동 생성되었다면 XDC를 먼저 바꾸지 말고 Block Design의 외부 포트 이름을 의도한 <code>clk</code>, <code>btnC</code>로 정리한 뒤 XDC와 맞춘다.</div>
-</section>
-
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Processor System Reset 설정</h2>
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Processor System Reset 설정 · 연결</h2>
 <p>Basys3 Center Button은 누르면 High가 되는 입력으로 사용하므로 <code>ext_reset_in</code>도 Active-High로 맞추는 것이 직관적이다.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Processor System Reset 설정 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">SoC 02 기준</th><th scope="col" role="columnheader">이유</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="항목" role="cell">External Reset Logic Level</td><td data-label="SoC 02 기준" role="cell">Active-High</td><td data-label="이유" role="cell">BTNC 누름 = High</td></tr>
@@ -422,29 +280,49 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <p>외부 Push Button은 FPGA Clock과 비동기이며 기계적 바운스가 발생할 수 있다. Processor System Reset은 Reset 입력 검출과 동기화 기능을 제공하지만, 이를 일반적인 Push Button Debouncer로 간주하지 않는다.</p>
 <p>MDM V의 <code>Debug_SYS_Rst</code>는 <code>mb_debug_sys_rst</code>로 연결한다. <code>aux_reset_in</code>을 사용하지 않으면 Active-High 설정에서 0으로 고정한다.</p></section>
 
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>신호 경로 추적</h2>
-<p>Block Design에서 아래 다섯 경로를 실제 Wire를 따라가며 확인한다.</p>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>01장 XDC를 실제 외부 포트명에 맞춰 수정</h2>
 <ol class="step-seq">
-<li><h3>Primary Clock</h3><p><code>clk → clk_wiz_1/clk_in1</code></p></li>
+<li><h3>기존 XDC 열기</h3><p>Sources → Constraints에서 01장에 등록한 <code>Basys-3-Master.xdc</code>를 연다.</p></li>
+<li><h3>포트명 대조</h3><p>Vivado Diagram의 <strong>BD 외부 Clock 포트명</strong>과 <strong>BD 외부 Reset 포트명</strong>을 확인한다. <code>clk_wiz_1/clk_in1</code>과 같은 IP 내부 포트명과 구분한다.</p></li>
+<li><h3>XDC 수정</h3><p>아래 01장 코드는 기존 기준이다. <code>get_ports clk</code>의 <code>clk</code>, <code>get_ports btnC</code>의 <code>btnC</code>가 실제 BD 외부 포트와 다르다면 <strong>get_ports 안의 이름만</strong> 현재 회로도에 맞춰 변경한다. 이미 같으면 유지한다.</p></li>
+<li><h3>고정 제약 유지</h3><p>Clock <code>W5</code> · <code>10.00 ns</code>, Reset <code>U18</code>, <code>LVCMOS33</code>은 유지하고 XDC를 저장한다.</p></li>
+</ol>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 XDC · 소스 코드"><code>## Clock signal
+set_property -dict { PACKAGE_PIN W5 IOSTANDARD LVCMOS33 } [get_ports clk]
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+
+## Center Button : Reset
+set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</code></pre>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Basys3 XDC · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">포트</th><th scope="col" role="columnheader">핀</th><th scope="col" role="columnheader">기능</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="포트" role="cell"><code>clk</code></td><td data-label="핀" role="cell"><code>W5</code></td><td data-label="기능" role="cell">100 MHz Primary Clock</td></tr>
+<tr role="row"><td data-label="포트" role="cell"><code>btnC</code></td><td data-label="핀" role="cell"><code>U18</code></td><td data-label="기능" role="cell">Active-High 외부 Reset 입력</td></tr>
+</tbody></table></div>
+<div class="note">아래 XDC의 <code>clk</code>, <code>btnC</code>는 01장에서 등록한 이름이다. 실제 회로도와 다르면 <code>get_ports</code> 이름만 변경한다. 차동 클럭 설정 자체는 XDC 이름 변경으로 해결되지 않으므로 SECTION 01에서 단일 입력 구성을 먼저 확인한다.</div>
+</section>
+
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>신호 경로 추적</h2>
+<p>다음 신호가 실제 Diagram에서 연결되었는지 확인한다. 외부 Clock/Reset 포트명은 현재 회로도에서 확인한 이름을 사용한다.</p>
+<ol class="step-seq">
+<li><h3>Primary Clock</h3><p>BD 외부 Clock → <code>clk_wiz_1</code> 단일 입력</p></li>
 <li><h3>Generated Clock</h3><p><code>clk_wiz_1/clk_out1 → microblaze_riscv_0/Clk</code></p></li>
 <li><h3>Lock</h3><p><code>clk_wiz_1/locked → rst_clk_wiz_1_100M/dcm_locked</code></p></li>
-<li><h3>External Reset</h3><p><code>btnC → rst_clk_wiz_1_100M/ext_reset_in</code></p></li>
+<li><h3>External Reset</h3><p>BD 외부 Reset → <code>rst_clk_wiz_1_100M/ext_reset_in</code></p></li>
 <li><h3>CPU Reset</h3><p><code>rst_clk_wiz_1_100M/mb_reset → microblaze_riscv_0/Reset</code></p></li>
 </ol>
 <div class="ok">이 다섯 경로가 설명과 실제 Block Design에서 일치해야 SoC 02의 핵심 구조가 완성된다.</div>
 </section>
 
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Validate Design — 첫 번째 Stage Gate</h2>
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Validate Design — 첫 번째 Stage Gate</h2>
 <ol class="step-seq">
-<li><h3>첫 Validate Design</h3><p>SoC 02 SECTION 12~15에서 Basys3 외부 Clock/Reset 포트와 내부 필수 경로 연결을 완료하고 <code>Ctrl+S</code>로 저장한 뒤 <strong>Validate Design</strong>을 실행한다. SoC 01의 미연결 중간 상태에서는 실행하지 않는다.</p></li>
+<li><h3>첫 Validate Design</h3><p>외부 Clock/Reset 연결 및 XDC 수정 후 <code>Ctrl+S</code>로 Block Design을 저장하고 <strong>Validate Design</strong>을 실행한다.</p></li>
 <li><h3>Clock Association</h3><p>MicroBlaze V, Local Memory, Processor System Reset이 동일한 100 MHz Clock에 연결되었는지 확인한다.</p></li>
 <li><h3>Reset Association</h3><p>AXI 계층이 아직 최소 구성이라도 <code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 올바른 극성으로 생성되는지 확인한다.</p></li>
 </ol>
 <div class="gate note"><strong>Gate 1 PASS 기준:</strong> Clock 입력 100 MHz, Clock Wizard lock 경로, Processor System Reset 입력/출력, MicroBlaze V Reset 경로가 모두 연결되고 Validate Design이 오류 없이 완료되어야 한다. Messages에서 Clock/Reset과 미연결 Interface 오류를 함께 확인한다. 사용하지 않을 AXI 인터페이스의 미완성 주소 경고도 원인을 확인한다.</div>
 </section>
 
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Generate Output Products · HDL Wrapper</h2>
-<div class="note"><strong>실행 조건:</strong> SECTION 16에서 첫 Validate Design이 오류 없이 통과한 뒤 수행한다.</div>
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Generate Output Products · HDL Wrapper</h2>
+<div class="note"><strong>실행 조건:</strong> SECTION 06에서 첫 Validate Design이 오류 없이 통과한 뒤 수행한다.</div>
 <ol class="step-seq">
 <li><h3>Generate Output Products</h3><p>Sources에서 <code>soc01_mb_bram.bd</code>를 우클릭하고 <strong>Generate Output Products</strong>를 실행한다.</p></li>
 <li><h3>Create HDL Wrapper</h3><p>Block Design을 우클릭 → <strong>Create HDL Wrapper</strong>.</p></li>
@@ -453,7 +331,8 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 </ol>
 <div class="note">Wrapper에는 계산, 상태 판단, Register Map 정책, 기능 FSM을 직접 추가하지 않는다. Custom RTL은 별도 모듈/IP로 구성하고 Top은 연결 중심으로 유지한다.</div>
 </section>
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Synthesis · Implementation</h2>
+
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Synthesis · Implementation</h2>
 <div class="note"><strong>실행 조건:</strong> 외부 Clock/Reset 연결과 Validate Design이 완료되고 HDL Wrapper가 생성된 다음 수행한다.</div>
 <ol class="step-seq">
 <li><h3>Run Synthesis</h3><p>Synthesis가 완료되면 Critical Warning과 unconstrained clock/I/O 관련 메시지를 확인한다.</p></li>
@@ -463,7 +342,8 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 </ol>
 
 </section>
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>오류 점검</h2>
+
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>오류 점검</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인 위치</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="증상" role="cell">CPU가 실행되지 않음</td><td data-label="원인 후보" role="cell"><code>mb_reset</code>이 계속 High</td><td data-label="확인 위치" role="cell"><code>locked → dcm_locked</code>, 외부 Reset 상태 확인</td></tr>
 <tr role="row"><td data-label="증상" role="cell">Reset이 반대로 동작</td><td data-label="원인 후보" role="cell"><code>ext_reset_in</code> polarity 불일치</td><td data-label="확인 위치" role="cell">Processor System Reset 설정과 BTNC 논리 확인</td></tr>
@@ -476,20 +356,12 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 
 <section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 02 완료 확인</h2>
 <ul>
-<li>Basys3 100 MHz Clock가 <code>W5</code>로 정의되어 있다.</li>
-<li>XDC의 Clock Period가 <code>10.00 ns</code>이다.</li>
-<li>Clocking Wizard 입력과 출력 Clock을 구분할 수 있다.</li>
-<li><code>clk_wiz_1/locked → rst_clk_wiz_1_100M/dcm_locked</code>가 연결되어 있다.</li>
-<li><code>clk_wiz_1/clk_out1 → rst_clk_wiz_1_100M/slowest_sync_clk</code>가 연결되어 있다.</li>
-<li><code>btnC(U18) → ext_reset_in</code>이 연결되어 있다.</li>
-<li><code>mb_reset</code>이 Active-High임을 이해한다.</li>
-<li><code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 Active-Low임을 이해한다.</li>
-<li>Reset 해제 순서가 Bus/Interconnect → Peripheral → MicroBlaze V임을 이해한다.</li>
-<li>100 MHz에서 16 clocks가 약 160 ns임을 계산할 수 있다.</li>
-<li>Block Design에서 다섯 핵심 Signal Path를 실제로 추적했다.</li>
-<li>SoC 02 SECTION 16에서 첫 Validate Design이 오류 없이 성공하여 Gate 1 PASS를 확인했다.</li>
-<li>Gate 1 PASS 이후 Generate Output Products 및 HDL Wrapper 생성을 완료했다.</li>
-<li>Synthesis와 Implementation을 실행하고 결과 및 100 MHz Clock 제약을 확인했다.</li>
+<li>01장에서 생성한 MicroBlaze V 및 Local BRAM 구조를 그대로 이어서 사용했다.</li>
+<li><code>clk_wiz_1</code>의 입력을 Basys3 단일 100 MHz Clock으로 설정했다.</li>
+<li>BD 외부 Clock/Reset 포트와 Processor System Reset 연결을 확인했다.</li>
+<li>기존 XDC의 <code>get_ports</code>가 실제 BD 외부 포트명과 일치한다.</li>
+<li>W5 · U18 · 10 ns · LVCMOS33 제약을 확인했다.</li>
+<li>Validate Design 성공 후 Output Products, Wrapper, 합성 및 구현을 확인했다.</li>
 </ul>
 <div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
 </section>
