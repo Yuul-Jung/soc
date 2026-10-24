@@ -294,8 +294,11 @@ PC
 
 <section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>ILMB · DLMB · BRAM</h2>
 <figure class="manual-figure">
-<a href="../../images/common/v_system.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조. · 원본 보기 (새 탭)"><img alt="MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조." loading="lazy" src="../../images/common/v_system.png">
-</a><figcaption>MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조.<br><a href="../../images/common/v_system.png" target="_blank" rel="noopener" class="figure-original" aria-label="MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
+<a href="../../images/soc02_vivado_final_2024_2.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="02장에서 완료한 Vivado 2024.2 실제 Block Design 원본 확대">
+<img loading="lazy" src="../../images/soc02_vivado_final_2024_2.png" alt="Vivado 2024.2 실습 최종 회로: clk, btnC, microblaze_riscv_0, microblaze_riscv_0_local_memory, clk_wiz_1, rst_clk_wiz_1_100M, mdm_1의 실제 연결">
+</a>
+<figcaption>02장에서 구성한 실제 Vivado 2024.2 Block Design · MicroBlaze V의 ILMB/DLMB → Local BRAM 연결과 Clock/Reset 신호 경로
+<a href="../../images/soc02_vivado_final_2024_2.png" target="_blank" rel="noopener" class="figure-original" aria-label="Vivado 2024.2 원본 회로도 확대 보기">원본 회로도 확대 ↗</a></figcaption>
 </figure>
 <div class="table-wrap" tabindex="0" role="region" aria-label="ILMB · DLMB · BRAM · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">경로</th><th scope="col" role="columnheader">주요 역할</th><th scope="col" role="columnheader">대표 접근</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="경로" role="cell"><code>ILMB</code></td><td data-label="주요 역할" role="cell">Instruction Local Memory Bus</td><td data-label="대표 접근" role="cell">Reset Vector, Startup Code, <code>.text</code> 명령어 Fetch</td></tr>
