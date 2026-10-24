@@ -229,7 +229,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s10"><span class="n">10</span><span>Clock · Reset 연결 준비</span></a></li>
 <li><a href="#s11"><span class="n">11</span><span>XDC 기준</span></a></li>
 <li><a href="#s12"><span class="n">12</span><span>Diagram 저장 · 구성 확인</span></a></li>
-<li><a href="#summary"><span class="n">S</span><span>완료 체크</span></a></li>
+<li><a href="#summary"><span class="n">S</span><span>완료 확인</span></a></li>
 <li><a href="#sources"><span class="n">R</span><span>공식 매뉴얼</span></a></li>
 </ol></aside>
 <main id="main-content" tabindex="-1">
@@ -368,23 +368,21 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <ol class="step-seq">
 <li><h3>Diagram 저장</h3><p><code>Ctrl+S</code>로 <code>soc01_mb_bram.bd</code>를 저장한다.</p></li>
 <li><h3>MicroBlaze V · Local Memory 확인</h3><p><code>microblaze_riscv_0</code> 및 Local Memory 계층에 ILMB/DLMB Controller와 16 KB BRAM이 존재하는지 확인한다.</p></li>
-<li><h3>Clock/Reset IP 확인</h3><p>자동 생성된 Clocking Wizard 및 Processor System Reset이 존재하는지 확인한다. 외부 Clock/Reset 미연결 상태는 이 단계에서 정상적인 <strong>중간 구성 상태</strong>로 분류한다.</p></li>
+<li><h3>Clock/Reset IP 확인</h3><p>자동 생성된 Clocking Wizard 및 Processor System Reset이 존재하는지 확인한다. </p></li>
 </ol>
-<div class="note"><strong>SoC 01 저장 기준:</strong> 필요한 IP와 Local Memory 계층이 생성되고 Block Design이 저장되었다. 외부 Clock/Reset 연결은 SoC 02 SECTION 12~15에서 완료하며, <strong>첫 Validate Design 및 Gate 1 PASS 판정은 SoC 02 SECTION 16</strong>에서 진행한다.</div>
 </section>
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 01 완료 체크리스트</h2>
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 01 완료 확인</h2>
 <ul>
-<li>[ ] Target이 Basys3의 <code>XC7A35T-1CPG236C</code>이다.</li>
-<li>[ ] <code>soc01_mb_bram.bd</code>가 생성되었다.</li>
-<li>[ ] MicroBlaze V와 MDM V가 존재한다.</li>
-<li>[ ] Local Memory 16 KB, ECC None, Cache None이다.</li>
-<li>[ ] ILMB와 DLMB가 Local BRAM으로 연결된다.</li>
-<li>[ ] MDM V Debug Module이 연결된다.</li>
-<li>[ ] Clocking Wizard와 Processor System Reset IP가 생성되어 있다.</li>
-<li>[ ] Basys-3-Master.xdc가 프로젝트에 등록되어 있고 W5 / U18 / 10 ns 제약을 확인했다.</li>
-<li>[ ] <code>soc01_mb_bram.bd</code>를 저장했다.</li>
-<li>[ ] 외부 Clock/Reset 연결, Validate Design, Wrapper 및 빌드 작업은 SoC 02 이후 단계에서 수행한다.</li>
-<li>[ ] 아직 GPIO/UART/Timer/Interrupt/NPU를 추가하지 않았다.</li>
+<li>Target이 Basys3의 <code>XC7A35T-1CPG236C</code>이다.</li>
+<li><code>soc01_mb_bram.bd</code>가 생성되었다.</li>
+<li>MicroBlaze V와 MDM V가 존재한다.</li>
+<li>Local Memory 16 KB, ECC None, Cache None이다.</li>
+<li>ILMB와 DLMB가 Local BRAM으로 연결된다.</li>
+<li>MDM V Debug Module이 연결된다.</li>
+<li>Clocking Wizard와 Processor System Reset IP가 생성되어 있다.</li>
+<li>Basys-3-Master.xdc가 프로젝트에 등록되어 있고 W5 / U18 / 10 ns 제약을 확인했다.</li>
+<li><code>soc01_mb_bram.bd</code>를 저장했다.</li>
+<li>아직 GPIO/UART/Timer/Interrupt/NPU를 추가하지 않았다.</li>
 </ul>
 <div class="flow">SoC 01 완료 → SoC 02 Clock / Reset 구조 → SoC 03 BRAM 프로그램 실행 → SoC 04 Memory Map → SoC 05 AXI</div>
 </section>
