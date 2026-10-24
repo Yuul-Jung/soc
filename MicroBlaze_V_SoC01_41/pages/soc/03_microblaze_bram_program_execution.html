@@ -339,12 +339,12 @@ High Address = 0x00000000 + 0x4000 - 1
 <p>02장에서 <strong>Generate Bitstream</strong>까지 완료한 동일한 Vivado 프로젝트에서 XSA(Xilinx Support Archive, 하드웨어 플랫폼 파일)를 내보낸다.</p>
 <ol class="step-seq">
 <li><h3>Export Hardware 실행</h3><p>Vivado 2024.2의 <strong>File → Export → Export Hardware</strong>를 선택한다.</p></li>
-<li><h3>Export Hardware Platform 진행</h3><p>마법사에서 <strong>Next</strong>를 클릭한다. MicroBlaze V 소프트웨어 개발용이므로 <strong>Fixed Platform</strong>을 사용한다.</p></li>
-<li><h3>Bitstream 포함</h3><p>Output 단계에서 <strong>Include bitstream</strong>을 선택하고 <strong>Next</strong>를 클릭한다.</p></li>
-<li><h3>XSA 저장</h3><p>자동 입력된 XSA 파일명과 저장 경로를 확인한 뒤 <strong>Finish</strong>를 클릭한다. 실제 생성된 <code>*.xsa</code> 파일을 확인한다.</p></li>
+<li><h3>Export Hardware Platform 시작</h3><p><strong>Export Hardware Platform</strong> 시작 화면이 나타나면 <strong>Next</strong>를 클릭한다. 이 실습에서는 별도의 <strong>Fixed Platform</strong> 선택 화면을 찾을 필요가 없다.</p></li>
+<li><h3>Output — Include bitstream</h3><p><strong>Output</strong> 화면에서 <strong>Include bitstream</strong>을 선택한 후 <strong>Next</strong>를 클릭한다. 02장에서 생성한 Bitstream을 XSA에 포함하는 단계이다.</p></li>
+<li><h3>Files — XSA 저장</h3><p><strong>Files</strong> 화면에서 자동 입력된 <strong>XSA file name</strong>과 <strong>Export to</strong> 저장 경로를 확인한다. 파일명은 기본값을 유지하고 <strong>Next → Finish</strong>로 완료한다. 해당 경로에 <code>*.xsa</code> 파일이 생성되었는지 확인한다.</p></li>
 </ol>
 <div class="flow">Vivado 2024.2 → File → Export → Export Hardware → Include bitstream → XSA → Vitis 2024.2</div>
-<p><a href="https://docs.amd.com/r/2024.2-English/Vitis-Tutorials-Embedded-Software/Exporting-the-XSA" target="_blank" rel="noopener">AMD XD260 · Exporting the XSA (2024.2)</a> · <a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Creating-a-Hardware-Design-XSA-File" target="_blank" rel="noopener">AMD UG1400 · XSA 파일 생성 (2024.2)</a></p>
+<p>Vivado 2024.2 단계별 참고: <a href="https://docs.amd.com/r/2024.2-English/ug1579-microblaze-embedded-design/Exporting-a-Hardware-Description" target="_blank" rel="noopener">AMD UG1579 · Exporting a Hardware Description</a> · <a href="https://docs.amd.com/r/2024.2-English/ug1209-embedded-design-tutorial/Exporting-Hardware" target="_blank" rel="noopener">AMD UG1209 · Exporting Hardware</a></p>
 </section>
 
 <section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Vitis Platform 생성</h2>
