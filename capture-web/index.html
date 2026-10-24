@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#121b2d">
+  <meta name="description" content="Vivado/Vitis 실습 화면을 로컬 폴더에 PNG와 CSV로 보관하는 GitHub Pages 웹 캡처 도구">
+  <title>SoC Capture Web | 실습 화면 증빙 캡처</title>
+  <style>
+:root{--navy:#142037;--navy2:#1e2c43;--accent:#5848dc;--accent-light:#efedff;--ink:#192438;--muted:#687387;--line:#e2e7ef;--bg:#f4f6fa;--white:#fff;--green:#128b6a;--warn:#a3661b; font-family:system-ui,-apple-system,"Noto Sans KR","Malgun Gothic",sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--bg)}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.44;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #a9a2ff;outline-offset:2px}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.86em}h1,h2,p{margin-top:0}.topbar{min-height:75px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px clamp(18px,3vw,46px);border-bottom:1px solid #36455c}.brand{display:flex;gap:13px;align-items:center;font-size:19px;letter-spacing:-.45px}.brand-mark{display:grid;place-items:center;background:#f1eaff;color:#4d3fbc;border-radius:10px;height:40px;width:40px;font-weight:850;font-size:14px;letter-spacing:-.04em}.brand strong{font-weight:750}.brand small{display:block;font-size:11px;font-weight:400;color:#c0c9d8;margin-top:3px;letter-spacing:0}.top-right{display:flex;align-items:center;gap:15px;font-size:12px}.privacy{color:#b6dcd2;white-space:nowrap}.privacy span{color:#46d4a6;margin-right:5px}.state{background:#34415b;padding:7px 12px;border-radius:99px;font-weight:600}.state.success{background:#145f54}.state.error{background:#753e45}.workspace{display:grid;grid-template-columns:minmax(260px,302px) minmax(0,1fr);max-width:1580px;margin:0 auto;align-items:start}.sidebar{min-height:calc(100vh - 75px);background:white;border-right:1px solid var(--line);padding:27px 25px 32px}.sidebar-title{font-size:12px;font-weight:800;letter-spacing:.02em;color:#4b5670;padding-bottom:18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.sidebar-title span{color:#a0a8b7}.setting-group{padding:24px 0;border-bottom:1px solid var(--line)}.setting-group h2{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:9px}.step-badge{display:inline-grid;place-items:center;border-radius:7px;background:var(--accent-light);color:var(--accent);font-size:12px;width:24px;height:24px}.hint{font-size:12px;line-height:1.75;color:var(--muted);margin:0 0 13px}.hint strong{color:#414c60}.info-pill{font-size:11.5px;border-radius:7px;background:#f3f5f8;color:#66738a;padding:10px 11px;margin-top:9px;overflow-wrap:anywhere}.info-pill.on{color:#09664f;background:#e8f7f0}.info-pill.warn{color:#995b1d;background:#fff5e5}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:8px;padding:11px 14px;border:1px solid transparent;font-size:13px;font-weight:750;transition:background .15s,color .15s}.btn.primary{background:var(--accent);color:white}.btn.primary:not(:disabled):hover{background:#4836c3}.btn.secondary{background:var(--accent-light);color:#4737bb}.btn.secondary:not(:disabled):hover{background:#dedafa}.btn.ghost{background:white;border-color:var(--line);color:#4b5670}.btn.ghost:not(:disabled):hover{background:#f5f6fd}.btn.dark{background:var(--navy2);color:white}.btn.dark.active{background:#a53d44}.btn.full{width:100%}.btn.small{padding:8px 11px;font-size:12px}.btn.big{padding:15px 17px;font-size:14px}.setting-group .btn + .btn{margin-top:8px}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field-row label,.auto-options label{font-size:11px;color:#67738b;font-weight:700}.field-row input,.auto-options select{display:block;width:100%;border:1px solid #d7dce7;background:#fff;color:var(--ink);height:41px;border-radius:7px;padding:0 10px;margin-top:6px}.path-preview{margin:12px 0;font-size:11px;font-family:ui-monospace,monospace;padding:10px;background:#f4f5fa;color:#6551c3;overflow-wrap:anywhere}.sidebar-foot{background:#f6f7fb;padding:16px;margin-top:25px;border-radius:9px;border:1px solid var(--line)}.sidebar-foot b{font-size:12px}.sidebar-foot p{font-size:11px;line-height:1.8;margin:7px 0 0;color:#69768b}.mainarea{min-width:0;padding:29px clamp(16px,2.7vw,38px) 50px}.page-intro{display:flex;align-items:center;justify-content:space-between;margin-bottom:23px;gap:16px}.eyebrow{font-size:10px;color:var(--accent);font-weight:800;letter-spacing:.2em;margin-bottom:8px}.page-intro h1{font-size:clamp(21px,2.2vw,30px);font-weight:800;letter-spacing:-1px;margin:0 0 8px}.page-intro p:not(.eyebrow){font-size:13px;color:var(--muted);margin:0}.count-block{display:flex;align-items:baseline;gap:5px;background:white;border:1px solid var(--line);border-radius:12px;padding:12px 18px;white-space:nowrap;color:var(--muted);font-size:11px}.count-block strong{font-size:26px;color:var(--accent);line-height:1;margin-left:8px}.viewer-panel,.control-panel,.history-panel{background:white;border:1px solid var(--line);border-radius:13px;box-shadow:0 3px 15px #1b284408}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:19px 22px}.panel-head h2{font-size:16px;margin-bottom:6px}.panel-head p{font-size:12px;color:var(--muted);margin:0}.panel-head h2 span{font-size:11px;font-weight:500;color:#8c96a6;margin-left:7px}.live-chip{font-size:11px;color:#68758a;white-space:nowrap;display:flex;gap:7px;align-items:center;border-radius:99px;background:#f0f2f6;padding:8px 11px}.live-chip i{height:7px;width:7px;background:#a8aebb;border-radius:100%}.live-chip.active{color:#08684c;background:#e4f8f0}.live-chip.active i{background:#16b881;box-shadow:0 0 0 3px #bfe9d9}.viewer-frame{position:relative;background:#141e30;aspect-ratio:16/9;overflow:hidden;display:flex;align-items:center;justify-content:center}.viewer-frame video{display:none;width:100%;height:100%;object-fit:contain}.viewer-frame.playing video{display:block}.empty-preview{text-align:center;color:#b7c5d6;font-size:12px;padding:18px}.empty-preview strong{display:block;font-size:17px;color:#f3f6fc;margin-bottom:8px}.empty-preview>span{display:block}.viewer-frame.playing .empty-preview{display:none}.preview-illustration{height:150px;display:grid;place-items:center}.mini-window{width:175px;height:112px;border:2px solid #8191ad;background:#253348;border-radius:7px;padding:10px;text-align:left}.mini-top{display:flex;gap:4px;margin:-3px 0 17px}.mini-top i{height:5px;width:5px;background:#5a75a9;border-radius:10px}.mini-lines{height:6px;width:100%;border-radius:2px;background:#70819b;margin-bottom:8px;opacity:.75}.mini-lines.short{width:60%}.mini-chart{height:36px;margin-top:10px;background:linear-gradient(140deg,transparent 30%,#665fe0 30% 38%,transparent 38% 48%,#8e86ec 48% 55%,transparent 55%);opacity:.8}.viewer-watermark{display:none;position:absolute;right:15px;bottom:13px;background:#1420389e;border:1px solid #ffffff28;color:#e3e7f3;padding:5px 9px;border-radius:5px;font:600 10px ui-monospace,monospace;pointer-events:none}.viewer-frame.playing .viewer-watermark{display:block}.viewer-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;color:#7a8598;font-size:11.5px}.tool-actions{display:flex;gap:8px}.crop-layer{position:absolute;inset:0;display:none;cursor:crosshair;touch-action:none;z-index:2}.crop-layer.active{display:block}.crop-box{position:absolute;border:2px solid #8b7aff;background:#6655e636;box-shadow:0 0 0 1px #fff5;display:none;pointer-events:none}.control-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}.control-panel{padding:20px 22px}.control-header{display:flex;justify-content:space-between;margin-bottom:18px}.control-header h2{font-size:15px;margin:0 0 6px}.control-header p{font-size:11px;color:#7b8597;margin:0}.mode-icon{font-size:23px;color:#786ddd}.fineprint{font-size:10.5px;color:#8490a1;margin:10px 0 0;line-height:1.6}.auto-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}.auto-options select{height:35px;margin-top:5px}.history-panel{margin-top:15px;overflow:hidden}.history-empty{text-align:center;padding:27px;color:#8b95a4;border-top:1px solid var(--line);font-size:12px}.history-list{padding:0 19px 12px;max-height:290px;overflow-y:auto}.history-item{display:grid;grid-template-columns:66px minmax(0,1fr) auto;gap:13px;align-items:center;border-top:1px solid var(--line);padding:11px 0}.history-item img{width:66px;height:42px;object-fit:contain;background:#152139;border-radius:5px}.history-item h3{font-size:12px;font-weight:700;word-break:break-all;margin:0 0 5px}.history-item p{font-size:11px;color:#8a94a4;margin:0}.history-item .status{font-size:10px;color:#786038;background:#fff4e5;border-radius:6px;padding:5px}.bottom-note{font-size:11px;line-height:1.8;color:#7d8999;padding:20px 4px}.bottom-note a{color:#5747cf;text-decoration:none}.toast{position:fixed;bottom:22px;right:22px;max-width:min(410px,calc(100vw - 44px));background:#1b293f;color:white;padding:14px 18px;border-radius:9px;box-shadow:0 10px 35px #14203855;opacity:0;pointer-events:none;transition:opacity .2s;z-index:8;font-size:13px;line-height:1.6}.toast.show{opacity:1}.toast.error{background:#8a3440}
+@media(max-width:1050px){.workspace{grid-template-columns:265px minmax(0,1fr)}.sidebar{padding:23px 17px}.control-grid{grid-template-columns:1fr}.page-intro h1{font-size:23px}}@media(max-width:760px){.workspace{display:block}.sidebar{min-height:unset;border-right:0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:0 18px;padding:15px 19px}.sidebar-title{grid-column:1/-1}.setting-group{padding:17px 0}.setting-group:last-of-type{grid-column:1/-1}.sidebar-foot{display:none}.mainarea{padding:23px 15px}.topbar{padding:13px 15px}.top-right{gap:6px}.privacy{display:none}.page-intro{align-items:start}.count-block{padding:10px 12px}.control-grid{grid-template-columns:1fr 1fr}.control-panel{padding:17px}.viewer-toolbar{flex-wrap:wrap}}@media(max-width:540px){.sidebar{display:block}.page-intro{display:block}.count-block{margin-top:14px;display:inline-flex}.control-grid{grid-template-columns:1fr}.panel-head{padding:15px}.viewer-toolbar{padding:12px 14px}.history-item{grid-template-columns:50px minmax(0,1fr);gap:8px}.history-item img{width:50px;height:35px}.history-item .status{display:none}}
+
+</style>
+  
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">SC</span><span>SoC <strong>Capture Web</strong><small>Vivado / Vitis 실습 증빙 관리</small></span></div>
+    <div class="top-right"><span class="privacy"><span aria-hidden="true">●</span> 서버 업로드 없음</span><span id="appState" class="state neutral" role="status">준비 대기</span></div>
+  </header>
+
+  <div class="workspace">
+    <aside class="sidebar" aria-label="캡처 설정">
+      <div class="sidebar-title">작업 설정 <span>01 / 03</span></div>
+      <section class="setting-group">
+        <h2><span class="step-badge">1</span> 로컬 저장 폴더</h2>
+        <p class="hint">Ubuntu에서 <code>~/soc/evidence</code> 폴더를 만든 다음 선택하세요. 이미지와 CSV는 이 폴더에만 저장합니다.</p>
+        <button id="chooseFolder" type="button" class="btn secondary full"><span aria-hidden="true">▣</span> 저장 폴더 선택</button>
+        <div class="info-pill" id="folderStatus">선택된 폴더 없음</div>
+      </section>
+      <section class="setting-group">
+        <h2><span class="step-badge">2</span> 챕터 및 STEP</h2>
+        <div class="field-row">
+          <label>챕터 <input id="chapter" type="number" min="1" max="99" value="1" inputmode="numeric"></label>
+          <label>STEP <input id="step" type="number" min="1" max="999" value="1" inputmode="numeric"></label>
+        </div>
+        <div id="pathPreview" class="path-preview">ch01 / step01 / raw /</div>
+        <button id="nextStep" type="button" class="btn ghost full">다음 STEP <span aria-hidden="true">→</span></button>
+      </section>
+      <section class="setting-group">
+        <h2><span class="step-badge">3</span> 공유할 화면</h2>
+        <p class="hint">Vivado/Vitis 창이나 전체 화면을 직접 선택합니다. <strong>모달창까지 담으려면 전체 화면 공유가 안정적</strong>입니다.</p>
+        <button id="startShare" type="button" class="btn primary full">화면 공유 시작</button>
+        <button id="stopShare" type="button" class="btn ghost full" disabled>화면 공유 종료</button>
+        <div id="shareStatus" class="info-pill">화면 공유 안 됨</div>
+      </section>
+      <div class="sidebar-foot">
+        <b>개인정보 및 안전</b>
+        <p>화면과 폴더 접근에는 브라우저 승인이 필요합니다. 캡처 파일은 GitHub로 전송되지 않으며, 프로그램은 Vivado 프로젝트를 변경하지 않습니다.</p>
+      </div>
+    </aside>
+
+    <main class="mainarea">
+      <div class="page-intro"><div><p class="eyebrow">CAPTURE WORKSPACE</p><h1>실습 과정을 이미지로 기록</h1><p>캡처 화면 확인 → PNG 저장 → CSV 이력 관리. 브라우저만으로 동작합니다.</p></div><div class="count-block"><span>현재 세션 저장</span><strong id="savedCount">0</strong><span>장</span></div></div>
+      <section class="viewer-panel">
+        <div class="panel-head"><div><h2>화면 미리보기 <span id="resolution">—</span></h2><p id="surfaceLabel">화면을 공유하면 여기에 실시간으로 표시됩니다.</p></div><div class="live-chip" id="liveChip"><i></i> 미연결</div></div>
+        <div class="viewer-frame" id="viewerFrame">
+          <div id="emptyPreview" class="empty-preview"><div class="preview-illustration" aria-hidden="true"><div class="mini-window"><div class="mini-top"><i></i><i></i><i></i></div><div class="mini-lines"></div><div class="mini-lines short"></div><div class="mini-chart"></div></div></div><strong>아직 공유 중인 화면이 없습니다</strong><span>왼쪽에서 저장 폴더를 선택하고 화면 공유를 시작하세요.</span></div>
+          <video id="previewVideo" autoplay muted playsinline aria-label="현재 공유 중인 화면"></video>
+          <div id="cropLayer" class="crop-layer" aria-label="캡처 영역 마우스 선택"><div id="cropBox" class="crop-box"></div></div>
+          <div class="viewer-watermark" id="viewerWatermark">LIVE PREVIEW</div>
+        </div>
+        <div class="viewer-toolbar"><span id="cropHelp">전체 공유 화면을 PNG로 저장합니다.</span><div class="tool-actions"><button id="selectCrop" type="button" class="btn small ghost" disabled>영역 선택</button><button id="clearCrop" type="button" class="btn small ghost" disabled>영역 해제</button></div></div>
+      </section>
+
+      <div class="control-grid">
+        <section class="control-panel"><div class="control-header"><div><h2>수동 캡처</h2><p>현재 표시된 화면을 즉시 기록합니다.</p></div><span class="mode-icon">⌖</span></div><button id="captureNow" type="button" class="btn primary full big" disabled>현재 화면 PNG 저장 <span aria-hidden="true">↗</span></button><p class="fineprint">선택 영역이 있으면 해당 영역만 저장합니다.</p></section>
+        <section class="control-panel"><div class="control-header"><div><h2>자동 캡처</h2><p>화면 변화가 멈추면 기록합니다.</p></div><span class="mode-icon">◷</span></div><div class="auto-options"><label>최소 저장 간격 <select id="interval"><option value="4000" selected>4초</option><option value="6000">6초</option><option value="10000">10초</option></select></label><label>변화 감도 <select id="sensitivity"><option value="0.006">높음</option><option value="0.012" selected>보통</option><option value="0.024">낮음</option></select></label></div><button id="toggleAuto" type="button" class="btn dark full big" disabled>자동 캡처 시작</button><p class="fineprint">전역 클릭 감지 대신 화면 변화 감지 · 약 1초 안정화 후 저장</p></section>
+      </div>
+
+      <section class="history-panel"><div class="panel-head"><div><h2>캡처 기록</h2><p>이번 브라우저 세션에서 저장된 항목입니다. 파일 원본은 로컬 폴더에 남습니다.</p></div><button id="clearHistory" type="button" class="btn small ghost">목록 비우기</button></div><div id="historyEmpty" class="history-empty">저장된 캡처가 없습니다. 첫 번째 화면을 기록해보세요.</div><div id="historyList" class="history-list" aria-live="polite"></div></section>
+      <div class="bottom-note"><strong>확인:</strong> 모든 촬영본은 우선 <code>UNREVIEWED</code>(검증 전) 상태입니다. 잘못된 설정이나 오류 화면은 교육자료에 사용하기 전에 따로 판정하세요. <a href="./README.md" target="_blank" rel="noopener">사용 설명서 보기 ↗</a></div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+<script>
+/* SoC Capture Web — no dependencies, local-only screenshot files.
+ * Screen content stays in browser memory until written to the user-approved local directory.
+ */
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    appState: $('appState'), chooseFolder: $('chooseFolder'), folderStatus: $('folderStatus'),
+    chapter: $('chapter'), step: $('step'), pathPreview: $('pathPreview'), nextStep: $('nextStep'),
+    startShare: $('startShare'), stopShare: $('stopShare'), shareStatus: $('shareStatus'),
+    previewVideo: $('previewVideo'), viewerFrame: $('viewerFrame'), resolution: $('resolution'),
+    surfaceLabel: $('surfaceLabel'), liveChip: $('liveChip'), cropLayer: $('cropLayer'),
+    cropBox: $('cropBox'), cropHelp: $('cropHelp'), selectCrop: $('selectCrop'), clearCrop: $('clearCrop'),
+    captureNow: $('captureNow'), toggleAuto: $('toggleAuto'), interval: $('interval'),
+    sensitivity: $('sensitivity'), savedCount: $('savedCount'), historyEmpty: $('historyEmpty'),
+    historyList: $('historyList'), clearHistory: $('clearHistory'), toast: $('toast')
+  };
+  const CSV_FIELDS = [
+    'timestamp', 'chapter', 'step', 'reason', 'mode', 'root_title',
+    'root_window_id', 'included_window_ids', 'click_x', 'click_y',
+    'x', 'y', 'width', 'height', 'file', 'sha256', 'status'
+  ];
+  const fpCanvas = document.createElement('canvas');
+  const fpCtx = fpCanvas.getContext('2d', { willReadFrequently: true });
+  fpCanvas.width = 96;
+  fpCanvas.height = 54;
+  let rootHandle = null;
+  let mediaStream = null;
+  let saving = false;
+  let autoOn = false;
+  let autoTimer = null;
+  let savedCount = 0;
+  let lastSave = 0;
+  let lastDigest = '';
+  let baseline = null;
+  let previousSample = null;
+  let stableSince = 0;
+  let changed = false;
+  let toastTimer = null;
+  let cropActive = false;
+  let crop = null;
+  let dragStart = null;
+  let runningSequence = 0;
+  const previewUrls = [];
+
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const getChapter = () => Math.max(1, Math.min(99, Math.floor(Number(els.chapter.value) || 1)));
+  const getStep = () => Math.max(1, Math.min(999, Math.floor(Number(els.step.value) || 1)));
+
+  function toast(message, isError = false) {
+    els.toast.textContent = message;
+    els.toast.classList.toggle('error', isError);
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => els.toast.classList.remove('show'), 5600);
+  }
+  function state(message, style = 'neutral') {
+    els.appState.textContent = message;
+    els.appState.className = `state ${style}`;
+  }
+  function updatePath() {
+    els.pathPreview.textContent = `ch${pad2(getChapter())} / step${pad2(getStep())} / raw /`;
+    localStorage.setItem('soc-capture-chapter', String(getChapter()));
+    localStorage.setItem('soc-capture-step', String(getStep()));
+  }
+  function refreshUI() {
+    const shared = !!mediaStream && els.previewVideo.readyState >= 2;
+    els.captureNow.disabled = !shared || !rootHandle || saving;
+    els.toggleAuto.disabled = !shared || !rootHandle;
+    els.stopShare.disabled = !mediaStream;
+    els.selectCrop.disabled = !shared;
+    els.clearCrop.disabled = !crop;
+    els.toggleAuto.textContent = autoOn ? '자동 캡처 중지' : '자동 캡처 시작';
+    els.toggleAuto.classList.toggle('active', autoOn);
+    els.folderStatus.textContent = rootHandle ? `선택됨: ${rootHandle.name} (로컬)` : '선택된 폴더 없음';
+    els.folderStatus.className = `info-pill${rootHandle ? ' on' : ''}`;
+    els.savedCount.textContent = String(savedCount);
+    els.historyEmpty.style.display = els.historyList.childElementCount ? 'none' : 'block';
+    els.liveChip.classList.toggle('active', shared);
+    els.liveChip.innerHTML = `<i></i> ${shared ? (autoOn ? '자동 촬영 중' : '공유 중') : '미연결'}`;
+  }
+
+  function openDb() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('soc_capture_web_v1', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('settings');
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function loadSavedDirectory() {
+    try {
+      const db = await openDb();
+      const handle = await new Promise((resolve, reject) => {
+        const tx = db.transaction('settings', 'readonly');
+        const req = tx.objectStore('settings').get('root_directory');
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      db.close();
+      if (handle && handle.kind === 'directory') {
+        rootHandle = handle;
+        const access = await handle.queryPermission({ mode: 'readwrite' });
+        els.folderStatus.textContent = access === 'granted' ?
+          `이전 폴더: ${handle.name}` : `이전 폴더: ${handle.name} · 사용 전 재승인 필요`;
+        refreshUI();
+        if (access !== 'granted') {
+          els.folderStatus.textContent = `이전 폴더: ${handle.name} · 권한 확인 필요`;
+          els.folderStatus.className = 'info-pill warn';
+        }
+      }
+    } catch (error) {
+      console.warn('저장 폴더 설정을 복구하지 못했습니다:', error);
+    }
+  }
+  async function rememberDirectory(handle) {
+    try {
+      const db = await openDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction('settings', 'readwrite');
+        tx.objectStore('settings').put(handle, 'root_directory');
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      db.close();
+    } catch (error) {
+      console.warn('폴더 설정 자동 복구 저장 실패:', error);
+    }
+  }
+  async function chooseDirectory() {
+    if (typeof window.showDirectoryPicker !== 'function') {
+      toast('이 브라우저는 로컬 폴더 저장을 지원하지 않습니다. 최신 Chrome/Chromium/Edge를 사용하세요.', true);
+      return;
+    }
+    try {
+      // Must be called immediately from a user click — transient activation.
+      const handle = await window.showDirectoryPicker({ id: 'soc-capture-evidence', mode: 'readwrite' });
+      if (autoOn) stopAuto();
+      rootHandle = handle;
+      refreshUI();
+      state('저장 폴더 준비', 'success');
+      toast(`로컬 폴더가 연결되었습니다: ${handle.name}`);
+      await rememberDirectory(handle);
+    } catch (error) {
+      if (error.name !== 'AbortError') toast(`폴더 선택 실패: ${error.message}`, true);
+    }
+  }
+  async function canWrite(interactive) {
+    if (!rootHandle) return false;
+    try {
+      let permission = await rootHandle.queryPermission({ mode: 'readwrite' });
+      if (permission !== 'granted' && interactive) {
+        permission = await rootHandle.requestPermission({ mode: 'readwrite' });
+      }
+      if (permission !== 'granted') {
+        toast('로컬 폴더 쓰기 권한이 없습니다. 「저장 폴더 선택」을 다시 누르세요.', true);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      toast(`폴더 권한 확인 실패: ${error.message}`, true);
+      return false;
+    }
+  }
+
+  function endShare() {
+    stopAuto();
+    if (mediaStream) for (const track of mediaStream.getTracks()) track.stop();
+    mediaStream = null;
+    els.previewVideo.srcObject = null;
+    els.viewerFrame.classList.remove('playing');
+    els.shareStatus.textContent = '화면 공유 안 됨';
+    els.shareStatus.className = 'info-pill';
+    els.resolution.textContent = '—';
+    els.surfaceLabel.textContent = '화면을 공유하면 여기에 실시간으로 표시됩니다.';
+    clearCrop();
+    if (cropActive) toggleCrop(false);
+    state(rootHandle ? '저장 폴더 준비' : '준비 대기');
+    refreshUI();
+  }
+  async function startShare() {
+    if (!navigator.mediaDevices?.getDisplayMedia) {
+      toast('이 브라우저에서 화면 공유를 사용할 수 없습니다. HTTPS의 Chrome/Chromium을 이용하세요.', true);
+      return;
+    }
+    try {
+      if (mediaStream) endShare();
+      // Must be called immediately from a button press — no async work before it.
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 15, displaySurface: 'window' },
+        audio: false,
+        selfBrowserSurface: 'exclude',
+        surfaceSwitching: 'exclude'
+      });
+      mediaStream = stream;
+      const track = stream.getVideoTracks()[0];
+      track.addEventListener('ended', endShare, { once: true });
+      els.previewVideo.srcObject = stream;
+      await els.previewVideo.play();
+      if (!els.previewVideo.videoWidth) {
+        await new Promise((resolve) => els.previewVideo.addEventListener('loadedmetadata', resolve, { once: true }));
+      }
+      els.viewerFrame.style.aspectRatio = `${els.previewVideo.videoWidth} / ${els.previewVideo.videoHeight}`;
+      els.viewerFrame.classList.add('playing');
+      const info = track.getSettings();
+      const sourceLabel = { monitor: '전체 화면', window: '공유 창', browser: '브라우저 탭' }[info.displaySurface] || '사용자 선택 화면';
+      els.shareStatus.textContent = `${sourceLabel} · 공유 중`;
+      els.shareStatus.className = 'info-pill on';
+      els.resolution.textContent = `${els.previewVideo.videoWidth} × ${els.previewVideo.videoHeight}`;
+      els.surfaceLabel.textContent = `대상: ${sourceLabel} · 원본 해상도로 PNG를 저장합니다.`;
+      state('화면 공유 중', 'success');
+      toast('화면 공유가 시작되었습니다. 모달까지 기록하려면 전체 화면 공유를 권장합니다.');
+      refreshUI();
+    } catch (error) {
+      if (error.name !== 'NotAllowedError') toast(`화면 공유 실패: ${error.message}`, true);
+      refreshUI();
+    }
+  }
+
+  function clearCrop() {
+    crop = null;
+    els.cropBox.style.display = 'none';
+    els.cropHelp.textContent = '전체 공유 화면을 PNG로 저장합니다.';
+    refreshUI();
+  }
+  function toggleCrop(on) {
+    cropActive = on;
+    els.cropLayer.classList.toggle('active', on);
+    els.selectCrop.textContent = on ? '선택 완료' : '영역 선택';
+    if (on) {
+      clearCrop();
+      els.cropHelp.textContent = '영상 위에서 마우스로 사각형을 그리세요. ESC를 누르면 선택을 취소합니다.';
+    }
+  }
+  function relativePoint(event) {
+    const box = els.cropLayer.getBoundingClientRect();
+    return {
+      x: Math.min(1, Math.max(0, (event.clientX - box.left) / box.width)),
+      y: Math.min(1, Math.max(0, (event.clientY - box.top) / box.height))
+    };
+  }
+  function showCropRect(rect) {
+    Object.assign(els.cropBox.style, {
+      display: 'block', left: `${rect.x * 100}%`, top: `${rect.y * 100}%`,
+      width: `${rect.w * 100}%`, height: `${rect.h * 100}%`
+    });
+  }
+  function cropPointerMove(event) {
+    if (!dragStart) return;
+    const point = relativePoint(event);
+    crop = {
+      x: Math.min(dragStart.x, point.x), y: Math.min(dragStart.y, point.y),
+      w: Math.abs(point.x - dragStart.x), h: Math.abs(point.y - dragStart.y)
+    };
+    showCropRect(crop);
+  }
+  function cropPointerUp(event) {
+    if (!dragStart) return;
+    cropPointerMove(event);
+    dragStart = null;
+    if (!crop || crop.w < 0.02 || crop.h < 0.02) {
+      clearCrop();
+      toast('캡처 영역이 너무 작습니다. 다시 선택하세요.', true);
+      return;
+    }
+    els.cropHelp.textContent = `선택 영역: 화면의 ${Math.round(crop.w * 100)}% × ${Math.round(crop.h * 100)}% · 해당 영역만 저장`;
+    toggleCrop(false);
+    // Keep the crop visualization while not in selection mode.
+    els.cropBox.style.display = 'block';
+    els.cropLayer.classList.add('active');
+    els.cropLayer.style.pointerEvents = 'none';
+    refreshUI();
+  }
+
+  function fingerprint() {
+    if (!mediaStream || els.previewVideo.readyState < 2 || !els.previewVideo.videoWidth) return null;
+    fpCtx.drawImage(els.previewVideo, 0, 0, fpCanvas.width, fpCanvas.height);
+    return fpCtx.getImageData(0, 0, fpCanvas.width, fpCanvas.height).data;
+  }
+  function difference(a, b) {
+    if (!a || !b || a.length !== b.length) return 1;
+    let count = 0;
+    for (let i = 0; i < a.length; i += 4) {
+      const sum = Math.abs(a[i] - b[i]) + Math.abs(a[i + 1] - b[i + 1]) + Math.abs(a[i + 2] - b[i + 2]);
+      if (sum > 52) count++;
+    }
+    return count / (a.length / 4);
+  }
+  function stopAuto() {
+    autoOn = false;
+    changed = false;
+    stableSince = 0;
+    clearInterval(autoTimer);
+    autoTimer = null;
+    if (mediaStream) state('화면 공유 중', 'success');
+    refreshUI();
+  }
+  async function startAuto() {
+    if (!(await canWrite(true))) return;
+    if (!mediaStream || !fingerprint()) return toast('먼저 화면을 공유하세요.', true);
+    autoOn = true;
+    baseline = fingerprint();
+    previousSample = baseline;
+    changed = false;
+    stableSince = 0;
+    state('자동 캡처 실행', 'success');
+    autoTimer = setInterval(autoTick, 650);
+    toast('자동 캡처 시작: 화면 변화가 안정된 후 저장합니다.');
+    refreshUI();
+  }
+  async function autoTick() {
+    if (!autoOn || saving) return;
+    try {
+      const now = performance.now();
+      const frame = fingerprint();
+      if (!frame) return;
+      const threshold = Number(els.sensitivity.value);
+      const changedFromBaseline = difference(frame, baseline);
+      if (changedFromBaseline < threshold) {
+        changed = false;
+        stableSince = 0;
+        previousSample = frame;
+        return;
+      }
+      if (!changed || difference(frame, previousSample) > 0.0018) {
+        changed = true;
+        stableSince = now;
+      }
+      previousSample = frame;
+      if (changed && now - stableSince >= 1200 && now - lastSave >= Number(els.interval.value)) {
+        const success = await saveCapture('auto_change', false);
+        if (success) {
+          baseline = fingerprint();
+          previousSample = baseline;
+          changed = false;
+          stableSince = 0;
+        } else if (autoOn) stopAuto();
+      }
+    } catch (error) {
+      stopAuto();
+      toast(`자동 촬영 오류: ${error.message}`, true);
+    }
+  }
+
+  async function writePng(chapter, step, name, blob) {
+    const chFolder = await rootHandle.getDirectoryHandle(`ch${pad2(chapter)}`, { create: true });
+    const stepFolder = await chFolder.getDirectoryHandle(`step${pad2(step)}`, { create: true });
+    const rawFolder = await stepFolder.getDirectoryHandle('raw', { create: true });
+    const file = await rawFolder.getFileHandle(name, { create: true });
+    const writer = await file.createWritable();
+    try { await writer.write(blob); await writer.close(); }
+    catch (error) { try { await writer.abort(); } catch (_) { /* ignore */ } throw error; }
+  }
+  function csvCell(value) {
+    const valueString = String(value ?? '');
+    return /[",\r\n]/.test(valueString) ? `"${valueString.replace(/"/g, '""')}"` : valueString;
+  }
+  async function appendCsv(row) {
+    const file = await rootHandle.getFileHandle('captures.csv', { create: true });
+    const existing = await file.getFile();
+    if (existing.size) {
+      const prefix = (await existing.slice(0, 450).text()).replace(/^\uFEFF/, '');
+      if (!prefix.startsWith(CSV_FIELDS.join(','))) {
+        throw new Error('captures.csv의 열 형식이 다릅니다. 다른 저장 폴더를 선택하세요.');
+      }
+    }
+    const tail = existing.size ? await existing.slice(existing.size - 1).text() : '';
+    const record = `${row.map(csvCell).join(',')}\r\n`;
+    const line = `${existing.size && tail !== '\n' ? '\r\n' : ''}${record}`;
+    const writer = await file.createWritable({ keepExistingData: true });
+    try {
+      await writer.seek(existing.size);
+      await writer.write(existing.size ? line : `${CSV_FIELDS.join(',')}\r\n${record}`);
+      await writer.close();
+    } catch (error) { try { await writer.abort(); } catch (_) { /* ignore */ } throw error; }
+  }
+  function localDateName(date) {
+    return `${date.getFullYear()}${pad2(date.getMonth() + 1)}${pad2(date.getDate())}_` +
+      `${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}_` +
+      `${String(date.getMilliseconds()).padStart(3, '0')}`;
+  }
+  function pngBlobFromCanvas(canvas) {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('PNG 생성에 실패했습니다.')), 'image/png');
+    });
+  }
+  async function sha256(blob) {
+    const raw = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+    return Array.from(new Uint8Array(raw)).map(v => v.toString(16).padStart(2, '0')).join('');
+  }
+  async function saveCapture(reason, interactive = true) {
+    if (saving || !mediaStream || els.previewVideo.readyState < 2) return false;
+    if (!(await canWrite(interactive))) return false;
+    saving = true;
+    refreshUI();
+    let createdPng = false;
+    let pngName = '';
+    try {
+      const date = new Date();
+      const chapter = getChapter();
+      const step = getStep();
+      const v = els.previewVideo;
+      const fullW = v.videoWidth;
+      const fullH = v.videoHeight;
+      if (!fullW || !fullH) throw new Error('캡처 원본 영상이 준비되지 않았습니다.');
+      // Cropped output remains at the original pixel scale.
+      const rect = crop ? {
+        x: Math.floor(crop.x * fullW), y: Math.floor(crop.y * fullH),
+        w: Math.min(fullW, Math.ceil(crop.w * fullW)), h: Math.min(fullH, Math.ceil(crop.h * fullH))
+      } : { x: 0, y: 0, w: fullW, h: fullH };
+      rect.w = Math.min(rect.w, fullW - rect.x);
+      rect.h = Math.min(rect.h, fullH - rect.y);
+      if (rect.w < 4 || rect.h < 4) throw new Error('선택 영역이 너무 작습니다.');
+      const canvas = document.createElement('canvas');
+      canvas.width = rect.w;
+      canvas.height = rect.h;
+      const context = canvas.getContext('2d', { alpha: false });
+      context.drawImage(v, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
+      const blob = await pngBlobFromCanvas(canvas);
+      const digest = await sha256(blob);
+      if (reason === 'auto_change' && digest === lastDigest) return true;
+      // Random suffix prevents overwrites after refresh and across multiple browser tabs.
+      const unique = crypto.randomUUID().slice(0, 8);
+      pngName = `ch${pad2(chapter)}_step${pad2(step)}_${localDateName(date)}_${reason}_${unique}.png`;
+      await writePng(chapter, step, pngName, blob);
+      createdPng = true;
+      const relativePath = `ch${pad2(chapter)}/step${pad2(step)}/raw/${pngName}`;
+      const track = mediaStream.getVideoTracks()[0];
+      const displaySurface = track?.getSettings().displaySurface || 'unknown';
+      const mode = crop ? `web_${displaySurface}_region` : `web_${displaySurface}`;
+      let csvSucceeded = true;
+      try {
+        await appendCsv([
+          date.toISOString(), chapter, step, reason, mode,
+          track?.label || '', '', '', '', '', rect.x, rect.y,
+          rect.w, rect.h, relativePath, digest, 'UNREVIEWED'
+        ]);
+      } catch (error) {
+        csvSucceeded = false;
+        toast(`PNG는 저장되었지만 CSV 기록에 실패했습니다: ${error.message}`, true);
+      }
+      const imageUrl = URL.createObjectURL(blob);
+      previewUrls.push(imageUrl);
+      addHistory({ name: pngName, path: relativePath, url: imageUrl, date, csvSucceeded });
+      lastDigest = digest;
+      lastSave = performance.now();
+      savedCount++;
+      els.savedCount.textContent = String(savedCount);
+      baseline = fingerprint();
+      previousSample = baseline;
+      changed = false;
+      stableSince = 0;
+      if (csvSucceeded) toast(`PNG + CSV 저장 완료: ${relativePath}`);
+      return true;
+    } catch (error) {
+      state('저장 오류', 'error');
+      toast(`${createdPng ? 'CSV 오류' : 'PNG 저장 실패'}: ${error.message}`, true);
+      return false;
+    } finally {
+      saving = false;
+      refreshUI();
+    }
+  }
+  function addHistory({ name, path, url, date, csvSucceeded }) {
+    const article = document.createElement('article');
+    article.className = 'history-item';
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = `캡처 미리보기 ${name}`;
+    const details = document.createElement('div');
+    const title = document.createElement('h3');
+    title.textContent = name;
+    title.title = path;
+    const info = document.createElement('p');
+    info.textContent = `${date.toLocaleTimeString('ko-KR')} · ${path}`;
+    details.append(title, info);
+    const chip = document.createElement('span');
+    chip.className = 'status';
+    chip.textContent = csvSucceeded ? '검증 전' : 'CSV 오류';
+    article.append(img, details, chip);
+    els.historyList.prepend(article);
+    if (els.historyList.children.length > 35) {
+      els.historyList.lastElementChild.remove();
+    }
+    els.historyEmpty.style.display = 'none';
+  }
+
+  els.chooseFolder.addEventListener('click', chooseDirectory);
+  els.startShare.addEventListener('click', startShare);
+  els.stopShare.addEventListener('click', endShare);
+  els.chapter.addEventListener('change', () => { els.chapter.value = getChapter(); updatePath(); });
+  els.step.addEventListener('change', () => { els.step.value = getStep(); updatePath(); });
+  els.nextStep.addEventListener('click', () => {
+    els.step.value = Math.min(999, getStep() + 1);
+    updatePath();
+    toast(`STEP ${pad2(getStep())} 폴더로 이동합니다. (검증 완료 판정과 무관)`);
+  });
+  els.captureNow.addEventListener('click', () => saveCapture('manual'));
+  els.toggleAuto.addEventListener('click', () => autoOn ? stopAuto() : startAuto());
+  els.selectCrop.addEventListener('click', () => {
+    if (!cropActive && crop) { clearCrop(); els.cropLayer.style.pointerEvents = ''; }
+    toggleCrop(!cropActive);
+  });
+  els.clearCrop.addEventListener('click', () => { clearCrop(); els.cropLayer.classList.remove('active'); els.cropLayer.style.pointerEvents = ''; });
+  els.cropLayer.addEventListener('pointerdown', (event) => {
+    if (!cropActive) return;
+    els.cropLayer.setPointerCapture(event.pointerId);
+    dragStart = relativePoint(event);
+    crop = null;
+  });
+  els.cropLayer.addEventListener('pointermove', cropPointerMove);
+  els.cropLayer.addEventListener('pointerup', cropPointerUp);
+  els.cropLayer.addEventListener('pointercancel', () => { dragStart = null; });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && cropActive) {
+      toggleCrop(false);
+      clearCrop();
+      els.cropLayer.classList.remove('active');
+      els.cropLayer.style.pointerEvents = '';
+    }
+  });
+  els.clearHistory.addEventListener('click', () => {
+    els.historyList.replaceChildren();
+    previewUrls.forEach(URL.revokeObjectURL);
+    previewUrls.length = 0;
+    els.historyEmpty.style.display = 'block';
+    toast('화면의 목록만 비웠습니다. 로컬에 저장된 PNG와 CSV는 유지됩니다.');
+  });
+  window.addEventListener('beforeunload', () => {
+    if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+    clearInterval(autoTimer);
+    previewUrls.forEach(URL.revokeObjectURL);
+  });
+
+  try {
+    const ch = Number(localStorage.getItem('soc-capture-chapter'));
+    const st = Number(localStorage.getItem('soc-capture-step'));
+    if (Number.isInteger(ch) && ch >= 1 && ch <= 99) els.chapter.value = ch;
+    if (Number.isInteger(st) && st >= 1 && st <= 999) els.step.value = st;
+  } catch (error) { console.warn('설정 불러오기 실패', error); }
+  updatePath();
+  refreshUI();
+  loadSavedDirectory();
+})();
+
+</script>
+</body>
+</html>
