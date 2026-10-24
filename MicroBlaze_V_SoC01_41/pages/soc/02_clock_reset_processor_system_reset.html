@@ -248,10 +248,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><h3>Basys3 클럭 입력 확인</h3><p>Basys3 W5는 단일 100 MHz 클럭 입력이므로 Primary Input Source는 <strong>Single ended clock capable pin</strong>, Primary Input Frequency는 <strong>100.000 MHz</strong>로 맞춘다. <code>clk_out1</code>도 설정값 100 MHz인지 확인한다.</p></li>
 <li><h3>입력 포트 형태 확인</h3><p><code>CLK_IN1_D</code>가 있다면 차동 입력 설정인지 확인하고 단일 입력으로 변경한다. <code>Ctrl+S</code>로 저장한다.</p></li>
 </ol>
-<figure class="manual-figure">
-<a href="../../images/common/v_clock_before.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset. · 원본 보기 (새 탭)"><img alt="AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset." loading="lazy" src="../../images/common/v_clock_before.png">
-</a><figcaption>AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset.<br><a href="../../images/common/v_clock_before.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1711 2026.1 · MicroBlaze V와 Clocking Wizard / Processor System Reset. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
-</figure>
+
 </section>
 
 <section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Clock / Reset 외부 포트 연결</h2>
@@ -262,8 +259,10 @@ main[tabindex="-1"]:focus{outline:none}
 <li><h3>중복 포트 확인</h3><p>이미 외부 포트가 생성되어 있다면 새로 만들지 않는다. 실제 외부 Clock과 Reset 포트명을 SECTION 04에서 기존 XDC와 대조한다.</p></li>
 </ol>
 <figure class="manual-figure">
-<a href="../../images/common/v_clock_after.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD 원본 MicroBlaze V Clock Reset 회로도 열기"><img loading="lazy" src="../../images/common/v_clock_after.png" alt="AMD 원본 MicroBlaze V Clock Reset 연결 회로도"></a>
-<figcaption>AMD 원본 Vivado Block Design 참고 그림 · Basys3 입력과 외부 포트 이름은 현재 회로도 기준으로 확인<br><a href="../../images/common/v_clock_after.png" target="_blank" rel="noopener" class="figure-original">원본 보기 ↗</a></figcaption>
+<a href="../../images/soc02_vivado_actual_clock_reset.avif" target="_blank" rel="noopener" class="figure-image-link" aria-label="실습에서 완성한 Vivado Block Design 회로도 확대">
+<img loading="lazy" src="../../images/soc02_vivado_actual_clock_reset.avif" alt="실제 Basys3 MicroBlaze V Vivado Block Design: 외부 clk, btnC, clk_wiz_1, rst_clk_wiz_1_100M, Local BRAM, mdm_1 신호 연결"></a>
+<figcaption>Vivado 2024.2 실습 회로도 · <code>clk</code>(W5)와 <code>btnC</code>(U18) 연결 완료 화면
+<a href="../../images/soc02_vivado_actual_clock_reset.avif" target="_blank" rel="noopener" class="figure-original" aria-label="실습 원본 회로도 확대 보기">회로도 확대 ↗</a></figcaption>
 </figure>
 <div class="signal-map signal-table" role="region" aria-label="보드 입력 및 클록 잠금 배선" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">출발 신호</th><th scope="col" role="columnheader">도착 신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="출발 신호">외부 Clock 포트 · W5 · 100 MHz</td><td role="cell" data-label="도착 신호">clk_wiz_1/clk_in1</td></tr><tr role="row"><td role="cell" data-label="출발 신호">외부 Reset 포트 · U18</td><td role="cell" data-label="도착 신호">clk_wiz_1/reset</td></tr><tr role="row"><td role="cell" data-label="출발 신호">외부 Reset 포트 · U18</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/ext_reset_in</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/locked</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/dcm_locked</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/slowest_sync_clk</td></tr></tbody></table></div>
 </section>
