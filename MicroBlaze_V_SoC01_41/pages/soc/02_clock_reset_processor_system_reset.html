@@ -334,59 +334,67 @@ main[tabindex="-1"]:focus{outline:none}
 <li><h3>Generate Bitstream</h3><p>Flow Navigator → <strong>PROGRAM AND DEBUG → Generate Bitstream</strong>을 클릭한다. 완료되면 생성 메시지와 <code>impl_1</code>의 <strong>write_bitstream Complete</strong> 상태를 확인한다.</p></li>
 <li><h3>Bitstream 파일 확인</h3><p>프로젝트의 <code>*.runs/impl_1/</code>에서 <code>soc01_mb_bram_wrapper.bit</code> 파일 생성 여부를 확인한다. 실제 파일명과 경로는 해당 Run 결과를 따른다.</p></li>
 </ol>
-<div class="flow">Validate Design → HDL Wrapper → Synthesis → Implementation → Generate Bitstream</div>
+<h3>최종 Bitstream 생성 결과 · Vivado 2024.2</h3>
+<p>제공된 실습 화면에서 <strong>Bitstream Generation successfully completed</strong>와 <strong>write_bitstream Complete!</strong>를 확인하였다. 최종 XDC는 09절의 <code>-add</code> 제거안이다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="02장 최종 구현 및 Bitstream 결과"><table><thead><tr><th>검증 항목</th><th>실제 결과</th></tr></thead><tbody>
+<tr><td>Bitstream</td><td><strong><code>write_bitstream Complete!</code></strong></td></tr>
+<tr><td>Setup</td><td>WNS +1.372 ns · TNS 0.000 ns</td></tr>
+<tr><td>Hold</td><td>WHS +0.045 ns · THS 0.000 ns</td></tr>
+<tr><td>Pulse Width</td><td>WPWS +3.000 ns</td></tr>
+<tr><td>Routing</td><td>Failed Routes 0</td></tr>
+<tr><td>FPGA 자원</td><td>LUT 1,731 · FF 1,441 · BRAM 4 · DSP 0</td></tr>
+<tr><td>Power</td><td>0.186 W (Vivado 추정치)</td></tr>
+<tr><td>Methodology</td><td>Critical Warning 0건 · 일반 Warning 5건</td></tr>
+</tbody></table></div>
+<div class="note"><strong>판정:</strong> 02장 하드웨어 합성·구현·Bitstream 생성 완료. 실제 Basys3 보드 프로그램 실행과 C 소프트웨어 동작은 03장에서 확인한다.</div>
+<div class="flow">Validate Design → HDL Wrapper → Synthesis → Implementation → Bitstream 생성 완료 → 03장 XSA Export</div>
 </section>
 
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Methodology Warning · XDC Clock 제약 확인</h2>
-<p>Vivado 2024.2의 <strong>Report Methodology</strong>에서 <code>TIMING-6</code> Critical Warning 2건을 확인하였다. <code>Basys-3-Master.xdc</code>의 중복 가능성이 있는 <code>create_clock -add</code> 줄을 주석 처리하고 다시 구현한 결과, <strong>Critical Warning 0건 · Warning 4건</strong>으로 바뀌었다. <strong>write_bitstream Complete</strong>도 확인되었다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="XDC 변경 전후 Methodology 경고 비교"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">변경 전</th><th scope="col" role="columnheader">변경 후</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td role="cell">Critical Warning</td><td role="cell">2건 (<code>TIMING-6</code>)</td><td role="cell"><strong>0건</strong></td></tr>
-<tr role="row"><td role="cell">일반 Warning</td><td role="cell">6건</td><td role="cell">4건</td></tr>
-<tr role="row"><td role="cell">Bitstream</td><td role="cell">생성 완료</td><td role="cell"><code>write_bitstream Complete</code></td></tr>
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Methodology Warning · XDC 수정 및 재검증</h2>
+<p>초기 <code>create_clock -add</code> 설정에서 <code>TIMING-6</code> Critical Warning 2건이 발생했다. <code>create_clock</code> 전체 주석 처리로 한 차례 경고를 점검한 뒤, <strong>100 MHz 입력 Clock 제약을 유지하며 <code>-add</code> 옵션만 제거하는 방법</strong>을 실제 Vivado 2024.2에서 적용하였다.</p>
+<h3>1. XDC 변경 단계 비교</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="XDC 변경별 Methodology 결과"><table><thead><tr><th>Clock 제약</th><th>Critical Warning</th><th>일반 Warning</th><th>판정</th></tr></thead><tbody>
+<tr><td><code>create_clock -add</code></td><td>2건</td><td>6건</td><td><code>TIMING-6</code> 발생</td></tr>
+<tr><td><code>create_clock</code> 전체 주석 처리</td><td>0건</td><td>4건</td><td>중간 확인</td></tr>
+<tr><td><strong><code>-add</code>만 제거</strong></td><td><strong>0건</strong></td><td><strong>5건</strong></td><td><strong>최종 적용 · Bitstream 생성 성공</strong></td></tr>
 </tbody></table></div>
-<h3>1. XDC 변경 전후 비교</h3>
-<p>Clock 입력 물리 핀 <code>W5</code>와 I/O 규격 <code>LVCMOS33</code>는 변경하지 않는다. 실제로 변경한 부분은 Clock 생성 명령 한 줄이다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="TIMING-6 발생 당시 Clock 제약"><code>## Clock signal
-set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk]
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]</code></pre>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="변경된 Basys3 Clock XDC"><code>## Clock signal
-set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk]
-## Methodology 확인 후 해제 - 크리티컬 워닝 2건 발생
-#create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]</code></pre>
-<div class="note" role="note" aria-label="선택 검증안: create_clock -add 옵션만 제거">
-<h3>선택 검증안 — <code>-add</code> 옵션만 제거</h3>
-<p><code>create_clock</code> 전체를 주석 처리하는 대신, <strong><code>-add</code>만 제거</strong>해 Basys3 외부 <code>clk</code>의 100 MHz(10 ns) Primary Clock 제약을 명시적으로 유지하는 방법이다. <strong>아직 실제 Vivado 2024.2에서 재검증하지 않은 대체 수정안</strong>으로, 위의 검증된 경고 감소 결과와 구분한다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="선택 검증안 XDC, add 옵션 제거"><code>## Clock signal
+<h3>2. 최종 적용 XDC — <code>-add</code> 제거</h3>
+<div class="note" role="note" aria-label="Vivado 2024.2에서 Bitstream까지 생성한 XDC 설정">
+<p><strong>최종 적용 코드 · Basys-3-Master.xdc</strong></p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="최종 XDC 100 MHz"><code>## Clock signal
 set_property -dict { PACKAGE_PIN W5   IOSTANDARD LVCMOS33 } [get_ports clk]
 
-# (변경) -add 옵션만 제거 — Primary Clock 100 MHz 정의 유지
-create_clock -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]</code></pre>
-<p><strong>확인 순서:</strong> XDC 저장 → Run Synthesis → Run Implementation → Generate Bitstream → <code>report_clocks</code>에서 <code>sys_clk_pin</code>의 10 ns 확인 → <code>check_timing -verbose</code>로 미제약 경로 확인 → <code>report_methodology</code>로 <code>TIMING-6</code> 재발 여부 확인. 이전보다 경고가 줄어드는지뿐 아니라 <strong>실제 Clock 제약이 유효한지</strong>도 확인한다.</p>
+# (변경) -add 옵션 제거 — 100 MHz Clock 제약 유지
+create_clock -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+
+# (기존) -add 옵션 포함 설정은 주석 처리
+#create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]</code></pre>
+<p>외부 <code>clk</code>는 W5에 연결하며 <code>create_clock</code>으로 10 ns(100 MHz)를 지정한다. 같은 소스에 불필요한 Clock 객체가 추가되는 것을 피하도록 <code>-add</code>를 제거했다.</p>
 </div>
-<h3>2. 변경 후 남은 Warning 4건</h3>
-<div class="table-wrap" tabindex="0" role="region" aria-label="변경 후 Methodology Warning 상세"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Warning</th><th scope="col" role="columnheader">건수</th><th scope="col" role="columnheader">의미와 확인 지점</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td role="cell"><code>LUTAR-1</code></td><td role="cell">2건</td><td role="cell"><code>Serial_Dbg_Intf</code> 내부 LUT가 플립플롭의 비동기 Preset/Clear를 구동. 글리치가 의도치 않은 Reset을 발생시킬 위험이 있으므로 해당 경로와 Debug IP 구성을 점검한다.</td></tr>
-<tr role="row"><td role="cell"><code>TIMING-9</code></td><td role="cell">1건</td><td role="cell">비동기 Clock Domain Crossing(CDC, 클럭 영역 교차) 경로에 인식 가능한 2단 동기화 구조가 확인되지 않음. <code>report_cdc</code>로 실제 경로를 확인한다.</td></tr>
-<tr role="row"><td role="cell"><code>TIMING-18</code></td><td role="cell">1건</td><td role="cell"><code>btnC</code> 입력에 <code>clk</code> 기준 Input Delay가 없음. 비동기 버튼 Reset인지 확인하고 Reset 해제 경로와 타이밍 제약의 적절성을 검토한다.</td></tr>
+<h3>3. 최종 Methodology 일반 Warning</h3>
+<p>최종 화면에는 <strong>Critical Warning 0건 · 일반 Warning 5건</strong>이 표시된다. 화면에서 상세 내용을 읽을 수 있는 4건은 아래와 같다. 나머지 1건의 상세 내용은 제공된 화면만으로 확정하지 않는다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="최종 Methodology Warning 항목"><table><thead><tr><th>Warning</th><th>건수</th><th>확인할 사항</th></tr></thead><tbody>
+<tr><td><code>LUTAR-1</code></td><td>2건</td><td><code>Serial_Dbg_Intf</code> 내부 비동기 Preset/Clear를 구동하는 LUT 경로와 글리치 위험 확인</td></tr>
+<tr><td><code>TIMING-9</code></td><td>1건</td><td>CDC(클럭 영역 교차) 경로의 동기화 구조 확인: <code>report_cdc</code></td></tr>
+<tr><td><code>TIMING-18</code></td><td>1건</td><td><code>btnC</code> 입력과 <code>sys_clk_pin</code> 사이의 Input Delay 경고: 비동기 Reset 경로 검토</td></tr>
+<tr><td>그 밖의 Warning</td><td>1건</td><td>스크롤 아래의 미확인 상세 메시지 추가 확인</td></tr>
 </tbody></table></div>
-<h3>3. Timing 제약 및 Warning 확인</h3>
-<p>Critical Warning이 사라졌더라도, Clock 제약이 실제로 적용되어 있는지를 확인해야 한다. <strong>Open Implemented Design → Tcl Console</strong>에서 실행한다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Clock 및 CDC 점검 Tcl 명령"><code># Primary Clock 및 Generated Clock의 주기·기원 확인
+<h3>4. Clock · Timing 추가 확인</h3>
+<p>최종 Bitstream 생성, WNS/WHS 양수, Critical Warning 0건은 확인되었다. 그러나 Clock 제약 전체와 모든 미제약 경로가 검증된 것은 아니므로 다음 명령으로 확인한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Clock 타이밍 추가 검증 명령"><code># 외부 기준 Clock 및 Generated Clock 주기 확인
 report_clocks
 
-# 외부 clk 포트에 연결된 Clock 객체 확인
+# W5의 clk에 연결된 Clock 객체 확인
 get_clocks -of_objects [get_ports clk]
 
-# 누락된 Clock 및 미제약 경로 확인
+# 예상하지 않은 미제약 경로 확인
 check_timing -verbose
 
-# Methodology Warning 재확인
+# 잔여 Warning 및 CDC 경로 확인
 report_methodology
-
-# Clock Domain Crossing 상세 경로 분석
 report_cdc</code></pre>
-<div class="warn"><strong>판정 기준:</strong> ① MicroBlaze V의 동작 Clock에 100 MHz(10 ns) 제약이 유효할 것, ② <code>no_clock</code> 등 예상하지 않은 미제약 경로가 없을 것, ③ <code>TIMING-6</code>이 재발하지 않을 것. 남은 <code>LUTAR-1</code>·<code>TIMING-9</code>·<code>TIMING-18</code>은 원인 확인 없이 무시하거나 임의의 <code>set_false_path</code> / <code>set_input_delay</code>로 경고만 숨기지 않는다.</div>
-<p>공식 참고: <a href="https://docs.amd.com/r/2024.2-English/ug906-vivado-design-analysis/TIMING-9-Unknown-CDC-Logic" rel="noopener" target="_blank">AMD UG906 2024.2 · TIMING-9</a> · <a href="https://docs.amd.com/r/2024.2-English/ug906-vivado-design-analysis/Verifying-Timing-Signoff" rel="noopener" target="_blank">AMD UG906 2024.2 · Timing Signoff</a>.</p>
+<div class="warn"><strong>검증 범위:</strong> <code>-add</code> 제거 상태에서 Bitstream 생성 성공과 Critical Warning 해소까지 확인했다. 남은 일반 Warning은 보드 동작과 별개로 상세 경로 분석이 필요하다. 임의로 <code>set_false_path</code>를 추가하여 경고만 숨기지 않는다.</div>
+<p>AMD Vivado 2024.2 참고: <a href="https://docs.amd.com/r/2024.2-English/ug835-vivado-tcl-commands/create_clock" rel="noopener" target="_blank">UG835 · create_clock</a> · <a href="https://docs.amd.com/r/2024.2-English/ug903-vivado-using-constraints/Timing-Constraints-Wizard" rel="noopener" target="_blank">UG903 · Timing Constraints Wizard</a>.</p>
 </section>
 
 <section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>오류 점검</h2>
@@ -406,14 +414,14 @@ report_cdc</code></pre>
 <li><code>clk_wiz_1</code>의 입력을 Basys3 단일 100 MHz Clock으로 설정했다.</li>
 <li>BD 외부 Clock/Reset 포트와 Processor System Reset 연결을 확인했다.</li>
 <li>기존 XDC의 <code>get_ports</code>가 실제 BD 외부 포트명과 일치한다.</li>
-<li>W5 · U18 · 10 ns · LVCMOS33 제약을 확인했다.</li>
+<li>W5 · U18 · LVCMOS33 제약과 <code>-add</code>를 제거한 10 ns Clock XDC를 적용했다.</li>
 <li>Validate Design이 오류 및 Critical Warning 없이 완료되었다. 일반 Warning 3건은 별도로 확인했다.</li>
 <li>합성/시뮬레이션용 RTL과 <code>.hwh</code>, <code>.hwdef</code> 파일이 생성되었다.</li>
 <li><code>soc01_mb_bram_wrapper</code>를 프로젝트 Top으로 등록했다.</li>
-<li>Synthesis · Implementation 완료 후 <code>soc01_mb_bram_wrapper.bit</code> 생성 결과를 확인한다.</li>
-<li><code>create_clock -add</code> 주석 처리 후 <code>TIMING-6</code> 중요 경고가 0건으로 감소했다. 남은 일반 Warning 4건과 실제 100 MHz Clock 제약은 별도로 점검한다.</li>
+<li>Synthesis · Implementation 및 <strong><code>write_bitstream Complete</code></strong>를 확인했다.</li>
+<li>최종 XDC의 <code>create_clock</code>에서 <code>-add</code> 옵션만 제거하고 Bitstream 생성 성공을 확인했다. Critical Warning 0건, 일반 Warning 5건이다.</li>
 </ul>
-<div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
+<div class="flow">SoC 02 · Bitstream 생성 완료 → SoC 03 · XSA Export 및 Vitis 프로그램 실행</div>
 </section>
 
 <section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
