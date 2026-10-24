@@ -311,6 +311,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><h3>Reset Association</h3><p>AXI 계층이 아직 최소 구성이라도 <code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 올바른 극성으로 생성되는지 확인한다.</p></li>
 </ol>
 <div class="gate note"><strong>Gate 1 PASS 기준:</strong> Clock 입력 100 MHz, Clock Wizard lock 경로, Processor System Reset 입력/출력, MicroBlaze V Reset 경로가 모두 연결되고 Validate Design이 오류 없이 완료되어야 한다. Messages에서 Clock/Reset과 미연결 Interface 오류를 함께 확인한다. 사용하지 않을 AXI 인터페이스의 미완성 주소 경고도 원인을 확인한다.</div>
+<div class="ok"><strong>실습 확인 · 2026-10-24:</strong> Vivado 2024.2의 <code>Validate Design</code> 결과 <strong>Validation successful</strong>이 확인되었다. Error 및 Critical Warning은 없으며, 일반 Warning 3건(<code>BD 41-2670</code> · 미완성 M_AXI_DP 주소 경로, <code>BD 5-699</code> · Reset IP 주소 세그먼트 없음, <code>filemgmt 56-443</code> · ECC 기본값 적용)이 출력되었다. 이는 Clock/Reset 검증 PASS이며, AXI 주소 경로 경고는 후속 AXI 연결 단계에서 재확인한다.</div>
 </section>
 
 <section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Generate Output Products · HDL Wrapper</h2>
@@ -353,7 +354,8 @@ main[tabindex="-1"]:focus{outline:none}
 <li>BD 외부 Clock/Reset 포트와 Processor System Reset 연결을 확인했다.</li>
 <li>기존 XDC의 <code>get_ports</code>가 실제 BD 외부 포트명과 일치한다.</li>
 <li>W5 · U18 · 10 ns · LVCMOS33 제약을 확인했다.</li>
-<li>Validate Design 성공 후 Output Products, Wrapper, 합성 및 구현을 확인했다.</li>
+<li>Validate Design이 오류 및 Critical Warning 없이 완료되었다. 일반 Warning 3건은 별도로 확인했다.</li>
+<li>Output Products · HDL Wrapper · Synthesis · Implementation은 다음 단계에서 진행한다.</li>
 </ul>
 <div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
 </section>
