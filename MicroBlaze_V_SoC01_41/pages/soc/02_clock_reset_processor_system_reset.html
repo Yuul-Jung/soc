@@ -259,10 +259,10 @@ main[tabindex="-1"]:focus{outline:none}
 <li><h3>중복 포트 확인</h3><p>이미 외부 포트가 생성되어 있다면 새로 만들지 않는다. 실제 외부 Clock과 Reset 포트명을 SECTION 04에서 기존 XDC와 대조한다.</p></li>
 </ol>
 <figure class="manual-figure">
-<a href="../../images/soc02_vivado_actual_clock_reset.avif" target="_blank" rel="noopener" class="figure-image-link" aria-label="실습에서 완성한 Vivado Block Design 회로도 확대">
-<img loading="lazy" src="../../images/soc02_vivado_actual_clock_reset.avif" alt="실제 Basys3 MicroBlaze V Vivado Block Design: 외부 clk, btnC, clk_wiz_1, rst_clk_wiz_1_100M, Local BRAM, mdm_1 신호 연결"></a>
-<figcaption>Vivado 2024.2 실습 회로도 · <code>clk</code>(W5)와 <code>btnC</code>(U18) 연결 완료 화면
-<a href="../../images/soc02_vivado_actual_clock_reset.avif" target="_blank" rel="noopener" class="figure-original" aria-label="실습 원본 회로도 확대 보기">회로도 확대 ↗</a></figcaption>
+<a href="../../images/soc02_vivado_final_2024_2.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="실습에서 완성한 Vivado Block Design 회로도 확대">
+<img loading="lazy" src="../../images/soc02_vivado_final_2024_2.png" alt="실제 Vivado 2024.2 최종 회로도: clk(W5), btnC(U18), clk_wiz_1, rst_clk_wiz_1_100M, Local BRAM, mdm_1 신호 연결"></a>
+<figcaption>Vivado 2024.2 · Implementation 완료 당시 실제 Block Design · <code>clk</code>(W5), <code>btnC</code>(U18) 포함
+<a href="../../images/soc02_vivado_final_2024_2.png" target="_blank" rel="noopener" class="figure-original" aria-label="실습 원본 회로도 확대 보기">회로도 확대 ↗</a></figcaption>
 </figure>
 <div class="signal-map signal-table" role="region" aria-label="보드 입력 및 클록 잠금 배선" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">출발 신호</th><th scope="col" role="columnheader">도착 신호</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="출발 신호">외부 Clock 포트 · W5 · 100 MHz</td><td role="cell" data-label="도착 신호">clk_wiz_1/clk_in1</td></tr><tr role="row"><td role="cell" data-label="출발 신호">외부 Reset 포트 · U18</td><td role="cell" data-label="도착 신호">clk_wiz_1/reset</td></tr><tr role="row"><td role="cell" data-label="출발 신호">외부 Reset 포트 · U18</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/ext_reset_in</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/locked</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/dcm_locked</td></tr><tr role="row"><td role="cell" data-label="출발 신호">clk_wiz_1/clk_out1</td><td role="cell" data-label="도착 신호">rst_clk_wiz_1_100M/slowest_sync_clk</td></tr></tbody></table></div>
 </section>
