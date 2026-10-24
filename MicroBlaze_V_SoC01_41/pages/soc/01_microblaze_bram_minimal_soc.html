@@ -210,7 +210,7 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="hero-brief">
 <article><h2>CPU</h2><p>FPGA Fabric에 구현되는 MicroBlaze V를 사용한다.</p></article>
 <article><h2>Memory</h2><p>ILMB/DLMB를 통해 공통 Block RAM에 접근한다.</p></article>
-<article><h2>완료 기준</h2><p>Block Design 검증 → HDL Wrapper → Synthesis/Implementation까지 통과한다.</p></article>
+<article><h2>완료 기준</h2><p>MicroBlaze V · Local BRAM 계층 생성과 Block Design 저장까지 확인한다. 외부 Clock/Reset 연결 및 첫 Validate는 SoC 02에서 진행한다.</p></article>
 </div>
 </div></header>
 <div class="wrap">
@@ -226,9 +226,9 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s07"><span class="n">07</span><span>MicroBlaze V 추가</span></a></li>
 <li><a href="#s08"><span class="n">08</span><span>Block Automation</span></a></li>
 <li><a href="#s09"><span class="n">09</span><span>자동 생성 구조 확인</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>Clock · Reset 연결</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>Clock · Reset 연결 준비</span></a></li>
 <li><a href="#s11"><span class="n">11</span><span>XDC 기준</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>Validate Design</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Diagram 저장 · 구성 확인</span></a></li>
 <li><a href="#s13"><span class="n">13</span><span>Output · Wrapper</span></a></li>
 <li><a href="#s14"><span class="n">14</span><span>Synthesis · Implementation</span></a></li>
 <li><a href="#s15"><span class="n">15</span><span>오류 점검</span></a></li>
@@ -244,8 +244,8 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="lesson-goal">
 <article><strong>① CPU</strong><p><code>MicroBlaze V</code>를 FPGA 내부에 구성한다.</p></article>
 <article><strong>② Local Memory</strong><p>명령과 데이터를 저장할 BRAM을 붙인다.</p></article>
-<article><strong>③ Clock / Reset</strong><p>Basys3 100 MHz와 Processor System Reset을 연결한다.</p></article>
-<article><strong>④ Build Gate</strong><p>Validate → Wrapper → Synthesis/Implementation을 통과한다.</p></article>
+<article><strong>③ Clock / Reset</strong><p>자동 생성된 Clock/Reset IP와 내부 연결을 확인한다. Basys3 외부 입력 포트 연결은 SoC 02에서 완료한다.</p></article>
+<article><strong>④ 저장 기준</strong><p>Local Memory 16 KB 구성과 Block Design 저장을 확인한다. Validate 및 후속 빌드는 SoC 02 연결 이후 진행한다.</p></article>
 </div>
 <div class="note">MicroBlaze V를 사용한다. CPU는 32비트 RV32IM, 캐시 없음, Machine mode로 구성한다.</div><div class="flow">Basys3 100 MHz → Clocking Wizard → MicroBlaze V → ILMB/DLMB → Local BRAM</div>
 </section>
@@ -341,19 +341,19 @@ Load/Store → Data-side Bus → DLMB → BRAM → Data Read/Write</div>
 <p><code>microblaze_riscv_0_local_memory</code>와 같은 Hierarchical Block을 열어 <strong>ILMB Controller, DLMB Controller, Block Memory Generator</strong>가 실제로 존재하는지 확인한다.</p>
 <div class="ok">여기까지 확인했으면 “MicroBlaze V와 BRAM이 연결되어 있다”를 그림이 아니라 실제 IP 계층으로 검증한 것이다.</div>
 </section>
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Clock · Reset 연결</h2>
-<p>Block Automation이 내부 연결을 만들어도 외부 Basys3 Clock/Reset과 연결되지 않은 포트가 남을 수 있다. Designer Assistance의 <strong>Run Connection Automation</strong>을 확인한다.</p>
-<h3>Clock</h3>
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Clock · Reset 연결 준비</h2>
+<p>Block Automation으로 생성된 Clocking Wizard와 Processor System Reset의 존재 및 내부 연결을 확인한다. 현재는 외부 Basys3 Clock/Reset이 미연결일 수 있으며, <strong>Run Connection Automation과 외부 포트의 실제 연결은 SoC 02 SECTION 12</strong>에서 진행한다.</p>
+<h3>Clock — SoC 02에서 연결할 경로</h3>
 <div class="flow">Basys3 W5 · 100 MHz → Clocking Wizard clk_in1 → clk_out1 → MicroBlaze V / LMB / Reset System</div>
-<h3>Reset</h3>
+<h3>Reset — SoC 02에서 연결할 경로</h3>
 <div class="flow">Basys3 BTNC · U18 → ext_reset_in → Processor System Reset → mb_reset / bus_struct_reset / peripheral_aresetn</div>
-<h3>반드시 확인할 연결</h3>
+<h3>SoC 02에서 완료할 필수 연결</h3>
 <ul><li><code>Clocking Wizard locked</code> → <code>Processor System Reset dcm_locked</code></li><li><code>Clocking Wizard clk_out1</code> → MicroBlaze V Clock 및 Local Memory Clock</li><li>외부 Reset → <code>ext_reset_in</code></li><li>MicroBlaze V Reset ← <code>mb_reset</code></li></ul>
-<div class="danger"><strong>중요:</strong> Board Flow를 사용하지 않는 경우에도 <code>clk_wiz/locked</code>와 <code>proc_sys_reset/dcm_locked</code> 연결을 빠뜨리면 안 된다. Reset이 정상 해제되지 않아 CPU가 계속 Reset 상태에 머물 수 있다.</div>
+<div class="warn"><strong>후속 연결 시 주의:</strong> Board Flow를 사용하지 않는 경우에도 <code>clk_wiz/locked</code>와 <code>proc_sys_reset/dcm_locked</code> 연결을 빠뜨리면 안 된다. Reset이 정상 해제되지 않아 CPU가 계속 Reset 상태에 머물 수 있다.</div>
 <div class="note"><strong>Reset 극성:</strong> Processor System Reset의 외부 Reset 입력은 Active-High/Active-Low 설정이 가능하다. 이 실습에서는 Basys3 <code>BTNC</code>를 누르면 High가 되는 조건에 맞춰 Active-High 입력으로 맞춘다. SoC 02에서 Reset 동기화와 출력 극성을 더 깊게 다룬다.</div>
-<p><code>MDM V/Debug_SYS_Rst → Processor System Reset/mb_debug_sys_rst</code>를 연결한다. 미사용 <code>aux_reset_in</code>은 Active-High 설정에서 0으로 고정한다.</p></section>
+<p><code>MDM V/Debug_SYS_Rst → Processor System Reset/mb_debug_sys_rst</code> 및 미사용 <code>aux_reset_in</code>의 연결/고정도 SoC 02에서 설정하고 검증한다.</p></section>
 <section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Basys3 XDC — 필요한 줄만 원본에서 활성화</h2>
-<p>Digilent <code>Basys-3-Master.xdc</code>에서 Clock과 Center Button Reset 관련 줄을 활성화한다. Block Design의 외부 포트 이름은 <code>clk</code>, <code>btnC</code>와 일치시킨다.</p>
+<p>Digilent <code>Basys-3-Master.xdc</code>를 프로젝트에 추가하고 Clock과 Center Button Reset에 사용할 제약을 확인한다. 외부 포트 <code>clk</code>, <code>btnC</code>의 실제 연결과 이름 일치는 SoC 02에서 완료한다.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 XDC — 필요한 줄만 원본에서 활성화 · 소스 코드"><code>## Clock signal
 set_property -dict { PACKAGE_PIN W5 IOSTANDARD LVCMOS33 } [get_ports clk]
 create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
@@ -365,17 +365,18 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <tr role="row"><td data-label="XDC" role="cell"><code>period 10.00</code></td><td data-label="의미" role="cell">100 MHz의 1주기 = 10 ns</td><td data-label="검증" role="cell">Timing Engine에 Primary Clock 정의</td></tr>
 <tr role="row"><td data-label="XDC" role="cell"><code>PACKAGE_PIN U18</code></td><td data-label="의미" role="cell">Center Push Button</td><td data-label="검증" role="cell">Digilent Master XDC의 <code>btnC</code></td></tr>
 </tbody></table></div>
-<div class="warn">Block Design에서 생성된 외부 포트 이름이 <code>clk_0</code>, <code>reset_0</code>처럼 되어 있다면 XDC를 억지로 바꾸기 전에 포트 이름을 먼저 의도한 이름으로 정리한다. <strong>HDL/BD 포트명 ↔ XDC <code>get_ports</code> 이름이 정확히 같아야 한다.</strong></div>
+<div class="warn">아래 XDC는 연결 완료 시 적용할 기준이다. SoC 01에서 외부 포트가 아직 없다면 Validate Design을 실행하지 않는다. Block Design에서 생성된 외부 포트 이름이 <code>clk_0</code>, <code>reset_0</code>처럼 되어 있다면 XDC를 억지로 바꾸기 전에 포트 이름을 먼저 의도한 이름으로 정리한다. <strong>HDL/BD 포트명 ↔ XDC <code>get_ports</code> 이름이 정확히 같아야 한다.</strong></div>
 </section>
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Validate Design — 첫 번째 Stage Gate</h2>
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Diagram 저장 · IP 구성 확인</h2>
 <ol class="step-seq">
-<li><h3>Diagram 저장</h3><p><code>Ctrl+S</code>로 Block Design을 먼저 저장한다.</p></li>
-<li><h3>Validate Design</h3><p>Diagram Toolbar의 Validate 또는 우클릭 → <strong>Validate Design</strong>을 실행한다.</p></li>
-<li><h3>Error와 Critical Warning 확인</h3><p>단순히 “Validation successful” 창만 보는 것이 아니라 Messages 창에서 Clock/Reset/Unconnected Interface 관련 메시지를 확인한다.</p></li>
+<li><h3>Diagram 저장</h3><p><code>Ctrl+S</code>로 <code>soc01_mb_bram.bd</code>를 저장한다.</p></li>
+<li><h3>MicroBlaze V · Local Memory 확인</h3><p><code>microblaze_riscv_0</code> 및 Local Memory 계층에 ILMB/DLMB Controller와 16 KB BRAM이 존재하는지 확인한다.</p></li>
+<li><h3>Clock/Reset IP 확인</h3><p>자동 생성된 Clocking Wizard 및 Processor System Reset이 존재하는지 확인한다. 외부 Clock/Reset 미연결 상태는 이 단계에서 정상적인 <strong>중간 구성 상태</strong>로 분류한다.</p></li>
 </ol>
-<div class="gate note"><strong>Gate 1 PASS 조건:</strong> Clock/Reset의 필수 포트가 연결되어 있고, MicroBlaze V Local Memory Hierarchy가 생성되어 있으며, Validate Design이 오류 없이 완료된다.</div>
+<div class="note"><strong>SoC 01 저장 기준:</strong> 필요한 IP와 Local Memory 계층이 생성되고 Block Design이 저장되었다. 외부 Clock/Reset 연결은 SoC 02 SECTION 12~15에서 완료하며, <strong>첫 Validate Design 및 Gate 1 PASS 판정은 SoC 02 SECTION 16</strong>에서 진행한다.</div>
 </section>
 <section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Generate Output Products · HDL Wrapper</h2>
+<div class="warn"><strong>후속 실행 절차:</strong> SoC 01 단계에서는 실행하지 않는다. SoC 02에서 외부 Clock/Reset 연결과 첫 Validate Design이 통과한 뒤 아래 작업을 수행한다.</div>
 <ol class="step-seq">
 <li><h3>Generate Output Products</h3><p>Sources에서 <code>soc01_mb_bram.bd</code>를 우클릭하고 <strong>Generate Output Products</strong>를 실행한다.</p></li>
 <li><h3>Create HDL Wrapper</h3><p>Block Design을 우클릭 → <strong>Create HDL Wrapper</strong>.</p></li>
@@ -385,6 +386,7 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <div class="note">Wrapper에는 계산, 상태 판단, Register Map 정책, 기능 FSM을 직접 추가하지 않는다. Custom RTL은 별도 모듈/IP로 구성하고 Top은 연결 중심으로 유지한다.</div>
 </section>
 <section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Synthesis · Implementation</h2>
+<div class="warn"><strong>후속 실행 절차:</strong> SoC 02의 Gate 1 PASS 및 HDL Wrapper 생성 이후 수행한다. SoC 01의 완료 조건으로 요구하지 않는다.</div>
 <ol class="step-seq">
 <li><h3>Run Synthesis</h3><p>Synthesis가 완료되면 Critical Warning과 unconstrained clock/I/O 관련 메시지를 확인한다.</p></li>
 <li><h3>Open Synthesized Design</h3><p>Clock 포트와 Reset 포트가 예상한 Pin/IOSTANDARD 제약을 받았는지 확인한다.</p></li>
@@ -412,14 +414,10 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <li>[ ] Local Memory 16 KB, ECC None, Cache None이다.</li>
 <li>[ ] ILMB와 DLMB가 Local BRAM으로 연결된다.</li>
 <li>[ ] MDM V Debug Module이 연결된다.</li>
-<li>[ ] Basys3 100 MHz Clock이 Clocking Wizard로 들어간다.</li>
-<li>[ ] <code>clk_wiz/locked → proc_sys_reset/dcm_locked</code>가 연결된다.</li>
-<li>[ ] <code>btnC</code>가 외부 Reset으로 연결된다.</li>
-<li>[ ] XDC의 W5 / U18 / 10 ns Clock Constraint가 실제 포트명과 일치한다.</li>
-<li>[ ] Validate Design이 통과한다.</li>
-<li>[ ] HDL Wrapper를 Vivado 관리 방식으로 생성했다.</li>
-<li>[ ] Synthesis가 통과한다.</li>
-<li>[ ] Implementation이 통과한다.</li>
+<li>[ ] Clocking Wizard와 Processor System Reset IP가 생성되어 있다.</li>
+<li>[ ] Basys-3-Master.xdc가 프로젝트에 등록되어 있고 W5 / U18 / 10 ns 제약을 확인했다.</li>
+<li>[ ] <code>soc01_mb_bram.bd</code>를 저장했다.</li>
+<li>[ ] 외부 Clock/Reset 연결, Validate Design, Wrapper 및 빌드 작업은 SoC 02 이후 단계에서 수행한다.</li>
 <li>[ ] 아직 GPIO/UART/Timer/Interrupt/NPU를 추가하지 않았다.</li>
 </ul>
 <div class="flow">SoC 01 완료 → SoC 02 Clock / Reset 구조 → SoC 03 BRAM 프로그램 실행 → SoC 04 Memory Map → SoC 05 AXI</div>
