@@ -236,7 +236,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s13"><span class="n">13</span><span>Basys3 XDC</span></a></li>
 <li><a href="#s14"><span class="n">14</span><span>Processor System Reset 설정</span></a></li>
 <li><a href="#s15"><span class="n">15</span><span>신호 경로 추적</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>Validate · Timing 확인</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Validate · Gate 1</span></a></li>
 <li><a href="#s17"><span class="n">17</span><span>오류 점검</span></a></li>
 <li><a href="#summary"><span class="n">18</span><span>완료 체크리스트</span></a></li>
 <li><a href="#sources"><span class="n">19</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol>
@@ -425,14 +425,14 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <div class="ok">이 다섯 경로가 설명과 실제 Block Design에서 일치해야 SoC 02의 핵심 구조가 완성된다.</div>
 </section>
 
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Validate · Timing 확인</h2>
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Validate Design — 첫 번째 Stage Gate · Timing 확인</h2>
 <ol class="step-seq">
-<li><h3>Validate Design</h3><p>Block Design을 저장한 뒤 <strong>Validate Design</strong>을 실행한다.</p></li>
+<li><h3>첫 Validate Design</h3><p>SoC 02 SECTION 12~15에서 Basys3 외부 Clock/Reset 포트와 내부 필수 경로 연결을 완료하고 <code>Ctrl+S</code>로 저장한 뒤 <strong>Validate Design</strong>을 실행한다. SoC 01의 미연결 중간 상태에서는 실행하지 않는다.</p></li>
 <li><h3>Clock Association</h3><p>MicroBlaze V, Local Memory, Processor System Reset이 동일한 100 MHz Clock에 연결되었는지 확인한다.</p></li>
 <li><h3>Reset Association</h3><p>AXI 계층이 아직 최소 구성이라도 <code>interconnect_aresetn</code>, <code>peripheral_aresetn</code>이 올바른 극성으로 생성되는지 확인한다.</p></li>
 <li><h3>Report Clocks</h3><p>Synthesis 이후 100 MHz Primary Clock이 10 ns Period로 인식되는지 확인한다.</p></li>
 </ol>
-<div class="gate note"><strong>PASS 기준:</strong> Clock 입력 100 MHz, Clock Wizard lock 경로, Processor System Reset 입력/출력, MicroBlaze V Reset 경로가 모두 연결되고 Validate Design에서 Clock/Reset 관련 오류가 없어야 한다.</div>
+<div class="gate note"><strong>Gate 1 PASS 기준:</strong> Clock 입력 100 MHz, Clock Wizard lock 경로, Processor System Reset 입력/출력, MicroBlaze V Reset 경로가 모두 연결되고 Validate Design이 오류 없이 완료되어야 한다. Messages에서 Clock/Reset과 미연결 Interface 오류를 함께 확인한다. 사용하지 않을 AXI 인터페이스의 미완성 주소 경고도 원인을 확인한다.</div>
 </section>
 
 <section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>오류 점검</h2>
@@ -459,7 +459,7 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <li>[ ] Reset 해제 순서가 Bus/Interconnect → Peripheral → MicroBlaze V임을 이해한다.</li>
 <li>[ ] 100 MHz에서 16 clocks가 약 160 ns임을 계산할 수 있다.</li>
 <li>[ ] Block Design에서 다섯 핵심 Signal Path를 실제로 추적했다.</li>
-<li>[ ] Validate Design에서 Clock/Reset 관련 오류가 없다.</li>
+<li>[ ] SoC 02 SECTION 16에서 첫 Validate Design이 오류 없이 성공하여 Gate 1 PASS를 확인했다.</li>
 </ul>
 <div class="flow">SoC 02 완료 → SoC 03 MicroBlaze V 실행 구조와 BRAM 프로그램 실행</div>
 </section>
