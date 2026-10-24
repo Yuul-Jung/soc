@@ -294,8 +294,8 @@ PC
 
 <section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>ILMB · DLMB · BRAM</h2>
 <figure class="manual-figure">
-<a href="../../images/common/v_system.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1711 2026.1 · MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결. · 원본 보기 (새 탭)"><img alt="AMD UG1711 2026.1 · MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결." loading="lazy" src="../../images/common/v_system.png">
-</a><figcaption>AMD UG1711 2026.1 · MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결.<br><a href="../../images/common/v_system.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1711 2026.1 · MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
+<a href="../../images/common/v_system.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조. · 원본 보기 (새 탭)"><img alt="MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조." loading="lazy" src="../../images/common/v_system.png">
+</a><figcaption>MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조.<br><a href="../../images/common/v_system.png" target="_blank" rel="noopener" class="figure-original" aria-label="MicroBlaze V의 ILMB/DLMB와 공유 Local Memory 연결 구조. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
 </figure>
 <div class="table-wrap" tabindex="0" role="region" aria-label="ILMB · DLMB · BRAM · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">경로</th><th scope="col" role="columnheader">주요 역할</th><th scope="col" role="columnheader">대표 접근</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="경로" role="cell"><code>ILMB</code></td><td data-label="주요 역할" role="cell">Instruction Local Memory Bus</td><td data-label="대표 접근" role="cell">Reset Vector, Startup Code, <code>.text</code> 명령어 Fetch</td></tr>
@@ -488,11 +488,7 @@ read_value_3 ← 0x33333333</div>
 <p>JTAG 대상은 MDM V에 연결된 MicroBlaze V hart(하트, 실행 하드웨어 단위)를 선택한다. 하드웨어 설정 후 Reset/Halt → ELF 다운로드 → <code>main()</code> 중단점 → Run 순서로 확인한다.</p></section>
 
 <section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>FPGA Program Device</h2>
-<figure class="manual-figure">
-<a href="../../images/common/original_08.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1400 Program Device screen · 원본 보기 (새 탭)"><img alt="AMD UG1400 Program Device screen" loading="lazy" src="../../images/common/original_08.png">
-</a><figcaption>Vitis 2026.1 Program Device 화면. MicroBlaze V 설계에서는 Bitstream과 함께 BRAM 위치 정보를 나타내는 BMM/MMI 항목을 사용할 수 있으며, ELF와 Bitstream을 결합한 결과를 생성할 수 있다.
-<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Program-Device" rel="noopener" target="_blank">AMD UG1400 · Program Device · 2026.1</a></span><br><a href="../../images/common/original_08.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1400 Program Device screen · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
-</figure>
+<p><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Program-Device" target="_blank" rel="noopener">AMD UG1400 · Program Device (2024.2) · 공식 화면 및 절차</a></p>
 <ol class="step-seq">
 <li><h3>Connection 선택</h3><p>Local Hardware Target 또는 설정한 Hardware Server를 선택한다.</p></li>
 <li><h3>Bitstream 확인</h3><p>SoC 01~02에서 생성한 Hardware Bitstream을 선택한다.</p></li>
@@ -501,16 +497,12 @@ read_value_3 ← 0x33333333</div>
 </section>
 
 <section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Application Run</h2>
-<figure class="manual-figure">
-<a href="../../images/common/original_09.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1400 Running Application Component screen · 원본 보기 (새 탭)"><img alt="AMD UG1400 Running Application Component screen" loading="lazy" src="../../images/common/original_09.png">
-</a><figcaption>Vitis Unified IDE의 Application Run 흐름. Application을 선택하고 Launch Configuration과 Target Connection을 확인한 뒤 Run을 실행한다.
-<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Running-the-Application-Component" rel="noopener" target="_blank">AMD UG1400 · Running the Application Component · 2026.1</a></span><br><a href="../../images/common/original_09.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1400 Running Application Component screen · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
-</figure>
+<p><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Running-the-Application-Component" target="_blank" rel="noopener">AMD UG1400 · Running the Application Component (2024.2) · 공식 화면 및 절차</a></p>
 <div class="flow">Application 선택 → Launch Configuration → Target Connection → Program / Download ELF → Run</div>
 <p>이번 프로그램은 UART 출력이 없으므로 Run 화면에 문자열이 출력되는 것을 성공 기준으로 삼지 않는다.</p>
 </section>
 
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Debugger로 Read / Write 확인</h2><p>줄 단위 관찰은 디버그 정보가 포함된 최적화 없음 빌드(<code>-g -O0</code>)로 진행한다. <code>while (1)</code>은 CPU가 반복 명령을 실행하는 대기 루프이며 디버거의 정지 상태가 아니다. 최종값은 <strong>Suspend / Halt</strong>로 CPU를 멈춘 뒤 Watch에서 확인한다. 각 <code>stage</code> 대입문까지 실행한 다음 아래 표와 비교한다. <a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Specifying-Debug-and-Optimization-Compiler-Flags" target="_blank" rel="noopener">UG1400 · Debug / Optimization 설정</a>.</p>
+<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Debugger로 Read / Write 확인</h2><p>줄 단위 관찰은 디버그 정보가 포함된 최적화 없음 빌드(<code>-g -O0</code>)로 진행한다. <code>while (1)</code>은 CPU가 반복 명령을 실행하는 대기 루프이며 디버거의 정지 상태가 아니다. 최종값은 <strong>Suspend / Halt</strong>로 CPU를 멈춘 뒤 Watch에서 확인한다. 각 <code>stage</code> 대입문까지 실행한 다음 아래 표와 비교한다. <a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Specifying-Debug-and-Optimization-Compiler-Flags" target="_blank" rel="noopener">UG1400 · Debug / Optimization 설정</a>.</p>
 <p>Vitis Debugger의 Watch 창에는 <code>memory_data</code>, <code>read_value_1</code>, <code>read_value_2</code>, <code>read_value_3</code>, <code>stage</code>를 등록한다. 각 대입문에 Breakpoint를 걸거나 Step Over로 한 줄씩 실행하면 값의 변화를 직접 확인할 수 있다.</p>
 
 <div class="table-wrap" tabindex="0" role="region" aria-label="Debugger로 Read / Write 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader"><code>stage</code></th><th scope="col" role="columnheader"><code>memory_data</code></th><th scope="col" role="columnheader"><code>read_value_1</code></th><th scope="col" role="columnheader"><code>read_value_2</code></th><th scope="col" role="columnheader"><code>read_value_3</code></th></tr></thead><tbody role="rowgroup">
@@ -616,14 +608,14 @@ read_value_3 ← 0x33333333</div>
 
 <section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Reset" rel="noopener" target="_blank">AMD UG1629 · MicroBlaze V Processor Reference Guide · Reset · 2026.1</a></td><td data-label="확인 항목" role="cell">Reset 시 Pipeline Flush, <code>C_BASE_VECTORS + 0x0</code>에서 Instruction Fetch 시작</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Local-Memory-Bus-Interfaces" rel="noopener" target="_blank">AMD UG1711 · Local Memory Bus Interfaces · 2026.1</a></td><td data-label="확인 항목" role="cell">ILMB Instruction Local Memory, DLMB Data/Vector Local Memory</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/Reset" rel="noopener" target="_blank">AMD UG1629 · MicroBlaze V Processor Reference Guide · Reset · 2024.2</a></td><td data-label="확인 항목" role="cell">Reset 시 Pipeline Flush, <code>C_BASE_VECTORS + 0x0</code>에서 Instruction Fetch 시작</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1711-microblaze-v-embedded-design/Local-Memory-Bus-Interfaces" rel="noopener" target="_blank">AMD UG1711 · Local Memory Bus Interfaces · 2024.2</a></td><td data-label="확인 항목" role="cell">ILMB Instruction Local Memory, DLMB Data/Vector Local Memory</td></tr>
 <tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg112-lmb-bram-if-cntlr/General-Design-Guidelines" rel="noopener" target="_blank">AMD PG112 · LMB Block RAM Interface Controller</a></td><td data-label="확인 항목" role="cell">ILMB/DLMB → LMB Controller → Dual-Port BRAM 구조</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Linker-Scripts" rel="noopener" target="_blank">AMD UG1400 · Linker Scripts · 2026.1</a></td><td data-label="확인 항목" role="cell">Vector, Text, Data, BSS, Heap, Stack Section</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/User-and-Program-Memory" rel="noopener" target="_blank">AMD UG1400 · User and Program Memory · 2026.1</a></td><td data-label="확인 항목" role="cell">Instruction, Read-only, Read-write, Stack, Heap의 Program Memory 구성</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Creating-a-Hardware-Design-XSA-File" rel="noopener" target="_blank">AMD UG1400 · Creating a Hardware Design (XSA File) · 2026.1</a></td><td data-label="확인 항목" role="cell">Vivado Hardware → Bitstream → XSA Export</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Program-Device" rel="noopener" target="_blank">AMD UG1400 · Program Device · 2026.1</a></td><td data-label="확인 항목" role="cell">Bitstream/PDI, BMM/MMI, ELF 결합과 Device Program</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1400-vitis-embedded/Running-the-Application-Component" rel="noopener" target="_blank">AMD UG1400 · Running the Application Component · 2026.1</a></td><td data-label="확인 항목" role="cell">Launch Configuration, Target Connection, Application Run</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Linker-Scripts" rel="noopener" target="_blank">AMD UG1400 · Linker Scripts · 2024.2</a></td><td data-label="확인 항목" role="cell">Vector, Text, Data, BSS, Heap, Stack Section</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/User-and-Program-Memory" rel="noopener" target="_blank">AMD UG1400 · User and Program Memory · 2024.2</a></td><td data-label="확인 항목" role="cell">Instruction, Read-only, Read-write, Stack, Heap의 Program Memory 구성</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Creating-a-Hardware-Design-XSA-File" rel="noopener" target="_blank">AMD UG1400 · Creating a Hardware Design (XSA File) · 2024.2</a></td><td data-label="확인 항목" role="cell">Vivado Hardware → Bitstream → XSA Export</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Program-Device" rel="noopener" target="_blank">AMD UG1400 · Program Device · 2024.2</a></td><td data-label="확인 항목" role="cell">Bitstream/PDI, BMM/MMI, ELF 결합과 Device Program</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Running-the-Application-Component" rel="noopener" target="_blank">AMD UG1400 · Running the Application Component · 2024.2</a></td><td data-label="확인 항목" role="cell">Launch Configuration, Target Connection, Application Run</td></tr>
 <tr role="row"><td role="cell" data-label="문서"><a href="https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/boot.S" target="_blank" rel="noopener">AMD Standalone RISC-V · boot.S</a></td><td role="cell" data-label="확인 항목">_boot와 .text.init의 실제 시작 코드</td></tr></tbody></table></div>
 </section>
 
