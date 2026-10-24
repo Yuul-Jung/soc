@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 814" role="img" aria-labelledby="title desc">
+<title id="title">Basys3 · Clock Reset XDC 일치 연결 기준도</title>
+<desc id="desc">Basys3 단일 100 MHz 클럭 clk, 리셋 btnC, Clocking Wizard와 Processor System Reset 연결 경로</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#4F61AA"/></marker></defs>
+<rect width="1150" height="814" fill="#FAFAFC"/>
+<text x="36" y="51" fill="#181C28" font-size="27" font-weight="700" font-family="Noto Sans KR,Malgun Gothic,sans-serif">Basys3 외부 포트 · Clock / Reset 연결</text>
+<text x="36" y="84" fill="#667085" font-size="16" font-family="Noto Sans KR,Malgun Gothic,sans-serif">Single-ended 100 MHz · XDC clk(W5), btnC(U18)</text>
+<text x="46" y="130" fill="#4635B1" font-size="17" font-weight="700" font-family="Noto Sans KR,Malgun Gothic,sans-serif">출발 포트 / 신호</text>
+<text x="613" y="130" fill="#4635B1" font-size="17" font-weight="700" font-family="Noto Sans KR,Malgun Gothic,sans-serif">도착 IP / 포트</text>
+<rect x="34" y="147" width="493" height="54" rx="8" fill="#EDF1FC" stroke="#9AABDB"/><rect x="602" y="147" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 174 L593 174" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="181" fill="#202A3B" font-size="16.5" font-weight="700" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk  [W5 · 100 MHz · LVCMOS33]</text>
+<text x="619" y="181" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk_wiz_1/clk_in1</text><rect x="34" y="214" width="493" height="54" rx="8" fill="#EDF1FC" stroke="#9AABDB"/><rect x="602" y="214" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 241 L593 241" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="248" fill="#202A3B" font-size="16.5" font-weight="700" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">btnC  [U18 · Active-High]</text>
+<text x="619" y="248" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk_wiz_1/reset</text><rect x="34" y="281" width="493" height="54" rx="8" fill="#EDF1FC" stroke="#9AABDB"/><rect x="602" y="281" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 308 L593 308" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="315" fill="#202A3B" font-size="16.5" font-weight="700" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">btnC  [U18 · Active-High]</text>
+<text x="619" y="315" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">rst_clk_wiz_1_100M/ext_reset_in</text><rect x="34" y="348" width="493" height="54" rx="8" fill="#EFF2F5" stroke="#CCD3DB"/><rect x="602" y="348" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 375 L593 375" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="382" fill="#202A3B" font-size="16.5" font-weight="500" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk_wiz_1/clk_out1</text>
+<text x="619" y="382" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">microblaze_riscv_0/Clk</text><rect x="34" y="415" width="493" height="54" rx="8" fill="#EFF2F5" stroke="#CCD3DB"/><rect x="602" y="415" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 442 L593 442" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="449" fill="#202A3B" font-size="16.5" font-weight="500" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk_wiz_1/clk_out1</text>
+<text x="619" y="449" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">microblaze_riscv_0_local_memory/LMB_Clk</text><rect x="34" y="482" width="493" height="54" rx="8" fill="#EFF2F5" stroke="#CCD3DB"/><rect x="602" y="482" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 509 L593 509" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="516" fill="#202A3B" font-size="16.5" font-weight="500" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk_wiz_1/clk_out1</text>
+<text x="619" y="516" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">rst_clk_wiz_1_100M/slowest_sync_clk</text><rect x="34" y="549" width="493" height="54" rx="8" fill="#EFF2F5" stroke="#CCD3DB"/><rect x="602" y="549" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 576 L593 576" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="583" fill="#202A3B" font-size="16.5" font-weight="500" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">clk_wiz_1/locked</text>
+<text x="619" y="583" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">rst_clk_wiz_1_100M/dcm_locked</text><rect x="34" y="616" width="493" height="54" rx="8" fill="#EFF2F5" stroke="#CCD3DB"/><rect x="602" y="616" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 643 L593 643" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="650" fill="#202A3B" font-size="16.5" font-weight="500" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">mdm_1/Debug_SYS_Rst</text>
+<text x="619" y="650" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">rst_clk_wiz_1_100M/mb_debug_sys_rst</text><rect x="34" y="683" width="493" height="54" rx="8" fill="#EFF2F5" stroke="#CCD3DB"/><rect x="602" y="683" width="516" height="54" rx="8" fill="#FFF" stroke="#CCD3DB"/>
+<path d="M535 710 L593 710" fill="none" stroke="#4F61AA" stroke-width="2.7" marker-end="url(#arrow)"/>
+<text x="49" y="717" fill="#202A3B" font-size="16.5" font-weight="500" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">rst_clk_wiz_1_100M/mb_reset</text>
+<text x="619" y="717" fill="#202A3B" font-size="16.5" font-weight="550" font-family="Noto Sans KR,Malgun Gothic,Consolas,sans-serif">microblaze_riscv_0/Reset</text><text x="36" y="791" fill="#667085" font-size="14" font-family="Noto Sans KR,Malgun Gothic,sans-serif">교육용 신호 연결 기준 · 실제 포트와 배선은 Vivado Block Design에서 검증</text></svg>
