@@ -204,7 +204,7 @@ main[tabindex="-1"]:focus{outline:none}
 <body>
 <a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
 <div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 03</strong></div>
-<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+<div class="brand">BASYS3 · SOC LAB</div>
 </div></div>
 
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
@@ -619,7 +619,7 @@ read_value_3 ← 0x33333333</div>
 <li>Basys3 Target과 <code>microblaze_riscv_0</code> Debug Target을 확인했다.</li>
 <li>Debugger에서 <code>main()</code>까지 실행되는지 확인했다.</li>
 <li>Debugger에서 Write → Read → Re-Write → Re-Read 순서를 확인했다.</li>
-<li>최종값 <code>stage = 6</code>, <code>memory_data = 0x33333333</code>, <code>read_value_3 = 0x33333333</code>을 확인했다.</li>
+<li>최종 예상값 <code>stage = 6</code>, <code>memory_data = 0x33333333</code>, <code>read_value_3 = 0x33333333</code>을 WATCH로 확인한다. 실제 최종 캡처로 검증해야 완료이다.</li>
 </ul>
 <div class="flow">SoC 03 완료 → SoC 04 Memory Map과 Memory-Mapped I/O</div>
 </section>
