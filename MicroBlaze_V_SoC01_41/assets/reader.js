@@ -1,6 +1,24 @@
 /* (추가) 오프라인 문서 탐색. 실습 소스와 독립적으로 동작한다. */
 (() => {
   'use strict';
+  // (추가) UTF-8 인코딩이 없는 raw 텍스트 응답으로 바로 이동하지 않고 전용 뷰어를 사용한다.
+  // 원본 다운로드·압축파일 링크는 변경하지 않는다.
+  const scriptSrc = document.currentScript && document.currentScript.src;
+  if (scriptSrc) {
+    const siteRoot = new URL('../', scriptSrc).href;
+    const viewerHref = new URL('../source_viewer.html', scriptSrc).href;
+    document.querySelectorAll('a[href]').forEach(anchor => {
+      if (anchor.hasAttribute('download')) return;
+      let url;
+      try { url = new URL(anchor.getAttribute('href'), document.baseURI); } catch (_) { return; }
+      if (!url.href.startsWith(siteRoot)) return;
+      const relative = decodeURIComponent(url.href.slice(siteRoot.length).split(/[?#]/)[0]);
+      if (!/^(code|docs|validation)\//.test(relative)) return;
+      if (!/\.(?:v|vh|sv|svh|c|h|py|tcl|xdc|sh|md|txt|json|xml|csv|log|S|hex|mem|coe|yml|yaml)$/i.test(relative)) return;
+      anchor.href = viewerHref + '?file=' + encodeURIComponent(relative);
+      anchor.title = 'UTF-8 소스 보기: ' + relative;
+    });
+  }
   const nav = document.querySelector('.flow-nav');
   const live = document.createElement('p');
   live.className = 'reader-sr'; live.setAttribute('role', 'status');
