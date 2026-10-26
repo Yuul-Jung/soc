@@ -70,15 +70,15 @@ main[tabindex="-1"]:focus{outline:none}
 
 <section class="group">
 <h2>전체 구조</h2>
-<div class="flow path">01~05 Minimum SoC → 06~10 AMD Peripheral IP → 11~16 Custom AXI → 17~23 RTL IP/Verification/QoR → 24~26 NPU Compute → 27~30 Memory/Dataflow/Quantization → 31~36 NPU SoC Integration → 37~41 Performance/Optimization/Sign-off</div>
+<div class="flow path">01~04 Minimum SoC → 05~10 AXI / AMD Peripheral IP → 11~16 Custom AXI → 17~23 RTL IP/Verification/QoR → 24~26 NPU Compute → 27~30 Memory/Dataflow/Quantization → 31~36 NPU SoC Integration → 37~41 Performance/Optimization/Sign-off</div>
 </section>
 
 
     <section class="group" id="group1">
       <div class="group-head">
         <span class="badge">GROUP 1</span>
-        <div><h2 style="margin:0">MicroBlaze V 기반 최소 SoC · SoC 01~05</h2>
-        <p class="small">MicroBlaze V, BRAM, Clock/Reset, Memory Map, AXI 구조를 이용해 최소 SoC의 뼈대를 만든다.</p>
+        <div><h2 style="margin:0">MicroBlaze V 기반 최소 SoC · SoC 01~04</h2>
+        <p class="small">MicroBlaze V와 Local BRAM으로 최소 SoC를 구성하고 프로그램 실행과 메모리 읽기·쓰기를 검증한다.</p>
         <a class="linkbtn" href="../groups/group01_microblaze_minimal_soc/index.html">그룹 전용 목차</a></div>
       </div>
       <div class="grid">
@@ -118,6 +118,16 @@ main[tabindex="-1"]:focus{outline:none}
             <a class="linkbtn" href="../validation/SOC04_VALIDATION.txt">검증</a>
           </div>
         </article>
+        </div>
+    </section>
+    <section class="group" id="group2">
+      <div class="group-head">
+        <span class="badge">GROUP 2</span>
+        <div><h2 style="margin:0">AXI 인터페이스 · AMD IP 기반 주변장치 SoC · SoC 05~10</h2>
+        <p class="small">AXI 전송 구조를 이해하고 GPIO, UART Lite, Timer, Interrupt Controller를 연결하여 주변장치 SoC를 통합한다.</p>
+        <a class="linkbtn" href="../groups/group02_amd_ip_peripheral_soc/index.html">그룹 전용 목차</a></div>
+      </div>
+      <div class="grid">
         <article class="card">
           <div class="num">SOC 05</div>
           <h3>AXI4 / AXI4-Lite / AXI4-Stream 구조</h3>
@@ -126,16 +136,8 @@ main[tabindex="-1"]:focus{outline:none}
             <a class="linkbtn" href="../manifests/soc05_manifest.html">Manifest</a>
             <a class="linkbtn" href="../validation/SOC05_VALIDATION.txt">검증</a>
           </div>
-        </article></div>
-    </section>
-    <section class="group" id="group2">
-      <div class="group-head">
-        <span class="badge">GROUP 2</span>
-        <div><h2 style="margin:0">AMD IP 기반 주변장치 SoC · SoC 06~10</h2>
-        <p class="small">AXI GPIO, UART Lite, Timer, Interrupt Controller를 연결하고 MicroBlaze V 주변장치 시스템으로 통합한다.</p>
-        <a class="linkbtn" href="../groups/group02_amd_ip_peripheral_soc/index.html">그룹 전용 목차</a></div>
-      </div>
-      <div class="grid">
+        </article>
+
         <article class="card">
           <div class="num">SOC 06</div>
           <h3>AXI GPIO - Switch 입력을 LED 출력으로</h3>
