@@ -1,35 +1,77 @@
-SoC 04 · MicroBlaze V
+SoC 04 — Local BRAM Memory Map과 주소 기반 읽기·쓰기
+검증 기준: 2026-10-26 제공된 실제 Vivado/Vitis 2024.2 실행 화면
+상태 판정: 실제 화면 검증 / 계산값 / 저장소 정적 검사 / 미검증
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+1. 실제 실습 확인 결과
+  1. Vivado BD / Address Editor
+     상태: 실제 화면 검증
+     근거: image(20261026-081925).png / image(20261026-081952).png
+     결과: ILMB, DLMB 각각 Base 0x0 / Range 16K / High 0x3FFF; Assigned 2, Unassigned 0, Incomplete Paths 1(M_AXI_DP 미연결)
+  2. Vitis Application 생성
+     상태: 실제 화면 검증
+     근거: image(20261026-082715).png 등 Application Wizard 화면
+     결과: soc04_memory_map / soc_01_platform / standalone_microblaze_riscv_0
+  3. Linker Script
+     상태: 실제 화면 검증
+     근거: image(20261026-083614).png
+     결과: lmb_bram_0 Base 0x0, Size 0x4000; Stack 0x400, Heap 0x800
+  4. Build
+     상태: 실제 화면 검증
+     근거: image(20261026-083850).png
+     결과: Build Finished successfully; GNU 13.3.0; text 4984, data 204, bss 3564 B; ELF 생성
+  5. Debug 설정
+     상태: 실제 화면 검증
+     근거: image(20261026-085104).png
+     결과: launch.json: Local/default, Baremetal Debug, Program Device/Reset 체크, Bitstream 및 ELF 경로 설정
+  6. WATCH 중간
+     상태: 실제 화면 검증
+     근거: image(20261026-085835).png
+     결과: stage 2; addr_0 0x00001460; bram_word[1] 및 read_1 0x22222222
+  7. WATCH 최종
+     상태: 실제 화면 검증
+     근거: image(20261026-085917).png
+     결과: stage 5; bram_word[1] 및 read_1 0xA5A5A5A5; while(1)에서 정지
+  8. 배열 후속 주소
+     상태: 계산값 — 개별 WATCH 실측 아님
+     근거: addr_0의 실측값과 uint32_t 배열 규칙
+     결과: bram_word[1] 0x1464, [2] 0x1468, [3] 0x146C
+  9. AXI MMIO / FPGA Timing
+     상태: 미검증
+     근거: 04장에서는 AXI Peripheral 미연결; Timing Report 미제공
+     결과: AXI 주변장치 검증이나 Timing Closure를 성공으로 표기하지 않음
+  10. launch.json 탭 클릭 우회
+     상태: 관찰된 성공 절차
+     근거: image(20261026-085104).png 및 Debug 성공 화면
+     결과: 중앙 탭 클릭 후 Debug 성공. 탭 미오픈 시 오류의 원인은 미확정
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+2. 증거 범위 및 계산 규칙
+- MicroBlaze V의 Instruction 경로와 Data 경로는 Local BRAM 16 KiB에 연결되어 있음.
+- addr_0 값 0x00001460은 실제 WATCH 표시로 확인됨.
+- uint32_t 배열의 요소당 크기는 4 byte. 나머지 배열 주소 0x1464/0x1468/0x146C는 계산값임.
+- 04장 본문에 있는 흰색 배경 SVG는 실제 값에 근거해 재구성한 도식이며 원본 GUI 화면이 아님.
+- 위 증빙 이미지들은 사용자가 대화에 업로드한 PNG이며 04장 GitHub Pages에는 아직 원본 PNG가 게시되지 않음.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
+3. 저장소 정합성 확인 및 게시 변경
+- 교재 HTML: pages/soc/04_memory_map_memory_mapped_io.html
+- Markdown: docs/soc04.md
+- 실습 코드: code/soc04/main.c (원본을 수정하지 않음)
+- 04장 제목은 Local BRAM Memory Map과 주소 기반 읽기·쓰기로 통일.
+- HTML 및 Markdown 코드 블록을 위 실습 코드 원본과 대조해 일치시킴.
+- AXI 주변장치 주소 구조, 별도 MMIO 실습, 중복된 Address Editor 절차 등은 제거함.
+- 완료 체크박스 기호는 제거하고 검증 결과 표로 정리함.
+- 좌측 섹션 목차/본문 앵커 연결 및 HTML 태그 균형을 정적 검사함.
 
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Previous run status applied only to the 2026-10-19 documentation review.
+4. 과거 기록과의 구분
+- 2026-10-19 문서 정적 검증 당시 'Target Build / Board Run = NOT RUN'이었다.
+- 2026-10-26에는 사용자 제공 성공 화면으로 Build와 FPGA Debug가 확인되었다.
+- 2026-10-19에 통과한 브라우저 폭 1440/1024/390/320 및 200% 확대 검사는 그때의 문서 버전에 대한 기록이다.
+- 수정된 2026-10-26 HTML에 대해 동일한 다중 브라우저 실측 PASS를 새로 주장하지 않는다.
 
-2026-10-26 user-provided Vivado/Vitis 2024.2 screenshots (separate from automated tests):
-- Vivado Address Editor: ILMB and DLMB Base 0x00000000 / Range 16 KiB / High 0x00003FFF; Assigned 2, Unassigned 0, Incomplete Paths 1 (unused M_AXI_DP).
-- Vitis Application soc04_memory_map: GNU 13.3.0 target build successful; ELF built.
-- FPGA programming and MicroBlaze V bare-metal debugging: Vitis Hart #0 paused on breakpoint in main.c.
-- WATCH intermediate state: stage 2; addr_0 0x00001460; bram_word[1] and read_1 0x22222222.
-- WATCH final state: stage 5; bram_word[1] and read_1 0xA5A5A5A5.
-- Observed launch.json tab-click workflow for successful debugging; failure mechanism not determined.
+5. 추가 검증이 필요한 항목
+- 수정된 HTML의 실제 GitHub Pages 로딩과 다중 해상도 브라우저 렌더링: 이번 환경에서 미확인.
+- 실제 GUI PNG 원본을 GitHub 저장소에 등록하고 본문 위치에 삽입하는 작업: 미완료.
+- Vivado 새 합성·구현·Timing·Resource 보고서: 이번 장에서 미실행.
+- 로컬 Vitis 프로젝트의 별도 재실행: 도구상 수행하지 않았으며 제공된 실제 GUI 화면을 검증 근거로 삼음.
 
-Verification scope: user-provided hardware debugger screenshots only; no independent local reproduction or timing report asserted.
-MMIO peripheral IP not present; AXI GPIO not yet verified.
-2026-10-26 publication edit: removed redundant AXI peripheral sections, eliminated checkbox-style checklist bullets, aligned HTML/Markdown/index/manifest.
-HTML includes diagrams reconstructed from the verified measurements; these diagrams are not original GUI screenshots.
+최종 판정: SoC 04 BRAM Write → Read → Re-Write → Re-Read 성공(사용자 제공 실기 화면).
+AXI MMIO는 04장 범위 밖. HTML/Markdown/검증 파일은 증거 기준으로 정리함.
