@@ -31,5 +31,5 @@ Previous run status applied only to the 2026-10-19 documentation review.
 
 Verification scope: user-provided hardware debugger screenshots only; no independent local reproduction or timing report asserted.
 MMIO peripheral IP not present; AXI GPIO not yet verified.
-2026-10-26 publication edit: removed redundant AXI peripheral sections, eliminated [ ] checkboxes, aligned HTML/Markdown/index/manifest.
+2026-10-26 publication edit: removed redundant AXI peripheral sections, eliminated checkbox-style checklist bullets, aligned HTML/Markdown/index/manifest.
 HTML includes diagrams reconstructed from the verified measurements; these diagrams are not original GUI screenshots.
