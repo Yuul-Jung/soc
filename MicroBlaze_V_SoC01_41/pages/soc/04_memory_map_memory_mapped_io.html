@@ -276,9 +276,14 @@ High   : Base + Range - 1 → 0x00003FFF</div>
 </section>
 
 <section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>main.c 원본 코드 입력</h2>
-<p>실제 실습에 사용한 변수명과 실행 순서를 유지한 <code>main.c</code> 전체 코드다. 절대 메모리 주소를 하드코딩하지 않고, 배열 주소를 Linker가 배치하도록 한다.</p>
+<p>저장소의 <code>code/soc04/main.c</code>와 <strong>내용이 동일한 원본 코드</strong>다. 검증된 변수명과 실행 순서를 변경하지 않는다. 절대 메모리 주소를 하드코딩하지 않고 Linker가 배열 주소를 배치하도록 한다.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="04장 main.c 전체 소스 코드"><code>#include &lt;stdint.h&gt;
 #include &lt;stddef.h&gt;
+
+/*
+ * SoC 04 교육용 Memory Map / BRAM 주소 확인 코드
+ * 특정 BRAM 절대주소를 임의로 고정하지 않는다.
+ */
 
 volatile uint32_t bram_word[4] = {0, 0, 0, 0};
 
@@ -320,10 +325,12 @@ int main(void)
     read_1 = bram_word[1];
     stage = 5;
 
-    while (1) {}
+    while (1) {
+    }
 
     return 0;
-}</code></pre>
+}
+</code></pre>
 <div class="note"><code>volatile</code>(볼러타일, 최적화 시에도 관찰 가능한 메모리 접근 지정)은 배열과 검증 변수의 실제 접근을 유지하도록 돕는다. <code>uintptr_t</code>는 포인터 주소를 보관할 수 있는 정수형이다. 각 <code>uint32_t</code> 요소는 4바이트를 차지한다.</div>
 </section>
 
@@ -367,6 +374,7 @@ int main(void)
 
 <section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>WATCH 최종 검증 — stage 5</h2>
 <p><code>bram_word[1]</code>에 <code>0xA5A5A5A5</code>를 다시 기록한 뒤 같은 위치에서 재읽기하여 값이 바뀌었는지 확인한다. 실행을 <code>while (1) {}</code> 위치까지 진행하면 <code>stage</code>가 5가 된다.</p>
+<div class="note"><strong>증빙 화면:</strong> 2026-10-26에 제출된 Vitis 원본 <code>image(20261026-085917).png</code>에서 <code>stage=5</code>, <code>read_1=0xA5A5A5A5</code>, <code>bram_word[1]=0xA5A5A5A5</code>가 동시에 확인되었다. 원본 PNG는 별도 검증 자료이며 아래 SVG는 실측값에 근거한 구조도다.</div>
 <div class="table-wrap" tabindex="0" role="region" aria-label="WATCH 변수 / 최종 검증값 / 판정 확인 표"><table><thead><tr><th scope="col">WATCH 변수</th><th scope="col">최종 검증값</th><th scope="col">판정</th></tr></thead><tbody><tr><td data-label="WATCH 변수"><code>stage</code></td><td data-label="최종 검증값"><code>0x00000005</code></td><td data-label="판정">정상</td></tr>
 <tr><td data-label="WATCH 변수"><code>addr_0</code></td><td data-label="최종 검증값"><code>0x00001460</code></td><td data-label="판정">BRAM 내부 주소</td></tr>
 <tr><td data-label="WATCH 변수"><code>bram_word[0]</code></td><td data-label="최종 검증값"><code>0x11111111</code></td><td data-label="판정">유지</td></tr>
@@ -374,7 +382,7 @@ int main(void)
 <tr><td data-label="WATCH 변수"><code>bram_word[2]</code></td><td data-label="최종 검증값"><code>0x33333333</code></td><td data-label="판정">유지</td></tr>
 <tr><td data-label="WATCH 변수"><code>bram_word[3]</code></td><td data-label="최종 검증값"><code>0x44444444</code></td><td data-label="판정">유지</td></tr>
 <tr><td data-label="WATCH 변수"><code>read_1</code></td><td data-label="최종 검증값"><code>0xA5A5A5A5</code></td><td data-label="판정">재읽기 성공</td></tr></tbody></table></div>
-<div class="flow"><strong>실제 보드 Debug 검증 완료</strong> — 동일 BRAM 주소에 새 데이터를 Write하고, 같은 주소에서 다시 Read한 결과가 일치함을 확인했다.</div>
+<div class="flow"><strong>사용자 제공 Vitis 2024.2 디버깅 화면으로 검증</strong> — 동일 BRAM 주소에 새 데이터를 Write하고, 같은 주소에서 다시 Read한 결과가 일치함을 확인했다.</div>
 <div class="note">실제 성공 화면에서 <code>main.c</code> 44행의 무한 루프 위치와 <code>stage = 5</code>가 확인되었다. 이는 실제 FPGA 다운로드 및 실행 결과이며, AXI 주변장치 검증 결과는 아니다.</div>
 </section>
 
@@ -413,6 +421,7 @@ int main(void)
 <tr><td data-label="검증 항목">실제 배열 주소</td><td data-label="실제 확인"><code>addr_0 = 0x00001460</code></td></tr>
 <tr><td data-label="검증 항목">데이터 재기록 및 재읽기</td><td data-label="실제 확인"><code>bram_word[1] = read_1 = 0xA5A5A5A5</code></td></tr>
 <tr><td data-label="검증 항목">최종 실행 단계</td><td data-label="실제 확인"><code>stage = 5</code></td></tr></tbody></table></div>
+<p>검증의 기준은 <a href="../../validation/SOC04_VALIDATION.txt">SoC 04 검증 기록</a>과 저장소의 <a href="../../code/soc04/main.c">실습 소스 원본</a>이다. 검증되지 않은 합성 자원량·Timing 결과·AXI Peripheral 구동 결과는 이 장의 성과로 기록하지 않는다.</p>
 <div class="flow">SoC 04 완료 → SoC 05 AXI4 / AXI4-Lite / AXI4-Stream 구조</div></section>
 
 <section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 자료</h2>
