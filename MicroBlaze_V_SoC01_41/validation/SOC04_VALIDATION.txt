@@ -19,4 +19,17 @@ Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
 Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
 
 2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+Previous run status applied only to the 2026-10-19 documentation review.
+
+2026-10-26 user-provided Vivado/Vitis 2024.2 screenshots (separate from automated tests):
+- Vivado Address Editor: ILMB and DLMB Base 0x00000000 / Range 16 KiB / High 0x00003FFF; Assigned 2, Unassigned 0, Incomplete Paths 1 (unused M_AXI_DP).
+- Vitis Application soc04_memory_map: GNU 13.3.0 target build successful; ELF built.
+- FPGA programming and MicroBlaze V bare-metal debugging: Vitis Hart #0 paused on breakpoint in main.c.
+- WATCH intermediate state: stage 2; addr_0 0x00001460; bram_word[1] and read_1 0x22222222.
+- WATCH final state: stage 5; bram_word[1] and read_1 0xA5A5A5A5.
+- Observed launch.json tab-click workflow for successful debugging; failure mechanism not determined.
+
+Verification scope: user-provided hardware debugger screenshots only; no independent local reproduction or timing report asserted.
+MMIO peripheral IP not present; AXI GPIO not yet verified.
+2026-10-26 publication edit: removed redundant AXI peripheral sections, eliminated [ ] checkboxes, aligned HTML/Markdown/index/manifest.
+HTML includes diagrams reconstructed from the verified measurements; these diagrams are not original GUI screenshots.
