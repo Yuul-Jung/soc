@@ -50,11 +50,16 @@ Block Design에서 Address Editor를 열어 다음 실제 주소를 확인한다
 5. Empty Application → Finish
 6. `/home/jung/soc/sw/soc04_memory_map/src/main.c` 생성
 
-## 5. main.c — 실제 실습 코드
+## 5. main.c — 저장소 원본 코드
 
 ```c
 #include <stdint.h>
 #include <stddef.h>
+
+/*
+ * SoC 04 교육용 Memory Map / BRAM 주소 확인 코드
+ * 특정 BRAM 절대주소를 임의로 고정하지 않는다.
+ */
 
 volatile uint32_t bram_word[4] = {0, 0, 0, 0};
 
@@ -96,11 +101,14 @@ int main(void)
     read_1 = bram_word[1];
     stage = 5;
 
-    while (1) {}
+    while (1) {
+    }
 
     return 0;
 }
 ```
+
+위 코드는 저장소의 `code/soc04/main.c` 원문을 보존한 것이며, Vivado/Vitis 실습 스크린샷에는 일부 설명용 주석이 덧붙어 있다. 동작 순서와 검증 변수명은 같다.
 
 `volatile`은 해당 변수를 통한 메모리 접근이 최적화로 임의 제거되지 않도록 하는 데 중요하다. `uintptr_t`는 포인터 주소를 정수값으로 보관한다. 배열의 실제 시작 주소는 Linker가 결정하므로 고정하지 않는다.
 
@@ -137,7 +145,7 @@ Build에서 **Build Finished successfully** 확인.
 
 실습 환경에서는 `launch.json` 탭을 연 뒤 Debug 실행이 성공했다. 탭을 열지 않은 경우의 오류 원인은 확인되지 않았으므로 임의로 특정하지 않는다.
 
-## 8. WATCH 검증
+## 8. WATCH 검증 — 실제 GUI 증빙
 
 WATCH에 `stage`, `addr_0`, `bram_word`, `read_1`을 추가하고 `bram_word`를 펼친다. 과거 03장 변수의 N/A 표시는 해당 변수가 04장에 없기 때문이다.
 
@@ -152,6 +160,8 @@ WATCH에 `stage`, `addr_0`, `bram_word`, `read_1`을 추가하고 `bram_word`를
 | `read_1` | `0x22222222` | **`0xA5A5A5A5`** |
 
 최종 WATCH에서 `stage = 5`와 C 소스의 `while(1)` 구간을 확인했다.
+
+증빙 PNG 파일: `image(20261026-085835).png`(중간 단계), `image(20261026-085917).png`(최종 단계). 이 화면들은 사용자가 실제 실행하며 제공한 원본이며 GitHub 웹 교재의 SVG 재구성 그림과 구별한다.
 
 `uint32_t` 배열의 주소 간격은 4바이트이다. `addr_0` 실측 `0x00001460`을 기준으로 `bram_word[1]`의 주소는 **`0x00001464`로 계산**되며, 이는 WATCH에서 직접 측정한 개별 주소가 아닌 산출값이다.
 
@@ -169,6 +179,8 @@ WATCH에 `stage`, `addr_0`, `bram_word`, `read_1`을 추가하고 `bram_word`를
 ## 10. 최종 결과와 다음 장
 
 **04장 완료: Vivado 16 KiB BRAM 주소 확인 → Vitis Build 성공 → FPGA Debug → 실제 주소 관찰 → BRAM 재기록·재읽기 성공.**
+
+검증 범위와 한계는 [`validation/SOC04_VALIDATION.txt`](../validation/SOC04_VALIDATION.txt)를 기준으로 판단한다. 이 기록은 제공된 실제 GUI 성공 화면과 교재 정적 검사 결과를 구별하며, Timing/자원량/05~06장 AXI 기능의 성공을 뜻하지 않는다.
 
 다음 장인 **05장 AXI4 / AXI4-Lite / AXI4-Stream 구조**에서는 AXI 전송 구조를 다룬다. AXI GPIO의 실제 주변장치 제어는 **06장**에서 다룬다.
 
