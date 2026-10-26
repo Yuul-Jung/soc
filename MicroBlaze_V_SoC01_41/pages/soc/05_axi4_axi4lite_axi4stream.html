@@ -197,186 +197,142 @@ main[tabindex="-1"]:focus{outline:none}
 <a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 05</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 05</p><h1>AXI4 / AXI4-Lite / AXI4-Stream 구조</h1>
-<p class="hero-desc">SoC 04에서 배운 Address 기반 접근이 AXI4-Lite 채널을 통해 실제 Peripheral Register로 전달되는 과정을 이해하고, 고성능 Memory 전송용 AXI4와 연속 데이터 처리용 AXI4-Stream을 분리해서 정리한다.</p>
+<p class="hero-desc">AXI4·AXI4-Lite·AXI4-Stream의 차이와 5개 채널, VALID/READY 핸드셰이크 및 공식 전송 파형을 이해한다. Local BRAM 접근과 AXI 전송을 구별하고 06장의 실제 AXI GPIO 연결을 준비한다.</p>
 <div class="hero-meta"><span class="chip">AXI4</span><span class="chip">AXI4-Lite</span><span class="chip">AXI4-Stream</span><span class="chip">VALID / READY</span><span class="chip">AW · W · B · AR · R</span><span class="chip">SmartConnect</span></div>
 <div class="hero-brief"><article><h2>AXI4</h2><p>주소 기반 고성능 Memory-Mapped Burst 전송.</p></article><article><h2>AXI4-Lite</h2><p>Peripheral Register 제어에 적합한 경량 Memory-Mapped 전송.</p></article><article><h2>AXI4-Stream</h2><p>주소 없이 연속 데이터를 전달하는 Streaming 전송.</p></article></div>
 </div></header>
-<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html" selected>SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc05_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc05">이 장 검증</a></div></div><p class="nav-title">SOC 05 · LEARNING FLOW</p><p class="nav-help">Address → Channel → Handshake → Transaction → Stream</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>AXI가 필요한 이유</span></a></li>
-<li><a href="#s02"><span class="n">02</span><span>AXI4 계열 3가지</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>Memory-Mapped와 Stream</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>Master · Slave</span></a></li>
-<li><a href="#s05"><span class="n">05</span><span>Clock · Reset</span></a></li>
-<li><a href="#s06"><span class="n">06</span><span>VALID / READY Handshake</span></a></li>
-<li><a href="#s07"><span class="n">07</span><span>AXI4-Lite 5개 채널</span></a></li>
-<li><a href="#s08"><span class="n">08</span><span>Write Transaction</span></a></li>
-<li><a href="#s09"><span class="n">09</span><span>AXI4-Lite Write 파형</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>Read Transaction</span></a></li>
-<li><a href="#s11"><span class="n">11</span><span>AXI4-Lite Read 파형</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>BRESP · RRESP</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>WSTRB</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>AXI4와 Burst</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>AXI4-Lite가 Peripheral에 적합한 이유</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>AXI4-Stream 구조</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>AXI4-Stream Handshake 파형</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>MicroBlaze V와 SmartConnect</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>SoC 04와 연결</span></a></li>
-<li><a href="#s20"><span class="n">20</span><span>신호명 읽는 법</span></a></li>
-<li><a href="#s21"><span class="n">21</span><span>전체 Transaction 추적</span></a></li>
-<li><a href="#s22"><span class="n">22</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">23</span><span>완료 체크리스트</span></a></li>
-<li><a href="#sources"><span class="n">24</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside><main id="main-content" tabindex="-1">
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html" selected>SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc05_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc05">이 장 검증</a></div></div><p class="nav-title">SOC 05 · LEARNING FLOW</p><p class="nav-help">AXI 종류 → 채널 → Handshake → 파형 → MicroBlaze V</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>AXI의 역할과 Memory Map의 차이</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>AXI4 / AXI4-Lite / AXI4-Stream 비교</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Master / Slave와 SmartConnect</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Clock과 Reset</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>VALID / READY Handshake</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>AXI4-Lite의 독립된 5개 채널</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Write Transaction과 공식 파형</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Read Transaction과 공식 파형</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>WSTRB와 응답 코드(BRESP / RRESP)</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>AXI4 Burst와 AXI4-Lite의 경계</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>AXI4-Stream 구조와 공식 파형</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>MicroBlaze V의 AXI 포트와 장별 연결</span></a></li><li><a href="#summary"><span class="n">13</span><span>핵심 정리</span></a></li><li><a href="#sources"><span class="n">14</span><span>공식 기술 문서</span></a></li></ol></aside><main id="main-content" tabindex="-1">
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 04 Memory Map</span><span class="arrow">→</span><span class="stage"><strong>SoC 05 AXI 구조</strong></span><span class="arrow">→</span><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage">SoC 07 AXI UART Lite</span></div></div>
 
-<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>AXI가 필요한 이유</h2><p>MicroBlaze V가 GPIO, UART, Timer, Custom IP 같은 여러 Hardware Block에 접근하려면 CPU와 각 IP 사이에 공통 통신 규칙이 필요하다. AXI(Advanced eXtensible Interface, 고급 확장 인터페이스)는 주소·데이터·응답·Handshake 방식을 표준화한다.</p><div class="signal-map" tabindex="0" role="region" aria-label="01절 신호 및 실행 흐름">MicroBlaze V
-    │
-    │ AXI Master
-    ▼
-SmartConnect
-    │
-    ├─ AXI GPIO
-    ├─ AXI UART Lite
-    ├─ AXI Timer
-    └─ Custom AXI IP</div><p>SoC 04의 Memory Map이 <strong>어느 주소가 어느 Hardware인가</strong>를 정했다면, AXI는 <strong>그 주소와 데이터를 어떤 신호 절차로 전달할 것인가</strong>를 정한다.</p></section>
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>AXI의 역할과 Memory Map의 차이</h2>
+<p><strong>AXI(Advanced eXtensible Interface, 액시·고급 확장 인터페이스)</strong>는 CPU와 메모리·주변장치 IP가 주소, 데이터, 응답을 주고받을 때 사용하는 AMBA 계열 통신 규격이다. AXI4 계열에서는 전송 요청과 응답을 서로 구분된 채널로 전달한다.</p>
+<div class="lesson-goal"><article><strong>Memory Map(메모리 맵)</strong><p>CPU 주소 공간에서 어느 주소가 메모리 또는 주변장치를 가리키는지 정의한다.</p></article><article><strong>AXI Protocol(프로토콜)</strong><p>정해진 주소와 데이터를 하드웨어 신호로 어떻게 전달하고 응답할지 정의한다.</p></article></div>
+<div class="flow">주소의 의미: Memory Map　→　전송 절차: AXI Handshake</div>
+<p><strong>04장에서 확인한 사실:</strong> MicroBlaze V는 <code>ILMB</code>(명령어용 로컬 메모리 버스)와 <code>DLMB</code>(데이터용 로컬 메모리 버스)를 통해 Local BRAM(로컬 블록 RAM)에 접근했다. 이 결과는 실제 BRAM 접근의 검증이며, AXI 전송을 확인한 결과는 아니다.</p>
+<p>AXI가 연결된 주변장치에서는 CPU의 주소 접근이 AXI 전송으로 이어질 수 있지만, <strong>모든 메모리 접근이 AXI를 거치는 것은 아니다.</strong></p></section>
 
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>AXI4 계열 3가지</h2><div class="table-wrap" tabindex="0" role="region" aria-label="AXI4 계열 3가지 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">인터페이스</th><th scope="col" role="columnheader">주소</th><th scope="col" role="columnheader">Burst</th><th scope="col" role="columnheader">주요 용도</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="인터페이스" role="cell"><strong>AXI4</strong></td><td data-label="주소" role="cell">있음</td><td data-label="Burst" role="cell">지원</td><td data-label="주요 용도" role="cell">DDR, 대용량 Memory, 고대역폭 Data Transfer</td></tr>
-<tr role="row"><td data-label="인터페이스" role="cell"><strong>AXI4-Lite</strong></td><td data-label="주소" role="cell">있음</td><td data-label="Burst" role="cell">지원하지 않음</td><td data-label="주요 용도" role="cell">Control/Status Register, GPIO, UART, Timer</td></tr>
-<tr role="row"><td data-label="인터페이스" role="cell"><strong>AXI4-Stream</strong></td><td data-label="주소" role="cell">없음</td><td data-label="Burst" role="cell">Memory Burst 개념 없음</td><td data-label="주요 용도" role="cell">Video, DSP, FFT, NPU Data Stream</td></tr>
-</tbody></table></div><div class="flow">AXI4 = Memory 대량 전송　|　AXI4-Lite = Register 제어　|　AXI4-Stream = 연속 Data</div></section>
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>AXI4 / AXI4-Lite / AXI4-Stream 비교</h2>
+<p>세 인터페이스는 목적에 따라 선택한다. AXI4와 AXI4-Lite는 Memory-Mapped(메모리 맵드, 주소 기반) 방식이고, AXI4-Stream(액시 스트림)은 주소 채널이 없는 데이터 흐름 방식이다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="AXI 인터페이스 비교"><table><thead><tr><th>항목</th><th>AXI4</th><th>AXI4-Lite</th><th>AXI4-Stream</th></tr></thead><tbody>
+<tr><td>주소 채널</td><td>있음</td><td>있음</td><td>없음</td></tr>
+<tr><td>데이터 전송</td><td>단일 또는 Burst(버스트, 연속 묶음) 전송</td><td>단일 전송(Single Beat)</td><td>연속 데이터 비트·바이트 전달</td></tr>
+<tr><td>대표 특징</td><td>고대역폭 메모리 접근</td><td>단순 제어 레지스터 접근</td><td>주소를 지정하지 않는 연속 처리</td></tr>
+<tr><td>대표 적용</td><td>DDR 및 메모리 컨트롤러</td><td>GPIO, UART, Timer의 제어·상태 레지스터</td><td>영상, DSP, 데이터 처리 파이프라인</td></tr>
+</tbody></table></div>
+<div class="flow">AXI4 → 메모리 데이터 전송　|　AXI4-Lite → 주변장치 레지스터 제어　|　AXI4-Stream → 연속 데이터 흐름</div>
+<p>06장에서 연결할 AXI GPIO의 제어 레지스터 접근은 AXI4-Lite의 대표적인 사용 사례다. AXI4-Stream은 AXI4의 Burst 기능을 다른 이름으로 부르는 것이 아니라 별도의 주소 없는 전송 방식이다.</p></section>
 
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Memory-Mapped와 Stream</h2><div class="lesson-goal"><article><strong>Memory-Mapped</strong><p>Address가 존재한다. 특정 주소를 지정하여 Read/Write한다.</p></article><article><strong>Stream</strong><p>Address가 없다. Source에서 Destination으로 순차 Data를 전달한다.</p></article></div><div class="signal-map" tabindex="0" role="region" aria-label="03절 신호 및 실행 흐름">AXI4 / AXI4-Lite
-Address + Data
-      ↓
-특정 Memory / Register 선택
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Master / Slave와 SmartConnect</h2>
+<p><strong>Master(마스터, 요청 주체)</strong>는 주소·쓰기 데이터를 내보내거나 읽기를 요청한다. <strong>Slave(슬레이브, 응답 장치)</strong>는 해당 요청을 받아 처리하고 데이터 또는 응답을 반환한다. AMD Vivado에서는 하위 IP의 연결 포트 이름에 <code>M_AXI</code> 및 <code>S_AXI</code>를 흔히 사용한다.</p>
+<div class="signal-map signal-table" role="region" aria-label="AXI 연결 개념도"><table><thead><tr><th>요청 쪽</th><th>연결 및 경로 선택</th><th>응답 쪽</th></tr></thead><tbody>
+<tr><td>MicroBlaze V<br><strong>M_AXI_DP</strong><br>AXI Master</td><td>→ SmartConnect →<br>주소에 맞는 Slave로 전달<br>← 읽기 데이터·응답 ←</td><td>AXI GPIO<br><strong>S_AXI</strong><br>AXI Slave</td></tr>
+</tbody></table></div>
+<p><strong>SmartConnect(스마트커넥트, AXI 연결·경로 선택 IP)</strong>는 하나 이상의 Master와 Slave를 연결하는 데 사용할 수 있으며, 설정과 접속 대상에 따라 주소 디코딩, 경로 선택, 프로토콜 변환을 담당한다. 단순한 AXI 연결의 모든 경우에 반드시 필요한 고정 구성요소는 아니다.</p>
+<p>위 그림은 <strong>06장에서 만들 연결의 개념도</strong>이며, 05장에서 해당 회로를 이미 구현했다는 뜻이 아니다.</p></section>
 
-AXI4-Stream
-TDATA + TVALID / TREADY
-      ↓
-다음 처리 Block으로 Data 전달</div></section>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Clock과 Reset</h2>
+<p>AXI의 전송 성립 여부는 <strong>ACLK(에이클록, AXI 클록)의 상승 에지(Rising Edge, 라이징 에지)</strong>에서 판정한다. READY 또는 VALID가 클록 사이에 바뀌었다고 그 순간에 데이터가 전송되는 것은 아니다.</p>
+<div class="table-wrap" role="region" aria-label="AXI 클록과 리셋"><table><thead><tr><th>신호</th><th>의미</th><th>이해할 점</th></tr></thead><tbody>
+<tr><td><code>ACLK</code></td><td>AXI 인터페이스 클록</td><td>상승 에지에서 핸드셰이크 판정</td></tr>
+<tr><td><code>ARESETn</code></td><td>Active-Low Reset(액티브 로 리셋, 낮은 값에서 활성화)</td><td>Low 상태가 리셋을 뜻하며, IP별 실제 포트 명칭을 확인해야 한다.</td></tr>
+<tr><td><code>s_axi_aclk</code></td><td>AXI Slave IP의 클록 입력 예</td><td>실제 IP 포트 이름은 제품별로 다를 수 있다.</td></tr>
+<tr><td><code>s_axi_aresetn</code></td><td>AXI Slave IP의 Active-Low 리셋 입력 예</td><td>기존 <code>peripheral_aresetn</code>과 연결할 때 극성을 확인한다.</td></tr>
+</tbody></table></div>
+<p>클록·리셋 IP의 구체적인 추가·배선 절차는 06장에서 실제 Vivado 화면으로 확인한다.</p></section>
 
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Master · Slave</h2><p>Memory-Mapped AXI에서는 Transaction을 시작하는 쪽이 Master이고 주소를 받아 응답하는 쪽이 Slave이다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Master · Slave · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구분</th><th scope="col" role="columnheader">SoC 예</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="구분" role="cell">AXI Master</td><td data-label="SoC 예" role="cell">MicroBlaze V</td><td data-label="역할" role="cell">주소와 Read/Write 요청 생성</td></tr><tr role="row"><td data-label="구분" role="cell">AXI Slave</td><td data-label="SoC 예" role="cell">AXI GPIO</td><td data-label="역할" role="cell">Register Address를 Decode하고 Data 응답</td></tr><tr role="row"><td data-label="구분" role="cell">AXI Interconnect</td><td data-label="SoC 예" role="cell">SmartConnect</td><td data-label="역할" role="cell">Master 요청을 대상 Slave로 전달</td></tr></tbody></table></div><div class="flow">MicroBlaze V Master → SmartConnect → AXI GPIO Slave</div></section>
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>VALID / READY Handshake</h2>
+<p><strong>Handshake(핸드셰이크, 전송 승인)</strong>는 데이터를 제공하는 쪽의 <code>VALID</code>(유효함)와 이를 받는 쪽의 <code>READY</code>(수신 가능)가 <strong>같은 상승 에지에서 모두 1</strong>일 때 성립한다. 주소·데이터·응답 채널마다 각자의 VALID/READY 쌍이 있다.</p>
+<div class="table-wrap" role="region" aria-label="VALID READY 조건"><table><thead><tr><th>VALID</th><th>READY</th><th>상승 에지에서의 결과</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>전송 없음</td></tr><tr><td>0</td><td>1</td><td>전송 없음 — 수신 준비만 완료</td></tr><tr><td>1</td><td>0</td><td>대기 — 유효한 정보 유지</td></tr><tr><td><strong>1</strong></td><td><strong>1</strong></td><td><strong>한 번의 전송 성립</strong></td></tr>
+</tbody></table></div>
+<div class="flow"><code>VALID &amp;&amp; READY</code> → ACLK 상승 에지에서 전송 성립</div>
+<p><strong>대기 규칙:</strong> 제공하는 쪽은 VALID를 올린 뒤 상대 READY가 0이면 VALID와 해당 주소·데이터 등 Payload(페이로드, 전달 정보)를 유지해야 한다. VALID 발생을 READY에 종속시켜 기다려서는 안 된다. READY는 먼저 1이 되어 있어도 된다.</p>
+<p><strong>연속 전송:</strong> VALID와 READY가 연속된 상승 에지마다 모두 1이면 각 상승 에지에서 새로운 전송이 성립할 수 있다. 따라서 두 신호가 1인 기간 전체를 한 건의 전송으로 해석하면 안 된다.</p></section>
 
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Clock · Reset</h2><p>AXI Interface는 Clock Edge를 기준으로 Handshake를 판단한다. AXI4-Lite IP에서 흔히 사용하는 이름은 <code>s_axi_aclk</code>와 <code>s_axi_aresetn</code>이다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Clock · Reset · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">신호</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="신호" role="cell"><code>ACLK</code></td><td data-label="의미" role="cell">AXI Interface Clock</td></tr><tr role="row"><td data-label="신호" role="cell"><code>ARESETN</code></td><td data-label="의미" role="cell">Active-Low AXI Reset</td></tr></tbody></table></div><div class="note">SoC 02의 <code>peripheral_aresetn</code>이 이후 AXI Peripheral의 Active-Low Reset과 연결되는 이유가 여기서 이어진다.</div></section>
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>AXI4-Lite의 독립된 5개 채널</h2>
+<p>AXI4-Lite(액시 포 라이트, 단순 주소 기반 전송 규격)는 쓰기 주소·쓰기 데이터·쓰기 응답·읽기 주소·읽기 데이터를 <strong>5개의 독립 채널</strong>로 나눈다. 각 채널은 자체 VALID/READY로 전달된다.</p>
+<div class="table-wrap" role="region" aria-label="AXI4-Lite 다섯 채널"><table><thead><tr><th>채널</th><th>주요 신호</th><th>정보의 방향</th><th>기능</th></tr></thead><tbody>
+<tr><td><strong>AW</strong> (Write Address, 쓰기 주소)</td><td><code>AWADDR</code>, <code>AWVALID</code>, <code>AWREADY</code></td><td>Master → Slave</td><td>쓸 주소를 전달</td></tr>
+<tr><td><strong>W</strong> (Write Data, 쓰기 데이터)</td><td><code>WDATA</code>, <code>WSTRB</code>, <code>WVALID</code>, <code>WREADY</code></td><td>Master → Slave</td><td>쓸 데이터와 바이트 유효 위치 전달</td></tr>
+<tr><td><strong>B</strong> (Write Response, 쓰기 응답)</td><td><code>BRESP</code>, <code>BVALID</code>, <code>BREADY</code></td><td>Slave → Master</td><td>쓰기 처리 결과 반환</td></tr>
+<tr><td><strong>AR</strong> (Read Address, 읽기 주소)</td><td><code>ARADDR</code>, <code>ARVALID</code>, <code>ARREADY</code></td><td>Master → Slave</td><td>읽을 주소를 전달</td></tr>
+<tr><td><strong>R</strong> (Read Data, 읽기 데이터)</td><td><code>RDATA</code>, <code>RRESP</code>, <code>RVALID</code>, <code>RREADY</code></td><td>Slave → Master</td><td>읽은 데이터와 처리 결과 반환</td></tr>
+</tbody></table></div>
+<p>표의 '정보 방향'은 주소·데이터·응답의 방향을 뜻한다. 각 채널의 <code>READY</code>는 그 정보를 <strong>받는 쪽</strong>에서 반대 방향으로 낸다. 예를 들어 AW 채널에서는 <code>AWVALID</code>가 Master 출력이고 <code>AWREADY</code>가 Slave 출력이다.</p>
+<div class="flow">쓰기: AW + W → B 응답　　읽기: AR → R 데이터·응답</div></section>
 
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>VALID / READY Handshake</h2><p>AXI에서 가장 중요한 기본 규칙은 <strong>VALID와 READY가 같은 Rising Edge에서 모두 High일 때 전송이 성립</strong>한다는 것이다.</p><div class="signal-map" tabindex="0" role="region" aria-label="06절 신호 및 실행 흐름">VALID = 0, READY = 0 → 전송 없음
-VALID = 1, READY = 0 → 전송 대기
-VALID = 0, READY = 1 → 전송 대기
-VALID = 1, READY = 1 → Clock Rising Edge에서 전송</div><div class="flow">VALID ∧ READY → Transfer</div></section>
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Write Transaction과 공식 파형</h2>
+<p><strong>Write Transaction(라이트 트랜잭션, 한 번의 쓰기 요청과 응답)</strong>에서는 Master가 쓰기 주소(AW)와 쓰기 데이터(W)를 보내고, Slave가 처리 결과(B)를 반환한다.</p>
+<ol class="step-seq"><li><h3>AW 채널 — 쓰기 주소 전달</h3><p><code>AWVALID &amp;&amp; AWREADY</code>인 상승 에지에 쓰기 주소가 수락된다.</p></li>
+<li><h3>W 채널 — 쓰기 데이터 전달</h3><p><code>WVALID &amp;&amp; WREADY</code>인 상승 에지에 데이터와 <code>WSTRB</code>가 수락된다.</p></li>
+<li><h3>B 채널 — 처리 결과 반환</h3><p>Slave가 주소와 데이터를 모두 받아 해당 쓰기 전송을 처리하면 <code>BRESP</code>와 <code>BVALID</code>를 제공한다. <code>BVALID &amp;&amp; BREADY</code>인 상승 에지에 응답이 전달된다.</p></li></ol>
+<p><strong>주의:</strong> AW와 W는 서로 독립 채널이므로 주소가 먼저, 데이터가 먼저, 또는 둘이 같은 상승 에지에 수락될 수 있다. 아래 그림은 그중 한 가지 가능한 전송 파형이다. AW와 W가 반드시 정해진 순서로 도착해야 하는 것은 아니다.</p>
+<figure class="manual-figure"><img src="../../images/common/original_13.png" alt="AMD PG203 AXI4-Lite 쓰기 트랜잭션 공식 파형. AWVALID AWREADY WVALID WREADY BVALID BREADY 신호 표시" loading="lazy"><figcaption>AXI4-Lite 쓰기 전송 공식 파형 예시. 주소·데이터 수락 후 쓰기 응답이 전달된다.<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions" target="_blank" rel="noopener">AMD PG203 · User Side AXI4-Lite Write/Read Transactions</a> (특정 IP의 예시 파형)</span></figcaption></figure>
+<div class="flow">AW 수락 + W 수락 → BVALID 응답 → BVALID ∧ BREADY 상승 에지</div>
+<p>그림의 <code>AXI_AWADDR</code>, <code>AXI_WDATA</code> 등은 해당 문서의 신호 표기다. Vivado에서 실제 IP를 연결하면 <code>M_AXI_DP_AWADDR</code>, <code>s_axi_awaddr</code>처럼 접두사가 달라질 수 있다.</p></section>
 
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>AXI4-Lite 5개 채널</h2><div class="table-wrap" tabindex="0" role="region" aria-label="AXI4-Lite 5개 채널 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Channel</th><th scope="col" role="columnheader">대표 신호</th><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Channel" role="cell">AW · Write Address</td><td data-label="대표 신호" role="cell"><code>AWADDR, AWVALID, AWREADY</code></td><td data-label="방향" role="cell">Master → Slave</td><td data-label="역할" role="cell">Write 대상 주소 전달</td></tr>
-<tr role="row"><td data-label="Channel" role="cell">W · Write Data</td><td data-label="대표 신호" role="cell"><code>WDATA, WSTRB, WVALID, WREADY</code></td><td data-label="방향" role="cell">Master → Slave</td><td data-label="역할" role="cell">Write Data 전달</td></tr>
-<tr role="row"><td data-label="Channel" role="cell">B · Write Response</td><td data-label="대표 신호" role="cell"><code>BRESP, BVALID, BREADY</code></td><td data-label="방향" role="cell">Slave → Master</td><td data-label="역할" role="cell">Write 결과 응답</td></tr>
-<tr role="row"><td data-label="Channel" role="cell">AR · Read Address</td><td data-label="대표 신호" role="cell"><code>ARADDR, ARVALID, ARREADY</code></td><td data-label="방향" role="cell">Master → Slave</td><td data-label="역할" role="cell">Read 대상 주소 전달</td></tr>
-<tr role="row"><td data-label="Channel" role="cell">R · Read Data</td><td data-label="대표 신호" role="cell"><code>RDATA, RRESP, RVALID, RREADY</code></td><td data-label="방향" role="cell">Slave → Master</td><td data-label="역할" role="cell">Read Data와 결과 응답</td></tr>
-</tbody></table></div><div class="signal-map" tabindex="0" role="region" aria-label="07절 신호 및 실행 흐름">WRITE : AW + W → B
-READ  : AR → R</div></section>
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Read Transaction과 공식 파형</h2>
+<p><strong>Read Transaction(리드 트랜잭션, 한 번의 읽기 요청과 응답)</strong>은 읽기 주소(AR)와 읽기 데이터·응답(R)의 두 채널로 수행한다.</p>
+<ol class="step-seq"><li><h3>AR 채널 — 읽기 주소 수락</h3><p>Master가 <code>ARADDR</code>와 <code>ARVALID</code>를 제공하고, <code>ARVALID &amp;&amp; ARREADY</code>인 상승 에지에 Slave가 주소를 수락한다.</p></li><li><h3>R 채널 — 읽기 데이터 반환</h3><p>Slave가 <code>RDATA</code>, <code>RRESP</code>, <code>RVALID</code>를 제공하며, <code>RVALID &amp;&amp; RREADY</code>인 상승 에지에 Master가 데이터를 수락한다.</p></li></ol>
+<figure class="manual-figure"><img src="../../images/common/original_14.png" alt="AMD PG203 AXI4-Lite 읽기 트랜잭션 공식 파형. ARVALID ARREADY RVALID RREADY 신호 표시" loading="lazy"><figcaption>AXI4-Lite 읽기 전송 공식 파형 예시. 주소를 수락한 뒤 읽기 데이터와 응답을 반환한다.<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions" target="_blank" rel="noopener">AMD PG203 · User Side AXI4-Lite Write/Read Transactions</a> (특정 IP의 예시 파형)</span></figcaption></figure>
+<p>Master가 <code>RREADY</code>를 0으로 유지하면 Slave는 완료되지 않은 R 채널 전송의 <code>RVALID</code>, <code>RDATA</code>, <code>RRESP</code>를 유지해야 한다. <strong>읽기에서는 B 채널을 사용하지 않는다.</strong></p>
+<div class="flow">ARVALID ∧ ARREADY 상승 에지 → RVALID ∧ RREADY 상승 에지</div></section>
 
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Write Transaction</h2><div class="signal-map signal-table" role="region" aria-label="AXI4-Lite Write 채널 방향" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">채널</th><th scope="col" role="columnheader">Master → Slave</th><th scope="col" role="columnheader">Slave → Master</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="채널">Write Address</td><td role="cell" data-label="Master → Slave">AWADDR + AWVALID</td><td role="cell" data-label="Slave → Master">AWREADY</td></tr><tr role="row"><td role="cell" data-label="채널">Write Data</td><td role="cell" data-label="Master → Slave">WDATA + WSTRB + WVALID</td><td role="cell" data-label="Slave → Master">WREADY</td></tr><tr role="row"><td role="cell" data-label="채널">Write Response</td><td role="cell" data-label="Master → Slave">BREADY</td><td role="cell" data-label="Slave → Master">BRESP + BVALID</td></tr></tbody></table></div><p>Write Address Channel과 Write Data Channel은 서로 독립된 채널이다. 두 Handshake가 완료된 뒤 Slave가 Register Write를 처리하고 B Channel로 결과를 반환한다.</p></section>
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>WSTRB와 응답 코드(BRESP / RRESP)</h2>
+<p><code>WSTRB</code>(Write Strobe, 라이트 스트로브, 쓰기 바이트 유효 표시)는 쓰기 데이터 중 실제로 유효한 Byte Lane(바이트 레인)을 표시한다. MicroBlaze V의 32비트 데이터 인터페이스에서는 4비트 스트로브가 바이트 4개에 대응한다.</p>
+<div class="table-wrap" role="region" aria-label="WSTRB 교육용 예"><table><thead><tr><th>WSTRB[3:0]</th><th>유효한 바이트 레인</th><th>32비트 WDATA 예: 0xAABBCCDD</th></tr></thead><tbody>
+<tr><td><code>0001</code></td><td>Byte 0</td><td><code>DD</code> 바이트만 유효</td></tr><tr><td><code>0011</code></td><td>Byte 0, 1</td><td><code>CCDD</code>의 두 바이트가 유효</td></tr><tr><td><code>1111</code></td><td>Byte 0~3</td><td>네 바이트 모두 유효</td></tr></tbody></table></div>
+<p>이는 <strong>교육용 32비트 예시</strong>다. 각 Slave의 레지스터가 실제로 어떤 바이트 쓰기를 허용하는지는 그 IP 문서를 확인해야 한다.</p>
+<div class="table-wrap" role="region" aria-label="AXI 응답 코드"><table><thead><tr><th>응답 코드</th><th>2비트</th><th>의미 및 AXI4-Lite 적용</th></tr></thead><tbody>
+<tr><td><code>OKAY</code></td><td><code>00</code></td><td>정상 완료</td></tr>
+<tr><td><code>EXOKAY</code></td><td><code>01</code></td><td>배타적 접근 응답. <strong>AXI4-Lite에서는 지원하지 않음.</strong></td></tr>
+<tr><td><code>SLVERR</code></td><td><code>10</code></td><td>Slave 처리 오류</td></tr>
+<tr><td><code>DECERR</code></td><td><code>11</code></td><td>주소 디코딩 오류</td></tr>
+</tbody></table></div>
+<p><code>BRESP</code>는 쓰기 응답, <code>RRESP</code>는 읽기 응답에 사용한다. 개별 IP가 <code>SLVERR</code>나 <code>DECERR</code>를 직접 생성하는지는 구현에 따라 다르다. <code>EXOKAY</code>를 AXI4-Lite의 정상 응답으로 해석해서는 안 된다.</p></section>
 
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>AXI4-Lite Write 파형</h2>
-<figure class="manual-figure"><a href="../../images/common/original_13.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD AXI4-Lite Write Transaction waveform · 원본 보기 (새 탭)"><img alt="AMD AXI4-Lite Write Transaction waveform" loading="lazy" src="../../images/common/original_13.png"></a><figcaption>AXI4-Lite Write Transaction의 공식 AMD 예. AW Channel, W Channel, B Channel이 각각 VALID/READY Handshake로 진행된다.<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions" rel="noopener" target="_blank">AMD PG203 · AXI4-Lite Write/Read Transactions</a></span><br><a href="../../images/common/original_13.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD AXI4-Lite Write Transaction waveform · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>AXI4 Burst와 AXI4-Lite의 경계</h2>
+<p><strong>Burst(버스트, 한 번의 주소 요청으로 여러 데이터 전송을 묶는 방식)</strong>는 AXI4의 대표 기능이다. AXI4는 하나의 주소 요청에 여러 Data Beat(데이터 비트가 아닌 '비트/beat', 한 번의 데이터 전송 단위)를 사용할 수 있고, AXI4-Lite는 한 번의 주소 접근당 한 번의 데이터 전송만 지원한다.</p>
+<div class="lesson-goal"><article><strong>AXI4</strong><p>AW 또는 AR 주소 요청 → 데이터 Beat 0 → Beat 1 → … → 마지막 Beat</p></article><article><strong>AXI4-Lite</strong><p>주소 요청 → 데이터 한 번 → 응답. Burst 길이는 항상 1이다.</p></article></div>
+<p><strong>AXI4-Lite는 단순한 레지스터 제어에 적합하다.</strong> GPIO 제어 레지스터 하나를 쓰는 작업에 다중 Beat 전송이나 복잡한 트랜잭션 ID를 요구하지 않는다.</p>
+<p>일부 AXI 연결·변환 IP는 AXI4의 Burst 접근을 AXI4-Lite에 맞는 여러 단일 접근으로 변환할 수 있다. 이는 <strong>변환 IP의 기능</strong>이지 AXI4-Lite 자체가 Burst를 지원한다는 의미가 아니다.</p></section>
 
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Read Transaction</h2><div class="signal-map signal-table" role="region" aria-label="AXI4-Lite Read 채널 방향" tabindex="0"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">채널</th><th scope="col" role="columnheader">Master → Slave</th><th scope="col" role="columnheader">Slave → Master</th></tr></thead><tbody role="rowgroup"><tr role="row"><td role="cell" data-label="채널">Read Address</td><td role="cell" data-label="Master → Slave">ARADDR + ARVALID</td><td role="cell" data-label="Slave → Master">ARREADY</td></tr><tr role="row"><td role="cell" data-label="채널">Read Data</td><td role="cell" data-label="Master → Slave">RREADY</td><td role="cell" data-label="Slave → Master">RDATA + RRESP + RVALID</td></tr></tbody></table></div><p>Read는 AR Address Channel과 R Data Channel로 구성된다.</p></section>
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>AXI4-Stream 구조와 공식 파형</h2>
+<p><strong>AXI4-Stream(액시 포 스트림, 주소 없는 스트리밍 인터페이스)</strong>은 Source(소스, 데이터 제공 장치)에서 Destination(데스티네이션, 수신 장치)으로 연속 데이터를 넘길 때 사용한다. AW·AR 같은 주소 채널이 없으며, 데이터 흐름에 <code>TVALID</code>와 <code>TREADY</code>를 사용한다.</p>
+<div class="table-wrap" role="region" aria-label="AXI4-Stream 주요 신호"><table><thead><tr><th>신호</th><th>역할</th></tr></thead><tbody>
+<tr><td><code>TDATA</code></td><td>전달할 데이터</td></tr>
+<tr><td><code>TVALID</code></td><td>Source가 유효한 전송 단위를 제공함</td></tr>
+<tr><td><code>TREADY</code></td><td>Destination이 데이터를 받을 준비가 됨</td></tr>
+<tr><td><code>TLAST</code></td><td>패킷 또는 응용별 전송 경계의 마지막 Beat 표시(선택 신호)</td></tr>
+<tr><td><code>TKEEP</code>, <code>TUSER</code></td><td>유효 바이트 표시·사용자 정의 부가 정보(구성에 따른 선택 신호)</td></tr>
+</tbody></table></div>
+<figure class="manual-figure"><img src="../../images/common/original_15.png" alt="AMD AXI4-Stream 공식 파형 aclk tvalid tready tdata D1 D2 D3 D4 tlast" loading="lazy"><figcaption>AXI4-Stream 공식 핸드셰이크 파형. <code>TVALID</code>와 <code>TREADY</code>가 같은 상승 에지에 1인 곳에서 D1, D2, D3, D4가 차례로 전달된다.<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg256-sdfec-integrated-block/AXI4-Stream-Interface" target="_blank" rel="noopener">AMD PG256 · AXI4-Stream Interface</a></span></figcaption></figure>
+<p>수신 측이 <code>TREADY</code>를 0으로 내리면 Backpressure(백프레셔, 수신 측의 전송 지연)가 발생한다. 이때 전송이 아직 완료되지 않은 Source는 <code>TVALID</code>와 데이터 및 관련 부가 신호를 유지한다. <code>TLAST</code>는 '마지막 바이트'가 아니라 <strong>마지막 전송 Beat</strong>를 나타낸다.</p></section>
 
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>AXI4-Lite Read 파형</h2>
-<figure class="manual-figure"><a href="../../images/common/original_14.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD AXI4-Lite Read Transaction waveform · 원본 보기 (새 탭)"><img alt="AMD AXI4-Lite Read Transaction waveform" loading="lazy" src="../../images/common/original_14.png"></a><figcaption>AXI4-Lite Read Transaction의 공식 AMD 예. AR Address Handshake 후 Slave가 RDATA와 RVALID를 반환한다.<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions" rel="noopener" target="_blank">AMD PG203 · AXI4-Lite Write/Read Transactions</a></span><br><a href="../../images/common/original_14.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD AXI4-Lite Read Transaction waveform · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<div class="flow">ARVALID ∧ ARREADY → Read Address 수락 → RVALID ∧ RREADY → Read Data 전송</div></section>
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>MicroBlaze V의 AXI 포트와 장별 연결</h2>
+<p>AMD <strong>UG1629 2024.2</strong> 기준, MicroBlaze V의 <code>M_AXI_DP</code>(Master AXI Data Peripheral, 주변장치 데이터용 마스터)는 32비트 Memory-Mapped 인터페이스다. 기본 설정은 <strong>AXI4-Lite</strong>이며, <code>lr</code>/<code>sc</code> 명령을 위한 Exclusive Access(익스클루시브 액세스, 배타적 메모리 접근)를 활성화하는 설정에서는 AXI4를 사용한다. 현재 프로젝트에서 Exclusive Access 설정을 별도 검증한 것은 아니다.</p>
+<div class="table-wrap" role="region" aria-label="프로젝트에서 확인된 연결과 다음 단계"><table><thead><tr><th>구분</th><th>실제 연결·예정 상태</th><th>검증 경계</th></tr></thead><tbody>
+<tr><td>04장 <code>ILMB</code> / <code>DLMB</code></td><td>Local BRAM, <code>0x00000000</code> ~ <code>0x00003FFF</code> (16 KiB)</td><td><strong>실제 읽기·쓰기 검증 완료</strong></td></tr>
+<tr><td>04장 <code>M_AXI_DP</code></td><td>아직 AXI 주변장치에 연결되지 않음</td><td><strong>AXI MMIO 동작은 미검증</strong></td></tr>
+<tr><td>06장 예정 경로</td><td><code>M_AXI_DP</code> → AXI 연결 IP → AXI GPIO <code>S_AXI</code></td><td>실제 Block Design·주소·프로그램으로 확인 예정</td></tr>
+</tbody></table></div>
+<div class="flow">04장: CPU → Local BRAM (검증 완료)<br>05장: AXI 신호·채널·파형 이해 (이론)<br>06장: CPU → AXI GPIO → Basys3 Switch / LED (실습)</div>
+<p>CPU의 C 코드에서 주변장치 주소를 읽고 쓰더라도, 하드웨어 접근 경로는 연결된 메모리·버스 구성에 따라 달라진다. 06장에서 Vivado의 AXI GPIO 연결과 Address Editor(어드레스 에디터, 주소 할당 화면), Vitis 프로그램 실행으로 실제 주변장치 경로를 검증한다.</p></section>
 
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>BRESP · RRESP</h2><div class="table-wrap" tabindex="0" role="region" aria-label="BRESP · RRESP · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Response</th><th scope="col" role="columnheader">2-bit 값</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Response" role="cell">OKAY</td><td data-label="2-bit 값" role="cell"><code>00</code></td><td data-label="의미" role="cell">정상 접근</td></tr><tr role="row"><td data-label="Response" role="cell">EXOKAY</td><td data-label="2-bit 값" role="cell"><code>01</code></td><td data-label="의미" role="cell">Exclusive Access 관련 응답</td></tr><tr role="row"><td data-label="Response" role="cell">SLVERR</td><td data-label="2-bit 값" role="cell"><code>10</code></td><td data-label="의미" role="cell">Slave Error</td></tr><tr role="row"><td data-label="Response" role="cell">DECERR</td><td data-label="2-bit 값" role="cell"><code>11</code></td><td data-label="의미" role="cell">Decode Error</td></tr></tbody></table></div></section>
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 05 핵심 정리</h2><div class="table-wrap" role="region" aria-label="05장 핵심 정리"><table><thead><tr><th>구분</th><th>핵심</th></tr></thead><tbody><tr><td>AXI4</td><td>주소 기반, Burst 전송 지원</td></tr><tr><td>AXI4-Lite</td><td>주소 기반, 단일 전송, AW/W/B/AR/R 5개 채널</td></tr><tr><td>AXI4-Stream</td><td>주소 채널이 없는 스트리밍 전송</td></tr><tr><td>Handshake</td><td>각 채널의 VALID와 READY가 같은 클록 상승 에지에 모두 1일 때 전송 성립</td></tr><tr><td>Write / Read</td><td>Write: AW와 W는 독립 → B 응답 / Read: AR → R 데이터·응답</td></tr><tr><td>실제 프로젝트</td><td>04장 Local BRAM 접근 검증 완료, AXI GPIO 동작은 06장에서 검증</td></tr></tbody></table></div><div class="flow">SoC 05 · AXI 통신 구조 이해 → SoC 06 · Vivado AXI GPIO 연결 및 Basys3 실습</div></section>
 
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>WSTRB</h2><p><code>WSTRB</code>는 <code>WDATA</code>의 어떤 Byte Lane이 유효한지를 나타낸다. 32비트 Data Bus라면 보통 <code>WSTRB[3:0]</code>를 사용한다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="WSTRB · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">WSTRB</th><th scope="col" role="columnheader">유효 Byte</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="WSTRB" role="cell"><code>4'b0001</code></td><td data-label="유효 Byte" role="cell">Byte 0</td></tr><tr role="row"><td data-label="WSTRB" role="cell"><code>4'b0011</code></td><td data-label="유효 Byte" role="cell">Byte 0~1</td></tr><tr role="row"><td data-label="WSTRB" role="cell"><code>4'b1111</code></td><td data-label="유효 Byte" role="cell">32비트 전체</td></tr></tbody></table></div></section>
-
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>AXI4와 Burst</h2><p>AXI4는 하나의 Address Transaction 이후 여러 Data Beat를 연속 전송하는 Burst를 지원한다. AXI4-Lite는 Burst를 지원하지 않는다.</p><div class="signal-map" tabindex="0" role="region" aria-label="14절 신호 및 실행 흐름">AXI4 Burst
-Address 1회
-   ↓
-Data Beat 0
-Data Beat 1
-Data Beat 2
-...
-Data Beat N</div><p>AXI4 Burst가 AXI4-Lite Slave로 연결되면 SmartConnect 또는 Protocol Converter가 여러 Single-Beat Transaction으로 변환할 수 있다.</p></section>
-
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>AXI4-Lite가 Peripheral에 적합한 이유</h2><p>GPIO Direction Register, UART Status Register, Timer Control Register처럼 CPU가 Register 하나를 읽고 쓰는 용도에는 Burst와 복잡한 ID 관리가 필요하지 않다.</p><div class="flow">CPU Register Access → Single Address → Single Data → Response</div></section>
-
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>AXI4-Stream 구조</h2><p>AXI4-Stream은 Address Channel이 없다. Source가 <code>TDATA</code>와 <code>TVALID</code>를 내보내고 Destination이 <code>TREADY</code>를 High로 만들면 Data가 전송된다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="AXI4-Stream 구조 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">신호</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="신호" role="cell"><code>TDATA</code></td><td data-label="역할" role="cell">전송 Data</td></tr><tr role="row"><td data-label="신호" role="cell"><code>TVALID</code></td><td data-label="역할" role="cell">Data 유효 표시</td></tr><tr role="row"><td data-label="신호" role="cell"><code>TREADY</code></td><td data-label="역할" role="cell">수신 가능 표시</td></tr><tr role="row"><td data-label="신호" role="cell"><code>TLAST</code></td><td data-label="역할" role="cell">Packet/Frame 마지막 Beat</td></tr><tr role="row"><td data-label="신호" role="cell"><code>TUSER</code></td><td data-label="역할" role="cell">응용별 Sideband 정보</td></tr></tbody></table></div></section>
-
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>AXI4-Stream Handshake 파형</h2>
-<figure class="manual-figure"><a href="../../images/common/original_15.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD AXI4-Stream TVALID TREADY handshake waveform · 원본 보기 (새 탭)"><img alt="AMD AXI4-Stream TVALID TREADY handshake waveform" loading="lazy" src="../../images/common/original_15.png"></a><figcaption>AXI4-Stream의 공식 AMD Handshake 예. <code>TVALID</code>과 <code>TREADY</code>가 동시에 High인 Cycle에서 <code>TDATA</code>가 전송된다.<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg256-sdfec-integrated-block/AXI4-Stream-Interface" rel="noopener" target="_blank">AMD PG256 · AXI4-Stream Interface</a></span><br><a href="../../images/common/original_15.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD AXI4-Stream TVALID TREADY handshake waveform · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<p><code>TREADY</code>가 Low이면 Source는 전송을 완료할 수 없으므로 Backpressure가 발생할 수 있다.</p></section>
-
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>MicroBlaze V와 SmartConnect</h2><p>Vivado IP Integrator에서 MicroBlaze V의 Memory-Mapped AXI Master와 여러 AXI Slave를 연결할 때 SmartConnect를 사용할 수 있다.</p><div class="signal-map" tabindex="0" role="region" aria-label="18절 신호 및 실행 흐름">MicroBlaze V M_AXI
-       │
-       ▼
-SmartConnect
-  ┌────┼──────────┐
-  ▼    ▼          ▼
-GPIO  UART      Timer
-S_AXI S_AXI     S_AXI</div></section>
-
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>SoC 04와 연결</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="SoC 04와 연결 · 소스 코드"><code>volatile uint32_t *reg =
-    (volatile uint32_t *)PERIPHERAL_ADDRESS;
-
-*reg = 0x12345678U;</code></pre><div class="signal-map" tabindex="0" role="region" aria-label="19절 신호 및 실행 흐름">C Store
-  ↓
-MicroBlaze V Load/Store
-  ↓
-AWADDR + WDATA
-  ↓
-SmartConnect Address Decode
-  ↓
-AXI Slave Register</div></section>
-
-<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>신호명 읽는 법</h2><div class="table-wrap" tabindex="0" role="region" aria-label="신호명 읽는 법 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">예</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="예" role="cell"><code>s_axi_awaddr</code></td><td data-label="의미" role="cell">Slave AXI Write Address</td></tr><tr role="row"><td data-label="예" role="cell"><code>s_axi_wdata</code></td><td data-label="의미" role="cell">Slave AXI Write Data</td></tr><tr role="row"><td data-label="예" role="cell"><code>s_axi_bvalid</code></td><td data-label="의미" role="cell">Slave Write Response Valid</td></tr><tr role="row"><td data-label="예" role="cell"><code>s_axi_araddr</code></td><td data-label="의미" role="cell">Slave AXI Read Address</td></tr><tr role="row"><td data-label="예" role="cell"><code>s_axi_rdata</code></td><td data-label="의미" role="cell">Slave Read Data</td></tr><tr role="row"><td data-label="예" role="cell"><code>m_axi_awaddr</code></td><td data-label="의미" role="cell">Master AXI Write Address</td></tr></tbody></table></div></section>
-
-<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>전체 Transaction 추적</h2><div class="signal-map" tabindex="0" role="region" aria-label="21절 신호 및 실행 흐름">[WRITE]
-C Store
- → MicroBlaze V
- → AW Address Handshake
- → W Data Handshake
- → SmartConnect
- → AXI Slave Register Write
- → B Response
-
-[READ]
-C Load
- → MicroBlaze V
- → AR Address Handshake
- → SmartConnect
- → AXI Slave Register Read
- → R Data + Response</div><p>다음 SoC 06에서는 이 흐름을 AXI GPIO의 실제 Register와 Basys3 LED에 연결한다.</p></section>
-
-<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>오류 점검</h2><div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">오해 / 문제</th><th scope="col" role="columnheader">확인 내용</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="오해 / 문제" role="cell">VALID만 High이면 전송</td><td data-label="확인 내용" role="cell"><code>VALID &amp;&amp; READY</code>가 같은 Clock Edge에 필요</td></tr>
-<tr role="row"><td data-label="오해 / 문제" role="cell">AW와 W가 하나의 채널</td><td data-label="확인 내용" role="cell">Write Address와 Write Data는 독립 채널</td></tr>
-<tr role="row"><td data-label="오해 / 문제" role="cell">Read에 B Channel 존재</td><td data-label="확인 내용" role="cell">Read는 AR + R</td></tr>
-<tr role="row"><td data-label="오해 / 문제" role="cell">AXI4-Lite Burst 사용</td><td data-label="확인 내용" role="cell">AXI4-Lite는 Single-Beat</td></tr>
-<tr role="row"><td data-label="오해 / 문제" role="cell">AXI4-Stream Address 사용</td><td data-label="확인 내용" role="cell">Stream에는 Address Channel 없음</td></tr>
-<tr role="row"><td data-label="오해 / 문제" role="cell"><code>aresetn</code> 반대 연결</td><td data-label="확인 내용" role="cell">Active-Low Reset</td></tr>
-<tr role="row"><td data-label="오해 / 문제" role="cell">Memory Map과 AXI 동일시</td><td data-label="확인 내용" role="cell">Memory Map은 주소 배치, AXI는 전송 Protocol</td></tr>
-</tbody></table></div></section>
-
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 05 완료 체크리스트</h2><ul>
-<li>[ ] AXI4, AXI4-Lite, AXI4-Stream의 용도를 구분할 수 있다.</li>
-<li>[ ] AXI4/AXI4-Lite는 Memory-Mapped이고 AXI4-Stream은 Address가 없음을 이해한다.</li>
-<li>[ ] AXI4-Lite의 AW, W, B, AR, R 5개 채널을 설명할 수 있다.</li>
-<li>[ ] <code>VALID &amp;&amp; READY</code> Handshake 조건을 이해한다.</li>
-<li>[ ] Write는 AW + W → B, Read는 AR → R 관계임을 이해한다.</li>
-<li>[ ] <code>WSTRB</code>와 <code>BRESP/RRESP</code> 역할을 이해한다.</li>
-<li>[ ] AXI4는 Burst를 지원하고 AXI4-Lite는 지원하지 않음을 이해한다.</li>
-<li>[ ] AXI4-Stream의 <code>TDATA/TVALID/TREADY</code>를 설명할 수 있다.</li>
-<li>[ ] SmartConnect의 역할을 이해한다.</li>
-<li>[ ] SoC 04의 C Pointer Write가 AXI Write Transaction으로 이어지는 흐름을 설명할 수 있다.</li>
-</ul><div class="flow">SoC 05 완료 → SoC 06 AXI GPIO</div></section>
-
-<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2><div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/2025.2-English/ug1483-model-composer-sys-gen-user-guide/AXI-Interface" target="_blank" rel="noopener">AMD UG1483 · AXI Interface · 2025.2</a></td><td data-label="확인 항목" role="cell">AXI4 / AXI4-Lite / AXI4-Stream 구분</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg292-ethernet-1-10-25g/AXI4-Lite-Interface-Ports" target="_blank" rel="noopener">AMD PG292 · AXI4-Lite Interface Ports · 2026</a></td><td data-label="확인 항목" role="cell">AW/W/B/AR/R, WSTRB, Response</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions" target="_blank" rel="noopener">AMD PG203 · AXI4-Lite Write/Read Transactions</a></td><td data-label="확인 항목" role="cell">Write / Read 공식 Timing Diagram</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg256-sdfec-integrated-block/AXI4-Stream-Interface" target="_blank" rel="noopener">AMD PG256 · AXI4-Stream Interface</a></td><td data-label="확인 항목" role="cell">TVALID / TREADY / TDATA / TLAST</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg453-axi-switch/Burst-Conversion" target="_blank" rel="noopener">AMD PG453 · Burst Conversion · 2026.1</a></td><td data-label="확인 항목" role="cell">AXI4-Lite Burst 미지원</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg247-smartconnect/Conversion-to-AXI4-Lite" target="_blank" rel="noopener">AMD PG247 · Conversion to AXI4-Lite · 2026.1</a></td><td data-label="확인 항목" role="cell">AXI4 Burst의 AXI4-Lite Single-Beat 변환</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/When-to-Use-SmartConnect-IP" target="_blank" rel="noopener">AMD UG994 · SmartConnect · 2026.1</a></td><td data-label="확인 항목" role="cell">AXI4-Lite Endpoint 연결</td></tr>
-</tbody></table></div></section>
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 기술 문서와 파형 출처</h2><p>MicroBlaze V에 관한 설정 설명은 사용하는 Vivado 2024.2 버전의 AMD 공식 문서를 우선한다. PG203 및 PG256의 파형은 각 IP 문서에 제시된 <strong>공식 설명용 예시</strong>이며 현재 Basys3에서 실측한 신호가 아니다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="공식 기술 문서"><table class="resource-table"><thead><tr><th>공식 자료</th><th>관련 내용</th></tr></thead><tbody><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/Peripheral-Interfaces" target="_blank" rel="noopener">AMD UG1629 · Peripheral Interfaces · 2024.2</a></td><td data-label="관련 내용">MicroBlaze V M_AXI_DP 기본 AXI4-Lite와 데이터 주변장치 접근</td></tr><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/Interface-Parameters-and-Signals" target="_blank" rel="noopener">AMD UG1629 · Interface Parameters and Signals · 2024.2</a></td><td data-label="관련 내용">C_M_AXI_DP_PROTOCOL 및 Exclusive Access 설정</td></tr><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/MicroBlaze-V-I/O-Overview" target="_blank" rel="noopener">AMD UG1629 · MicroBlaze V I/O Overview</a></td><td data-label="관련 내용">ILMB·DLMB 및 AXI 포트 구분</td></tr><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/2024.2-English/ug994-vivado-ip-subsystems/When-to-Use-SmartConnect-IP" target="_blank" rel="noopener">AMD UG994 · When to Use SmartConnect IP · 2024.2</a></td><td data-label="관련 내용">AXI4-Lite 연결에 SmartConnect 사용</td></tr><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/en-US/pg203-cmac-usplus/User-Side-AXI4-Lite-Write/Read-Transactions" target="_blank" rel="noopener">AMD PG203 · AXI4-Lite Write/Read Transactions</a></td><td data-label="관련 내용">기존 공식 쓰기·읽기 타이밍 파형 원본</td></tr><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/en-US/pg256-sdfec-integrated-block/AXI4-Stream-Interface" target="_blank" rel="noopener">AMD PG256 · AXI4-Stream Interface</a></td><td data-label="관련 내용">TVALID / TREADY / TDATA 핸드셰이크</td></tr><tr><td data-label="공식 자료"><a href="https://docs.amd.com/r/en-US/pg101-axi-protocol-checker/AXI-Protocol-Checks-and-Descriptions" target="_blank" rel="noopener">AMD PG101 · AXI Protocol Checks</a></td><td data-label="관련 내용">AXI4-Lite의 EXOKAY 응답 금지 규칙</td></tr></tbody></table></div></section>
 
 <nav class="chapter-nav"><a href="04_memory_map_memory_mapped_io.html">← SoC 04</a><a href="../../index.html">전체 목차</a><a href="06_axi_gpio.html">SoC 06 →</a></nav>
 </main></div>
