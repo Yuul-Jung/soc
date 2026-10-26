@@ -55,8 +55,8 @@ main[tabindex="-1"]:focus{outline:none}
 </style><link rel="stylesheet" href="../assets/reader.css"><script defer src="../assets/reader.js"></script>
 </head><body>
 <a class="skip-link" href="#main-content">본문으로 바로가기</a><header class="hero"><div class="inner"><div class="num">SOC 04 · GROUP 1</div>
-<h1>Memory Map과 Memory-Mapped I/O</h1>
-<p>MicroBlaze V 기반 최소 SoC · 장별 HTML, 코드, 이미지, 검증자료, 실습 패키지 위치를 정리한 Manifest입니다.</p></div></header>
+<h1>Local BRAM Memory Map과 주소 기반 읽기·쓰기</h1>
+<p>MicroBlaze V + 16 KiB Local BRAM 실습 · 코드와 실제 FPGA Debug 결과를 확인하는 장별 자료 목록입니다.</p></div></header>
 <main class="container" id="main-content" tabindex="-1">
 <div class="links">
 <a class="linkbtn" href="../pages/soc/04_memory_map_memory_mapped_io.html">본문 HTML</a>
@@ -70,10 +70,11 @@ main[tabindex="-1"]:focus{outline:none}
 <tr role="row"><td class="path" data-label="파일" role="cell"><a href="../code/soc04/working_files/main.c">code/soc04/working_files/main.c</a></td><td data-label="크기" role="cell">1,084 bytes</td></tr>
 </tbody></table></section>
 
-<section class="group"><h2>그림 / 도식</h2><table><thead><tr><th scope="col">파일</th><th scope="col">크기</th></tr></thead><tbody><tr><td data-label="파일"><a href="../images/common/original_10.png">images/common/original_10.png</a><br>AMD UG994 Address Structure</td><td data-label="크기">13,637 bytes</td></tr><tr><td data-label="파일"><a href="../images/common/original_11.png">images/common/original_11.png</a><br>AMD UG994 Vivado Address Editor example</td><td data-label="크기">136,721 bytes</td></tr><tr><td data-label="파일"><a href="../images/common/v_address.png">images/common/v_address.png</a><br>AMD UG1711 2026.1 · Memory-Mapping in the Address Editor. 실제 인스턴스의 주소를 확인한다.</td><td data-label="크기">50,827 bytes</td></tr></tbody></table></section>
+<section class="group"><h2>참고 그림 / 도식 (기존 공식 자료)</h2><table><thead><tr><th scope="col">파일</th><th scope="col">크기</th></tr></thead><tbody><tr><td data-label="파일"><a href="../images/common/original_10.png">images/common/original_10.png</a><br>AMD UG994 Address Structure</td><td data-label="크기">13,637 bytes</td></tr><tr><td data-label="파일"><a href="../images/common/original_11.png">images/common/original_11.png</a><br>AMD UG994 Vivado Address Editor example</td><td data-label="크기">136,721 bytes</td></tr><tr><td data-label="파일"><a href="../images/common/v_address.png">images/common/v_address.png</a><br>AMD UG1711 2026.1 · Memory-Mapping in the Address Editor. 실제 인스턴스의 주소를 확인한다.</td><td data-label="크기">50,827 bytes</td></tr></tbody></table></section>
 
 <section class="group"><h2>독립 Lab / Source Package</h2><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">파일</th><th scope="col" role="columnheader">크기</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td colspan="2" class="small" data-label="파일" role="cell">해당 파일 없음</td></tr>
 </tbody></table></section>
+<section class="group"><h2>04장 검증 범위</h2><p>실습 본문에는 실제 확인한 Vivado BRAM 주소와 Vitis WATCH 값, 흰 배경의 재구성 구조도가 포함되어 있습니다. 공식 매뉴얼의 AXI 그림은 다음 장 학습용 참고이며, 이번 장에서 해당 주변장치를 구현한 것으로 간주하지 않습니다.</p><p><strong>실제 확인:</strong> BRAM 16 KiB, Vitis Build 성공, stage 5, read_1 0xA5A5A5A5.</p></section>
 </main><footer class="footer">Basys3 SoC + NPU · SoC 04 File Manifest</footer>
 </body></html>
