@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
-<meta content="Basys3 MicroBlaze V SoC에서 Memory Map, Address Space, Address Editor, BRAM 직접 주소 확인과 Memory-Mapped I/O 개념을 연결하는 절차형 실습 자료." name="description">
-<title>SoC 04 · Memory Map과 Memory-Mapped I/O</title><style>
+<meta content="Basys3 MicroBlaze V SoC 04장 실습: Local BRAM 주소 확인, Vitis C 배열 쓰기·읽기, Debug WATCH 결과 검증." name="description">
+<title>SoC 04 · Local BRAM Memory Map과 주소 기반 읽기·쓰기</title><style>
 
 :root{
   --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
@@ -194,112 +194,91 @@ main[tabindex="-1"]:focus{outline:none}
 }
 </style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
 <body>
-<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 04</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 04</strong></div><div class="brand">BASYS3 · MICROBLAZE V SOC</div></div></div>
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
-<p class="hero-kicker">Basys3 SoC + NPU · SoC 04</p><h1>Memory Map과 Memory-Mapped I/O</h1>
-<p class="hero-desc">MicroBlaze V가 주소를 이용해 BRAM의 특정 위치를 선택하고 데이터를 읽고 쓰는 과정을 직접 확인한다. Vivado Address Editor의 Base Address와 Range를 연결해 이해하고, 같은 주소 접근 방식이 이후 AXI Peripheral Register에 어떻게 확장되는지 정리한다.</p>
-<div class="hero-meta"><span class="chip">Memory Map</span><span class="chip">Address Space</span><span class="chip">Base Address</span><span class="chip">Range</span><span class="chip">Address Editor</span><span class="chip">Memory-Mapped I/O</span></div>
-<div class="hero-brief"><article><h2>주소</h2><p>CPU가 어느 Memory 또는 Peripheral을 선택할지 결정한다.</p></article><article><h2>데이터</h2><p>선택한 주소에 실제 값을 Write하고 다시 Read한다.</p></article><article><h2>확장</h2><p>BRAM 주소 접근을 AXI Peripheral Register 접근으로 연결한다.</p></article></div>
+<p class="hero-kicker">Basys3 SoC + NPU · SoC 04</p><h1>Local BRAM Memory Map과 주소 기반 읽기·쓰기</h1>
+<p class="hero-desc">Vivado에서 16 KiB Local BRAM 주소를 확인하고, Vitis에서 C 프로그램을 빌드·실행한 뒤 WATCH로 실제 주소와 읽기·쓰기 결과를 검증한다.</p>
+<div class="hero-meta"><span class="chip">Memory Map</span><span class="chip">Address Space</span><span class="chip">Base Address</span><span class="chip">Range</span><span class="chip">Address Editor</span><span class="chip">Vitis Debug</span><span class="chip">WATCH 검증</span></div>
+<div class="hero-brief"><article><h2>주소</h2><p>ILMB/DLMB에 연결된 BRAM의 16 KiB 주소 범위를 확인한다.</p></article><article><h2>코드</h2><p>Vitis의 main.c에서 BRAM 데이터를 Write/Read한다.</p></article><article><h2>검증</h2><p>FPGA Debug와 WATCH에서 최종 stage 5를 확인한다.</p></article></div>
 </div></header>
-<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html" selected>SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc04_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc04">이 장 검증</a></div></div><p class="nav-title">SOC 04 · LEARNING FLOW</p><p class="nav-help">Address → Map → Write → Read → MMIO</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>Memory Map이 필요한 이유</span></a></li>
-<li><a href="#s02"><span class="n">02</span><span>MicroBlaze V 주소 공간</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>Memory와 I/O를 같은 주소로 접근</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>Address Space · Segment · Path</span></a></li>
-<li><a href="#s05"><span class="n">05</span><span>Address Path 구조</span></a></li>
-<li><a href="#s06"><span class="n">06</span><span>Vivado Address Editor</span></a></li>
-<li><a href="#s07"><span class="n">07</span><span>SoC 03 Local BRAM 주소</span></a></li>
-<li><a href="#s08"><span class="n">08</span><span>Base · Range · High Address</span></a></li>
-<li><a href="#s09"><span class="n">09</span><span>프로그램 영역과 데이터 주소</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>BRAM 주소 실습 코드</span></a></li>
-<li><a href="#s11"><span class="n">11</span><span>Write → Read → Re-Write → Re-Read</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>Debugger에서 실제 주소 확인</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>주소와 데이터의 차이</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>Memory-Mapped I/O의 의미</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>Peripheral 주소 구조 예고</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>Address Editor 사용 절차</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>주소 중복과 정렬</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>volatile 포인터 접근</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>SoC 04 전체 흐름</span></a></li>
-<li><a href="#s20"><span class="n">20</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">21</span><span>완료 체크리스트</span></a></li>
-<li><a href="#sources"><span class="n">22</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html" selected>SoC 04 · Local BRAM Memory Map과 주소 기반 읽기·쓰기</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc04_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc04">이 장 검증</a></div></div><p class="nav-title">SOC 04 · LEARNING FLOW</p><p class="nav-help">Address → BRAM → Build → Debug → WATCH</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>04장 실습 범위와 하드웨어 구조</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>Vivado에서 BRAM 주소 확인</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>Base · Range · High 주소 계산</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>기존 프로젝트와 새 Application</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>Vitis Application 생성</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>main.c 원본 코드 입력</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Linker Script의 BRAM 배치</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Build와 ELF 생성 결과</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>launch.json 확인 및 Debug 진입</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>WATCH 중간 검증 — stage 2</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>WATCH 최종 검증 — stage 5</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>주소와 32비트 데이터 관계</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>04장 실습 결과와 다음 장 경계</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>오류 점검</span></a></li><li><a href="#summary"><span class="n">15</span><span>최종 확인 결과</span></a></li><li><a href="#sources"><span class="n">16</span><span>공식 자료</span></a></li></ol></aside>
 <main id="main-content" tabindex="-1">
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 03 BRAM 실행</span><span class="arrow">→</span><span class="stage"><strong>SoC 04 Memory Map</strong></span><span class="arrow">→</span><span class="stage">SoC 05 AXI</span><span class="arrow">→</span><span class="stage">SoC 06 AXI GPIO</span></div></div>
 
-<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>Memory Map이 필요한 이유</h2>
-<p>CPU가 BRAM, UART, GPIO, Timer 같은 여러 자원 중 하나를 선택하려면 각 자원에 서로 다른 주소 범위를 부여해야 한다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="01절 신호 및 실행 흐름">CPU Address
-   ├─ Local BRAM
-   ├─ AXI GPIO
-   ├─ AXI UART Lite
-   └─ AXI Timer</div>
-<p>시스템의 Memory와 Peripheral을 주소별로 배치한 표가 <strong>Memory Map</strong>이다.</p></section>
+<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>04장 실습 범위와 하드웨어 구조</h2>
+<p>이번 장은 <strong>이미 구성한 MicroBlaze V + 16 KiB Local BRAM</strong>을 그대로 사용한다. CPU가 메모리 주소를 생성하고, 해당 위치에 값을 쓰고 다시 읽는 과정을 Vitis Debugger(디버거)에서 확인한다.</p>
+<figure class="manual-figure"><svg viewBox="0 0 730 270" width="100%" role="img" aria-label="실제 MicroBlaze V의 ILMB와 DLMB가 16 KiB Local BRAM에 연결되고 M_AXI_DP는 미연결인 구조도" xmlns="http://www.w3.org/2000/svg">
+<rect x="1" y="1" width="728" height="268" rx="10" fill="#fff" stroke="#d6dadd"/>
+<rect x="30" y="65" width="175" height="95" rx="9" fill="#ecf4ff" stroke="#6b9bc3" stroke-width="2"/>
+<text x="117" y="103" text-anchor="middle" font-size="18" font-weight="700" fill="#1b4367">microblaze_riscv_0</text><text x="117" y="127" text-anchor="middle" font-size="14" fill="#1b4367">MicroBlaze V</text>
+<rect x="265" y="32" width="160" height="55" rx="7" fill="#f4f2fe" stroke="#8b80bf"/>
+<text x="345" y="54" text-anchor="middle" font-size="15" font-weight="700" fill="#373071">ILMB</text><text x="345" y="73" text-anchor="middle" font-size="12" fill="#373071">Instruction 경로</text>
+<rect x="265" y="122" width="160" height="55" rx="7" fill="#f4f2fe" stroke="#8b80bf"/>
+<text x="345" y="145" text-anchor="middle" font-size="15" font-weight="700" fill="#373071">DLMB</text><text x="345" y="164" text-anchor="middle" font-size="12" fill="#373071">Data 경로</text>
+<rect x="486" y="65" width="207" height="110" rx="9" fill="#e9f6ee" stroke="#67a783" stroke-width="2"/>
+<text x="590" y="95" text-anchor="middle" font-size="19" font-weight="700" fill="#215c3c">Local BRAM</text>
+<text x="590" y="122" text-anchor="middle" font-size="15" fill="#215c3c">0x00000000</text><text x="590" y="145" text-anchor="middle" font-size="15" fill="#215c3c">~ 0x00003FFF</text><text x="590" y="163" text-anchor="middle" font-size="12" fill="#215c3c">16 KiB</text>
+<g fill="none" stroke="#61647c" stroke-width="2.4"><path d="M205 95 H230 V59 H265"/><path d="M205 130 H230 V150 H265"/><path d="M425 59 H450 V95 H486"/><path d="M425 150 H450 V145 H486"/></g>
+<g fill="#61647c"><path d="M265 59 l-9 -5 v10z"/><path d="M265 150 l-9 -5 v10z"/><path d="M486 95 l-9 -5 v10z"/><path d="M486 145 l-9 -5 v10z"/></g>
+<path d="M115 160 V213 H265" fill="none" stroke="#a46c29" stroke-dasharray="7 5" stroke-width="2"/>
+<text x="275" y="218" font-size="14" font-weight="700" fill="#7a5525">M_AXI_DP</text><text x="365" y="218" font-size="13" fill="#7a5525">미연결 · 이번 장에서 사용하지 않음</text>
+</svg><figcaption>실제 Vivado Block Design과 Address Editor에서 확인한 연결을 바탕으로 재구성한 구조도. 설명용 그림이며 GUI 스크린샷이 아니다.</figcaption></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="구분 / 이번 장의 실제 범위 확인 표"><table><thead><tr><th scope="col">구분</th><th scope="col">이번 장의 실제 범위</th></tr></thead><tbody><tr><td data-label="구분">Instruction 경로</td><td data-label="이번 장의 실제 범위"><code>ILMB → Local BRAM</code></td></tr>
+<tr><td data-label="구분">Data 경로</td><td data-label="이번 장의 실제 범위"><code>DLMB → Local BRAM</code></td></tr>
+<tr><td data-label="구분">검증 대상</td><td data-label="이번 장의 실제 범위"><code>bram_word[4]</code> 배열의 주소와 값</td></tr>
+<tr><td data-label="구분">미구현</td><td data-label="이번 장의 실제 범위"><code>M_AXI_DP</code>의 AXI 주변장치 연결</td></tr></tbody></table></div>
+<div class="note">04장에는 AXI GPIO·UART·Timer를 추가하지 않는다. AXI 구조는 05장, 실제 AXI GPIO 제어는 06장에서 다룬다.</div>
+</section>
 
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>MicroBlaze V 주소 공간</h2>
-<p>32비트 MicroBlaze V의 기본적인 32비트 주소 공간은 <code>0x00000000 ~ 0xFFFFFFFF</code>, 즉 4 GB이다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">2^32 Byte = 4 GB
-0x00000000 ─────────────── 0xFFFFFFFF</div>
-<p>이 실습은 32비트 Machine mode와 MMU 비활성 구성을 사용한다. 주소 변환 없이 연결된 메모리와 주변장치에 접근하며, 32비트 주소 범위는 4 GiB이다.</p></section>
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Vivado에서 BRAM 주소 확인</h2>
+<ol class="step-seq"><li><h3>기존 Vivado 프로젝트 열기</h3><p><code>/home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code>을 연다.</p></li><li><h3>Block Design 열기</h3><p><code>soc01_mb_bram</code>을 열고 상단 <strong>Address Editor</strong> 탭을 선택한다.</p></li><li><h3>ILMB와 DLMB 주소 확인</h3><p>두 SLMB 경로의 Base가 <code>0x00000000</code>, Range가 <code>16K</code>, High가 <code>0x00003FFF</code>인지 확인한다.</p></li><li><h3>미연결 경로 구분</h3><p><code>Incomplete Paths (1)</code>의 <code>/microblaze_riscv_0/M_AXI_DP</code>는 이번 장에서 미사용하는 경로이므로 별도로 주소를 할당하지 않는다.</p></li></ol>
+<div class="table-wrap" tabindex="0" role="region" aria-label="실제 Address Editor 항목 / 확인값 확인 표"><table><thead><tr><th scope="col">실제 Address Editor 항목</th><th scope="col">확인값</th></tr></thead><tbody><tr><td data-label="실제 Address Editor 항목"><code>/microblaze_riscv_0_local_memory/ilmb_bram_if_cntlr/SLMB</code></td><td data-label="확인값">Base <code>0x00000000</code> · Range <code>16K</code> · High <code>0x00003FFF</code></td></tr>
+<tr><td data-label="실제 Address Editor 항목"><code>/microblaze_riscv_0_local_memory/dlmb_bram_if_cntlr/SLMB</code></td><td data-label="확인값">Base <code>0x00000000</code> · Range <code>16K</code> · High <code>0x00003FFF</code></td></tr>
+<tr><td data-label="실제 Address Editor 항목">Assigned / Unassigned</td><td data-label="확인값"><code>2 / 0</code></td></tr>
+<tr><td data-label="실제 Address Editor 항목">Incomplete Paths</td><td data-label="확인값"><code>1</code> — <code>M_AXI_DP</code> 미연결</td></tr></tbody></table></div>
+<div class="note">Instruction과 Data가 동일한 물리 BRAM을 보는 구성에서는 두 주소 범위가 같아도 오류가 아니다. 실습에서 정상 검증된 설계를 임의로 바꾸지 않는다.</div>
+</section>
 
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Memory와 I/O를 같은 주소로 접근</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Memory와 I/O를 같은 주소로 접근 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">대상</th><th scope="col" role="columnheader">CPU가 보는 것</th><th scope="col" role="columnheader">동작</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="대상" role="cell">BRAM</td><td data-label="CPU가 보는 것" role="cell">Memory Address</td><td data-label="동작" role="cell">Load / Store</td></tr>
-<tr role="row"><td data-label="대상" role="cell">GPIO Register</td><td data-label="CPU가 보는 것" role="cell">Peripheral Address</td><td data-label="동작" role="cell">Load / Store</td></tr>
-<tr role="row"><td data-label="대상" role="cell">UART Register</td><td data-label="CPU가 보는 것" role="cell">Peripheral Address</td><td data-label="동작" role="cell">Load / Store</td></tr>
-<tr role="row"><td data-label="대상" role="cell">Timer Register</td><td data-label="CPU가 보는 것" role="cell">Peripheral Address</td><td data-label="동작" role="cell">Load / Store</td></tr>
-</tbody></table></div>
-<div class="flow">CPU Load / Store → Address Decode → BRAM 또는 Peripheral Register</div></section>
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Base · Range · High 주소 계산</h2>
+<p>주소 범위는 <strong>Base Address(시작 주소)</strong>, <strong>Range(크기)</strong>, <strong>High Address(마지막 주소)</strong>로 계산한다.</p>
+<div class="signal-map">Base   : 0x00000000
+Range  : 0x00004000 = 16 × 1024 byte = 16 KiB
+High   : Base + Range - 1 → 0x00003FFF</div>
+<figure class="manual-figure"><svg viewBox="0 0 730 164" width="100%" role="img" aria-label="16 KiB BRAM 범위 0x0부터 0x3FFF와 실제 확인한 bram_word 첫 주소 0x1460" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="728" height="162" rx="10" fill="#fff" stroke="#d6dadd"/><text x="22" y="30" font-size="14" font-weight="700" fill="#20232b">Local BRAM 주소 범위 (16 KiB)</text><rect x="25" y="55" width="680" height="47" rx="6" fill="#edf1f8" stroke="#7f91ad"/><rect x="242" y="55" width="40" height="47" fill="#b6e5c9" stroke="#317e54"/><path d="M262 53 V38" stroke="#317e54" stroke-width="2"/><text x="262" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#245b3d">0x1460</text><text x="25" y="120" font-size="13" fill="#303747">0x00000000</text><text x="705" y="120" font-size="13" text-anchor="end" fill="#303747">0x00003FFF</text><text x="365" y="146" font-size="13" text-anchor="middle" fill="#576274">bram_word[0]의 실제 확인 주소: 0x00001460</text></svg><figcaption>표시 위치는 설명용 비례도이며 주소 0x00001460 자체는 실습 WATCH에서 확인한 실제 값이다.</figcaption></figure>
+<p>32비트 주소로 표현할 수 있는 전체 이론적 범위는 <code>0x00000000 ~ 0xFFFFFFFF</code>(4 GiB)이다. <strong>이 실습에서 실제로 연결된 메모리 영역은 그중 16 KiB뿐</strong>이다.</p>
+</section>
 
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Address Space · Segment · Path</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Address Space · Segment · Path · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">용어</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="용어" role="cell">Address Space</td><td data-label="의미" role="cell">Master가 생성할 수 있는 전체 주소 공간</td></tr>
-<tr role="row"><td data-label="용어" role="cell">Slave Segment</td><td data-label="의미" role="cell">Memory 또는 Peripheral이 제공하는 주소 가능한 영역</td></tr>
-<tr role="row"><td data-label="용어" role="cell">Address Path</td><td data-label="의미" role="cell">Master Interface에서 Slave Interface까지의 주소 전달 경로</td></tr>
-<tr role="row"><td data-label="용어" role="cell">Master Segment</td><td data-label="의미" role="cell">Master Address Space 안에 Slave Segment를 Base/Range로 배치한 결과</td></tr>
-</tbody></table></div></section>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>기존 프로젝트와 새 Application</h2>
+<p>하드웨어 프로젝트와 기존 Vitis Application은 그대로 유지한다. 04장 C 프로그램만 새 Application으로 분리한다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="구분 / 실습 경로 / 이름 확인 표"><table><thead><tr><th scope="col">구분</th><th scope="col">실습 경로 / 이름</th></tr></thead><tbody><tr><td data-label="구분">Vivado Project</td><td data-label="실습 경로 / 이름"><code>/home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code></td></tr>
+<tr><td data-label="구분">Vitis Workspace</td><td data-label="실습 경로 / 이름"><code>/home/jung/soc/sw</code></td></tr>
+<tr><td data-label="구분">기존 Platform</td><td data-label="실습 경로 / 이름"><code>soc_01_platform</code></td></tr>
+<tr><td data-label="구분">기존 03장 Application</td><td data-label="실습 경로 / 이름"><code>soc03_bram_run</code> — 변경하지 않음</td></tr>
+<tr><td data-label="구분">신규 04장 Application</td><td data-label="실습 경로 / 이름"><code>soc04_memory_map</code></td></tr></tbody></table></div>
+<div class="note">이 실습은 새로운 AXI IP를 추가하지 않으므로 Vivado Block Design을 수정하거나 Bitstream을 새로 생성할 필요가 없다.</div>
+</section>
 
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Address Path 구조</h2>
-<figure class="manual-figure"><a href="../../images/common/original_10.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG994 Address Structure · 원본 보기 (새 탭)"><img alt="AMD UG994 Address Structure" loading="lazy" src="../../images/common/original_10.png">
-</a><figcaption>Master Address Space가 SmartConnect를 거쳐 Slave Segment에 연결되는 구조.
-<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Addressing-Structure" target="_blank" rel="noopener">AMD UG994 · Addressing Structure · 2026.1</a></span><br><a href="../../images/common/original_10.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG994 Address Structure · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<div class="signal-map" tabindex="0" role="region" aria-label="05절 신호 및 실행 흐름">MicroBlaze V Address Space → M_AXI → SmartConnect → S_AXI → Slave Segment</div></section>
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Vitis Application 생성</h2>
+<ol class="step-seq"><li><h3>Vitis 2024.2 실행</h3><p>Workspace <code>/home/jung/soc/sw</code>를 열고 <strong>New Application</strong> 생성 화면으로 이동한다.</p></li><li><h3>Application Name 입력</h3><p><code>soc04_memory_map</code>을 입력한다.</p></li><li><h3>Platform 선택</h3><p>기존 <code>soc_01_platform</code>을 선택한다. Board는 <code>basys3</code>, Processor는 <code>microblaze_riscv_0</code>이다.</p></li><li><h3>Domain 확인</h3><p><code>standalone_microblaze_riscv_0</code>을 선택한다.</p></li><li><h3>Template 및 Finish</h3><p><strong>Empty Application</strong>을 선택하고 Finish로 생성한다. 기존 <code>soc03_bram_run</code>은 유지한다.</p></li><li><h3>main.c 생성</h3><p><code>/home/jung/soc/sw/soc04_memory_map/src/main.c</code>를 생성하고 다음 절의 코드를 입력한다.</p></li></ol>
+</section>
 
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Vivado Address Editor</h2>
-<figure class="manual-figure"><a href="../../images/common/original_11.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG994 Vivado Address Editor example · 원본 보기 (새 탭)"><img alt="AMD UG994 Vivado Address Editor example" loading="lazy" src="../../images/common/original_11.png">
-</a><figcaption>MicroBlaze V Data Address Space 아래에 Local Memory와 AXI Peripheral이 서로 다른 Base Address와 Range로 배치된 예.
-<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Address-Editor" target="_blank" rel="noopener">AMD UG994 · Using the Address Editor · 2026.1</a></span><br><a href="../../images/common/original_11.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG994 Vivado Address Editor example · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<p>그림의 주소값은 AMD 매뉴얼 예제이며 현재 SoC 04 프로젝트의 실제 주소값이 아니다.</p></section>
-
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>SoC 03 Local BRAM 주소</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="07절 신호 및 실행 흐름">Base  = 0x00000000
-Range = 16 KB = 0x00004000
-High  = Base + Range - 1
-      = 0x00003FFF</div>
-<p>실제 프로젝트에서는 Vivado Address Editor와 Vitis Linker Script의 주소를 기준으로 확인한다.</p></section>
-
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Base · Range · High Address</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Base · Range · High Address · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="항목" role="cell">Base Address</td><td data-label="의미" role="cell">해당 영역의 첫 주소</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Range</td><td data-label="의미" role="cell">해당 영역의 주소 크기</td></tr>
-<tr role="row"><td data-label="항목" role="cell">High Address</td><td data-label="의미" role="cell"><code>Base + Range - 1</code></td></tr>
-</tbody></table></div>
-<div class="signal-map" tabindex="0" role="region" aria-label="08절 신호 및 실행 흐름">예: Base = 0x40000000
-Range = 64 KB = 0x00010000
-High = 0x4000FFFF</div></section>
-
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>프로그램 영역과 데이터 주소</h2>
-<p>ELF의 <code>.text</code>, <code>.data</code>, <code>.bss</code>, Stack, Heap이 모두 Local BRAM에 배치될 수 있으므로 임의의 BRAM 절대주소를 테스트용으로 바로 사용하면 프로그램 영역과 충돌할 수 있다.</p>
-<p>따라서 Linker가 배치한 <code>bram_word[]</code> 배열의 실제 주소를 Debugger에서 확인한다.</p></section>
-
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>BRAM 주소 실습 코드</h2>
-<p>다음 코드는 SoC 04의 주소 확인을 위해 작성한 교육용 예제이다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="BRAM 주소 실습 코드 · 소스 코드"><code>#include &lt;stdint.h&gt;
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>main.c 원본 코드 입력</h2>
+<p>실제 실습에 사용한 변수명과 실행 순서를 유지한 <code>main.c</code> 전체 코드다. 절대 메모리 주소를 하드코딩하지 않고, 배열 주소를 Linker가 배치하도록 한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="04장 main.c 전체 소스 코드"><code>#include &lt;stdint.h&gt;
 #include &lt;stddef.h&gt;
-
-/*
- * SoC 04 교육용 Memory Map / BRAM 주소 확인 코드
- * 특정 BRAM 절대주소를 임의로 고정하지 않는다.
- */
 
 volatile uint32_t bram_word[4] = {0, 0, 0, 0};
 
@@ -341,140 +320,112 @@ int main(void)
     read_1 = bram_word[1];
     stage = 5;
 
-    while (1) {
-    }
+    while (1) {}
 
     return 0;
-}
-</code></pre>
-<div class="note"><code>uintptr_t</code>는 Pointer 주소값을 정수형으로 담기 위한 형식이다. 실제 BRAM 주소는 Build 후 Linker가 결정한다.</div></section>
+}</code></pre>
+<div class="note"><code>volatile</code>(볼러타일, 최적화 시에도 관찰 가능한 메모리 접근 지정)은 배열과 검증 변수의 실제 접근을 유지하도록 돕는다. <code>uintptr_t</code>는 포인터 주소를 보관할 수 있는 정수형이다. 각 <code>uint32_t</code> 요소는 4바이트를 차지한다.</div>
+</section>
 
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Write → Read → Re-Write → Re-Read</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Write → Read → Re-Write → Re-Read · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">단계</th><th scope="col" role="columnheader">동작</th><th scope="col" role="columnheader">확인값</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="단계" role="cell">1</td><td data-label="동작" role="cell">실제 주소 저장</td><td data-label="확인값" role="cell"><code>addr_0 ~ addr_3</code></td></tr>
-<tr role="row"><td data-label="단계" role="cell">2</td><td data-label="동작" role="cell">4개 위치에 Write</td><td data-label="확인값" role="cell"><code>11111111, 22222222, 33333333, 44444444</code></td></tr>
-<tr role="row"><td data-label="단계" role="cell">3</td><td data-label="동작" role="cell">같은 주소에서 Read</td><td data-label="확인값" role="cell"><code>read_0 ~ read_3</code></td></tr>
-<tr role="row"><td data-label="단계" role="cell">4</td><td data-label="동작" role="cell"><code>bram_word[1]</code> Re-Write</td><td data-label="확인값" role="cell"><code>0xA5A5A5A5</code></td></tr>
-<tr role="row"><td data-label="단계" role="cell">5</td><td data-label="동작" role="cell">같은 주소 Re-Read</td><td data-label="확인값" role="cell"><code>read_1 = 0xA5A5A5A5</code></td></tr>
-</tbody></table></div>
-<div class="signal-map" tabindex="0" role="region" aria-label="11절 신호 및 실행 흐름">같은 Address
-addr_1 = &amp;bram_word[1]
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Linker Script의 BRAM 배치</h2>
+<ol class="step-seq"><li><h3>Linker Script 열기</h3><p>Application의 <code>lscript.ld</code>를 열어 Memory Regions를 확인한다.</p></li><li><h3>BRAM 영역 확인</h3><p><code>lmb_bram_0</code>의 Base가 <code>0x00000000</code>, Size가 <code>0x00004000</code>인지 확인한다.</p></li><li><h3>Stack과 Heap 확인</h3><p>Stack <code>0x400</code>(1 KiB), Heap <code>0x800</code>(2 KiB) 설정을 확인한다.</p></li><li><h3>Section 배치 확인</h3><p><code>.text</code>, <code>.data</code>, <code>.bss</code> 등 프로그램 섹션이 Local BRAM에 배치되도록 설정되어 있는지 확인한다.</p></li></ol>
+<div class="table-wrap" tabindex="0" role="region" aria-label="설정 항목 / 실제 실습값 확인 표"><table><thead><tr><th scope="col">설정 항목</th><th scope="col">실제 실습값</th></tr></thead><tbody><tr><td data-label="설정 항목">Memory Region</td><td data-label="실제 실습값"><code>lmb_bram_0</code></td></tr>
+<tr><td data-label="설정 항목">Base / Size</td><td data-label="실제 실습값"><code>0x00000000 / 0x00004000</code></td></tr>
+<tr><td data-label="설정 항목">Stack</td><td data-label="실제 실습값"><code>0x400</code></td></tr>
+<tr><td data-label="설정 항목">Heap</td><td data-label="실제 실습값"><code>0x800</code></td></tr></tbody></table></div>
+<div class="note">배열의 세부 주소는 Linker 배치 결과에 따라 결정되므로 <code>0x00001460</code>을 소스 코드에 고정하지 않는다. 실제 위치는 Debugger WATCH에서 확인한다.</div>
+</section>
 
-Data
-0x22222222
-     ↓ Re-Write
-0xA5A5A5A5</div></section>
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Build와 ELF 생성 결과</h2>
+<ol class="step-seq"><li><h3>Application Build</h3><p>Vitis에서 <code>soc04_memory_map</code> Application을 Build한다.</p></li><li><h3>성공 메시지 확인</h3><p>Console에 <strong>Build Finished successfully</strong>가 나타나는지 확인한다.</p></li><li><h3>ELF 생성 확인</h3><p><code>/home/jung/soc/sw/soc04_memory_map/build/soc04_memory_map.elf</code>가 생성되었는지 확인한다.</p></li></ol>
+<div class="table-wrap" tabindex="0" role="region" aria-label="실제 Build 결과 / 값 확인 표"><table><thead><tr><th scope="col">실제 Build 결과</th><th scope="col">값</th></tr></thead><tbody><tr><td data-label="실제 Build 결과">Compiler</td><td data-label="값">GNU 13.3.0</td></tr>
+<tr><td data-label="실제 Build 결과">주요 옵션</td><td data-label="값"><code>-O2 -march=rv32i_zicsr_zifencei -mabi=ilp32</code></td></tr>
+<tr><td data-label="실제 Build 결과">text</td><td data-label="값">4,984 B</td></tr>
+<tr><td data-label="실제 Build 결과">data</td><td data-label="값">204 B</td></tr>
+<tr><td data-label="실제 Build 결과">bss</td><td data-label="값">3,564 B</td></tr>
+<tr><td data-label="실제 Build 결과">text + data + bss</td><td data-label="값">8,752 B</td></tr></tbody></table></div>
+<div class="note">8,752바이트는 세 섹션 크기의 합계이며, Heap·Stack 예약 영역을 합산한 전체 사용량을 뜻하지 않는다. 메모리 영역 배치의 자세한 검사는 Linker Map에서 수행한다.</div>
+</section>
 
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Debugger에서 실제 주소 확인</h2>
-<p>Watch 창에 <code>addr_0 ~ addr_3</code>, <code>bram_word[0] ~ [3]</code>, <code>read_0 ~ read_3</code>, <code>stage</code>를 등록한다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="12절 신호 및 실행 흐름">uint32_t 배열이므로
-addr_0 = X
-addr_1 = X + 4
-addr_2 = X + 8
-addr_3 = X + 12
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>launch.json 확인 및 Debug 진입</h2>
+<ol class="step-seq"><li><h3>04장 Launch 설정 열기</h3><p>Vitis 중앙 편집 영역의 상단 <code>launch.json</code> 탭을 <strong>직접 클릭하여 연다</strong>. 왼쪽 목록에서 단순히 다른 항목을 선택하라는 뜻이 아니다.</p></li><li><h3>Launch 설정 확인</h3><p>Launch Config Name <code>soc04_memory_map_app_hw_1</code>, Target Connection <code>Local [default]</code>, Target Setup Mode <code>Baremetal Debug</code>를 확인한다.</p></li><li><h3>Bitstream과 ELF 경로 확인</h3><p>Bitstream은 <code>${workspaceFolder}/soc04_memory_map/_ide/bitstream/soc01_mb_bram_wrapper.bit</code>, Application은 <code>${workspaceFolder}/soc04_memory_map/build/soc04_memory_map.elf</code>를 사용한다.</p></li><li><h3>Reset / Program 설정</h3><p><strong>Reset Entire System</strong>, <strong>Program Device</strong>, <code>microblaze_riscv_0</code>의 <strong>Reset Processor</strong>가 선택된 상태를 확인한다.</p></li><li><h3>Debug 실행</h3><p><code>main()</code>에 Breakpoint를 설정한 다음 Debug를 실행하고 <code>RISC-V → Hart #0 PAUSED ON BREAKPOINT</code> 상태를 확인한다.</p></li></ol>
+<div class="note">실제 환경에서 <code>launch.json</code> 탭을 연 뒤 Debug하면 진입에 성공했다. 탭을 열지 않았을 때 발생한 오류의 근본 원인은 확인되지 않았으므로 원인을 특정하지 않는다. 해당 절차는 확인된 우회 순서다.</div>
+</section>
 
-X는 실제 Linker 결과에서 확인</div></section>
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>WATCH 중간 검증 — stage 2</h2>
+<p>WATCH(워치, 변수 관찰)에 먼저 <code>stage</code>, <code>addr_0</code>, <code>bram_word</code>, <code>read_1</code> 네 항목만 추가한다. <code>bram_word</code> 옆 펼침 버튼을 누르면 네 배열 요소를 한 번에 확인할 수 있다.</p>
+<ol class="step-seq"><li><h3>기존 03장 변수 정리</h3><p>WATCH에 남아 있는 <code>memory_data</code>, <code>read_value_1</code> 등 03장 변수는 04장 코드에 없으므로 N/A가 표시될 수 있다. 제거하고 04장 변수를 등록한다.</p></li><li><h3>실행하여 중간값 확인</h3><p>F10(Step Over) 또는 Continue와 Breakpoint를 사용해 <code>stage</code>가 2인 시점을 확인한다.</p></li><li><h3>읽기 결과 확인</h3><p><code>read_1</code>이 <code>0x22222222</code>가 되고 배열의 네 요소가 초기 기록값인지 확인한다.</p></li></ol>
+<div class="table-wrap" tabindex="0" role="region" aria-label="WATCH 변수 / 실제로 확인한 중간값 확인 표"><table><thead><tr><th scope="col">WATCH 변수</th><th scope="col">실제로 확인한 중간값</th></tr></thead><tbody><tr><td data-label="WATCH 변수"><code>stage</code></td><td data-label="실제로 확인한 중간값"><code>0x00000002</code></td></tr>
+<tr><td data-label="WATCH 변수"><code>addr_0</code></td><td data-label="실제로 확인한 중간값"><code>0x00001460</code></td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[0]</code></td><td data-label="실제로 확인한 중간값"><code>0x11111111</code></td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[1]</code></td><td data-label="실제로 확인한 중간값"><code>0x22222222</code></td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[2]</code></td><td data-label="실제로 확인한 중간값"><code>0x33333333</code></td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[3]</code></td><td data-label="실제로 확인한 중간값"><code>0x44444444</code></td></tr>
+<tr><td data-label="WATCH 변수"><code>read_1</code></td><td data-label="실제로 확인한 중간값"><code>0x22222222</code></td></tr></tbody></table></div>
+<div class="note">실습 스크린샷에서는 <code>main.c</code> 34행에서 일시 정지했다. <code>stage = 3;</code> 문장이 실행되기 전이므로 <code>stage</code>가 2인 것은 정상이다.</div>
+</section>
 
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>주소와 데이터의 차이</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="주소와 데이터의 차이 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구분</th><th scope="col" role="columnheader">예</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="구분" role="cell">Address</td><td data-label="예" role="cell"><code>addr_1</code></td><td data-label="의미" role="cell">어느 위치를 선택할지 결정</td></tr>
-<tr role="row"><td data-label="구분" role="cell">Data</td><td data-label="예" role="cell"><code>0xA5A5A5A5</code></td><td data-label="의미" role="cell">선택된 위치에 저장되는 값</td></tr>
-</tbody></table></div>
-<div class="flow">Address 선택 → 위치 접근 → Data Write / Read</div></section>
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>WATCH 최종 검증 — stage 5</h2>
+<p><code>bram_word[1]</code>에 <code>0xA5A5A5A5</code>를 다시 기록한 뒤 같은 위치에서 재읽기하여 값이 바뀌었는지 확인한다. 실행을 <code>while (1) {}</code> 위치까지 진행하면 <code>stage</code>가 5가 된다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="WATCH 변수 / 최종 검증값 / 판정 확인 표"><table><thead><tr><th scope="col">WATCH 변수</th><th scope="col">최종 검증값</th><th scope="col">판정</th></tr></thead><tbody><tr><td data-label="WATCH 변수"><code>stage</code></td><td data-label="최종 검증값"><code>0x00000005</code></td><td data-label="판정">정상</td></tr>
+<tr><td data-label="WATCH 변수"><code>addr_0</code></td><td data-label="최종 검증값"><code>0x00001460</code></td><td data-label="판정">BRAM 내부 주소</td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[0]</code></td><td data-label="최종 검증값"><code>0x11111111</code></td><td data-label="판정">유지</td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[1]</code></td><td data-label="최종 검증값"><code>0xA5A5A5A5</code></td><td data-label="판정">재기록 성공</td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[2]</code></td><td data-label="최종 검증값"><code>0x33333333</code></td><td data-label="판정">유지</td></tr>
+<tr><td data-label="WATCH 변수"><code>bram_word[3]</code></td><td data-label="최종 검증값"><code>0x44444444</code></td><td data-label="판정">유지</td></tr>
+<tr><td data-label="WATCH 변수"><code>read_1</code></td><td data-label="최종 검증값"><code>0xA5A5A5A5</code></td><td data-label="판정">재읽기 성공</td></tr></tbody></table></div>
+<div class="flow"><strong>실제 보드 Debug 검증 완료</strong> — 동일 BRAM 주소에 새 데이터를 Write하고, 같은 주소에서 다시 Read한 결과가 일치함을 확인했다.</div>
+<div class="note">실제 성공 화면에서 <code>main.c</code> 44행의 무한 루프 위치와 <code>stage = 5</code>가 확인되었다. 이는 실제 FPGA 다운로드 및 실행 결과이며, AXI 주변장치 검증 결과는 아니다.</div>
+</section>
 
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Memory-Mapped I/O의 의미</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="14절 신호 및 실행 흐름">CPU Store
-   ├─ BRAM Address → Memory Cell 변경
-   └─ Peripheral Address → Hardware Register 변경 → Hardware 동작</div>
-<p>AMD UG1629에 따르면 MicroBlaze V의 Data Peripheral Interface는 AXI4-Lite를 기본으로 사용해 Peripheral에 단일 Read/Write 접근을 수행할 수 있다.</p></section>
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>주소와 32비트 데이터 관계</h2>
+<p><code>bram_word</code>는 각 요소가 32비트(4바이트)인 배열이므로 연속 주소에 4바이트씩 배치된다. <code>addr_0</code>가 실제로 <code>0x00001460</code>임을 확인했다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="요소 / 주소 / 근거 확인 표"><table><thead><tr><th scope="col">요소</th><th scope="col">주소</th><th scope="col">근거</th></tr></thead><tbody><tr><td data-label="요소"><code>bram_word[0]</code></td><td data-label="주소"><code>0x00001460</code></td><td data-label="근거">WATCH에서 실제 확인</td></tr>
+<tr><td data-label="요소"><code>bram_word[1]</code></td><td data-label="주소"><code>0x00001464</code></td><td data-label="근거">32비트 요소 간 4바이트 간격으로 계산</td></tr>
+<tr><td data-label="요소"><code>bram_word[2]</code></td><td data-label="주소"><code>0x00001468</code></td><td data-label="근거">같은 규칙으로 계산</td></tr>
+<tr><td data-label="요소"><code>bram_word[3]</code></td><td data-label="주소"><code>0x0000146C</code></td><td data-label="근거">같은 규칙으로 계산</td></tr></tbody></table></div>
+<figure class="manual-figure"><svg viewBox="0 0 730 220" width="100%" role="img" aria-label="MicroBlaze V와 Local BRAM의 0xA5A5A5A5 재기록과 재읽기 검증 구조" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="728" height="218" rx="10" fill="#fff" stroke="#d6dadd"/><rect x="24" y="65" width="196" height="105" rx="9" fill="#eaf2ff" stroke="#6596c5" stroke-width="2"/><text x="122" y="102" text-anchor="middle" font-weight="700" font-size="18" fill="#184873">MicroBlaze V</text><text x="122" y="132" text-anchor="middle" font-size="14" fill="#184873">Write / Read</text><rect x="485" y="54" width="221" height="126" rx="9" fill="#eaf6ee" stroke="#77b48c" stroke-width="2"/><text x="595" y="87" text-anchor="middle" font-weight="700" font-size="18" fill="#225d3c">Local BRAM</text><text x="595" y="117" text-anchor="middle" font-size="14" fill="#225d3c">bram_word[1]</text><text x="595" y="144" text-anchor="middle" font-size="14" fill="#225d3c">주소 0x00001464*</text><path d="M220 95 H480" stroke="#51657e" fill="none" stroke-width="2.5"/><path d="M480 95 l-10 -6 v12z" fill="#51657e"/><text x="348" y="83" text-anchor="middle" font-size="14" fill="#253e5b">Write 0xA5A5A5A5</text><path d="M485 146 H225" stroke="#51657e" fill="none" stroke-width="2.5"/><path d="M225 146 l10 -6 v12z" fill="#51657e"/><text x="348" y="169" text-anchor="middle" font-size="14" fill="#253e5b">Read 0xA5A5A5A5</text><text x="365" y="203" text-anchor="middle" font-size="12" fill="#5a646e">* addr_0의 확인값과 배열 요소 크기에서 산출한 주소</text></svg><figcaption>04장 성공 결과를 바탕으로 재구성한 데이터 이동도. 녹색 상자의 0x00001464는 WATCH로 직접 확인한 값이 아니라 계산한 주소다.</figcaption></figure>
+</section>
 
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Peripheral 주소 구조 예고</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="15절 신호 및 실행 흐름">MicroBlaze V Data Address Space
-├─ Local BRAM
-├─ AXI GPIO Register Area
-├─ AXI UART Lite Register Area
-└─ AXI Timer Register Area</div>
-<div class="warn">GPIO/UART/Timer의 Base Address는 아직 결정하지 않는다. 실제 IP를 추가한 뒤 Address Editor에서 확정한다.</div></section>
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>04장 실습 결과와 다음 장 경계</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="구분 / 04장에서 확인한 결과 확인 표"><table><thead><tr><th scope="col">구분</th><th scope="col">04장에서 확인한 결과</th></tr></thead><tbody><tr><td data-label="구분">Hardware</td><td data-label="04장에서 확인한 결과">MicroBlaze V의 ILMB/DLMB → 16 KiB Local BRAM</td></tr>
+<tr><td data-label="구분">Software</td><td data-label="04장에서 확인한 결과"><code>soc04_memory_map</code>의 C 배열에 Write / Read / Re-Write / Re-Read</td></tr>
+<tr><td data-label="구분">Address</td><td data-label="04장에서 확인한 결과"><code>addr_0 = 0x00001460</code> 실제 확인</td></tr>
+<tr><td data-label="구분">Data</td><td data-label="04장에서 확인한 결과"><code>bram_word[1]</code>과 <code>read_1</code>의 최종값 <code>0xA5A5A5A5</code> 일치</td></tr>
+<tr><td data-label="구분">Debug</td><td data-label="04장에서 확인한 결과">FPGA 다운로드와 RISC-V Hart 일시 정지 및 WATCH 값 확인</td></tr></tbody></table></div>
+<p>이번 장에서 다룬 것은 <strong>BRAM에 대한 Memory Map</strong>이다. 주변장치의 Memory-Mapped I/O는 CPU가 특정 장치 레지스터 주소에 접근한다는 공통 원리를 갖지만, 실제 AXI 연결과 동작은 아직 구현하지 않았다.</p>
+<div class="flow">04장 BRAM 주소 접근 검증 완료 → 05장 AXI 전송 구조 → 06장 AXI GPIO 실제 주변장치 연결</div>
+</section>
 
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Address Editor 사용 절차</h2>
-<figure class="manual-figure"><a href="../../images/common/v_address.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD UG1711 2026.1 · Memory-Mapping in the Address Editor. 실제 인스턴스의 주소를 확인한다. · 원본 보기 (새 탭)"><img alt="AMD UG1711 2026.1 · Memory-Mapping in the Address Editor. 실제 인스턴스의 주소를 확인한다." loading="lazy" src="../../images/common/v_address.png">
-</a><figcaption>AMD UG1711 2026.1 · Memory-Mapping in the Address Editor. 실제 인스턴스의 주소를 확인한다.<br><a href="../../images/common/v_address.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD UG1711 2026.1 · Memory-Mapping in the Address Editor. 실제 인스턴스의 주소를 확인한다. · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<ol class="step-seq">
-<li><h3>Address Editor 열기</h3><p>Block Design 상단의 Address Editor를 연다.</p></li>
-<li><h3>Master Address Space 확인</h3><p><code>microblaze_riscv_0</code>의 Instruction/Data Address Space를 확인한다.</p></li>
-<li><h3>Assigned / Unassigned 확인</h3><p>주소가 없는 Slave Segment가 있는지 확인한다.</p></li>
-<li><h3>Assign All 또는 수동 배치</h3><p>자동 배치 후 Base Address와 Range를 확인하거나 직접 조정한다.</p></li>
-<li><h3>중복 확인</h3><p>각 Address Range가 서로 겹치지 않는지 확인한다.</p></li>
-</ol></section>
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>오류 점검</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="증상 / 확인 및 조치 확인 표"><table><thead><tr><th scope="col">증상</th><th scope="col">확인 및 조치</th></tr></thead><tbody><tr><td data-label="증상">Address Editor에 <code>M_AXI_DP</code> Incomplete Paths (1)</td><td data-label="확인 및 조치">이번 장에서 미연결인 경로로, BRAM 검증을 막는 오류로 판정하지 않는다.</td></tr>
+<tr><td data-label="증상">Build 실패</td><td data-label="확인 및 조치"><code>soc04_memory_map/src/main.c</code>의 입력과 <code>lscript.ld</code>의 <code>lmb_bram_0</code> 16 KiB 설정을 확인한다.</td></tr>
+<tr><td data-label="증상">Debug 진입 실패 또는 설정 오류</td><td data-label="확인 및 조치">중앙 상단 <code>launch.json</code> 탭을 클릭해 열고 Bitstream·ELF 경로와 Program/Reset 설정을 확인한 뒤 재시도한다.</td></tr>
+<tr><td data-label="증상">WATCH의 03장 변수에 N/A 표시</td><td data-label="확인 및 조치"><code>memory_data</code> 등 이전 Application 변수명을 제거하고 04장 변수명을 추가한다.</td></tr>
+<tr><td data-label="증상"><code>stage</code>가 예상보다 작음</td><td data-label="확인 및 조치">Breakpoint가 대입문 실행 <strong>이전</strong>에 멈춘 것인지 확인한다. 최종값은 <code>while(1)</code> 위치에서 확인한다.</td></tr>
+<tr><td data-label="증상">배열 주소가 <code>0x1460</code>과 다름</td><td data-label="확인 및 조치">주소는 Linker가 결정한다. 실제 WATCH의 주소가 BRAM 범위 내이고 데이터가 올바르면 무조건 오류로 보지 않는다.</td></tr></tbody></table></div>
+</section>
 
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>주소 중복과 정렬</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="주소 중복과 정렬 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문제</th><th scope="col" role="columnheader">결과</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="문제" role="cell">Address Range 중복</td><td data-label="결과" role="cell">Slave 선택 충돌 또는 Address Assignment 오류</td></tr>
-<tr role="row"><td data-label="문제" role="cell">Range 부족</td><td data-label="결과" role="cell">전체 Register 영역 접근 불가</td></tr>
-<tr role="row"><td data-label="문제" role="cell">잘못된 Alignment</td><td data-label="결과" role="cell">Vivado 주소 배치 오류 또는 불필요한 복잡성</td></tr>
-<tr role="row"><td data-label="문제" role="cell">Hardware 주소와 Software Macro 불일치</td><td data-label="결과" role="cell">CPU가 잘못된 Hardware에 접근</td></tr>
-</tbody></table></div></section>
-
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>volatile 포인터 접근</h2>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="volatile 포인터 접근 · 소스 코드"><code>volatile uint32_t *reg =
-    (volatile uint32_t *)PERIPHERAL_ADDRESS;
-
-*reg = write_data;     // Write
-read_data = *reg;      // Read</code></pre>
-<p><code>volatile</code>은 Hardware 주소 접근을 Compiler가 임의로 제거하거나 일반 Register 값으로만 대체하지 않도록 하는 데 중요하다.</p>
-<div class="warn"><code>PERIPHERAL_ADDRESS</code>는 실제 Address Editor와 Hardware Header에서 확인한 주소를 사용한다. SoC 04에서는 존재하지 않는 Peripheral 주소를 임의로 실행하지 않는다.</div></section>
-
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>SoC 04 전체 흐름</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="19절 신호 및 실행 흐름">MicroBlaze V Address 생성
-      ↓
-Address Space에서 대상 결정
-      ↓
-Local BRAM 선택
-      ↓
-bram_word[] 실제 주소 확인
-      ↓
-Write → Read
-      ↓
-같은 주소 Re-Write → Re-Read
-      ↓
-Address와 Data 구분
-      ↓
-이후 AXI Peripheral Register 주소 접근으로 확장</div></section>
-
-<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>오류 점검</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인 위치</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="증상" role="cell">주소가 예상과 다름</td><td data-label="원인 후보" role="cell">Linker 배치 결과 차이</td><td data-label="확인 위치" role="cell"><code>addr_0 ~ addr_3</code>, Linker Map</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Read 값이 Write 값과 다름</td><td data-label="원인 후보" role="cell">실행 순서 또는 Breakpoint 위치</td><td data-label="확인 위치" role="cell"><code>stage</code></td></tr>
-<tr role="row"><td data-label="증상" role="cell">Memory Overflow</td><td data-label="원인 후보" role="cell">Program/Data가 Local BRAM보다 큼</td><td data-label="확인 위치" role="cell">Linker Map</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Address Editor에 Peripheral이 없음</td><td data-label="원인 후보" role="cell">아직 AXI Slave를 추가하지 않음</td><td data-label="확인 위치" role="cell">SoC 04에서는 정상</td></tr>
-<tr role="row"><td data-label="증상" role="cell">임의 주소 접근 후 오류</td><td data-label="원인 후보" role="cell">해당 주소에 실제 Slave가 없음</td><td data-label="확인 위치" role="cell">Assigned Segment 확인</td></tr>
-</tbody></table></div></section>
-
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 04 완료 체크리스트</h2>
-<ul>
-<li>[ ] Memory Map이 주소별 Hardware 배치표라는 것을 설명할 수 있다.</li>
-<li>[ ] 32비트 주소 공간 <code>0x00000000 ~ 0xFFFFFFFF</code>을 이해한다.</li>
-<li>[ ] Address Space, Slave Segment, Address Path, Master Segment를 구분한다.</li>
-<li>[ ] Base, Range, High Address 관계를 계산할 수 있다.</li>
-<li>[ ] 16 KB Local BRAM 예가 <code>0x00000000 ~ 0x00003FFF</code>임을 이해한다.</li>
-<li>[ ] <code>bram_word[0] ~ [3]</code>의 실제 주소를 Debugger에서 확인했다.</li>
-<li>[ ] 같은 주소에 Write → Read → Re-Write → Re-Read했다.</li>
-<li>[ ] <code>bram_word[1]</code>의 최종값이 <code>0xA5A5A5A5</code>임을 확인했다.</li>
-<li>[ ] 실제 Peripheral 주소는 Address Editor에서 확정해야 함을 이해한다.</li>
-</ul>
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 04 최종 확인 결과</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="검증 항목 / 실제 확인 확인 표"><table><thead><tr><th scope="col">검증 항목</th><th scope="col">실제 확인</th></tr></thead><tbody><tr><td data-label="검증 항목">Vivado Local BRAM</td><td data-label="실제 확인">Base <code>0x00000000</code> · High <code>0x00003FFF</code> · 16 KiB</td></tr>
+<tr><td data-label="검증 항목">Vitis Build</td><td data-label="실제 확인"><code>soc04_memory_map.elf</code> 생성 성공</td></tr>
+<tr><td data-label="검증 항목">FPGA Debug</td><td data-label="실제 확인">RISC-V Hart #0 일시 정지 확인</td></tr>
+<tr><td data-label="검증 항목">실제 배열 주소</td><td data-label="실제 확인"><code>addr_0 = 0x00001460</code></td></tr>
+<tr><td data-label="검증 항목">데이터 재기록 및 재읽기</td><td data-label="실제 확인"><code>bram_word[1] = read_1 = 0xA5A5A5A5</code></td></tr>
+<tr><td data-label="검증 항목">최종 실행 단계</td><td data-label="실제 확인"><code>stage = 5</code></td></tr></tbody></table></div>
 <div class="flow">SoC 04 완료 → SoC 05 AXI4 / AXI4-Lite / AXI4-Stream 구조</div></section>
 
-<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
+<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 자료</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Addressing-Structure" target="_blank" rel="noopener">AMD UG994 · Addressing Structure · 2026.1</a></td><td data-label="확인 항목" role="cell">Address Space, Segment, Path 구조</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Address-Editor" target="_blank" rel="noopener">AMD UG994 · Using the Address Editor · 2026.1</a></td><td data-label="확인 항목" role="cell">Address Editor 구조</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Editing-Addresses" target="_blank" rel="noopener">AMD UG994 · Editing Addresses · 2026.1</a></td><td data-label="확인 항목" role="cell">Assign All, Base/Range 편집</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1711-microblaze-v-embedded-design/Memory-Mapping-in-the-Address-Editor" target="_blank" rel="noopener">AMD UG1711 · Memory-Mapping in the Address Editor · 2026.1</a></td><td data-label="확인 항목" role="cell">MicroBlaze V Peripheral Memory Mapping 절차</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Architecture" target="_blank" rel="noopener">AMD UG1629 · Memory Architecture · 2026.1</a></td><td data-label="확인 항목" role="cell">32비트 Effective/Physical Address 관계</td></tr>
-<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Mapped-Interfaces" target="_blank" rel="noopener">AMD UG1629 · Memory-Mapped Interfaces · 2026.1</a></td><td data-label="확인 항목" role="cell">AXI Peripheral Interface Read/Write</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Addressing-Structure" target="_blank" rel="noopener">AMD UG994 · Addressing Structure</a></td><td data-label="확인 항목" role="cell">Address Space의 기본 개념</td></tr>
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems/Using-the-Address-Editor" target="_blank" rel="noopener">AMD UG994 · Using the Address Editor</a></td><td data-label="확인 항목" role="cell">Vivado에서 주소 범위 확인</td></tr>
+
+
+<tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/ug1629-microblaze-v-user-guide/Memory-Architecture" target="_blank" rel="noopener">AMD UG1629 · Memory Architecture</a></td><td data-label="확인 항목" role="cell">32비트 메모리 주소 개념</td></tr>
+
 </tbody></table></div></section>
 
 <nav class="chapter-nav"><a href="03_microblaze_bram_program_execution.html">← SoC 03</a><a href="../../index.html">전체 목차</a><a href="05_axi4_axi4lite_axi4stream.html">SoC 05 →</a></nav>
 </main></div>
-<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+<footer class="site-footer">BASYS3 SOC + NPU · PRACTICAL TEXTBOOK</footer>
 </body></html>
