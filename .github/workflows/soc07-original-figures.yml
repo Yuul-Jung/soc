@@ -61,8 +61,18 @@ jobs:
           images=[]
           for key,page_num,filename,figure,frac,caption_token in figs:
             p=docs[key][page_num-1];x0,y0,x1,y1=frac
-            rect=fitz.Rect(p.rect.x0+x0*p.rect.width,p.rect.y0+y0*p.rect.height,
-                           p.rect.x0+x1*p.rect.width,p.rect.y0+y1*p.rect.height)
+            if key=="digilent":
+              # Figure location changed across the official manual revisions.
+              hits=p.search_for("Figure 6.") or p.search_for("Figure 6")
+              if not hits:raise RuntimeError("Cannot find Digilent Figure 6 caption")
+              cap=hits[0]
+              rect=fitz.Rect(p.rect.x0+.20*p.rect.width,
+                   max(p.rect.y0,cap.y0-.15*p.rect.height),
+                   p.rect.x0+.80*p.rect.width,
+                   min(p.rect.y1,cap.y1+.035*p.rect.height))
+            else:
+              rect=fitz.Rect(p.rect.x0+x0*p.rect.width,p.rect.y0+y0*p.rect.height,
+                             p.rect.x0+x1*p.rect.width,p.rect.y0+y1*p.rect.height)
             text=p.get_text("text",clip=rect)
             if caption_token.lower() not in text.lower():
               raise RuntimeError("Figure caption or key term missing: "+figure+"; "+text[:300])
