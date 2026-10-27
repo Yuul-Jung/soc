@@ -34,10 +34,9 @@ MicroBlaze V
 ## Basys3 USB-UART
 
 
-[![Basys3 USB UART 연결도](../images/soc07/basys3_usb_uart.svg)](../images/soc07/basys3_usb_uart.svg)
+원본 그림: [Digilent Basys 3 Reference Manual · Figure 6 (7쪽)](https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7)
 
-Digilent Basys 3 Reference Manual Figure 6을 기준으로 재작성한 연결도. FT2232HQ가 J4 Micro-USB와 FPGA UART 핀 사이를 연결한다.
-원문: Basys 3 Reference Manual · Page 7 · Figure 6
+FT2232HQ가 J4 Micro-USB와 FPGA UART 핀 사이를 연결한다. 공식 원본 그림을 직접 열람하며 B18(RX)과 A18(TX)를 확인한다.
 
 
 | 기능 | FPGA Pin | Top Port |
@@ -53,10 +52,9 @@ MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하
 ## AXI UART Lite 내부 구조
 
 
-[![AXI UART Lite block diagram](../images/soc07/pg142_axi_uartlite_block.svg)](../images/soc07/pg142_axi_uartlite_block.svg)
+원본 그림: [AMD PG142 · Figure 1-1 (5쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5)
 
-AMD PG142 Figure 1-1 기반 재작성 구조도. AXI4-Lite Interface, RX/TX FIFO, Status/Control Register, Baud Rate Generator가 핵심이다.
-원문: AMD PG142 · Page 5 · Figure 1-1
+AXI4-Lite Interface, RX/TX FIFO, Status/Control Register, Baud Rate Generator가 핵심이다.
 
 RX FIFO와 TX FIFO는 각각 16-character 깊이를 가지며 AXI4-Lite Register 접근으로 CPU가 데이터를 읽고 쓴다.
 
@@ -151,10 +149,7 @@ Classic Flow는 일반적으로 XPAR_UARTLITE_0_BASEADDR, SDT Flow는 XPAR_XUART
 ## Register Map
 
 
-[![AXI UART Lite register map](../images/soc07/pg142_uart_register_map.svg)](../images/soc07/pg142_uart_register_map.svg)
-
-AMD PG142 Table 2-4 기반 재작성 Register Map.
-원문: AMD PG142 · Page 9 · Register Space
+공식 원문: [AMD PG142 Table 2-4 · Register Space (9쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9)
 
 
 | Offset | Register | Access | 역할 |
@@ -167,16 +162,22 @@ AMD PG142 Table 2-4 기반 재작성 Register Map.
 
 ## RX FIFO
 
+공식 원본: [PG142 Figure 2-1 · RX FIFO 비트 배치 (9쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9)
+
 RX FIFO는 16-entry이며 수신된 Character를 저장한다. 8-bit 설정에서는 유효 Data가 bit [7:0]에 들어온다.
 
 
 ## TX FIFO
+
+공식 원본: [PG142 Figure 2-2 · TX FIFO 비트 배치 (10쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10)
 
 TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.
 
 
 ## Status Register
 
+
+공식 원본: [PG142 Figure 2-4 · Status Register 비트 배치 (11쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11)
 
 | Bit | 이름 | 의미 |
 | --- | --- | --- |
@@ -192,6 +193,8 @@ TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.
 
 ## Control Register
 
+
+공식 원본: [PG142 Figure 2-3 · Control Register 비트 배치 (10쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10)
 
 | Bit | 기능 |
 | --- | --- |
@@ -346,7 +349,7 @@ ls -l /dev/serial/by-id/는 연결된 Serial 장치를 사람이 읽기 쉬운 �
 
 ## 실행 결과
 
-FPGA Program → ELF Run → Terminal 연결 순서로 진행한다. 정상이라면 시작 문자열이 나타난다.
+FPGA Program → Terminal 연결 → ELF Run 순서로 진행한다. 정상이라면 시작 문자열이 나타난다.
 
 
 ```text
@@ -405,20 +408,42 @@ SoC 05의 AR/R Read와 AW/W/B Write가 UART FIFO 접근으로 실제 적용된�
 | RX/TX가 서로 바뀜 | 방향 관점 혼동 | B18=FPGA RX, A18=FPGA TX |
 
 
-## SoC 07 완료 체크리스트
+## AMD 공식 Example Design · 예제 설계
 
-- [ ] AXI UART Lite를 MicroBlaze V AXI Master에 연결했다.
-- [ ] Baud 115200, Data 8, Parity None으로 설정했다.
-- [ ] UART RX를 B18, TX를 A18에 연결했다.
-- [ ] Address Editor에서 실제 UART Lite Base Address를 확인했다.
-- [ ] RX FIFO +0x00, TX FIFO +0x04, STATUS +0x08, CONTROL +0x0C를 구분한다.
-- [ ] RX/TX FIFO가 각각 16-character 깊이임을 이해한다.
-- [ ] Status bit0과 bit3의 의미를 이해한다.
-- [ ] FIFO Clear를 위해 Control bit1/bit0을 사용했다.
-- [ ] XSA와 Vitis Platform을 갱신했다.
-- [ ] Terminal을 115200 8N1, Flow Control Off, Local Echo Off로 설정했다.
-- [ ] PC 입력 Byte를 RX FIFO에서 읽고 TX FIFO로 다시 썼다.
-- [ ] 실제 보드 실행에서 Echo 결과를 확인했다.
+원본 그림: [AMD PG142 Figure 5-1 · Example Design Block Diagram (18쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=18)
+
+- Vivado **Open IP Example Design**은 공식 AXI UART Lite IP 예제 프로젝트를 새로 생성한다.
+- **Clock Generator**는 예제 내부 AXI 클록 100 MHz를 생성한다.
+- **AXI Traffic Generator(ATG)**는 TX FIFO에 `0x41`을 Write하고 UART TX로 문자 `A`를 송신한다.
+- 공식 설명은 **KC705 보드**를 전제로 한다. Basys3 + MicroBlaze V 프로젝트와 동일한 설계가 아니므로 두 환경을 구분한다.
+- 공식 제공 파일: `<component_name>_exdes.vhd`, `clock_gen.vhd`, `atg_*.coe` 등.
+
+## AMD 공식 Test Bench · 시뮬레이션
+
+원본 그림: [AMD PG142 Figure 6-1 · Test Bench Block Diagram (21쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=21)
+
+- 제공 소스: 공식 Example Design의 Simulation Sources 안에 있는 `<component_name>_exdes_tb.vhd`(VHDL).
+- **Test Bench**는 입력 클록 200 MHz와 초기 Reset을 만들고, 예제 설계의 직렬 TX 출력을 검사한다.
+- 예제 내부 Clock Generator는 IP용 100 MHz AXI 클록을 생성한다.
+- UART 송신 데이터를 직렬·병렬 변환해 ASCII 문자 `A`(`0x41`)와 일치하는지 판정한다.
+- 실행 절차: 공식 Example Design 별도 생성 → Simulation Sources 확인 → **Run Behavioral Simulation** → TX 파형 및 결과 메시지 확인.
+- 기대 성공 메시지: `Test Completed Successfully`. **실제 Vivado 2024.2 시뮬레이션 성공은 아직 검증되지 않았다.**
+- 이 공식 시험은 AXI UART Lite의 송신 경로를 확인하는 것이며, 현재 07장의 Basys3 + MicroBlaze V 양방향 Echo 검증을 대신하지 않는다.
+
+## SoC 07 실습 확인 항목
+
+- AXI UART Lite를 MicroBlaze V AXI Master에 연결했다.
+- Baud 115200, Data 8, Parity None으로 설정했다.
+- UART RX를 B18, TX를 A18에 연결했다.
+- Address Editor에서 실제 UART Lite Base Address를 확인했다.
+- RX FIFO +0x00, TX FIFO +0x04, STATUS +0x08, CONTROL +0x0C를 구분한다.
+- RX/TX FIFO가 각각 16-character 깊이임을 이해한다.
+- Status bit0과 bit3의 의미를 이해한다.
+- FIFO Clear를 위해 Control bit1/bit0을 사용했다.
+- XSA와 Vitis Platform을 갱신했다.
+- Terminal을 115200 8N1, Flow Control Off, Local Echo Off로 설정했다.
+- PC 입력 Byte를 RX FIFO에서 읽고 TX FIFO로 다시 썼다.
+- 실제 보드 실행에서 Echo 결과를 확인했다.
 
 ## 공식 매뉴얼 및 원본 근거
 
