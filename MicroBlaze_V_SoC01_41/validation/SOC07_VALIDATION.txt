@@ -39,3 +39,9 @@ PG142 legacy GUI Figure 4-1 shows baud 9600. SoC07 Vivado configuration is 11520
 Vivado 2024.2 generated UART Lite IP simulation: NOT RUN.
 MicroBlaze V target Build/ELF/debug and Basys3 07 Echo: NOT RUN.
 Actual Vivado GUI screenshots and on-board UART verification: NOT RUN.
+
+2026-10-27 final figure-crop and browser QA verification:
+Original Digilent Figure 6, PG142 Figures 1-1, 2-1, 2-2, 2-3, 2-4, 4-1, 5-1, 6-1 and Table 2-4 visually inspected individually from stored PNGs, including source captions, important control/status labels, and edges. Revised crops exclude adjacent PDF paragraph fragments while retaining complete labels.
+QA rerun GitHub Actions 40453311442: SUCCESS after latest image asset regeneration and document commits. 10/10 original figure PNG images displayed by Chromium at 1440/1024/390/320 px; no page horizontal overflow, 27/27 anchors and relative paths; image integrity hashes match manifest; Icarus Verilog-2005 compilation against interface-only IP stub PASS.
+GitHub Pages direct visual confirmation in this environment: NOT AVAILABLE (headless browser against built local HTML passed; Pages deploy tracked separately).
+Generated Xilinx IP execution in Vivado/XSim and Basys3 board: NOT RUN.
