@@ -34,12 +34,12 @@ jobs:
             ("digilent",7,"digilent_fig06_basys3_uart.png","Digilent Figure 6",(.29,.685,.72,.83),"FT2232"),
             ("amd",5,"pg142_fig01_01_axi_uartlite.png","PG142 Figure 1-1",(.16,.29,.90,.57),"UART"),
             ("amd",9,"pg142_table02_04_registers.png","PG142 Table 2-4",(.15,.445,.93,.595),"Register"),
-            ("amd",9,"pg142_fig02_01_rx_fifo.png","PG142 Figure 2-1",(.16,.765,.91,.875),"FIFO"),
+            ("amd",9,"pg142_fig02_01_rx_fifo.png","PG142 Figure 2-1",(.16,.700,.91,.875),"FIFO"),
             ("amd",10,"pg142_fig02_02_tx_fifo.png","PG142 Figure 2-2",(.16,.35,.91,.495),"FIFO"),
             ("amd",10,"pg142_fig02_03_control.png","PG142 Figure 2-3",(.16,.735,.91,.885),"Control"),
             ("amd",11,"pg142_fig02_04_status.png","PG142 Figure 2-4",(.16,.53,.91,.74),"Status"),
-            ("amd",15,"pg142_fig04_01_vivado_gui.png","PG142 Figure 4-1",(.16,.14,.90,.655),"Vivado"),
-            ("amd",18,"pg142_fig05_01_example_design.png","PG142 Figure 5-1",(.19,.455,.89,.815),"Design"),
+            ("amd",15,"pg142_fig04_01_vivado_gui.png","PG142 Figure 4-1",(.16,.14,.90,.642),"Vivado"),
+            ("amd",18,"pg142_fig05_01_example_design.png","PG142 Figure 5-1",(.19,.455,.89,.800),"Design"),
             ("amd",21,"pg142_fig06_01_testbench.png","PG142 Figure 6-1",(.22,.39,.88,.765),"Bench")
           ]
           docs={}; records={}
@@ -67,7 +67,7 @@ jobs:
               if not hits:raise RuntimeError("Cannot find Digilent Figure 6 caption")
               cap=hits[0]
               rect=fitz.Rect(p.rect.x0+.20*p.rect.width,
-                   max(p.rect.y0,cap.y0-.15*p.rect.height),
+                   max(p.rect.y0,cap.y0-.12*p.rect.height),
                    p.rect.x0+.80*p.rect.width,
                    min(p.rect.y1,cap.y1+.035*p.rect.height))
             else:
