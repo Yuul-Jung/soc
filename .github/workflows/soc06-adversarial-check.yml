@@ -1,0 +1,100 @@
+name: SoC06 project lineage and published-source QA
+on:
+  push:
+    paths:
+      - .github/workflows/soc06-adversarial-check.yml
+      - MicroBlaze_V_SoC01_41/pages/soc/06_axi_gpio.html
+      - MicroBlaze_V_SoC01_41/docs/soc06.md
+      - MicroBlaze_V_SoC01_41/code/soc06/**
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up browser QA
+        run: |
+          python -m pip install playwright
+          python -m playwright install chromium
+      - name: Verify chapter-06 project lineage and actual RTL port mappings
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import re
+          root=Path('MicroBlaze_V_SoC01_41')
+          page=root/'pages/soc/06_axi_gpio.html'
+          html=page.read_text()
+          md=(root/'docs/soc06.md').read_text()
+          a=(root/'code/soc06/basys3_axi_gpio.xdc').read_text()
+          b=(root/'code/soc06/working_files/basys3_axi_gpio.xdc').read_text()
+          assert a==b,'Shipped primary and working XDC files differ'
+          for required in [
+              'soc01_microblaze_bram.xpr','soc06_axi_gpio.xpr',
+              'soc01_mb_bram.bd','soc06_axi_gpio.bd',
+              'soc01_mb_bram_wrapper','soc06_axi_gpio_wrapper',
+              'Save Block Design As','Let Vivado manage wrapper and auto-update',
+              'Remove File from Project','Delete files from disk',
+              '9개']:
+            assert required in html, 'Missing verified historical step '+required
+          assert '04장 성공 프로젝트는 변경하지 않습니다' not in html,'Wrong project lineage'
+          ids=re.findall(r'<section class="step-card" id="(s\d+)"',html)
+          nav=re.findall(r'<li><a href="#(s\d+)"',html)
+          assert len(ids)==16 and ids==nav, f'Navigation mismatch: {ids} != {nav}'
+          for doc in (a,md):
+            for n in range(16):
+              assert f'get_ports {{sw_tri_i[{n}]}}' in doc, f'Missing switch pin {n}'
+              assert f'get_ports {{led_tri_o[{n}]}}' in doc, f'Missing LED pin {n}'
+              assert f'get_ports {{sw[{n}]}}' not in doc,'Old wrong wrapper port: sw'
+              assert f'get_ports {{led[{n}]}}' not in doc,'Old wrong wrapper port: led'
+          assert 'soc06_axi_gpio_wrapper' in md
+          assert 'Save Block Design As' in md
+          assert '[ ]' not in md and '[x]' not in md
+          class RefCheck(HTMLParser):
+            def __init__(self):super().__init__();self.links=[];self.images=[]
+            def handle_starttag(self,tag,attrs):
+              a=dict(attrs)
+              if tag=='img':self.images.append(a)
+              if tag=='a':self.links.append(a.get('href',''))
+          p=RefCheck();p.feed(html)
+          assert len(p.images)>=2
+          for img in p.images:
+            src=img.get('src','')
+            if not src or src.startswith(('http:','https:','data:')):continue
+            assert (page.parent/src).resolve().is_file(),'Broken image '+src
+            assert img.get('alt'),'Missing image alt: '+src
+          print('QA PASS: 01→06 clone, Design Sources BD, wrapper Top, 9 IP status, 16/16 switch/LED XDC pins, 16 section anchors, image paths')
+          PY
+      - name: Browser check for full-width rendering at desktop and mobile
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          url=Path('MicroBlaze_V_SoC01_41/pages/soc/06_axi_gpio.html').resolve().as_uri()
+          with sync_playwright() as p:
+            browser=p.chromium.launch(headless=True,args=['--no-sandbox','--allow-file-access-from-files'])
+            for width in [1440,1024,390,320]:
+              page=browser.new_page(viewport={'width':width,'height':920})
+              page.goto(url,wait_until='load')
+              page.evaluate("""async () => {
+                const imgs=[...document.querySelectorAll('main img')];
+                imgs.forEach(img=>img.loading='eager');
+                await Promise.all(imgs.map(img=>img.decode().catch(()=>null)));
+              }""")
+              status=page.evaluate("""() => ({
+                width:window.innerWidth,
+                scroll:document.documentElement.scrollWidth,
+                images:[...document.querySelectorAll('main img')].map(i=>[i.naturalWidth,i.naturalHeight,i.getAttribute('src')])
+              })""")
+              assert status['scroll']<=width+2, f'Horizontal overflow at {width}: {status}'
+              assert all(x[0]>0 and x[1]>0 for x in status['images']), f'Broken image at {width}: {status}'
+              assert len(status['images'])>=2
+              print(f'QA PASS: viewport={width}, {len(status["images"])} images loaded, no horizontal overflow')
+              page.close()
+            browser.close()
+          PY
