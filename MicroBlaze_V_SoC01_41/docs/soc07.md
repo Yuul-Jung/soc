@@ -1,8 +1,26 @@
 # AXI UART Lite - PC 터미널 Echo 통신
 
 
-## 전체 학습 위치
+## 전체 학습 위치 · 어떤 프로젝트에서 시작하는가?
 
+**07장은 06장 AXI GPIO 성공 회로에서 이어지는 실습이다.** 다만 06장 원본을 수정하지 않고 Vivado에서 07장 전용 복제본을 만든 뒤 AXI UART Lite IP만 추가한다. 새 MicroBlaze V SoC를 처음부터 구성하지 않는다.
+
+| 구분 | 06장 기존 성공 프로젝트 | 07장 작업 프로젝트 |
+| --- | --- | --- |
+| Vivado 이름 | `soc06_axi_gpio` | `soc07_axi_uartlite` |
+| .xpr | `/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr` | `/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr` |
+| 기존 하드웨어 | MicroBlaze V, BRAM, Clock, Reset, SmartConnect, AXI GPIO | 그대로 유지 |
+| 새 하드웨어 | 없음 | `axi_uartlite_0` 추가 |
+| Vitis Platform·Application | 기존 성공 프로젝트 보존 | 07장 XSA를 반영한 새 Platform·Echo Application 생성 |
+
+### Vivado 최초 작업
+
+1. Vivado 2024.2에서 **06장 `soc06_axi_gpio.xpr`**를 연다.
+2. **File → Project → Save As**로 07장 새 프로젝트 `soc07_axi_uartlite`를 만든다. 최종 저장 파일을 위 표의 새 `.xpr` 경로에 둔다.
+3. 현재 프로젝트명과 Block Design·XDC의 **실제 소스 파일 경로**를 확인한다. 소스가 여전히 06장 디렉터리를 참조하면 **Copy File Into Project / Copy All Files Into Project** 등 적합한 복사 절차로 07장에 독립 보관한 후 다음 단계로 간다.
+4. **06장 원본과 소스의 독립성이 확인된 뒤에만** 07장 복제본에서 AXI UART Lite를 추가한다.
+
+기존 정상 동작 `soc06_axi_gpio` 프로젝트와 06장 Vitis Platform·GPIO 애플리케이션은 변경하거나 이동하지 않는다.
 
 ## 실습 목표
 
@@ -85,11 +103,14 @@ Idle  Start  D0 D1 D2 D3 D4 D5 D6 D7  Stop  Idle
 115200 8N1은 PC 터미널과 AXI UART Lite 양쪽 설정이 반드시 동일해야 한다.
 
 
-## IP 추가
+## 07장 복제 프로젝트에 IP 추가
 
-- Add IPBlock Design에서 AXI Uartlite를 검색하여 axi_uartlite_0을 추가한다.
-- 기존 AXI 구조 유지MicroBlaze V → SmartConnect 구조를 그대로 사용한다.
-- Interrupt이번 장에서는 Polling만 사용하므로 Interrupt 연결은 보류한다.
+- **선행 조건:** 독립 복제된 `soc07_axi_uartlite.xpr`을 연다. **06장 프로젝트에서 IP를 추가하지 않는다.**
+- **기존 IP 유지:** `microblaze_riscv_0`, BRAM, `axi_smc`, `axi_gpio_0`, Clock, Reset을 보존한다.
+- **Add IP:** Block Design에서 **AXI Uartlite**를 검색해 `axi_uartlite_0`을 추가한다.
+- **AXI:** 기존 `microblaze_riscv_0/M_AXI_DP`와 SmartConnect 구조를 활용하며 06장의 GPIO 경로는 유지한다.
+- **Interrupt:** 이번 장은 Polling 방식이므로 연결하지 않고 이후 장에서 다룬다.
+- **확인:** Block Design에 기존 `axi_gpio_0`과 새 `axi_uartlite_0`이 함께 표시되어야 한다.
 
 ## IP 설정
 
@@ -250,9 +271,14 @@ while (1)
 Interrupt Controller가 아직 없어도 동작하며 통신 경로를 확인하기 쉽다.
 
 
-## Vitis 갱신
+## 07장 Vitis Platform·Application
 
-새 XSA를 적용한 뒤 xparameters.h에서 UART Lite Base Address Macro가 생성되었는지 확인한다.
+07장 Vivado의 Bitstream을 생성하고 **07장 XSA**를 Export한다. 06장에서 정상 동작했던 Platform은 새 XSA로 덮어쓰지 않는다.
+
+- 07장 XSA를 기반으로 **새 Platform**을 생성한다. 제안 이름: `soc07_axi_uartlite_platform`.
+- 별도의 UART Echo Application을 만든다. 제안 이름: `soc07_axi_uartlite`.
+- 07장 Platform의 새 `xparameters.h`에서 UART Lite의 실제 Base Address Macro를 확인하고 C 프로그램을 빌드한다.
+- 위 이름은 **작성·실습용 권장 이름**이며 07장 실제 타깃 Build는 아직 수행하지 않았다.
 
 
 ## Echo 프로그램
