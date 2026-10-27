@@ -228,7 +228,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s18"><span class="n">18</span><span>Vitis 갱신</span></a></li>
 <li><a href="#s19"><span class="n">19</span><span>Echo 프로그램</span></a></li>
 <li><a href="#s20"><span class="n">20</span><span>Driver와 Register 연결</span></a></li>
-<li><a href="#s21"><span class="n">21</span><span>Ubuntu 터미널</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Ubuntu moserial</span></a></li>
 <li><a href="#s22"><span class="n">22</span><span>실행 결과</span></a></li>
 <li><a href="#s23"><span class="n">23</span><span>Debugger 확인</span></a></li>
 <li><a href="#s24"><span class="n">24</span><span>AXI Transaction 추적</span></a></li>
@@ -241,8 +241,8 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 05 AXI</span><span class="arrow">→</span><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage"><strong>SoC 07 AXI UART Lite</strong></span><span class="arrow">→</span><span class="stage">SoC 08 AXI Timer</span></div></div>
 
 <section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>실습 목표</h2>
-<div class="flow">PC Keyboard → USB-UART → AXI UART Lite RX → MicroBlaze V → AXI UART Lite TX → PC Terminal</div>
-<p>터미널에 <code>A</code>를 입력하면 FPGA가 <code>A</code>를 수신하고 MicroBlaze V가 같은 Byte를 다시 송신한다. Terminal Local Echo는 끄고 실제 FPGA Echo만 보이도록 한다.</p></section>
+<div class="flow">moserial Outgoing → USB-UART → AXI UART Lite RX → MicroBlaze V → AXI UART Lite TX → moserial Received ASCII</div>
+<p>moserial에서 문자 <code>A</code>를 전송하면 MicroBlaze V가 수신한 바이트를 그대로 되돌려 보낸다. moserial의 <strong>Echo received data</strong>는 끄고 FPGA가 전송한 응답을 <strong>Received ASCII</strong>에서 확인한다.</p></section>
 
 <section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>전체 통신 경로</h2>
 <div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">PC Terminal
@@ -472,36 +472,47 @@ int main(void)
 <tr role="row"><td data-label="Software" role="cell"><code>XUartLite_WriteReg(...CTRL..., 0x03)</code></td><td data-label="Hardware 동작" role="cell"><code>Base+0x0C</code>에 Write → RX/TX FIFO Clear</td></tr>
 </tbody></table></div></section>
 
-<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Ubuntu 터미널</h2>
-<p>기존 터미널 도구를 사용한다. 장치명은 PC 환경마다 달라질 수 있으므로 먼저 확인한다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Ubuntu 터미널 · 소스 코드"><code>## 1. UART 장치 확인
+<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>Ubuntu moserial 설정 및 통신</h2>
+<p><strong>moserial(모시리얼, 그래픽 시리얼 통신 프로그램)</strong>로 PC와 Basys3 간 UART 데이터를 송수신한다. 실제 UART 장치명은 PC마다 다르므로 먼저 확인한다.</p>
+<ol class="step-seq">
+<li><h3>장치 확인 및 moserial 실행</h3>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="moserial 설치 및 실행 명령"><code># Basys3 연결 후 USB 시리얼 장치와 연결 경로 확인
 ls -l /dev/serial/by-id/
 
-## 2. minicom 설치
-sudo apt install minicom
+# moserial 설치 (이미 설치되어 있으면 생략)
+sudo apt install moserial
 
-## 3. 예시 실행
-## 실제 장치명은 /dev/serial/by-id/ 결과에 맞춘다.
-minicom -D /dev/ttyUSB1 -b 115200</code></pre>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Ubuntu 터미널 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Terminal 설정</th><th scope="col" role="columnheader">값</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Terminal 설정" role="cell">Baud</td><td data-label="값" role="cell">115200</td></tr>
-<tr role="row"><td data-label="Terminal 설정" role="cell">Data</td><td data-label="값" role="cell">8 bit</td></tr>
-<tr role="row"><td data-label="Terminal 설정" role="cell">Parity</td><td data-label="값" role="cell">None</td></tr>
-<tr role="row"><td data-label="Terminal 설정" role="cell">Stop</td><td data-label="값" role="cell">1</td></tr>
-<tr role="row"><td data-label="Terminal 설정" role="cell">Hardware Flow Control</td><td data-label="값" role="cell">Off</td></tr>
-<tr role="row"><td data-label="Terminal 설정" role="cell">Software Flow Control</td><td data-label="값" role="cell">Off</td></tr>
-<tr role="row"><td data-label="Terminal 설정" role="cell">Local Echo</td><td data-label="값" role="cell">Off</td></tr>
-</tbody></table></div>
-<p><code>ls -l /dev/serial/by-id/</code>는 연결된 Serial 장치를 사람이 읽기 쉬운 이름으로 확인하는 명령이다. <code>minicom</code>은 해당 Serial Port를 115200 bit/s로 열어 문자 송수신을 확인한다.</p></section>
+# moserial 그래픽 프로그램 실행
+moserial</code></pre>
+<p><code>ls -l /dev/serial/by-id/</code>는 연결된 USB 시리얼 장치의 고유 이름과 실제 <code>/dev/ttyUSB*</code> 장치 경로를 표시한다. <code>sudo apt install moserial</code>은 프로그램 설치, <code>moserial</code>은 GUI 실행 명령이다. 연결 장치를 보고 해당 <code>/dev/ttyUSB0</code> 또는 <code>/dev/ttyUSB1</code> 등을 선택하며 번호를 임의로 고정하지 않는다.</p></li>
+<li><h3>Port Setup(포트 설정)</h3>
+<p>moserial의 <strong>Port Setup</strong> 화면에서 다음 항목을 지정한다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="moserial 포트 설정"><table role="table"><thead><tr><th>설정 항목</th><th>값</th></tr></thead><tbody>
+<tr><td>Device</td><td>장치 확인 결과에 해당하는 실제 UART 포트, 예: <code>/dev/ttyUSB1</code></td></tr>
+<tr><td>Baud Rate</td><td><code>115200</code></td></tr>
+<tr><td>Data Bits</td><td><code>8</code></td></tr>
+<tr><td>Parity</td><td><code>None</code></td></tr>
+<tr><td>Stop Bits</td><td><code>1</code></td></tr>
+<tr><td>Handshake</td><td><code>None</code> (흐름 제어 없음)</td></tr>
+<tr><td>Read / Write</td><td>둘 다 허용</td></tr>
+<tr><td>Echo received data</td><td><code>Off</code> (PC가 받은 바이트를 다시 FPGA로 자동 전송하지 않음)</td></tr>
+</tbody></table></div></li>
+<li><h3>Connect → ELF 실행 → 문자 송수신</h3>
+<p><strong>Connect</strong>로 포트를 연 다음 <strong>Received ASCII</strong> 화면을 표시한다. 그 상태에서 Vitis의 ELF를 실행하여 시작 메시지가 수신되는지 확인한다.</p>
+<p>moserial의 <strong>Outgoing</strong> 입력칸에 <code>A</code>를 입력하고, 전송 방식은 <strong>ASCII</strong>, 줄 종료는 <strong>No end</strong>로 선택한 다음 <strong>Send</strong>를 누른다. 그러면 추가 줄바꿈 없이 문자 <code>A</code> 1바이트만 전송한다.</p>
+<p><strong>Sent ASCII</strong>에 전송 문자 <code>A</code>가 기록되고, <strong>Received ASCII</strong>에 FPGA를 거쳐 돌아온 문자 <code>A</code>가 표시되면 Echo 경로를 확인할 수 있다. 같은 방식으로 <code>B</code>, <code>1</code>도 전송한다.</p></li>
+</ol>
+<div class="note"><strong>주의:</strong> moserial은 보낸 데이터(Sent ASCII)와 받은 데이터(Received ASCII)를 서로 다른 화면에 표시한다. 두 곳에 <code>A</code>가 나타나는 것은 정상이며 중복 Echo가 아니다. <strong>Echo received data</strong>를 켜면 FPGA의 Echo와 맞물려 데이터가 반복 송수신될 수 있으므로 반드시 끈다.</div>
+<p>장치 접근 권한 오류가 나는 경우 현재 사용자의 <code>dialout</code> 그룹 가입 여부를 확인한다. 설정 변경은 실제 오류를 확인한 뒤 수행한다.</p></section>
 
 <section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>실행 결과</h2>
-<p>FPGA Program → PC Terminal 연결 → ELF Run 순서로 진행한다. 정상이라면 시작 문자열이 나타난다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="실행 결과 · 소스 코드"><code>AXI UART Lite Echo Ready
+<p>FPGA Program → moserial <strong>Connect</strong> → ELF Run 순서로 진행한다. moserial의 <strong>Received ASCII</strong>에서 아래 시작 문자열을 확인한다.</p>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="실행 결과 · 예상 수신 문자열"><code>AXI UART Lite Echo Ready
 Type characters. Received data will be echoed.
 &gt; </code></pre>
-<p>이후 키보드에서 <code>A</code>, <code>B</code>, <code>1</code>을 입력하면 같은 Character가 FPGA를 거쳐 되돌아온다.</p>
-<div class="flow">PC 입력 A → FPGA RX → MicroBlaze V → FPGA TX → PC에 A 표시</div>
-<div class="note">위 문자열은 코드상 예상 출력이다. 실제 출력 여부는 Basys3에서 실행하여 확인한다.</div></section>
+<p>이어서 moserial <strong>Outgoing</strong>에서 ASCII, <strong>No end</strong>를 설정한 후 <code>A</code>, <code>B</code>, <code>1</code>을 각각 <strong>Send</strong>한다. 보낸 문자는 <strong>Sent ASCII</strong>, FPGA에서 되돌아온 문자는 <strong>Received ASCII</strong>에서 구분하여 확인한다.</p>
+<div class="flow">moserial Send A → FPGA RX → MicroBlaze V → FPGA TX → moserial Received ASCII A</div>
+<div class="note">위 문자열과 Echo 동작은 코드상 예상 결과다. 실제 Basys3 보드 실행과 moserial 화면 확인은 아직 수행하지 않았다.</div></section>
 
 <section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Debugger 확인</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Debugger 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">변수</th><th scope="col" role="columnheader">확인 내용</th></tr></thead><tbody role="rowgroup">
@@ -529,9 +540,9 @@ MicroBlaze V last_rx
 <section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>오류 점검</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="증상" role="cell">아무 글자도 안 보임</td><td data-label="원인 후보" role="cell">TX Pin·Baud·XSA 문제</td><td data-label="확인" role="cell">A18, 115200, 최신 Platform</td></tr>
-<tr role="row"><td data-label="증상" role="cell">입력해도 Echo 없음</td><td data-label="원인 후보" role="cell">RX Pin 또는 Terminal 장치 오류</td><td data-label="확인" role="cell">B18, 실제 <code>/dev/tty*</code></td></tr>
-<tr role="row"><td data-label="증상" role="cell">문자가 깨짐</td><td data-label="원인 후보" role="cell">Baud / Data / Parity 불일치</td><td data-label="확인" role="cell">115200 8N1 양쪽 동일</td></tr>
-<tr role="row"><td data-label="증상" role="cell">문자가 두 번 보임</td><td data-label="원인 후보" role="cell">Terminal Local Echo On</td><td data-label="확인" role="cell">Local Echo Off</td></tr>
+<tr role="row"><td data-label="증상" role="cell">입력해도 Echo 없음</td><td data-label="원인 후보" role="cell">RX Pin 또는 Terminal 장치 오류</td><td data-label="확인" role="cell">B18, moserial의 실제 <code>/dev/ttyUSB*</code> 포트, Connect</td></tr>
+<tr role="row"><td data-label="증상" role="cell">문자가 깨짐</td><td data-label="원인 후보" role="cell">Baud / Data / Parity 불일치</td><td data-label="확인" role="cell">moserial과 UART IP 모두 115200 8N1</td></tr>
+<tr role="row"><td data-label="증상" role="cell">같은 문자가 반복 송수신됨</td><td data-label="원인 후보" role="cell">moserial Echo received data On</td><td data-label="확인" role="cell">Echo received data Off</td></tr>
 <tr role="row"><td data-label="증상" role="cell">Build Macro 없음</td><td data-label="원인 후보" role="cell">XSA/Platform 미갱신 또는 Instance 명칭 차이</td><td data-label="확인" role="cell"><code>xparameters.h</code></td></tr>
 <tr role="row"><td data-label="증상" role="cell">수신 첫 글자가 이상함</td><td data-label="원인 후보" role="cell">기존 FIFO Data</td><td data-label="확인" role="cell">시작 시 FIFO Clear 확인</td></tr>
 <tr role="row"><td data-label="증상" role="cell">RX/TX가 서로 바뀜</td><td data-label="원인 후보" role="cell">방향 관점 혼동</td><td data-label="확인" role="cell">B18=FPGA RX, A18=FPGA TX</td></tr>
@@ -767,7 +778,7 @@ SOC07 VERILOG UARTLITE SELF-CHECK PASS</div>
 <li>Status bit0과 bit3의 의미를 이해한다.</li>
 <li>FIFO Clear를 위해 Control bit1/bit0을 사용했다.</li>
 <li>XSA와 Vitis Platform을 갱신했다.</li>
-<li>Terminal을 115200 8N1, Flow Control Off, Local Echo Off로 설정했다.</li>
+<li>moserial을 115200 8N1, Handshake None, Echo received data Off로 설정하고 Outgoing에서 No end로 1바이트를 전송했다.</li>
 <li>PC 입력 Byte를 RX FIFO에서 읽고 TX FIFO로 다시 썼다.</li>
 <li>실제 보드 실행에서 Echo 결과를 확인했다.</li>
 </ul>
