@@ -196,19 +196,30 @@ main[tabindex="-1"]:focus{outline:none}
  .signal-table td:first-child{background:#252a33}
  .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
 }
+.lesson-check{margin:14px 0;padding:11px 15px;border-left:3px solid var(--accent);background:#f5f3fd;color:#34304e;font-size:.93rem}
+.lesson-actions{margin:12px 0 18px;padding-left:26px}.lesson-actions li{margin:9px 0;padding-left:3px}
+.flow-center{text-align:center;white-space:normal;overflow-wrap:anywhere}
+.minor{color:var(--ink-3);font-size:.87rem}
+.bitline{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;padding:14px;margin:12px 0;background:#FBFBF9;border:1px solid var(--line)}
+.bitline code{font-size:.91rem;white-space:normal;overflow-wrap:anywhere;letter-spacing:.03em}
+.step-card details{padding:14px 18px;margin:15px 0;background:#fafaf9;border:1px solid var(--line)}
+.step-card details summary{cursor:pointer;font-weight:700;color:var(--accent)}
+.step-card details[open] summary{margin-bottom:12px}
+.step-card h3{margin-top:26px}
+@media(max-width:600px){.bitline{grid-template-columns:1fr}.lesson-actions{padding-left:21px}}
 </style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
 <div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 06</strong></div>
-<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+<div class="brand">BASYS3 · MICRO BLAZE V SoC</div>
 </div></div>
 
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 06</p>
 <h1>AXI GPIO - Switch 입력을 LED 출력으로</h1>
-<p class="hero-desc">MicroBlaze V에 AXI GPIO를 연결하고 Basys3의 16개 Slide Switch를 Channel 2에서 읽어 Channel 1의 16개 LED에 그대로 출력한다. Memory Map, AXI4-Lite, GPIO Register와 실제 보드 I/O가 하나의 경로로 연결되는 첫 Peripheral 실습이다.</p>
+<p class="hero-desc">Vivado에서 AXI GPIO를 연결하고 Vitis에서 C 프로그램을 작성하여, Basys3 스위치 16개 상태를 LED 16개에 그대로 표시한다.</p>
 <div class="hero-meta">
-<span class="chip">AXI GPIO</span><span class="chip">AXI4-Lite</span><span class="chip">Dual Channel</span><span class="chip">GPIO_DATA</span><span class="chip">GPIO_TRI</span><span class="chip">SW[15:0] → LED[15:0]</span>
+<span class="chip">AXI GPIO</span><span class="chip">AXI4-Lite</span><span class="chip">Dual Channel</span><span class="chip">Vivado 2024.2</span><span class="chip">Vitis 2024.2</span><span class="chip">SW[15:0] → LED[15:0]</span>
 </div>
 <div class="hero-brief">
 <article><h2>입력</h2><p>Channel 2에서 Basys3 SW[15:0]을 읽는다.</p></article>
@@ -221,436 +232,169 @@ main[tabindex="-1"]:focus{outline:none}
 <aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html" selected>SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc06_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc06">이 장 검증</a></div></div>
 <p class="nav-title">SOC 06 · LEARNING FLOW</p>
 <p class="nav-help">Switch → AXI Read → CPU → AXI Write → LED</p>
-<ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>AXI GPIO 실습 목표</span></a></li>
-<li><a href="#s02"><span class="n">02</span><span>전체 Hardware 구조</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>AXI GPIO 내부 구조</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>Channel 구성</span></a></li>
-<li><a href="#s05"><span class="n">05</span><span>AXI GPIO 추가</span></a></li>
-<li><a href="#s06"><span class="n">06</span><span>IP 설정</span></a></li>
-<li><a href="#s07"><span class="n">07</span><span>Connection Automation</span></a></li>
-<li><a href="#s08"><span class="n">08</span><span>외부 GPIO Port</span></a></li>
-<li><a href="#s09"><span class="n">09</span><span>Address Editor</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>Register Map</span></a></li>
-<li><a href="#s11"><span class="n">11</span><span>GPIO_DATA</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>GPIO_TRI</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>Basys3 Switch · LED 연결</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>XDC 작성</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>Validate · Bitstream</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>XSA · Vitis 갱신</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>XGpio Driver</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>Switch → LED 프로그램</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>Driver와 Register 연결</span></a></li>
-<li><a href="#s20"><span class="n">20</span><span>실행 순서</span></a></li>
-<li><a href="#s21"><span class="n">21</span><span>눈으로 확인하는 결과</span></a></li>
-<li><a href="#s22"><span class="n">22</span><span>Debugger 확인</span></a></li>
-<li><a href="#s23"><span class="n">23</span><span>AXI Transaction 추적</span></a></li>
-<li><a href="#s24"><span class="n">24</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">25</span><span>완료 체크리스트</span></a></li>
-<li><a href="#sources"><span class="n">26</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol>
+<ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>실습 목표</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>기존 구성과 신규 프로젝트</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>AXI GPIO 추가</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>GPIO 채널 설정</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>AXI · Clock · Reset 연결</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>외부 GPIO 포트와 Wrapper</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Basys3 XDC 작성</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Address Editor와 Register</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Validate · Bitstream</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>XSA 내보내기</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Vitis Platform 생성</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Vitis Application 생성</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>main.c 직접 작성</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>C 코드 한 줄씩 이해</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Build · Debug</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>Basys3 동작 · 오류 점검</span></a></li><li><a href="#sources"><span class="n">자료</span><span>AMD 공식 문서</span></a></li></ol>
 </aside>
 
 <main id="main-content" tabindex="-1">
-<div class="overview-card"><h2>전체 학습 위치</h2>
+<div class="overview-card"><h2>SoC 06 진행 위치</h2>
 <div class="stage-flow"><span class="stage">SoC 04 Memory Map</span><span class="arrow">→</span><span class="stage">SoC 05 AXI</span><span class="arrow">→</span><span class="stage"><strong>SoC 06 AXI GPIO</strong></span><span class="arrow">→</span><span class="stage">SoC 07 AXI UART Lite</span></div>
 </div>
 
 <section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>AXI GPIO 실습 목표</h2>
-<p>SoC 05까지는 AXI Transaction을 구조와 파형으로 이해했다. 이번 장에서는 실제 Peripheral인 AXI GPIO를 연결하여 CPU가 Hardware Register를 읽고 쓰는 결과를 Basys3 보드에서 직접 확인한다.</p>
-<div class="flow">SW[15:0] → AXI GPIO Ch2 → AXI Read → MicroBlaze V → AXI Write → AXI GPIO Ch1 → LED[15:0]</div>
-<p>SW0을 올리면 LED0, SW7을 올리면 LED7, SW15를 올리면 LED15가 켜지는 1:1 대응 구조를 만든다.</p>
+<p><strong>Basys3의 스위치 16개를 읽어서 같은 번호의 LED 16개를 켭니다.</strong> GPIO(지피아이오, 범용 입출력)는 스위치·LED 같은 간단한 주변장치를 제어하는 기능입니다.</p><div class="flow flow-center">SW[15:0] → AXI GPIO Channel 2 → MicroBlaze V → AXI GPIO Channel 1 → LED[15:0]</div><div class="table-wrap" role="region" tabindex="0" aria-label="입력 조작, 예상 출력"><table><thead><tr><th scope="col">입력 조작</th><th scope="col">예상 출력</th></tr></thead><tbody><tr><td data-label="입력 조작">SW0 ON</td><td data-label="예상 출력">LED0 ON</td></tr><tr><td data-label="입력 조작">SW3 ON</td><td data-label="예상 출력">LED3 ON</td></tr><tr><td data-label="입력 조작">SW0 + SW3 ON</td><td data-label="예상 출력">LED0 + LED3 ON</td></tr></tbody></table></div><p>06장에서는 GPIO를 실제 보드에 연결하고 C 프로그램으로 제어합니다. AXI 신호의 상세 이론은 05장을 참고합니다.</p>
 </section>
 
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>전체 Hardware 구조</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">Basys3 SW[15:0]
-        │
-        ▼
-AXI GPIO Channel 2
-    GPIO2_DATA
-        │ AXI4-Lite Read
-        ▼
-   SmartConnect
-        │
-        ▼
-    MicroBlaze V
-        │ AXI4-Lite Write
-        ▼
-   SmartConnect
-        │
-        ▼
-AXI GPIO Channel 1
-     GPIO_DATA
-        │
-        ▼
-Basys3 LED[15:0]</div>
-<p>AXI GPIO 하나를 Dual Channel로 사용하므로 하나의 AXI Base Address 안에서 입력과 출력을 함께 다룬다.</p>
+<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>기존 구성과 신규 프로젝트</h2>
+<p><strong>04장 성공 프로젝트는 변경하지 않습니다.</strong> 06장은 AXI GPIO가 추가되므로 별도 Vivado 프로젝트를 사용합니다.</p><div class="table-wrap" role="region" tabindex="0" aria-label="구분, 사용 경로"><table><thead><tr><th scope="col">구분</th><th scope="col">사용 경로</th></tr></thead><tbody><tr><td data-label="구분">기존 프로젝트 보존</td><td data-label="사용 경로"><code>/home/jung/soc/hw/soc01_microblaze_bram/</code></td></tr><tr><td data-label="구분">신규 Vivado</td><td data-label="사용 경로"><code>/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr</code></td></tr><tr><td data-label="구분">신규 Block Design</td><td data-label="사용 경로"><code>soc06_axi_gpio</code></td></tr><tr><td data-label="구분">Vitis Workspace</td><td data-label="사용 경로"><code>/home/jung/soc/sw</code></td></tr></tbody></table></div><ol class="lesson-actions"><li>Vivado에서 06장 프로젝트 <code>soc06_axi_gpio</code>를 준비하고 Block Design을 엽니다.</li><li>MicroBlaze V, 16 KiB Local BRAM, MDM, Clocking Wizard, Reset 구성을 유지합니다.</li><li>CPU의 <code>M_AXI_DP</code>를 AXI GPIO 연결에 사용합니다.</li></ol><p class="lesson-check"><strong>화면 확인</strong> CPU는 <code>microblaze_riscv_0</code>이며, 기존 <code>ILMB/DLMB</code> 메모리 구성이 남아 있어야 합니다.</p>
 </section>
 
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI GPIO 내부 구조</h2>
-<figure class="manual-figure">
-<a href="../../images/common/original_16.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD PG144 AXI GPIO Block Diagram · 원본 보기 (새 탭)"><img alt="AMD PG144 AXI GPIO Block Diagram" loading="lazy" src="../../images/common/original_16.png">
-</a><figcaption>AXI4-Lite Interface, GPIO_DATA, GPIO_TRI, 입력 Data Register, 두 GPIO Channel의 내부 연결 구조.
-<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg144-axi-gpio/Functional-Description" rel="noopener" target="_blank">AMD PG144 · Functional Description · 2026-01-30</a></span><br><a href="../../images/common/original_16.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD PG144 AXI GPIO Block Diagram · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
-</figure>
-<p>AXI GPIO는 AXI4-Lite Slave Interface와 GPIO Core를 연결한다. CPU가 Register를 쓰면 GPIO_DATA 또는 GPIO_TRI Register가 변경되고 실제 GPIO Pin에 반영된다.</p>
-<p>MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 <code>xparameters.h</code>의 심볼을 사용한다.</p></section>
-
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Channel 구성</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Channel 구성 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Channel</th><th scope="col" role="columnheader">폭</th><th scope="col" role="columnheader">방향</th><th scope="col" role="columnheader">Basys3 연결</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Channel" role="cell">Channel 1</td><td data-label="폭" role="cell">16 bit</td><td data-label="방향" role="cell">All Outputs</td><td data-label="Basys3 연결" role="cell"><code>LED[15:0]</code></td></tr>
-<tr role="row"><td data-label="Channel" role="cell">Channel 2</td><td data-label="폭" role="cell">16 bit</td><td data-label="방향" role="cell">All Inputs</td><td data-label="Basys3 연결" role="cell"><code>SW[15:0]</code></td></tr>
-</tbody></table></div>
-<p>Interrupt는 아직 사용하지 않는다. 이번 장에서는 Polling 방식으로 Switch 값을 계속 읽는다.</p>
+<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI GPIO 추가</h2>
+<ol class="lesson-actions"><li>Vivado의 <strong>IP Integrator → Block Design</strong>을 엽니다.</li><li><strong>Add IP</strong>에서 <code>AXI GPIO</code>를 검색합니다.</li><li><code>AXI GPIO</code>를 추가하여 <code>axi_gpio_0</code>가 나타나는지 확인합니다.</li></ol><p class="lesson-check"><strong>화면 확인</strong> <code>axi_gpio_0</code>에 <code>S_AXI</code>, <code>GPIO</code>, <code>GPIO2</code> 인터페이스가 표시됩니다.</p><p class="minor">하드웨어의 IP 이름 <code>axi_gpio_0</code>는 이후 Vitis의 GPIO 주소 정보와 연결됩니다.</p>
 </section>
 
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>AXI GPIO 추가</h2>
-<ol class="step-seq">
-<li><h3>Block Design 열기</h3><p>SoC 05까지 사용한 MicroBlaze V Block Design을 연다.</p></li>
-<li><h3>Add IP</h3><p><strong>AXI GPIO</strong>를 검색하여 <code>axi_gpio_0</code>을 추가한다.</p></li>
-<li><h3>MicroBlaze V AXI Master 유지</h3><p>기존 MicroBlaze V Peripheral AXI Port와 SmartConnect 구조를 유지한다.</p></li>
-</ol>
-<div class="flow">MicroBlaze V → SmartConnect → axi_gpio_0/S_AXI</div>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>GPIO 채널 설정</h2>
+<ol class="lesson-actions"><li><code>axi_gpio_0</code>를 더블클릭하여 설정 창을 엽니다.</li><li><strong>Enable Dual Channel</strong>을 활성화합니다.</li><li>아래 표처럼 두 채널의 방향과 폭을 지정하고 <strong>OK</strong>를 클릭합니다.</li></ol><div class="table-wrap" role="region" tabindex="0" aria-label="설정, Channel 1, Channel 2"><table><thead><tr><th scope="col">설정</th><th scope="col">Channel 1</th><th scope="col">Channel 2</th></tr></thead><tbody><tr><td data-label="설정">GPIO Width</td><td data-label="Channel 1"><code>16</code></td><td data-label="Channel 2"><code>16</code></td></tr><tr><td data-label="설정">GPIO Direction</td><td data-label="Channel 1"><strong>All Outputs</strong></td><td data-label="Channel 2"><strong>All Inputs</strong></td></tr><tr><td data-label="설정">Basys3 연결</td><td data-label="Channel 1">LED 16개</td><td data-label="Channel 2">스위치 16개</td></tr></tbody></table></div><p><strong>Enable Interrupt는 끕니다.</strong> 두 채널의 값을 CPU가 반복해서 읽고 쓰는 가장 간단한 방식으로 실습합니다.</p><figure class="manual-figure compact"><a class="figure-image-link" href="../../images/common/original_17.png" target="_blank" rel="noopener"><img loading="lazy" src="../../images/common/original_17.png" alt="AMD 공식 AXI GPIO 설정 창 참고 그림"></a><figcaption>AMD PG144의 AXI GPIO 설정 화면 참고 그림. 실제 입력값은 위 표와 현재 Vivado 프로젝트 설정을 따릅니다. <a class="figure-original" href="../../images/common/original_17.png" target="_blank" rel="noopener">원본 보기</a></figcaption></figure>
 </section>
 
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>IP 설정</h2>
-<figure class="manual-figure">
-<a href="../../images/common/original_17.png" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD PG144 AXI GPIO Customize IP window · 원본 보기 (새 탭)"><img alt="AMD PG144 AXI GPIO Customize IP window" loading="lazy" src="../../images/common/original_17.png">
-</a><figcaption>PG144의 AXI GPIO Customize IP 화면. 실제 Vivado 버전에 따라 배치는 달라질 수 있지만 GPIO Width, All Inputs/Outputs, Dual Channel 설정 항목은 동일한 개념이다.
-<span class="figure-source">출처: <a href="https://docs.amd.com/r/en-US/pg144-axi-gpio/Customizing-and-Generating-the-Core?contentId=Hogz3EBb8ECcA2mB6UtOaw" rel="noopener" target="_blank">AMD PG144 · Customizing and Generating the Core · 2026-01-30</a></span><br><a href="../../images/common/original_17.png" target="_blank" rel="noopener" class="figure-original" aria-label="AMD PG144 AXI GPIO Customize IP window · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption>
-</figure>
-<div class="table-wrap" tabindex="0" role="region" aria-label="IP 설정 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">SoC 06 설정</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="항목" role="cell">GPIO Width</td><td data-label="SoC 06 설정" role="cell">16</td></tr>
-<tr role="row"><td data-label="항목" role="cell">GPIO All Outputs</td><td data-label="SoC 06 설정" role="cell">Enabled</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Enable Dual Channel</td><td data-label="SoC 06 설정" role="cell">Enabled</td></tr>
-<tr role="row"><td data-label="항목" role="cell">GPIO2 Width</td><td data-label="SoC 06 설정" role="cell">16</td></tr>
-<tr role="row"><td data-label="항목" role="cell">GPIO2 All Inputs</td><td data-label="SoC 06 설정" role="cell">Enabled</td></tr>
-<tr role="row"><td data-label="항목" role="cell">Enable Interrupt</td><td data-label="SoC 06 설정" role="cell">Disabled</td></tr>
-</tbody></table></div>
-<div class="note">방향을 Hardware에서 고정하므로 Software에서는 매 Loop마다 GPIO_TRI를 변경하지 않는다.</div>
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>AXI · Clock · Reset 연결</h2>
+<ol class="lesson-actions"><li><code>axi_gpio_0/S_AXI</code>에서 <strong>Run Connection Automation</strong>을 실행합니다.</li><li>CPU의 <code>M_AXI_DP</code>와 GPIO의 <code>S_AXI</code> 사이에 <code>axi_smc</code>(AXI SmartConnect)가 생성되는지 확인합니다.</li><li><code>s_axi_aclk</code>는 시스템 100 MHz 클록, <code>s_axi_aresetn</code>은 활성 Low 리셋 경로에 연결되는지 확인합니다.</li></ol><div class="flow flow-center">microblaze_riscv_0 / M_AXI_DP → axi_smc → axi_gpio_0 / S_AXI</div><p class="lesson-check"><strong>화면 확인</strong> Vivado <strong>Validate Design</strong>에서 AXI, Clock, Reset 연결 오류가 없어야 합니다.</p>
 </section>
 
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Connection Automation</h2>
-<ol class="step-seq">
-<li><h3>Run Connection Automation</h3><p><code>axi_gpio_0/S_AXI</code> 연결을 선택한다.</p></li>
-<li><h3>AXI 연결 확인</h3><p>MicroBlaze V Master → SmartConnect → AXI GPIO Slave 경로가 생성되는지 확인한다.</p></li>
-<li><h3>Clock</h3><p><code>s_axi_aclk</code>가 시스템 100 MHz Clock에 연결되는지 확인한다.</p></li>
-<li><h3>Reset</h3><p><code>s_axi_aresetn</code>이 Processor System Reset의 Active-Low Peripheral Reset에 연결되는지 확인한다.</p></li>
-</ol>
+<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>외부 GPIO 포트와 Wrapper</h2>
+<ol class="lesson-actions"><li>AXI GPIO의 Channel 1 <code>GPIO</code>를 외부 포트로 만듭니다.</li><li>Channel 2 <code>GPIO2</code>도 외부 포트로 만듭니다.</li><li>외부 인터페이스 이름을 각각 <code>led</code>, <code>sw</code>로 지정합니다.</li><li><strong>Create HDL Wrapper</strong> 후 자동 생성된 실제 최상위 포트명을 확인합니다.</li></ol><div class="table-wrap" role="region" tabindex="0" aria-label="Vivado 외부 인터페이스 이름, HDL Wrapper 실제 포트 이름, 방향"><table><thead><tr><th scope="col">Vivado 외부 인터페이스 이름</th><th scope="col">HDL Wrapper 실제 포트 이름</th><th scope="col">방향</th></tr></thead><tbody><tr><td data-label="Vivado 외부 인터페이스 이름"><code>led</code></td><td data-label="HDL Wrapper 실제 포트 이름"><code>led_tri_o[15:0]</code></td><td data-label="방향">출력</td></tr><tr><td data-label="Vivado 외부 인터페이스 이름"><code>sw</code></td><td data-label="HDL Wrapper 실제 포트 이름"><code>sw_tri_i[15:0]</code></td><td data-label="방향">입력</td></tr></tbody></table></div><p class="lesson-check"><strong>중요</strong> XDC의 <code>get_ports</code>에는 <code>led</code>, <code>sw</code>가 아니라 <strong><code>led_tri_o</code>, <code>sw_tri_i</code></strong>를 사용해야 합니다. HDL Wrapper 코드를 임의로 수정하지 않습니다.</p><details><summary>Wrapper에 변경된 포트가 보이지 않을 때</summary><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Vivado Tcl Console"><code>get_files -all *soc06_axi_gpio.bd
+make_wrapper -files [get_files -all *soc06_axi_gpio.bd] -top -force
+update_compile_order -fileset sources_1</code></pre><p>Vivado <strong>Tcl Console</strong>에서 Wrapper를 다시 생성합니다. 기존 검증 과정에서 사용한 명령입니다.</p></details>
 </section>
 
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>외부 GPIO Port</h2>
-<p>Channel 1과 Channel 2를 외부 Port로 만든 뒤 이름을 다음과 같이 정리한다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="외부 GPIO Port · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">AXI GPIO Port</th><th scope="col" role="columnheader">외부 Port 이름</th><th scope="col" role="columnheader">방향</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="AXI GPIO Port" role="cell">Channel 1 Output</td><td data-label="외부 Port 이름" role="cell"><code>led[15:0]</code></td><td data-label="방향" role="cell">Output</td></tr>
-<tr role="row"><td data-label="AXI GPIO Port" role="cell">Channel 2 Input</td><td data-label="외부 Port 이름" role="cell"><code>sw[15:0]</code></td><td data-label="방향" role="cell">Input</td></tr>
-</tbody></table></div>
-<div class="flow">gpio_io_o[15:0] → led[15:0]<br>gpio2_io_i[15:0] ← sw[15:0]</div>
-</section>
-
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Address Editor</h2>
-<p>AXI GPIO가 MicroBlaze V에 연결되면 Address Editor에 <code>axi_gpio_0/S_AXI</code> Segment가 나타난다. <strong>Assign All</strong> 또는 수동 배치로 Base Address를 할당한다.</p>
-<div class="warn">이 장에서는 특정 Base Address를 문서에 고정하지 않는다. 실제 값은 현재 Vivado Address Editor에서 확인하고, XSA를 갱신한 뒤 Vitis의 <code>xparameters.h</code>와 일치하는지 확인한다.</div>
-<div class="signal-map" tabindex="0" role="region" aria-label="09절 신호 및 실행 흐름">MicroBlaze V Data Address Space
-        │
-        └─ axi_gpio_0/S_AXI
-              Base Address = Vivado에서 실제 확인
-              Register Offset = PG144 기준 사용</div>
-</section>
-
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Register Map</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">SoC 06 역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x00</code></td><td data-label="Register" role="cell"><code>GPIO_DATA</code></td><td data-label="Access" role="cell">R/W</td><td data-label="SoC 06 역할" role="cell">Channel 1 LED Data</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x04</code></td><td data-label="Register" role="cell"><code>GPIO_TRI</code></td><td data-label="Access" role="cell">R/W</td><td data-label="SoC 06 역할" role="cell">Channel 1 Direction</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x08</code></td><td data-label="Register" role="cell"><code>GPIO2_DATA</code></td><td data-label="Access" role="cell">R/W</td><td data-label="SoC 06 역할" role="cell">Channel 2 Switch Data</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x0C</code></td><td data-label="Register" role="cell"><code>GPIO2_TRI</code></td><td data-label="Access" role="cell">R/W</td><td data-label="SoC 06 역할" role="cell">Channel 2 Direction</td></tr>
-</tbody></table></div>
-<p>PG144 2026-01-30 Register Space 기준이다. Dual Channel이므로 Channel 2 Register도 존재한다.</p>
-</section>
-
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>GPIO_DATA</h2>
-<p>Channel 1을 Output으로 설정한 경우 <code>GPIO_DATA</code>에 Write한 값이 실제 Output Pin으로 전달된다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="11절 신호 및 실행 흐름">GPIO_DATA bit 0  → LED0
-GPIO_DATA bit 1  → LED1
-...
-GPIO_DATA bit 15 → LED15</div>
-<p>Basys3 User LED는 Logic High에서 켜지는 Active-High 구조이므로 <code>GPIO_DATA[n] = 1</code>이면 해당 LED가 켜진다.</p>
-</section>
-
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>GPIO_TRI</h2>
-<p>PG144의 3-State Control Register는 각 Bit의 방향을 제어하며 <strong>0 = Output, 1 = Input</strong>이다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="GPIO_TRI · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">GPIO_TRI bit</th><th scope="col" role="columnheader">방향</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="GPIO_TRI bit" role="cell"><code>0</code></td><td data-label="방향" role="cell">Output</td></tr>
-<tr role="row"><td data-label="GPIO_TRI bit" role="cell"><code>1</code></td><td data-label="방향" role="cell">Input</td></tr>
-</tbody></table></div>
-<p>이번 설계는 Vivado 설정에서 Channel 1을 All Outputs, Channel 2를 All Inputs로 고정하므로 Software에서 방향을 반복 설정할 필요가 없다.</p>
-</section>
-
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Basys3 Switch · LED 연결</h2>
-<p>Basys3에는 16개의 Slide Switch와 16개의 User LED가 있으며 Reference Manual Figure 16에서 FPGA Pin과 함께 확인할 수 있다. LED는 FPGA I/O가 High일 때 켜진다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="13절 신호 및 실행 흐름">SW0  ─────────────▶ LED0
-SW1  ─────────────▶ LED1
-SW2  ─────────────▶ LED2
-...
-SW15 ─────────────▶ LED15
-
-실제 경로:
-Switch → FPGA Input → AXI GPIO Ch2
-       → MicroBlaze V
-       → AXI GPIO Ch1 → FPGA Output → LED</div>
-</section>
-
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>XDC 작성</h2>
-<p>Digilent Basys-3-Master.xdc의 Switch와 LED Pin을 그대로 사용하고 주석은 제거한다. Block Design 외부 Port 이름은 <code>sw[15:0]</code>, <code>led[15:0]</code>와 일치시킨다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="XDC 작성 · 소스 코드"><code>## Basys3 Slide Switches
-set_property -dict { PACKAGE_PIN V17 IOSTANDARD LVCMOS33 } [get_ports {sw[0]}]
-set_property -dict { PACKAGE_PIN V16 IOSTANDARD LVCMOS33 } [get_ports {sw[1]}]
-set_property -dict { PACKAGE_PIN W16 IOSTANDARD LVCMOS33 } [get_ports {sw[2]}]
-set_property -dict { PACKAGE_PIN W17 IOSTANDARD LVCMOS33 } [get_ports {sw[3]}]
-set_property -dict { PACKAGE_PIN W15 IOSTANDARD LVCMOS33 } [get_ports {sw[4]}]
-set_property -dict { PACKAGE_PIN V15 IOSTANDARD LVCMOS33 } [get_ports {sw[5]}]
-set_property -dict { PACKAGE_PIN W14 IOSTANDARD LVCMOS33 } [get_ports {sw[6]}]
-set_property -dict { PACKAGE_PIN W13 IOSTANDARD LVCMOS33 } [get_ports {sw[7]}]
-set_property -dict { PACKAGE_PIN V2  IOSTANDARD LVCMOS33 } [get_ports {sw[8]}]
-set_property -dict { PACKAGE_PIN T3  IOSTANDARD LVCMOS33 } [get_ports {sw[9]}]
-set_property -dict { PACKAGE_PIN T2  IOSTANDARD LVCMOS33 } [get_ports {sw[10]}]
-set_property -dict { PACKAGE_PIN R3  IOSTANDARD LVCMOS33 } [get_ports {sw[11]}]
-set_property -dict { PACKAGE_PIN W2  IOSTANDARD LVCMOS33 } [get_ports {sw[12]}]
-set_property -dict { PACKAGE_PIN U1  IOSTANDARD LVCMOS33 } [get_ports {sw[13]}]
-set_property -dict { PACKAGE_PIN T1  IOSTANDARD LVCMOS33 } [get_ports {sw[14]}]
-set_property -dict { PACKAGE_PIN R2  IOSTANDARD LVCMOS33 } [get_ports {sw[15]}]
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Basys3 XDC 작성</h2>
+<p><strong>Basys3-Master.xdc의 기존 핀 번호를 그대로 사용</strong>합니다. 포트 이름만 실제 Wrapper에 맞춥니다.</p><div class="table-wrap" role="region" tabindex="0" aria-label="대상, 예시 핀, XDC 포트명"><table><thead><tr><th scope="col">대상</th><th scope="col">예시 핀</th><th scope="col">XDC 포트명</th></tr></thead><tbody><tr><td data-label="대상">SW0</td><td data-label="예시 핀">V17</td><td data-label="XDC 포트명"><code>sw_tri_i[0]</code></td></tr><tr><td data-label="대상">LED0</td><td data-label="예시 핀">U16</td><td data-label="XDC 포트명"><code>led_tri_o[0]</code></td></tr><tr><td data-label="대상">CLK</td><td data-label="예시 핀">W5</td><td data-label="XDC 포트명"><code>clk</code></td></tr><tr><td data-label="대상">btnC</td><td data-label="예시 핀">U18</td><td data-label="XDC 포트명"><code>btnC</code></td></tr></tbody></table></div><ol class="lesson-actions"><li>기존 XDC의 Clock과 Reset 핀 설정은 유지합니다.</li><li>Switch 16개, LED 16개를 아래처럼 연결합니다.</li><li><strong>Report I/O</strong>에서 포트와 PACKAGE_PIN의 대응을 확인합니다.</li></ol><pre class="codeblock-pre" tabindex="0" role="region" aria-label="06장 XDC Switch 16개 및 LED 16개"><code>## Basys3 Slide Switches
+set_property -dict { PACKAGE_PIN V17 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[0]}]
+set_property -dict { PACKAGE_PIN V16 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[1]}]
+set_property -dict { PACKAGE_PIN W16 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[2]}]
+set_property -dict { PACKAGE_PIN W17 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[3]}]
+set_property -dict { PACKAGE_PIN W15 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[4]}]
+set_property -dict { PACKAGE_PIN V15 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[5]}]
+set_property -dict { PACKAGE_PIN W14 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[6]}]
+set_property -dict { PACKAGE_PIN W13 IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[7]}]
+set_property -dict { PACKAGE_PIN V2  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[8]}]
+set_property -dict { PACKAGE_PIN T3  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[9]}]
+set_property -dict { PACKAGE_PIN T2  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[10]}]
+set_property -dict { PACKAGE_PIN R3  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[11]}]
+set_property -dict { PACKAGE_PIN W2  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[12]}]
+set_property -dict { PACKAGE_PIN U1  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[13]}]
+set_property -dict { PACKAGE_PIN T1  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[14]}]
+set_property -dict { PACKAGE_PIN R2  IOSTANDARD LVCMOS33 } [get_ports {sw_tri_i[15]}]
 
 ## Basys3 LEDs
-set_property -dict { PACKAGE_PIN U16 IOSTANDARD LVCMOS33 } [get_ports {led[0]}]
-set_property -dict { PACKAGE_PIN E19 IOSTANDARD LVCMOS33 } [get_ports {led[1]}]
-set_property -dict { PACKAGE_PIN U19 IOSTANDARD LVCMOS33 } [get_ports {led[2]}]
-set_property -dict { PACKAGE_PIN V19 IOSTANDARD LVCMOS33 } [get_ports {led[3]}]
-set_property -dict { PACKAGE_PIN W18 IOSTANDARD LVCMOS33 } [get_ports {led[4]}]
-set_property -dict { PACKAGE_PIN U15 IOSTANDARD LVCMOS33 } [get_ports {led[5]}]
-set_property -dict { PACKAGE_PIN U14 IOSTANDARD LVCMOS33 } [get_ports {led[6]}]
-set_property -dict { PACKAGE_PIN V14 IOSTANDARD LVCMOS33 } [get_ports {led[7]}]
-set_property -dict { PACKAGE_PIN V13 IOSTANDARD LVCMOS33 } [get_ports {led[8]}]
-set_property -dict { PACKAGE_PIN V3  IOSTANDARD LVCMOS33 } [get_ports {led[9]}]
-set_property -dict { PACKAGE_PIN W3  IOSTANDARD LVCMOS33 } [get_ports {led[10]}]
-set_property -dict { PACKAGE_PIN U3  IOSTANDARD LVCMOS33 } [get_ports {led[11]}]
-set_property -dict { PACKAGE_PIN P3  IOSTANDARD LVCMOS33 } [get_ports {led[12]}]
-set_property -dict { PACKAGE_PIN N3  IOSTANDARD LVCMOS33 } [get_ports {led[13]}]
-set_property -dict { PACKAGE_PIN P1  IOSTANDARD LVCMOS33 } [get_ports {led[14]}]
-set_property -dict { PACKAGE_PIN L1  IOSTANDARD LVCMOS33 } [get_ports {led[15]}]
-</code></pre>
+set_property -dict { PACKAGE_PIN U16 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[0]}]
+set_property -dict { PACKAGE_PIN E19 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[1]}]
+set_property -dict { PACKAGE_PIN U19 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[2]}]
+set_property -dict { PACKAGE_PIN V19 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[3]}]
+set_property -dict { PACKAGE_PIN W18 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[4]}]
+set_property -dict { PACKAGE_PIN U15 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[5]}]
+set_property -dict { PACKAGE_PIN U14 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[6]}]
+set_property -dict { PACKAGE_PIN V14 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[7]}]
+set_property -dict { PACKAGE_PIN V13 IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[8]}]
+set_property -dict { PACKAGE_PIN V3  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[9]}]
+set_property -dict { PACKAGE_PIN W3  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[10]}]
+set_property -dict { PACKAGE_PIN U3  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[11]}]
+set_property -dict { PACKAGE_PIN P3  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[12]}]
+set_property -dict { PACKAGE_PIN N3  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[13]}]
+set_property -dict { PACKAGE_PIN P1  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[14]}]
+set_property -dict { PACKAGE_PIN L1  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o[15]}]</code></pre><p class="minor">Clock 제약은 기존 프로젝트에서 확인한 설정을 유지합니다. 발생했던 Clock 관련 Critical Warning은 AXI GPIO 포트명 오류와 구별하여 판단합니다.</p>
 </section>
 
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Validate · Bitstream</h2>
-<ol class="step-seq">
-<li><h3>Validate Design</h3><p>AXI, Clock, Reset, GPIO 외부 Port 연결 오류를 확인한다.</p></li>
-<li><h3>Generate Output Products</h3><p>필요한 IP Output Product를 생성한다.</p></li>
-<li><h3>Generate Bitstream</h3><p>Synthesis → Implementation → Bitstream을 진행한다.</p></li>
-<li><h3>I/O 확인</h3><p>Implementation 후 <code>sw[15:0]</code>, <code>led[15:0]</code>가 의도한 PACKAGE_PIN에 연결되는지 확인한다.</p></li>
-</ol>
+<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Address Editor와 GPIO 레지스터</h2>
+<ol class="lesson-actions"><li>Block Design의 <strong>Address Editor</strong>를 엽니다.</li><li><code>axi_gpio_0/S_AXI</code>의 기준 주소가 <code>0x40000000</code>인지 확인합니다.</li><li>아래 네 레지스터는 기준 주소에 오프셋을 더해 접근한다는 점을 확인합니다.</li></ol><div class="table-wrap" role="region" tabindex="0" aria-label="레지스터, 오프셋, 이 장에서 하는 일"><table><thead><tr><th scope="col">레지스터</th><th scope="col">오프셋</th><th scope="col">이 장에서 하는 일</th></tr></thead><tbody><tr><td data-label="레지스터"><code>GPIO_DATA</code></td><td data-label="오프셋"><code>+0x00</code></td><td data-label="이 장에서 하는 일">LED 출력값</td></tr><tr><td data-label="레지스터"><code>GPIO_TRI</code></td><td data-label="오프셋"><code>+0x04</code></td><td data-label="이 장에서 하는 일">LED 방향</td></tr><tr><td data-label="레지스터"><code>GPIO2_DATA</code></td><td data-label="오프셋"><code>+0x08</code></td><td data-label="이 장에서 하는 일">스위치 입력값</td></tr><tr><td data-label="레지스터"><code>GPIO2_TRI</code></td><td data-label="오프셋"><code>+0x0C</code></td><td data-label="이 장에서 하는 일">스위치 방향</td></tr></tbody></table></div><p><strong>실제 주소 범위:</strong> <code>0x40000000 ~ 0x4000FFFF</code>(64 KiB 할당 영역). Local BRAM은 <code>0x00000000 ~ 0x00003FFF</code>(16 KiB)입니다. 64 KiB는 주변장치에 할당한 주소 범위이지 GPIO 데이터의 크기가 아닙니다.</p><figure class="manual-figure"><a href="../../images/common/original_16.png" target="_blank" rel="noopener" class="figure-image-link"><img loading="lazy" src="../../images/common/original_16.png" alt="AMD AXI GPIO 내부 레지스터 구조 참고 그림"></a><figcaption>출처: AMD PG144 · AXI GPIO 내부 구조. <a class="figure-original" href="../../images/common/original_16.png" target="_blank" rel="noopener">원본 보기</a></figcaption></figure>
 </section>
 
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>XSA · Vitis 갱신</h2>
-<p>AXI GPIO와 Address Map이 추가되었으므로 기존 SoC 03/04의 XSA를 그대로 사용하면 안 된다.</p>
-<div class="flow">Vivado 변경 → Bitstream → Export Hardware/XSA → Vitis Platform Update → BSP/Domain Regenerate → Application Build</div>
-<p>Vitis의 <code>xparameters.h</code>에서 GPIO Instance 관련 Macro가 생성되었는지 확인한다.</p>
+<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Validate · Bitstream 생성</h2>
+<ol class="lesson-actions"><li>Block Design에서 <strong>Validate Design</strong>을 실행합니다.</li><li><strong>Generate Bitstream</strong>을 실행합니다.</li><li>완료 메시지에서 <code>Bitstream Generation successfully completed</code>를 확인합니다.</li></ol><div class="table-wrap" role="region" tabindex="0" aria-label="확인 대상, 정상 기준"><table><thead><tr><th scope="col">확인 대상</th><th scope="col">정상 기준</th></tr></thead><tbody><tr><td data-label="확인 대상">Validate Design</td><td data-label="정상 기준"><code>Validation successful</code></td></tr><tr><td data-label="확인 대상">Bitstream</td><td data-label="정상 기준"><code>Bitstream Generation successfully completed</code></td></tr><tr><td data-label="확인 대상">포트 제약</td><td data-label="정상 기준">UCIO-1 또는 NSTD-1 없이 최상위 포트가 제약됨</td></tr></tbody></table></div><p class="minor">이 실습에서는 초기에 <code>sw</code>/<code>led</code> 이름으로 인해 발생한 XDC 오류를 실제 Wrapper 이름으로 수정해 Bitstream 생성을 완료했습니다.</p>
 </section>
 
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>XGpio Driver</h2>
-<p>AMD Standalone GPIO Driver는 AXI GPIO를 직접 제어하는 API를 제공한다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="XGpio Driver · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">API</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="API" role="cell"><code>XGpio_Initialize()</code></td><td data-label="역할" role="cell">GPIO Driver Instance 초기화</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XGpio_DiscreteRead()</code></td><td data-label="역할" role="cell">지정 Channel의 GPIO Data 읽기</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XGpio_DiscreteWrite()</code></td><td data-label="역할" role="cell">지정 Channel에 GPIO Data 쓰기</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XGpio_SetDataDirection()</code></td><td data-label="역할" role="cell">Runtime Direction 설정이 필요한 경우 GPIO_TRI 설정</td></tr>
-</tbody></table></div>
-<p>이번 설계는 Hardware에서 방향을 고정하므로 Read와 Write API만 사용한다.</p>
+<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Bitstream 포함 XSA 내보내기</h2>
+<ol class="lesson-actions"><li>Vivado에서 <strong>File → Export → Export Hardware</strong>를 선택합니다.</li><li><strong>Include Bitstream</strong>을 선택합니다.</li><li>다음 경로에 XSA를 저장합니다.</li></ol><pre class="codeblock-pre" tabindex="0" role="region" aria-label="XSA 저장 경로"><code>/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xsa</code></pre><p class="lesson-check"><strong>화면 확인</strong> 하드웨어 산출물 <code>.xsa</code>가 만들어지면 Vitis에서 같은 파일을 선택합니다.</p>
 </section>
 
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Switch → LED 프로그램</h2>
-<p>다음 코드는 이번 실습을 위해 작성한 교육용 예제이며, 초기화 방식은 AMD 공식 XGpio Example의 Classic/SDT 분기를 따른다.</p>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Switch → LED 프로그램 · 소스 코드"><code>#include "xparameters.h"
-#include "xgpio.h"
-#include "xstatus.h"
-#include "xil_types.h"
+<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Vitis Platform 생성</h2>
+<ol class="lesson-actions"><li>Vitis Unified IDE 2024.2에서 기존 Workspace <code>/home/jung/soc/sw</code>를 엽니다.</li><li><strong>File → New Component → Platform</strong>을 선택합니다.</li><li>Platform 이름 <code>soc06_axi_gpio_platform</code>을 입력합니다.</li><li>Hardware 파일로 06장에서 내보낸 <code>soc06_axi_gpio.xsa</code>를 선택합니다.</li><li>Processor는 <code>microblaze_riscv_0</code>, OS는 <code>standalone</code>으로 선택합니다.</li><li>생성 후 <strong>FLOW → Build</strong>를 실행합니다.</li></ol><div class="table-wrap" role="region" tabindex="0" aria-label="설정 항목, 입력값"><table><thead><tr><th scope="col">설정 항목</th><th scope="col">입력값</th></tr></thead><tbody><tr><td data-label="설정 항목">Platform</td><td data-label="입력값"><code>soc06_axi_gpio_platform</code></td></tr><tr><td data-label="설정 항목">Processor</td><td data-label="입력값"><code>microblaze_riscv_0</code></td></tr><tr><td data-label="설정 항목">Domain</td><td data-label="입력값"><code>standalone_microblaze_riscv_0</code></td></tr><tr><td data-label="설정 항목">Build 결과</td><td data-label="입력값"><code>Platform Build Finished successfully</code></td></tr></tbody></table></div><p class="lesson-check"><strong>기존 자료와 다른 점</strong> 06장은 <code>soc_01_platform</code>을 덮어쓰지 않고 신규 Platform을 만들었습니다.</p>
+</section>
 
-/*
- * SoC 06 - AXI GPIO
- *
- * Channel 1 : Basys3 LED[15:0]  (Output)
- * Channel 2 : Basys3 SW[15:0]   (Input)
- *
- * SW0 ~ SW15 상태를 읽어서 LED0 ~ LED15에 그대로 출력한다.
- */
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>Vitis Application 생성</h2>
+<ol class="lesson-actions"><li><strong>File → New Component → Application</strong>을 선택합니다.</li><li>Name에 <code>soc06_axi_gpio</code>, Workspace에 <code>/home/jung/soc/sw</code>를 입력합니다.</li><li>Platform에서 <code>soc06_axi_gpio_platform</code>을 선택합니다.</li><li>Domain에서 <code>standalone_microblaze_riscv_0</code>를 선택합니다.</li><li>Source Files 추가는 건너뛰고 <strong>Finish</strong>를 클릭합니다.</li><li><strong>Sources → src</strong>에 <code>main.c</code> 파일을 만듭니다.</li></ol><p class="lesson-check"><strong>화면 확인</strong> Vitis Explorer에 <code>soc06_axi_gpio</code> [Application]과 <code>soc06_axi_gpio_platform</code> [Platform]이 각각 보여야 합니다.</p>
+</section>
 
-#define LED_CHANNEL  1U
-#define SW_CHANNEL   2U
-#define GPIO_MASK    0x0000FFFFU
+<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>main.c 작성 — 자동 제공 파일과 직접 작성 코드</h2>
+<p>Vitis의 <strong>Sources → src → main.c</strong>에 아래 코드를 입력합니다. <strong>이번 장에서는 짧고 쉽게 작성한 코드 하나만 사용합니다.</strong></p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="soc06_axi_gpio/src/main.c 전체 코드"><code>#include "xparameters.h"  // Vitis 자동 생성: GPIO 주소 정보
+#include "xgpio.h"        // Vitis 자동 제공: AXI GPIO 제어 함수
+#include "xstatus.h"      // Vitis 자동 제공: 성공·실패 값
 
-#ifndef SDT
-#define GPIO_DEVICE_ID   XPAR_GPIO_0_DEVICE_ID
-#else
-#define GPIO_BASEADDR    XPAR_XGPIO_0_BASEADDR
-#endif
+#define LED_CH  1         // 직접 지정: Channel 1, LED 출력
+#define SW_CH   2         // 직접 지정: Channel 2, Switch 입력
 
-static XGpio Gpio;
-
-/* Debugger에서 관찰하기 위한 변수 */
-volatile u32 switch_value = 0U;
-volatile u32 led_value    = 0U;
+XGpio Gpio;               // 직접 선언: GPIO를 제어할 변수
 
 int main(void)
 {
-    int status;
-
-#ifndef SDT
-    status = XGpio_Initialize(&amp;Gpio, GPIO_DEVICE_ID);
-#else
-    status = XGpio_Initialize(&amp;Gpio, GPIO_BASEADDR);
-#endif
-
-    if (status != XST_SUCCESS) {
+    // 1. AXI GPIO 초기화
+    if (XGpio_Initialize(&amp;Gpio, XPAR_XGPIO_0_BASEADDR)
+        != XST_SUCCESS)
         return XST_FAILURE;
-    }
 
-    /*
-     * Vivado에서 Channel 1은 All Outputs,
-     * Channel 2는 All Inputs로 고정한다.
-     *
-     * 따라서 이 예제에서는 Software에서 GPIO_TRI를 다시 설정하지 않는다.
-     */
+    // 2. 입출력 방향 지정 (0: 출력, 1: 입력)
+    XGpio_SetDataDirection(&amp;Gpio, LED_CH, 0x0000);
+    XGpio_SetDataDirection(&amp;Gpio, SW_CH,  0xFFFF);
 
+    // 3. Switch 값을 읽어서 LED에 계속 출력
     while (1) {
-        /* Channel 2: Basys3 Slide Switch 읽기 */
-        switch_value = XGpio_DiscreteRead(&amp;Gpio, SW_CHANNEL) &amp; GPIO_MASK;
-
-        /* 읽은 16비트 값을 그대로 LED 출력으로 전달 */
-        led_value = switch_value;
-        XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_value);
+        u32 sw = XGpio_DiscreteRead(&amp;Gpio, SW_CH);
+        XGpio_DiscreteWrite(&amp;Gpio, LED_CH, sw);
     }
 
-    return XST_SUCCESS;
-}
-</code></pre>
-<div class="note">Vivado Instance 이름이 다르면 <code>xparameters.h</code>의 실제 Macro 이름도 달라질 수 있다. Build 전에 <code>XPAR_GPIO_0_DEVICE_ID</code> 또는 <code>XPAR_XGPIO_0_BASEADDR</code>가 실제로 생성되었는지 확인한다.</div>
+    return 0;
+}</code></pre><div class="table-wrap" role="region" tabindex="0" aria-label="코드에 나온 이름, 누가 준비하나요?, 무엇인가요?"><table><thead><tr><th scope="col">코드에 나온 이름</th><th scope="col">누가 준비하나요?</th><th scope="col">무엇인가요?</th></tr></thead><tbody><tr><td data-label="코드에 나온 이름"><code>xparameters.h</code></td><td data-label="누가 준비하나요?">Vitis 자동 생성</td><td data-label="무엇인가요?">하드웨어 주소 정의</td></tr><tr><td data-label="코드에 나온 이름"><code>xgpio.h</code></td><td data-label="누가 준비하나요?">Vitis 자동 제공</td><td data-label="무엇인가요?">GPIO 드라이버 함수</td></tr><tr><td data-label="코드에 나온 이름"><code>xstatus.h</code></td><td data-label="누가 준비하나요?">Vitis 자동 제공</td><td data-label="무엇인가요?">성공·실패 상태값</td></tr><tr><td data-label="코드에 나온 이름"><code>XPAR_XGPIO_0_BASEADDR</code></td><td data-label="누가 준비하나요?">Vitis 자동 생성</td><td data-label="무엇인가요?">현재 GPIO의 기준 주소</td></tr><tr><td data-label="코드에 나온 이름"><code>LED_CH</code>, <code>SW_CH</code></td><td data-label="누가 준비하나요?">직접 지정</td><td data-label="무엇인가요?">LED 채널 1, Switch 채널 2</td></tr><tr><td data-label="코드에 나온 이름"><code>Gpio</code>, <code>sw</code></td><td data-label="누가 준비하나요?">직접 선언</td><td data-label="무엇인가요?">제어 대상과 읽은 스위치 값</td></tr></tbody></table></div><p class="lesson-check"><strong>입력할 파일은 <code>main.c</code> 하나입니다.</strong> BSP 헤더를 복사하거나 직접 만들지 않습니다. <code>xil_types.h</code>의 <code>u32</code>는 드라이버가 포함한 자료형 정의를 통해 사용합니다.</p>
 </section>
 
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Driver와 Register 연결</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Driver와 Register 연결 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">C API</th><th scope="col" role="columnheader">Hardware Register</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="C API" role="cell"><code>XGpio_DiscreteWrite(&amp;Gpio, 1, value)</code></td><td data-label="Hardware Register" role="cell"><code>Base + 0x00 · GPIO_DATA</code></td></tr>
-<tr role="row"><td data-label="C API" role="cell"><code>XGpio_DiscreteRead(&amp;Gpio, 2)</code></td><td data-label="Hardware Register" role="cell"><code>Base + 0x08 · GPIO2_DATA</code></td></tr>
-</tbody></table></div>
-<div class="signal-map" tabindex="0" role="region" aria-label="19절 신호 및 실행 흐름">XGpio_DiscreteRead(Channel 2)
-        ↓
-Base + 0x08
-        ↓
-GPIO2_DATA
-        ↓
-SW[15:0]
-
-XGpio_DiscreteWrite(Channel 1)
-        ↓
-Base + 0x00
-        ↓
-GPIO_DATA
-        ↓
-LED[15:0]</div>
+<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>C 코드 한 줄씩 이해</h2>
+<p>처음 사용하는 GPIO 드라이버 프로그램이므로 실행 순서대로 읽습니다.</p>
+<h3>① GPIO 주소와 함수 가져오기</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="헤더 세 줄"><code>#include "xparameters.h"
+#include "xgpio.h"
+#include "xstatus.h"</code></pre><div class="table-wrap" role="region" tabindex="0" aria-label="코드, 쉽게 읽기"><table><thead><tr><th scope="col">코드</th><th scope="col">쉽게 읽기</th></tr></thead><tbody><tr><td data-label="코드"><code>#include</code></td><td data-label="쉽게 읽기">필요한 정의가 들어 있는 헤더를 사용하겠다는 뜻</td></tr><tr><td data-label="코드"><code>xparameters.h</code></td><td data-label="쉽게 읽기">Vivado에서 만든 GPIO의 주소를 알려 줌</td></tr><tr><td data-label="코드"><code>xgpio.h</code></td><td data-label="쉽게 읽기">GPIO를 초기화·읽기·쓰기 할 함수들을 제공</td></tr><tr><td data-label="코드"><code>xstatus.h</code></td><td data-label="쉽게 읽기">성공인지 실패인지 확인할 값 제공</td></tr></tbody></table></div>
+<h3>② 내가 사용할 채널과 변수 지정</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="채널과 변수"><code>#define LED_CH  1
+#define SW_CH   2
+XGpio Gpio;</code></pre><div class="table-wrap" role="region" tabindex="0" aria-label="코드, 쉽게 읽기"><table><thead><tr><th scope="col">코드</th><th scope="col">쉽게 읽기</th></tr></thead><tbody><tr><td data-label="코드"><code>#define LED_CH 1</code></td><td data-label="쉽게 읽기">LED는 GPIO 채널 1에 연결</td></tr><tr><td data-label="코드"><code>#define SW_CH 2</code></td><td data-label="쉽게 읽기">스위치는 GPIO 채널 2에 연결</td></tr><tr><td data-label="코드"><code>XGpio</code></td><td data-label="쉽게 읽기">AMD가 제공하는 GPIO 관리 자료형</td></tr><tr><td data-label="코드"><code>Gpio</code></td><td data-label="쉽게 읽기">내가 만든 GPIO 관리 변수의 이름</td></tr></tbody></table></div>
+<h3>③ GPIO 초기화</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="GPIO 초기화"><code>if (XGpio_Initialize(&amp;Gpio, XPAR_XGPIO_0_BASEADDR)
+    != XST_SUCCESS)
+    return XST_FAILURE;</code></pre><div class="table-wrap" role="region" tabindex="0" aria-label="이름, 쉽게 읽기"><table><thead><tr><th scope="col">이름</th><th scope="col">쉽게 읽기</th></tr></thead><tbody><tr><td data-label="이름"><code>XGpio_Initialize()</code></td><td data-label="쉽게 읽기">GPIO 장치를 사용할 준비를 함</td></tr><tr><td data-label="이름"><code>&amp;Gpio</code></td><td data-label="쉽게 읽기">초기화할 GPIO 변수의 위치(주소)를 전달</td></tr><tr><td data-label="이름"><code>XPAR_XGPIO_0_BASEADDR</code></td><td data-label="쉽게 읽기">Vitis가 알려준 실제 GPIO 기준 주소를 전달</td></tr><tr><td data-label="이름"><code>!= XST_SUCCESS</code></td><td data-label="쉽게 읽기">초기화에 실패했는지 검사</td></tr><tr><td data-label="이름"><code>return XST_FAILURE;</code></td><td data-label="쉽게 읽기">실패하면 프로그램을 종료</td></tr></tbody></table></div><p>Vitis 화면의 회색 <code>InstancePtr:</code>, <code>EffectiveAddr:</code>는 <strong>Inlay Hints(인레이 힌트, 인자 이름 보조 설명)</strong>입니다. 설명만 표시되며 직접 타이핑하지 않습니다.</p>
+<h3>④ LED는 출력, 스위치는 입력</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="GPIO 방향"><code>XGpio_SetDataDirection(&amp;Gpio, LED_CH, 0x0000);
+XGpio_SetDataDirection(&amp;Gpio, SW_CH,  0xFFFF);</code></pre><div class="table-wrap" role="region" tabindex="0" aria-label="인자, 의미"><table><thead><tr><th scope="col">인자</th><th scope="col">의미</th></tr></thead><tbody><tr><td data-label="인자"><code>&amp;Gpio</code></td><td data-label="의미">설정할 GPIO 장치</td></tr><tr><td data-label="인자"><code>LED_CH</code>, <code>SW_CH</code></td><td data-label="의미">설정할 채널 1 또는 2</td></tr><tr><td data-label="인자"><code>0x0000</code></td><td data-label="의미">16비트 모두 0 → LED 출력</td></tr><tr><td data-label="인자"><code>0xFFFF</code></td><td data-label="의미">16비트 모두 1 → 스위치 입력</td></tr></tbody></table></div><div class="bitline"><strong>출력(LED)</strong><code>0000 0000 0000 0000</code><strong>입력(SW)</strong><code>1111 1111 1111 1111</code></div><p>Vitis에 표시되는 <code>Channel:</code>, <code>DirectionMask:</code>도 각각 채널 번호와 입력·출력 설정값을 가리킵니다.</p>
+<h3>⑤ 스위치를 읽어서 LED에 출력</h3><pre class="codeblock-pre" tabindex="0" role="region" aria-label="스위치 읽기 / LED 출력"><code>while (1) {
+    u32 sw = XGpio_DiscreteRead(&amp;Gpio, SW_CH);
+    XGpio_DiscreteWrite(&amp;Gpio, LED_CH, sw);
+}</code></pre><div class="table-wrap" role="region" tabindex="0" aria-label="코드, 쉽게 읽기"><table><thead><tr><th scope="col">코드</th><th scope="col">쉽게 읽기</th></tr></thead><tbody><tr><td data-label="코드"><code>while (1)</code></td><td data-label="쉽게 읽기">멈추지 않고 계속 반복</td></tr><tr><td data-label="코드"><code>u32</code></td><td data-label="쉽게 읽기">32비트 부호 없는 정수형</td></tr><tr><td data-label="코드"><code>sw</code></td><td data-label="쉽게 읽기">읽은 스위치 상태를 보관할 변수</td></tr><tr><td data-label="코드"><code>XGpio_DiscreteRead(&amp;Gpio, SW_CH)</code></td><td data-label="쉽게 읽기">채널 2의 입력값을 읽음</td></tr><tr><td data-label="코드"><code>XGpio_DiscreteWrite(&amp;Gpio, LED_CH, sw)</code></td><td data-label="쉽게 읽기">읽은 값을 채널 1의 LED에 출력</td></tr></tbody></table></div><div class="flow flow-center">SW0 · SW2 ON → <code>sw = 0x0005</code> → LED0 · LED2 ON</div><p><code>return 0;</code>은 <code>main()</code>이 종료될 때 반환하는 값입니다. 현재 프로그램은 무한 반복하므로 정상 실행 중에는 도달하지 않습니다.</p>
 </section>
 
-<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>실행 순서</h2>
-<ol class="step-seq">
-<li><h3>FPGA Program</h3><p>SoC 06 Bitstream으로 Basys3를 Program한다.</p></li>
-<li><h3>Application Download</h3><p>Vitis에서 MicroBlaze V Application ELF를 다운로드한다.</p></li>
-<li><h3>Run</h3><p>프로그램을 실행한다.</p></li>
-<li><h3>Switch 조작</h3><p>SW0~SW15를 하나씩 올리고 대응 LED를 확인한다.</p></li>
-<li><h3>복수 Bit 확인</h3><p>예: SW0, SW3, SW7을 동시에 올리면 LED0, LED3, LED7이 동시에 켜지는지 확인한다.</p></li>
-</ol>
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Build · Debug · Inlay Hints</h2>
+<ol class="lesson-actions"><li>Vitis 왼쪽 아래 <strong>FLOW → Component</strong>에서 <code>soc06_axi_gpio</code> [Application]을 선택합니다.</li><li><strong>Build</strong>를 클릭하고 <code>Build Finished successfully</code>를 확인합니다.</li><li><strong>Settings → launch.json</strong>을 열고 <code>soc06_axi_gpio.bit</code>, <code>soc06_axi_gpio.elf</code>, <code>microblaze_riscv_0</code>를 확인합니다.</li><li><strong>Debug</strong>로 진입합니다. <code>Hart #0 — PAUSED ON BREAKPOINT</code>가 표시되면 <code>main()</code>에서 멈춘 상태입니다.</li><li><strong>Continue (▶)</strong>를 눌러 프로그램을 계속 실행합니다.</li></ol><div class="table-wrap" role="region" tabindex="0" aria-label="파일 / 화면, 확인 내용"><table><thead><tr><th scope="col">파일 / 화면</th><th scope="col">확인 내용</th></tr></thead><tbody><tr><td data-label="파일 / 화면"><code>soc06_axi_gpio.elf</code></td><td data-label="확인 내용">Application Build 후 자동 생성된 실행 파일</td></tr><tr><td data-label="파일 / 화면"><code>launch.json</code></td><td data-label="확인 내용">Bitstream/ELF 다운로드 및 Debug 설정</td></tr><tr><td data-label="파일 / 화면"><code>main.c</code>의 회색 <code>InstancePtr:</code></td><td data-label="확인 내용">Vitis 편집기의 인자 이름 보조 표시</td></tr></tbody></table></div><h3>Inlay Hints 표시 설정</h3><p>Vitis 상단의 <strong>File → Preferences → Open Settings (UI)</strong>에서 <code>Inlay Hints</code>를 검색하고 <strong>Editor › Inlay Hints: Enabled → On</strong>으로 설정합니다. 직접 입력하는 소스 코드에는 포함되지 않습니다.</p><details><summary>Build는 성공했는데 코드에 빨간 밑줄이 남을 때</summary><p>실제 사례에서는 Build 성공 후에도 <code>xparameters.h file not found</code> 등 코드 분석기 오류가 표시됐습니다. Vitis를 종료하고 같은 Workspace로 다시 실행한 뒤 <strong>PROBLEMS 오류 0개</strong>를 확인했습니다. 내부 원인은 별도로 확정되지 않았습니다.</p></details>
 </section>
 
-<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>눈으로 확인하는 결과</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="눈으로 확인하는 결과 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Switch 값</th><th scope="col" role="columnheader">CPU가 읽는 16비트 값</th><th scope="col" role="columnheader">LED 결과</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Switch 값" role="cell">모두 OFF</td><td data-label="CPU가 읽는 16비트 값" role="cell"><code>0x0000</code></td><td data-label="LED 결과" role="cell">모두 OFF</td></tr>
-<tr role="row"><td data-label="Switch 값" role="cell">SW0 ON</td><td data-label="CPU가 읽는 16비트 값" role="cell"><code>0x0001</code></td><td data-label="LED 결과" role="cell">LED0 ON</td></tr>
-<tr role="row"><td data-label="Switch 값" role="cell">SW3 ON</td><td data-label="CPU가 읽는 16비트 값" role="cell"><code>0x0008</code></td><td data-label="LED 결과" role="cell">LED3 ON</td></tr>
-<tr role="row"><td data-label="Switch 값" role="cell">SW0 + SW3 ON</td><td data-label="CPU가 읽는 16비트 값" role="cell"><code>0x0009</code></td><td data-label="LED 결과" role="cell">LED0 + LED3 ON</td></tr>
-<tr role="row"><td data-label="Switch 값" role="cell">SW15 ON</td><td data-label="CPU가 읽는 16비트 값" role="cell"><code>0x8000</code></td><td data-label="LED 결과" role="cell">LED15 ON</td></tr>
-<tr role="row"><td data-label="Switch 값" role="cell">모두 ON</td><td data-label="CPU가 읽는 16비트 값" role="cell"><code>0xFFFF</code></td><td data-label="LED 결과" role="cell">LED 16개 모두 ON</td></tr>
-</tbody></table></div>
-<div class="flow">Switch Pattern = LED Pattern</div>
-</section>
-
-<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>Debugger 확인</h2>
-<p>Vitis Watch 창에 <code>switch_value</code>와 <code>led_value</code>를 등록한다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="22절 신호 및 실행 흐름">SW0 ON
-switch_value = 0x00000001
-led_value    = 0x00000001
-
-SW15 ON
-switch_value = 0x00008000
-led_value    = 0x00008000
-
-ALL ON
-switch_value = 0x0000FFFF
-led_value    = 0x0000FFFF</div>
-<p>보드 LED 변화와 Software 변수 변화가 동시에 일치해야 한다.</p>
-</section>
-
-<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>AXI Transaction 추적</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="23절 신호 및 실행 흐름">[INPUT READ]
-
-SW[15:0]
-   ↓
-GPIO2_DATA
-   ↓
-AXI Read
-ARADDR = GPIO Base + 0x08
-   ↓
-RDATA = Switch Value
-   ↓
-MicroBlaze V
-
-[OUTPUT WRITE]
-
-MicroBlaze V
-   ↓
-AXI Write
-AWADDR = GPIO Base + 0x00
-WDATA  = Switch Value
-   ↓
-GPIO_DATA
-   ↓
-LED[15:0]</div>
-<p>SoC 04의 Memory Map과 SoC 05의 AXI Read/Write가 이번 장에서 실제 보드 I/O 동작으로 연결된다.</p>
-</section>
-
-<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>오류 점검</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인 위치</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="증상" role="cell">LED가 전혀 켜지지 않음</td><td data-label="원인 후보" role="cell">AXI GPIO Channel 1 설정 또는 XDC 오류</td><td data-label="확인 위치" role="cell">All Outputs, <code>led[]</code> Port, LED Pin</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Switch 값이 항상 0</td><td data-label="원인 후보" role="cell">Channel 2 Input 설정 또는 XDC 오류</td><td data-label="확인 위치" role="cell">All Inputs, <code>sw[]</code> Port, Switch Pin</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Channel 2 API에서 Assertion</td><td data-label="원인 후보" role="cell">Dual Channel 미설정</td><td data-label="확인 위치" role="cell">Enable Dual Channel 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Software Build에서 Macro 없음</td><td data-label="원인 후보" role="cell">XSA/Platform 미갱신 또는 Instance 이름 차이</td><td data-label="확인 위치" role="cell"><code>xparameters.h</code></td></tr>
-<tr role="row"><td data-label="증상" role="cell">CPU가 잘못된 주소 접근</td><td data-label="원인 후보" role="cell">Vivado Address Editor와 Platform 불일치</td><td data-label="확인 위치" role="cell">GPIO Base Address 비교</td></tr>
-<tr role="row"><td data-label="증상" role="cell">LED Bit 순서가 다름</td><td data-label="원인 후보" role="cell">외부 Port/XDC Index 불일치</td><td data-label="확인 위치" role="cell"><code>led[0]~led[15]</code> Mapping</td></tr>
-<tr role="row"><td data-label="증상" role="cell">SW0인데 LED15가 켜짐</td><td data-label="원인 후보" role="cell">Bit Index 역순 연결</td><td data-label="확인 위치" role="cell">Switch/LED Vector 연결 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">LED가 반대로 동작한다고 생각함</td><td data-label="원인 후보" role="cell">Board LED Polarity 오해</td><td data-label="확인 위치" role="cell">Basys3 LED는 Logic High에서 ON</td></tr>
-</tbody></table></div>
-</section>
-
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 06 완료 체크리스트</h2>
-<ul>
-<li>[ ] AXI GPIO를 MicroBlaze V AXI Master에 연결했다.</li>
-<li>[ ] Dual Channel을 활성화했다.</li>
-<li>[ ] Channel 1을 16-bit All Outputs로 설정했다.</li>
-<li>[ ] Channel 2를 16-bit All Inputs로 설정했다.</li>
-<li>[ ] Interrupt는 아직 사용하지 않는다.</li>
-<li>[ ] Address Editor에서 AXI GPIO Base Address를 실제로 확인했다.</li>
-<li>[ ] <code>GPIO_DATA +0x00</code>, <code>GPIO_TRI +0x04</code>, <code>GPIO2_DATA +0x08</code>, <code>GPIO2_TRI +0x0C</code>를 구분한다.</li>
-<li>[ ] Basys3 Switch와 LED XDC Pin을 확인했다.</li>
-<li>[ ] XSA를 다시 Export하고 Vitis Platform을 갱신했다.</li>
-<li>[ ] Switch 값을 Channel 2에서 읽었다.</li>
-<li>[ ] 읽은 값을 Channel 1에 썼다.</li>
-<li>[ ] SW0~SW15와 LED0~LED15가 1:1로 대응한다.</li>
-<li>[ ] <code>switch_value</code>와 <code>led_value</code>가 일치함을 Debugger에서 확인했다.</li>
-<li>[ ] SoC 04 Memory Map → SoC 05 AXI → SoC 06 실제 GPIO 동작의 연결을 설명할 수 있다.</li>
-</ul>
-<div class="flow">SoC 06 완료 → SoC 07 AXI UART Lite</div>
+<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Basys3 동작 확인 · 오류 점검</h2>
+<p>프로그램 실행 후 스위치를 움직이면 같은 번호의 LED가 반응해야 합니다.</p><div class="table-wrap" role="region" tabindex="0" aria-label="보드 조작, 예상 LED 출력"><table><thead><tr><th scope="col">보드 조작</th><th scope="col">예상 LED 출력</th></tr></thead><tbody><tr><td data-label="보드 조작">모두 OFF</td><td data-label="예상 LED 출력">모든 LED 꺼짐</td></tr><tr><td data-label="보드 조작">SW0 ON</td><td data-label="예상 LED 출력">LED0 켜짐</td></tr><tr><td data-label="보드 조작">SW1 ON</td><td data-label="예상 LED 출력">LED1 켜짐</td></tr><tr><td data-label="보드 조작">SW0 + SW3 ON</td><td data-label="예상 LED 출력">LED0 + LED3 켜짐</td></tr><tr><td data-label="보드 조작">SW15 ON</td><td data-label="예상 LED 출력">LED15 켜짐</td></tr><tr><td data-label="보드 조작">모두 ON</td><td data-label="예상 LED 출력">LED 16개 모두 켜짐</td></tr></tbody></table></div><div class="flow flow-center">Switch → Channel 2 입력 → MicroBlaze V → Channel 1 출력 → LED</div><h3>동작하지 않을 때 확인</h3><div class="table-wrap" role="region" tabindex="0" aria-label="증상, 먼저 확인할 곳"><table><thead><tr><th scope="col">증상</th><th scope="col">먼저 확인할 곳</th></tr></thead><tbody><tr><td data-label="증상">LED가 반응하지 않음</td><td data-label="먼저 확인할 곳">Debug가 중단점에 멈추지 않았는지 확인하고 Continue 실행</td></tr><tr><td data-label="증상">SW와 LED 번호가 다름</td><td data-label="먼저 확인할 곳"><code>sw_tri_i[n]</code>, <code>led_tri_o[n]</code> XDC 핀 매핑</td></tr><tr><td data-label="증상">GPIO를 초기화하지 못함</td><td data-label="먼저 확인할 곳">Platform XSA와 <code>XPAR_XGPIO_0_BASEADDR</code></td></tr><tr><td data-label="증상">Bitstream 생성 오류</td><td data-label="먼저 확인할 곳">Wrapper 포트명과 XDC <code>get_ports</code> 일치 여부</td></tr><tr><td data-label="증상">Vitis 빨간 밑줄만 표시</td><td data-label="먼저 확인할 곳">Application Build가 성공했는지 확인 후 Vitis 재실행</td></tr></tbody></table></div><p><strong>실습 확인 기준:</strong> 16개 스위치가 같은 번호의 LED에 대응하는지 보드에서 확인합니다. 빌드·디버그 성공과 실제 보드 동작 검증은 구별합니다.</p>
 </section>
 
 <section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
@@ -670,6 +414,6 @@ LED[15:0]</div>
 <a href="05_axi4_axi4lite_axi4stream.html">← SoC 05</a><a href="../../index.html">전체 목차</a><a href="07_axi_uart_lite.html">SoC 07 →</a></nav>
 </main></div>
 
-<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+<footer class="site-footer">BASYS3 SoC + NPU · MICRO BLAZE V</footer>
 
 </body></html>
