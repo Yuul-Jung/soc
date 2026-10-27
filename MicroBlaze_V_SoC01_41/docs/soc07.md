@@ -13,16 +13,34 @@
 | XDC | 06장 Clock/Reset/Switch/LED 제약 | 독립 사본 유지 후 UART RX/TX 제약 추가 |
 | Vitis | 06장 Platform·GPIO Application 보존 | 07장 Platform·UART Echo Application 신규 |
 
-### Vivado 시작 순서
+### Vivado 시작 순서 · Wrapper는 마지막에 생성
 
-1. **06장 성공 프로젝트 열기:** `soc06_axi_gpio.xpr`의 기존 CPU·BRAM·AXI GPIO·SmartConnect·Clock·Reset 상태를 확인한다.
-2. **File → Project → Save As:** `soc07_axi_uartlite`로 별도 복제한다. 파일은 `/home/jung/soc/hw/soc07_axi_uartlite/` 아래에 저장한다.
-3. **File → Save Block Design As:** 기존 `soc06_axi_gpio.bd`를 열어 `soc07_axi_uartlite.bd`로 저장한다. **Local to Project**, **Add to Design Sources**를 선택하고 원래 06장 BD는 보존한다.
-4. **Create HDL Wrapper:** 새 BD의 우클릭 메뉴에서 **Let Vivado manage wrapper and auto-update**를 선택해 `soc07_axi_uartlite_wrapper`를 만들고 **Set as Top**을 실행한다.
-5. **기존 Wrapper 정리:** 복제된 07장 프로젝트에 남은 `soc06_axi_gpio_wrapper`를 필요 시 **Remove File from Project**로 정리한다. **Delete files from disk는 선택하지 않는다.**
-6. **소스 독립성 검증:** 07장 BD·Wrapper·XDC가 06장 디렉터리에서 직접 참조되는 것이 아닌지 확인한다. 기존 `axi_gpio_0`이 정상으로 유지되는지 확인한 뒤 07장 UART IP를 추가한다.
+1. **06장 프로젝트 열기:** `/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr`를 열고 성공한 AXI GPIO·BRAM·Clock·Reset 구조를 확인한다.
+2. **File → Project → Save As:** `soc07_axi_uartlite`로 복제하여 `/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr`에 저장한다.
+3. **File → Save Block Design As:** 복제본의 `soc06_axi_gpio.bd`를 `soc07_axi_uartlite.bd`로 저장한다. **Local to Project**와 **Add to Design Sources**를 사용한다.
+4. **소스 경로 확인:** Design Sources의 BD와 Constraints의 XDC가 06장 파일을 직접 수정하지 않는 07장 독립 복사본인지 확인한다.
+5. **Add IP:** 07장 BD에 `axi_uartlite_0`를 추가한다. 기존 `axi_gpio_0`는 유지한다.
+6. **IP 설정:** UART Lite는 115200 baud, 8 Data Bits, No Parity로 설정한다. 연결 AXI 클록은 기존 100 MHz 실제 연결값과 대조한다.
+7. **Run Connection Automation:** `axi_uartlite_0/S_AXI`를 기존 `microblaze_riscv_0/M_AXI_DP` → `axi_smc` 경로에 연결하고 Clock·Reset을 확인한다.
+8. **Make External:** UART 수신 `rx`를 `RsRx`, 송신 `tx`를 `RsTx`로 내보낸다.
+9. **Create HDL Wrapper:** UART 외부 포트까지 완성된 `soc07_axi_uartlite.bd`에서 **Let Vivado manage wrapper and auto-update**를 선택한다. 새 `soc07_axi_uartlite_wrapper`를 **Set as Top**으로 지정한다.
+10. **기존 Wrapper 정리:** 불필요한 `soc06_axi_gpio_wrapper`는 **Remove File from Project**로만 제거한다. **Delete files from disk**는 사용하지 않는다.
+11. **XDC:** 새 Wrapper의 실제 UART 포트명에 맞춰 RX B18, TX A18을 07장 XDC에 추가한다. 기존 GPIO 핀을 유지한다.
+12. **Address Editor:** `axi_uartlite_0/S_AXI` 주소를 할당하고 실제 Base/High Address를 확인한다.
+13. **Validate Design → Generate Bitstream → File → Export → Export Hardware:** 07장 Bitstream을 만들고 **Include bitstream** XSA를 내보낸다.
 
-**주의:** 위 07장 파일명과 GUI 작업은 예정 실습 절차다. 실제 07장 복제·시뮬레이션·보드 동작은 사용자 화면으로 확인한 뒤에만 성공으로 기록한다.
+### Vitis·PC 통신 진행 순서
+
+14. **File → New Component → Platform:** 07장 `soc07_axi_uartlite.xsa`를 선택하고 MicroBlaze V standalone Domain으로 새 Platform을 생성·Build한다. 06장 Platform은 보존한다.
+15. **File → New Component → Application:** 07장 Platform·Domain을 선택하고 새 Echo Application을 만든다.
+16. 새 Application의 `src/main.c`에 제공된 코드를 입력한다. 새 `xparameters.h`의 UART 주소 매크로를 확인한다.
+17. 07장 Application을 Build하고 Basys3를 07장 Bitstream으로 Program한다.
+18. moserial에서 실제 USB-UART 포트를 확인해 115200 8N1, Handshake None, Echo received data Off로 Connect한다.
+19. Vitis ELF를 Run/Continue한다. moserial Outgoing의 ASCII·No end로 `A`를 전송하고 Received ASCII의 `A`를 확인한다. `B`, `1`도 확인한다.
+
+**실습 HTML 본문:** [07장 단계별 따라 하기](../pages/soc/07_axi_uart_lite.html) · SECTION 01~17이 실제 작업 절차이며 SECTION 18~27은 필요한 개념·공식 예제 참고이다.
+
+**실제 확인 상태:** 07장 Vivado·Vitis·moserial의 성공 화면은 아직 확인되지 않았으므로 위 내용은 검증 대기 중인 실습 절차다.
 
 ## 실습 목표
 
@@ -275,12 +293,14 @@ Interrupt Controller가 아직 없어도 동작하며 통신 경로를 확인하
 
 ## 07장 Vitis Platform·Application
 
-07장 Vivado의 Bitstream을 생성하고 **07장 XSA**를 Export한다. 06장에서 정상 동작했던 Platform은 새 XSA로 덮어쓰지 않는다.
+1. Vivado 07장 Bitstream을 생성하고 **File → Export → Export Hardware**, **Include bitstream**으로 `soc07_axi_uartlite.xsa`를 내보낸다.
+2. Vitis Workspace `/home/jung/soc/sw`에서 **File → New Component → Platform**을 연다. 이름은 `soc07_axi_uartlite_platform`을 권장하며 새 07장 XSA를 선택한다.
+3. CPU `microblaze_riscv_0`, OS `standalone` Domain으로 Platform을 생성·Build한다.
+4. **File → New Component → Application**으로 `soc07_axi_uartlite` 앱을 만들고 새 Platform·Domain을 선택한다.
+5. 07장 앱의 `src/main.c`를 추가하고 생성된 `xparameters.h`의 UART Base Address 매크로와 일치하도록 확인한다.
+6. Platform → Application 순서로 Build한다. 기존 06장 성공 Platform·GPIO Application은 수정하지 않는다.
 
-- 07장 XSA를 기반으로 **새 Platform**을 생성한다. 제안 이름: `soc07_axi_uartlite_platform`.
-- 별도의 UART Echo Application을 만든다. 제안 이름: `soc07_axi_uartlite`.
-- 07장 Platform의 새 `xparameters.h`에서 UART Lite의 실제 Base Address Macro를 확인하고 C 프로그램을 빌드한다.
-- 위 이름은 **작성·실습용 권장 이름**이며 07장 실제 타깃 Build는 아직 수행하지 않았다.
+해당 이름은 이번 실습을 위한 **권장 이름**이다. 실제 실행·Build 결과는 별도 확인한다.
 
 
 ## Echo 프로그램
