@@ -1,4 +1,5 @@
 name: SoC07 adversarial docs and Verilog QA
+# Vendor figures were also manually visually reviewed after SHA-verified PDF crops.
 on:
   push:
     paths:
