@@ -70,14 +70,14 @@
       "source": "amd",
       "fraction": [
         0.16,
-        0.7,
+        0.73,
         0.91,
         0.875
       ],
-      "sha256": "9f68a3ffb5aa811bcb52a086be4ff07a15bcd18c3e42c7c9936e8a7afd695576",
+      "sha256": "bc92b7e0a4216af504b53fc62cd31dbed10872d0a0c263c5b6723ff25a492da8",
       "pixels": [
         1286,
-        389
+        323
       ]
     },
     {
