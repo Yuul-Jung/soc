@@ -115,8 +115,13 @@ jobs:
             for width in (1440,1024,390,320):
               page=b.new_page(viewport={"width":width,"height":900},device_scale_factor=1)
               page.goto(html,wait_until="load")
+              # The manual uses lazy images: force an actual decode for ALL figures.
               page.locator("figure.official-original-figure img").first.wait_for()
-              page.wait_for_timeout(600)
+              page.evaluate("""async () => {
+                const imgs=[...document.querySelectorAll('figure.official-original-figure img')];
+                for(const img of imgs) img.loading='eager';
+                await Promise.all(imgs.map(img => img.decode().catch(() => null)));
+              }""")
               state=page.evaluate("""() => ({
                 width:window.innerWidth,
                 scrollWidth:document.documentElement.scrollWidth,
