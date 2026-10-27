@@ -1,6 +1,13 @@
 # AXI GPIO - Switch 입력을 LED 출력으로
 
 
+## AXI GPIO 실습 목표
+
+SoC 05까지는 AXI Transaction을 구조와 파형으로 이해했다. 이번 장에서는 실제 Peripheral인 AXI GPIO를 연결하여 CPU가 Hardware Register를 읽고 쓰는 결과를 Basys3 보드에서 직접 확인한다.
+
+SW0을 올리면 LED0, SW7을 올리면 LED7, SW15를 올리면 LED15가 켜지는 1:1 대응 구조를 만든다.
+
+
 ## SECTION 02 · 01장 프로젝트 복제와 Design Sources 변경
 
 **출발점은 04장이 아니라 01장에서 검증한 Vivado 프로젝트이다.** 04장에서는 01장 하드웨어를 활용했고, 05장은 AXI 구조 이론을 공부했다. 06장부터는 01장 성공 회로를 별도 프로젝트로 복제해 AXI GPIO를 추가한다.
@@ -24,13 +31,6 @@
 7. **Constraints(제약파일) 분리:** Clock/Reset 설정을 유지하고 06장 프로젝트의 GPIO XDC를 별도로 관리한다. FPGA 외부 포트를 만든 다음 `led_tri_o[15:0]` / `sw_tri_i[15:0]`로 확인하여 XDC를 적용한다. 01장 XDC 소스를 직접 수정하지 않는다.
 
 **확인 기준:** Design Sources의 BD는 `soc06_axi_gpio.bd`, Top은 `soc06_axi_gpio_wrapper`이다. 01장 소스를 참조하는 공유 경로는 없는지 확인한다. 기존 IP가 정상이면 **그때부터** AXI GPIO를 추가한다.
-
-## AXI GPIO 실습 목표
-
-SoC 05까지는 AXI Transaction을 구조와 파형으로 이해했다. 이번 장에서는 실제 Peripheral인 AXI GPIO를 연결하여 CPU가 Hardware Register를 읽고 쓰는 결과를 Basys3 보드에서 직접 확인한다.
-
-SW0을 올리면 LED0, SW7을 올리면 LED7, SW15를 올리면 LED15가 켜지는 1:1 대응 구조를 만든다.
-
 
 ## 전체 Hardware 구조
 
