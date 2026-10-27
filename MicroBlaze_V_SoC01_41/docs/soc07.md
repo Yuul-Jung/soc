@@ -33,8 +33,11 @@ MicroBlaze V
 
 ## Basys3 USB-UART
 
+[![Digilent Figure 6 · 공식 문서 원본 그림](../images/soc07/vendor/digilent_fig06_basys3_uart.png)](../images/soc07/vendor/digilent_fig06_basys3_uart.png)
 
-원본 그림: [Digilent Basys 3 Reference Manual · Figure 6 (7쪽)](https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7)
+원문: [Digilent Figure 6](https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7)
+
+
 
 FT2232HQ가 J4 Micro-USB와 FPGA UART 핀 사이를 연결한다. 공식 원본 그림을 직접 열람하며 B18(RX)과 A18(TX)를 확인한다.
 
@@ -46,13 +49,16 @@ FT2232HQ가 J4 Micro-USB와 FPGA UART 핀 사이를 연결한다. 공식 원본 
 
 J4 하나로 FPGA Programming/JTAG와 USB-UART를 함께 사용할 수 있으며 두 기능은 독립적으로 동작한다.
 
-MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 xparameters.h의 심볼을 사용한다.
+06장에 구성된 microblaze_riscv_0/M_AXI_DP → SmartConnect를 그대로 유지하고 UART Lite를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 xparameters.h의 심볼을 사용한다.
 
 
 ## AXI UART Lite 내부 구조
 
+[![PG142 Figure 1-1 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png)](../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png)
 
-원본 그림: [AMD PG142 · Figure 1-1 (5쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5)
+원문: [PG142 Figure 1-1](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5)
+
+
 
 AXI4-Lite Interface, RX/TX FIFO, Status/Control Register, Baud Rate Generator가 핵심이다.
 
@@ -87,6 +93,11 @@ Idle  Start  D0 D1 D2 D3 D4 D5 D6 D7  Stop  Idle
 
 ## IP 설정
 
+[![PG142 Figure 4-1 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig04_01_vivado_gui.png)](../images/soc07/vendor/pg142_fig04_01_vivado_gui.png)
+
+원문: [PG142 Figure 4-1](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15)
+
+
 
 | 항목 | 설정 |
 | --- | --- |
@@ -95,14 +106,14 @@ Idle  Start  D0 D1 D2 D3 D4 D5 D6 D7  Stop  Idle
 | Data Bits | 8 |
 | Parity | No Parity |
 
-Baud Rate, Data Bits, Parity는 Hardware Build 시 고정되는 설정이며 일반적인 Software API로 Runtime 변경하는 구조가 아니다.
+Baud Rate, Data Bits, Parity는 Hardware Build 시 고정되는 설정이며 일반적인 Software API로 Runtime 변경하는 구조가 아니다. PG142 Figure 4-1 화면의 Baud 9600은 구버전 원문 예시이며, 본 실습은 115200으로 설정한다.
 
 
 ## AXI 연결
 
 
 ```text
-MicroBlaze V M_AXI
+MicroBlaze V M_AXI_DP
       │
       ▼
 SmartConnect
@@ -148,8 +159,10 @@ Classic Flow는 일반적으로 XPAR_UARTLITE_0_BASEADDR, SDT Flow는 XPAR_XUART
 
 ## Register Map
 
+[![PG142 Table 2-4 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_table02_04_registers.png)](../images/soc07/vendor/pg142_table02_04_registers.png)
 
-공식 원문: [AMD PG142 Table 2-4 · Register Space (9쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9)
+원문: [PG142 Table 2-4](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9)
+
 
 
 | Offset | Register | Access | 역할 |
@@ -162,22 +175,31 @@ Classic Flow는 일반적으로 XPAR_UARTLITE_0_BASEADDR, SDT Flow는 XPAR_XUART
 
 ## RX FIFO
 
-공식 원본: [PG142 Figure 2-1 · RX FIFO 비트 배치 (9쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9)
+[![PG142 Figure 2-1 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig02_01_rx_fifo.png)](../images/soc07/vendor/pg142_fig02_01_rx_fifo.png)
+
+원문: [PG142 Figure 2-1](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9)
+
 
 RX FIFO는 16-entry이며 수신된 Character를 저장한다. 8-bit 설정에서는 유효 Data가 bit [7:0]에 들어온다.
 
 
 ## TX FIFO
 
-공식 원본: [PG142 Figure 2-2 · TX FIFO 비트 배치 (10쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10)
+[![PG142 Figure 2-2 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig02_02_tx_fifo.png)](../images/soc07/vendor/pg142_fig02_02_tx_fifo.png)
+
+원문: [PG142 Figure 2-2](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10)
+
 
 TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.
 
 
 ## Status Register
 
+[![PG142 Figure 2-4 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig02_04_status.png)](../images/soc07/vendor/pg142_fig02_04_status.png)
 
-공식 원본: [PG142 Figure 2-4 · Status Register 비트 배치 (11쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11)
+원문: [PG142 Figure 2-4](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11)
+
+
 
 | Bit | 이름 | 의미 |
 | --- | --- | --- |
@@ -193,8 +215,11 @@ TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.
 
 ## Control Register
 
+[![PG142 Figure 2-3 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig02_03_control.png)](../images/soc07/vendor/pg142_fig02_03_control.png)
 
-공식 원본: [PG142 Figure 2-3 · Control Register 비트 배치 (10쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10)
+원문: [PG142 Figure 2-3](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10)
+
+
 
 | Bit | 기능 |
 | --- | --- |
@@ -410,7 +435,10 @@ SoC 05의 AR/R Read와 AW/W/B Write가 UART FIFO 접근으로 실제 적용된�
 
 ## AMD 공식 Example Design · 예제 설계
 
-원본 그림: [AMD PG142 Figure 5-1 · Example Design Block Diagram (18쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=18)
+[![PG142 Figure 5-1 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig05_01_example_design.png)](../images/soc07/vendor/pg142_fig05_01_example_design.png)
+
+원문: [PG142 Figure 5-1](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=18)
+
 
 - Vivado **Open IP Example Design**은 공식 AXI UART Lite IP 예제 프로젝트를 새로 생성한다.
 - **Clock Generator**는 예제 내부 AXI 클록 100 MHz를 생성한다.
@@ -420,7 +448,10 @@ SoC 05의 AR/R Read와 AW/W/B Write가 UART FIFO 접근으로 실제 적용된�
 
 ## AMD 공식 Test Bench · 시뮬레이션
 
-원본 그림: [AMD PG142 Figure 6-1 · Test Bench Block Diagram (21쪽)](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=21)
+[![PG142 Figure 6-1 · 공식 문서 원본 그림](../images/soc07/vendor/pg142_fig06_01_testbench.png)](../images/soc07/vendor/pg142_fig06_01_testbench.png)
+
+원문: [PG142 Figure 6-1](https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=21)
+
 
 - 제공 소스: 공식 Example Design의 Simulation Sources 안에 있는 `<component_name>_exdes_tb.vhd`(VHDL).
 - **Test Bench**는 입력 클록 200 MHz와 초기 Reset을 만들고, 예제 설계의 직렬 TX 출력을 검사한다.
@@ -429,6 +460,18 @@ SoC 05의 AR/R Read와 AW/W/B Write가 UART FIFO 접근으로 실제 적용된�
 - 실행 절차: 공식 Example Design 별도 생성 → Simulation Sources 확인 → **Run Behavioral Simulation** → TX 파형 및 결과 메시지 확인.
 - 기대 성공 메시지: `Test Completed Successfully`. **실제 Vivado 2024.2 시뮬레이션 성공은 아직 검증되지 않았다.**
 - 이 공식 시험은 AXI UART Lite의 송신 경로를 확인하는 것이며, 현재 07장의 Basys3 + MicroBlaze V 양방향 Echo 검증을 대신하지 않는다.
+
+### Verilog 테스트벤치 적용
+
+[Verilog 전체 소스 보기: `tb_soc07_axi_uartlite.v`](../code/soc07/tb_soc07_axi_uartlite.v)
+
+- 공식 `*_exdes_tb.vhd`의 동작 목표를 참고하여 **독립 Verilog 테스트벤치**를 작성했다. 원본 VHDL의 문장별 직접 변환이 아닌 **검증 기능 재구현**이다.
+- 독립 Vivado 시뮬레이션 프로젝트에서 `axi_uartlite_0` IP를 100 MHz, 115200, 8N1로 생성하고 Output Products를 만든다.
+- Simulation Sources에 `tb_soc07_axi_uartlite.v`를 추가하고 Top을 `tb_soc07_axi_uartlite`로 지정한 뒤 Run Behavioral Simulation을 실행한다.
+- 자동 검사: TX 'A'(0x41), RX 'B'(0x42), RX FIFO AXI Read, TX Echo 'B'(0x42).
+- 기대 완료 문자열: `SOC07 VERILOG UARTLITE SELF-CHECK PASS`.
+- **Vivado 2024.2 IP 시뮬레이션, Basys3 실제 보드 검증은 아직 실행되지 않았다.**
+
 
 ## SoC 07 실습 확인 항목
 
