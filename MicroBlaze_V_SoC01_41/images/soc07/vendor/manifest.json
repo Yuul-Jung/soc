@@ -23,10 +23,10 @@
         0.72,
         0.83
       ],
-      "sha256": "1bfcfc2c71b15f6ec8fd46af349f54893633e34e194822d7fc2bead36e214902",
+      "sha256": "649aa4bcda99fbd187cb9f63055e386afd3a121c0a768e2ff539a4512bdaa5fe",
       "pixels": [
         1029,
-        434
+        367
       ]
     },
     {
@@ -70,14 +70,14 @@
       "source": "amd",
       "fraction": [
         0.16,
-        0.765,
+        0.7,
         0.91,
         0.875
       ],
-      "sha256": "c563fe6583f84cedd363ca0ba7a18a4bc1d3953ba8ae9a78556faa0515cb7b03",
+      "sha256": "9f68a3ffb5aa811bcb52a086be4ff07a15bcd18c3e42c7c9936e8a7afd695576",
       "pixels": [
         1286,
-        245
+        389
       ]
     },
     {
@@ -140,12 +140,12 @@
         0.16,
         0.14,
         0.9,
-        0.655
+        0.642
       ],
-      "sha256": "5da9ec1d1a9bc8da2b176a90cfb17bd3a00686c44123c6e4bc77763d786db9f5",
+      "sha256": "4673c79774b94d1eb5dcafdd5f1337647f8cbe1d74a983a32660237a8c3a4768",
       "pixels": [
         1269,
-        1143
+        1114
       ]
     },
     {
@@ -157,12 +157,12 @@
         0.19,
         0.455,
         0.89,
-        0.815
+        0.8
       ],
-      "sha256": "d3be66f9f7f5dffee7eb527e121200ef34ba1a68df55bdd39d21ca1a7dcbde84",
+      "sha256": "3587ce2aef625492e3689a3874ee34bcc002ddb8d2c630c8eeecf91b92f53014",
       "pixels": [
         1201,
-        799
+        766
       ]
     },
     {
