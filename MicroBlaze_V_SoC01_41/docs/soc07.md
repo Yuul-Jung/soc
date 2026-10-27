@@ -1,26 +1,28 @@
 # AXI UART Lite - PC 터미널 Echo 통신
 
 
-## 전체 학습 위치 · 어떤 프로젝트에서 시작하는가?
+## 전체 학습 위치 · 06장 성공 프로젝트에서 07장 복제
 
-**07장은 06장 AXI GPIO 성공 회로에서 이어지는 실습이다.** 다만 06장 원본을 수정하지 않고 Vivado에서 07장 전용 복제본을 만든 뒤 AXI UART Lite IP만 추가한다. 새 MicroBlaze V SoC를 처음부터 구성하지 않는다.
+07장은 06장 AXI GPIO를 직접 덮어쓰지 않고, **06장 Vivado 프로젝트를 07장으로 복제한 뒤 UART Lite를 추가하는 연속 실습**이다.
 
-| 구분 | 06장 기존 성공 프로젝트 | 07장 작업 프로젝트 |
+| 항목 | 06장 원본 · 보존 | 07장 복제본 · 작업 대상 |
 | --- | --- | --- |
-| Vivado 이름 | `soc06_axi_gpio` | `soc07_axi_uartlite` |
-| .xpr | `/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr` | `/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr` |
-| 기존 하드웨어 | MicroBlaze V, BRAM, Clock, Reset, SmartConnect, AXI GPIO | 그대로 유지 |
-| 새 하드웨어 | 없음 | `axi_uartlite_0` 추가 |
-| Vitis Platform·Application | 기존 성공 프로젝트 보존 | 07장 XSA를 반영한 새 Platform·Echo Application 생성 |
+| Vivado Project | `/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr` | `/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr` |
+| Block Design | `soc06_axi_gpio.bd` | `soc07_axi_uartlite.bd` (신규 이름) |
+| HDL Wrapper / Top | `soc06_axi_gpio_wrapper` | `soc07_axi_uartlite_wrapper` (신규 이름) |
+| XDC | 06장 Clock/Reset/Switch/LED 제약 | 독립 사본 유지 후 UART RX/TX 제약 추가 |
+| Vitis | 06장 Platform·GPIO Application 보존 | 07장 Platform·UART Echo Application 신규 |
 
-### Vivado 최초 작업
+### Vivado 시작 순서
 
-1. Vivado 2024.2에서 **06장 `soc06_axi_gpio.xpr`**를 연다.
-2. **File → Project → Save As**로 07장 새 프로젝트 `soc07_axi_uartlite`를 만든다. 최종 저장 파일을 위 표의 새 `.xpr` 경로에 둔다.
-3. 현재 프로젝트명과 Block Design·XDC의 **실제 소스 파일 경로**를 확인한다. 소스가 여전히 06장 디렉터리를 참조하면 **Copy File Into Project / Copy All Files Into Project** 등 적합한 복사 절차로 07장에 독립 보관한 후 다음 단계로 간다.
-4. **06장 원본과 소스의 독립성이 확인된 뒤에만** 07장 복제본에서 AXI UART Lite를 추가한다.
+1. **06장 성공 프로젝트 열기:** `soc06_axi_gpio.xpr`의 기존 CPU·BRAM·AXI GPIO·SmartConnect·Clock·Reset 상태를 확인한다.
+2. **File → Project → Save As:** `soc07_axi_uartlite`로 별도 복제한다. 파일은 `/home/jung/soc/hw/soc07_axi_uartlite/` 아래에 저장한다.
+3. **File → Save Block Design As:** 기존 `soc06_axi_gpio.bd`를 열어 `soc07_axi_uartlite.bd`로 저장한다. **Local to Project**, **Add to Design Sources**를 선택하고 원래 06장 BD는 보존한다.
+4. **Create HDL Wrapper:** 새 BD의 우클릭 메뉴에서 **Let Vivado manage wrapper and auto-update**를 선택해 `soc07_axi_uartlite_wrapper`를 만들고 **Set as Top**을 실행한다.
+5. **기존 Wrapper 정리:** 복제된 07장 프로젝트에 남은 `soc06_axi_gpio_wrapper`를 필요 시 **Remove File from Project**로 정리한다. **Delete files from disk는 선택하지 않는다.**
+6. **소스 독립성 검증:** 07장 BD·Wrapper·XDC가 06장 디렉터리에서 직접 참조되는 것이 아닌지 확인한다. 기존 `axi_gpio_0`이 정상으로 유지되는지 확인한 뒤 07장 UART IP를 추가한다.
 
-기존 정상 동작 `soc06_axi_gpio` 프로젝트와 06장 Vitis Platform·GPIO 애플리케이션은 변경하거나 이동하지 않는다.
+**주의:** 위 07장 파일명과 GUI 작업은 예정 실습 절차다. 실제 07장 복제·시뮬레이션·보드 동작은 사용자 화면으로 확인한 뒤에만 성공으로 기록한다.
 
 ## 실습 목표
 
