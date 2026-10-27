@@ -4,6 +4,7 @@
 
 - [공통 사양·실습 순서](00_overview/START_HERE.html)
 - [장별 검증 결과](validation/verification.html)
+- [07장 기준 교재 제작·검증 지침](EDITORIAL_GUIDELINES.md) — 공식 원본 그림, GUI 실습, Verilog 테스트벤치, moserial, 적대적 검증
 - `pages/soc/`: 장별 HTML · 좌측 세부 목차·검색·코드 복사
 - `docs/`: 장별 Markdown
 - `images/`: 내장 그림과 원본 크기 보기
