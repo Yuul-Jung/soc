@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko"><!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="SoC 07.1 · 검증된 AXI UART Lite Polling Echo C 소스 코드를 초보자 눈높이에서 문장별로 이해하는 보조 학습 페이지.">
+<title>SoC 07.1 · UART Echo C 코드 쉽게 이해하기</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+
+.official-original-figure img{display:block;max-width:100%;max-height:780px;object-fit:contain;width:auto;height:auto;margin:0 auto}
+.official-original-figure figcaption{max-width:1100px;margin:14px auto 4px}
+@media(max-width:600px){.official-original-figure{padding:9px}}
+
+/* GUI 실습 절차: 한 조작씩 따라하기 */
+.procedure{list-style:none;counter-reset:proc;padding:0;display:grid;gap:10px;margin:14px 0}
+.procedure>li{position:relative;counter-increment:proc;border:1px solid var(--line);border-radius:7px;padding:12px 14px 12px 52px;background:var(--card);min-width:0}
+.procedure>li:before{content:counter(proc,decimal-leading-zero);position:absolute;left:13px;top:14px;color:var(--accent);font-size:.85rem;font-weight:700}
+.procedure strong{display:block;margin-bottom:5px}
+.procedure p{margin:4px 0}
+.step-result,.step-caution{display:block;padding:8px 10px;margin-top:8px;font-size:.89rem;border-radius:4px}
+.step-result{background:var(--good-bg);color:var(--good)}.step-caution{background:var(--warn-bg);color:var(--warn)}
+@media(max-width:600px){.procedure>li{padding:11px 11px 11px 43px}.procedure>li:before{left:9px}}
+
+/* 실습 우선 탐색 — 개념 절에서 절차 절로 바로 이동 */
+.lab-jump{margin:0 0 19px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
+.lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
+
+/* SoC07 : 이론 / 실습 / 검증 구획 구분 */
+.chapter-phase{border-top:3px solid var(--accent);padding:18px 20px;margin:25px 0 16px;background:#F5F6F9;}
+.chapter-phase strong{display:block;font-weight:800;font-size:1.04rem;}
+.chapter-phase p{margin:5px 0 0;font-size:.88rem;line-height:1.6;}
+.chapter-phase.phase-practice{border-top-color:#356B51;background:#F3F8F5;}
+.chapter-phase.phase-verify{border-top-color:#9A6020;background:#FCF7ED;}
+.chapter-phase.phase-optional{border-top-color:#888;background:#F5F5F5;}
+.timeline .timeline-phase{margin:13px 7px 5px;padding:7px 9px;background:#F0F1F4;color:#42485B;font-size:.78rem;font-weight:800;list-style:none;}
+.optional-theory{margin:12px 0 0;border:1px solid var(--line);background:#fff;}
+.optional-theory>summary{cursor:pointer;font-weight:700;padding:12px 15px;color:var(--accent);}
+.optional-theory-body{padding:4px 16px 16px;}
+@media(max-width:600px){.chapter-phase{padding:12px 14px}.optional-theory-body{padding:4px 10px 12px}}
+
+/* 07장 실제 Vivado/Vitis 캡처: 단계별 이미지, 클릭 확대 */
+.soc07-shot{margin:14px 0 16px;padding:12px;border:1px solid var(--line);background:#fff;border-radius:10px;max-width:100%;box-sizing:border-box;}
+.soc07-shot a{display:block;max-width:100%;}
+.soc07-shot img{width:100%;height:auto;max-height:740px;display:block;object-fit:contain;object-position:left top;border-radius:5px;border:1px solid #e3e6ea;background:#fff;}
+.soc07-shot figcaption{display:block;font-size:.86rem;color:#465164;margin-top:8px;line-height:1.65;}
+.soc07-shot figcaption strong{display:inline;font-size:inherit;}
+.soc07-shot.is-success{border-left:4px solid #37835d;}
+.soc07-shot.is-estimate{border-left:4px solid #b58d39;}
+.soc07-shot .shot-source{font-size:.76rem;color:#747e8c;}
+.soc07-shot.is-procedure{border-left:4px solid #6f87b6;}
+@media(max-width:600px){.soc07-shot{padding:6px}.soc07-shot img{max-height:none}.soc07-shot figcaption{font-size:.82rem}}
+
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script><style>
+/* 07.1 C 코드 이해 페이지: 07장 공통 색상과 레이아웃 유지 */
+.lesson-lead{font-size:1rem;line-height:1.85;color:var(--ink-2);}
+.explain{padding:13px 16px;background:#F5F3FB;border-left:4px solid var(--accent);margin:14px 0 17px;line-height:1.75;}
+.explain strong{color:#34268E;}
+.explain p{margin:4px 0 0;}
+.memory-demo{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.memory-demo .cell{flex:1;min-width:78px;padding:14px 10px;text-align:center;background:#F7F6FB;border:1px solid #D8D3EF;border-radius:8px;}
+.memory-demo .cell strong{display:block;font-size:1.2rem;color:#322099}
+.memory-demo .cell small{display:block;margin-top:7px;font-size:.78rem;color:#697081}
+.lab-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.lab-mini>div{padding:15px 12px;border:1px solid #DDDDF0;background:#F8F8FC;border-radius:10px;line-height:1.55;}
+.lab-mini b{display:block;color:#33218F;margin-bottom:5px;}
+.key-result{padding:16px;border-left:4px solid #24754A;background:#EFF8F2;line-height:1.8;margin:18px 0;}
+.source-small{font-size:.84rem;line-height:1.7;color:#666F7A;}
+.step-card p{line-height:1.85;}
+.codeblock-pre{margin-top:12px;margin-bottom:14px;}
+.step-card .table-wrap{margin-top:12px;margin-bottom:15px;}
+.wide-code{max-height:980px;overflow:auto;}
+.wide-code pre{margin:0;}
+.phase-marker{margin:23px 0 15px;padding:15px 18px;border-top:3px solid var(--accent);background:#F5F3FB;font-weight:800}
+@media(max-width:720px){.lab-mini{grid-template-columns:1fr}.explain{padding:12px}.memory-demo .cell{min-width:70px}}
+</style></head><body>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a>
+<div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><a href="07_axi_uart_lite.html">SoC 07</a><span class="sep">/</span><strong>SoC 07.1</strong></div><div class="brand">BASYS3 · MICRO BLAZE V</div></div></div>
+<header class="hero"><div class="hero-grid"></div><div class="hero-inner">
+<p class="hero-kicker">Basys3 + MicroBlaze V · SoC 07.1 · 07장 보조 설명</p>
+<h1>UART Echo C 코드 쉽게 이해하기</h1>
+<p class="hero-desc">07장에서 성공한 <code>main.c</code>를 한 줄씩 풀어 읽는다. C 코드가 CPU에서 무슨 일을 시키는지, 메모리와 AXI UART Lite의 어느 부분을 움직이는지 연결한다.</p>
+<div class="hero-meta"><span class="chip">C 코드 해석</span><span class="chip">UART 115200 8N1</span><span class="chip">포인터</span><span class="chip">FIFO</span><span class="chip">Polling Echo</span></div>
+<div class="hero-brief">
+<article><h2>코드</h2><p>명령을 한 줄씩 읽는다.</p></article>
+<article><h2>CPU·메모리</h2><p>변수와 주소 변화를 이해한다.</p></article>
+<article><h2>UART</h2><p>RX FIFO를 읽고 TX FIFO로 돌려준다.</p></article>
+</div></div></header>
+<div class="wrap">
+<aside class="flow-nav" aria-label="07.1장 코드 풀이 세부 목차">
+<div class="reader-tools"><form hidden=""><label for="chapter-select">장 이동</label>
+<select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="07_1_uart_echo_c_code_guide.html" selected="">SoC 07.1 · UART Echo C 코드 풀이</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select>
+<button type="submit">선택한 장 열기</button></form>
+<div class="reader-links"><a href="07_axi_uart_lite.html">07장 GUI 실습</a><a href="../../code/soc07/main.c">검증 C 소스</a><a href="../../index.html">전체 목차</a></div></div>
+<p class="nav-title">SOC 07.1 · CODE READING</p>
+<p class="nav-help">C 명령 → CPU 실행 → AXI 레지스터 → UART</p><ol class="timeline">
+<li><a href="#s01"><span class="n">01</span><span>전체 데이터 이동</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>헤더 파일의 역할</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>하드웨어 주소</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>변수와 메모리</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>문자열 송신 함수</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>FIFO 초기화</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>시작 안내문 출력</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>문자 수신 · 대기</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>문자 송신 · Echo</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>실제 abc 실행 흐름</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Watch와 확인 문제</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>main.c 전체 원본</span></a></li>
+</ol>
+</aside><main id="main-content" tabindex="-1">
+<div class="overview-card"><h2>07장과 07.1장의 차이</h2><div class="stage-flow"><span class="stage"><a href="07_axi_uart_lite.html">07장 · Vivado/Vitis 따라하기</a></span><span class="arrow">→</span><span class="stage"><strong>07.1장 · C 소스 이해</strong></span><span class="arrow">→</span><span class="stage"><a href="08_axi_timer.html">08장 · AXI Timer</a></span></div><p class="lesson-lead">새 프로젝트를 만들지 않습니다. <code>/home/jung/soc/sw/soc07_axi_uartlite/src/main.c</code>와 GitHub <a href="../../code/soc07/main.c">원본 코드</a>를 읽는 보조 학습입니다.</p></div>
+<nav class="lab-jump" aria-label="핵심 내용 바로 이동"><strong>먼저 동작을 이해하고, 필요할 때 원본 전체 코드를 확인합니다.</strong>
+<div class="jump-links"><a href="#s01">전체 흐름</a><a href="#s05">문자열 함수</a><a href="#s08">수신 코드</a><a href="#s10">abc 사례</a><a href="#s12">전체 코드</a></div>
+</nav>
+<section class="step-card" id="s01"><span class="step">CODE 01</span><h2>프로그램이 하는 일 — PC에서 보낸 문자를 돌려준다</h2>
+<p class="lesson-lead">PC에서 <code>a</code>를 보내면 Basys3는 <code>a</code>를 받아 다시 <code>a</code>를 전송합니다. C 프로그램은 그 가운데에서 <strong>한 바이트를 읽고 같은 한 바이트를 쓰는 일</strong>을 담당합니다.</p>
+<div class="signal-map" tabindex="0" role="region">PC moserial에서 문자 'a' 송신
+       │ USB-UART 신호
+       ▼
+Basys3 B18  UART_0_rxd
+       │
+       ▼
+AXI UART Lite · RX FIFO   ← 수신 데이터 임시 보관
+       │ AXI 주소로 한 바이트 읽기
+       ▼
+MicroBlaze V · last_rx 변수에 저장
+       │ 같은 한 바이트를 다시 AXI 주소에 쓰기
+       ▼
+AXI UART Lite · TX FIFO   ← 송신 데이터 임시 보관
+       │
+       ▼
+Basys3 A18  UART_0_txd
+       │
+       ▼
+PC moserial에서 문자 'a' 수신</div>
+<div class="explain"><strong>쉽게 말하면</strong><p>UART Lite는 직렬 비트 신호를 만드는 전용 하드웨어이고, MicroBlaze V는 그 하드웨어의 저장 공간을 읽고 쓰는 CPU입니다. CPU가 직접 UART 비트의 높고 낮음을 일일이 만들지 않습니다.</p></div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="역할 구분"><table><thead><tr><th>대상</th><th>담당하는 일</th></tr></thead><tbody><tr><td data-label="대상">PC 터미널</td><td data-label="담당하는 일">문자 입력과 결과 화면 표시</td></tr><tr><td data-label="대상">RX FIFO(수신 버퍼)</td><td data-label="담당하는 일">직렬로 도착한 바이트를 보관</td></tr><tr><td data-label="대상">MicroBlaze V CPU</td><td data-label="담당하는 일">받은 바이트를 읽고 다시 송신하도록 명령</td></tr><tr><td data-label="대상">TX FIFO(송신 버퍼)</td><td data-label="담당하는 일">보낼 바이트를 보관하여 직렬 신호로 내보냄</td></tr></tbody></table></div>
+<p class="lesson-check"><strong>핵심 확인</strong> Echo(에코, 받은 문자를 그대로 반환하는 동작)는 UART 하드웨어와 CPU의 협업으로 이루어집니다.</p></section><section class="step-card" id="s02"><span class="step">CODE 02</span><h2>세 개의 헤더 파일 — 이미 준비된 도구를 가져온다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="헤더 include 3줄"><code>#include &quot;xparameters.h&quot;
+#include &quot;xuartlite_l.h&quot;
+#include &quot;xil_types.h&quot;</code></pre>
+<div class="table-wrap" tabindex="0" role="region" aria-label="헤더 파일 기능"><table><thead><tr><th>파일</th><th>쉬운 설명</th><th>실제로 쓰는 대상</th></tr></thead><tbody><tr><td data-label="파일"><code>xparameters.h</code></td><td data-label="쉬운 설명">Vivado 설계에서 생성된 하드웨어 주소표</td><td data-label="실제로 쓰는 대상"><code>XPAR_XUARTLITE_0_BASEADDR</code></td></tr><tr><td data-label="파일"><code>xuartlite_l.h</code></td><td data-label="쉬운 설명">UART Lite 레지스터를 사용하기 위한 저수준 도구</td><td data-label="실제로 쓰는 대상"><code>SendByte</code>, <code>RecvByte</code>, <code>WriteReg</code></td></tr><tr><td data-label="파일"><code>xil_types.h</code></td><td data-label="쉬운 설명">AMD 임베디드 코드의 기본 정수형</td><td data-label="실제로 쓰는 대상"><code>u8</code>, <code>u32</code></td></tr></tbody></table></div>
+<div class="explain"><strong>C 문법으로 읽기</strong><p><code>#include</code>는 지정한 헤더의 선언과 매크로를 컴파일 전에 사용할 수 있게 하는 명령입니다. 즉, UART 하드웨어 주소와 함수를 매번 직접 작성하지 않아도 됩니다.</p></div>
+<p class="lesson-check"><strong>핵심 확인</strong> 헤더 파일은 07장 Platform Build 후 생성·제공됩니다. 컴파일이 정상이라면 헤더 내용을 직접 고치지 않습니다.</p></section><section class="step-card" id="s03"><span class="step">CODE 03</span><h2>UART 주소를 선택한다 — CPU가 어느 장치에 접근할까?</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="하드웨어 주소 매크로 선택"><code>#ifndef SDT
+#define UARTLITE_BASEADDR XPAR_UARTLITE_0_BASEADDR
+#else
+#define UARTLITE_BASEADDR XPAR_XUARTLITE_0_BASEADDR
+#endif</code></pre>
+<p>이번 07장의 <code>xparameters.h</code>와 Vivado Address Editor에서 확인한 UART Lite 시작 주소는 <strong><code>0x40600000</code></strong>입니다.</p>
+<div class="lab-mini">
+<div><b>Base Address</b><code>0x40600000</code><br>UART Lite가 배치된 시작 주소</div>
+<div><b>Register Offset</b><code>+0x00</code>, <code>+0x04</code> 등<br>내부 레지스터 구분값</div>
+<div><b>실제 접근 주소</b>Base + Offset<br>어느 UART 레지스터인지 결정</div>
+</div>
+<div class="explain"><strong>왜 #ifndef SDT가 있을까?</strong><p>이 부분은 프로그램 실행 중에 검사하는 <code>if</code>가 아니라 <strong>컴파일 전에 사용할 주소 이름을 선택</strong>하는 전처리기 조건입니다. <code>SDT</code> 정의 여부에 따라 이름이 다른 두 매크로 중 하나를 선택합니다. 둘 다 같은 하드웨어를 가리키도록 플랫폼이 구성되어야 합니다.</p></div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="주소 선택"><table><thead><tr><th>컴파일 조건</th><th>선택되는 기호</th></tr></thead><tbody><tr><td data-label="컴파일 조건"><code>SDT</code>가 정의되지 않은 경우</td><td data-label="선택되는 기호"><code>XPAR_UARTLITE_0_BASEADDR</code></td></tr><tr><td data-label="컴파일 조건"><code>SDT</code>가 정의된 경우</td><td data-label="선택되는 기호"><code>XPAR_XUARTLITE_0_BASEADDR</code></td></tr></tbody></table></div>
+<p class="note">실제 헤더 화면에서는 <code>XPAR_XUARTLITE_0_BASEADDR</code>의 값 <code>0x40600000</code>이 확인됐습니다. 현재 프로젝트에서 어느 분기가 선택됐는지는 실제 빌드 설정으로 판단합니다. 원본 코드는 그대로 유지합니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> MicroBlaze V는 주소를 통해 UART Lite에 접근하며, 04장의 Local BRAM 주소와는 다른 영역입니다.</p></section><section class="step-card" id="s04"><span class="step">CODE 04</span><h2>변수 세 개 — 받은 문자와 횟수를 기억한다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="UART 관찰 변수"><code>volatile u8  last_rx  = 0U;
+volatile u32 rx_count = 0U;
+volatile u32 tx_count = 0U;</code></pre>
+<div class="memory-demo">
+<div class="cell"><strong>last_rx</strong><small>u8 · 마지막 수신 바이트</small></div>
+<div class="cell"><strong>rx_count</strong><small>u32 · 수신 처리 횟수</small></div>
+<div class="cell"><strong>tx_count</strong><small>u32 · 송신 함수 기록 횟수</small></div>
+</div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="변수 뜻"><table><thead><tr><th>변수</th><th>처음 값</th><th>예시 · 문자 a를 수신했다면</th></tr></thead><tbody><tr><td data-label="변수"><code>last_rx</code></td><td data-label="처음 값"><code>0x00</code></td><td data-label="예시 · 문자 a를 수신했다면"><code>0x61</code> (ASCII 코드)</td></tr><tr><td data-label="변수"><code>rx_count</code></td><td data-label="처음 값"><code>0</code></td><td data-label="예시 · 문자 a를 수신했다면">기존 값에서 1 증가</td></tr><tr><td data-label="변수"><code>tx_count</code></td><td data-label="처음 값"><code>0</code></td><td data-label="예시 · 문자 a를 수신했다면">UART로 기록할 때마다 1 증가</td></tr></tbody></table></div>
+<div class="explain"><strong>volatile u8 last_rx = 0U; 를 풀어 읽기</strong><p><code>u8</code>은 8비트 부호 없는 정수입니다. <code>volatile</code>은 컴파일러가 이 변수의 메모리 읽기·쓰기를 임의로 생략하지 않도록 합니다. <code>0U</code>는 부호 없는 정수 0입니다. Vitis Watch(변숫값 관찰 창)에서도 유용합니다.</p></div>
+<p><code>u32</code>는 32비트 부호 없는 정수입니다. 여기서 <code>volatile</code>은 인터럽트 처리나 병렬 접근을 안전하게 만드는 장치가 아닙니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> 문자 한 개의 내용은 <code>last_rx</code>, 누적된 횟수는 <code>rx_count</code>와 <code>tx_count</code>에 따로 기록됩니다.</p></section><section class="step-card" id="s05"><span class="step">CODE 05</span><h2>uart_puts() — 문자열을 한 글자씩 전송한다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="문자열 전송 함수"><code>static void uart_puts(const char *text)
+{
+    while (*text != '\0') {
+        XUartLite_SendByte(UARTLITE_BASEADDR, (u8)*text);
+        tx_count++;
+        text++;
+    }
+}</code></pre>
+<p><strong><code>uart_puts("ABC");</code>를 가정하면</strong> 문자열 <code>A</code>, <code>B</code>, <code>C</code>를 차례대로 UART로 보내고, 문자열 끝 <code>\0</code>에서는 반복을 종료합니다.</p>
+<div class="memory-demo"><div class="cell"><strong>A</strong><small>첫 문자</small></div><div class="cell"><strong>B</strong><small>다음 문자</small></div><div class="cell"><strong>C</strong><small>마지막 문자</small></div><div class="cell"><strong>\0</strong><small>문자열의 끝</small></div></div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="함수 내용 풀이"><table><thead><tr><th>실제 코드</th><th>컴퓨터가 하는 일</th></tr></thead><tbody><tr><td data-label="실제 코드"><code>const char *text</code></td><td data-label="컴퓨터가 하는 일">문자열 첫 글자 위치(주소)를 넘겨받습니다. <code>const</code>는 이 포인터를 통해 문자열을 변경하지 않는다는 의미입니다.</td></tr><tr><td data-label="실제 코드"><code>while (*text != '\0')</code></td><td data-label="컴퓨터가 하는 일">현재 글자가 문자열의 끝이 아니면 반복합니다.</td></tr><tr><td data-label="실제 코드"><code>SendByte(..., (u8)*text)</code></td><td data-label="컴퓨터가 하는 일">현재 글자의 1바이트 값을 TX FIFO로 보냅니다.</td></tr><tr><td data-label="실제 코드"><code>tx_count++</code></td><td data-label="컴퓨터가 하는 일">UART에 기록한 바이트 수를 1 증가시킵니다.</td></tr><tr><td data-label="실제 코드"><code>text++</code></td><td data-label="컴퓨터가 하는 일">포인터를 다음 글자 주소로 이동시킵니다.</td></tr></tbody></table></div>
+<div class="explain"><strong>포인터 기초</strong><p><code>*text</code>는 text가 가리키는 주소에 있는 <strong>현재 문자 읽기</strong>이고, <code>text++</code>는 <strong>다음 문자로 이동</strong>입니다. 문자 <code>A</code>를 보낼 때 <code>\0</code>까지 함께 송신하는 것은 아닙니다.</p></div>
+<p><code>XUartLite_SendByte()</code>는 TX FIFO가 기록 가능한 상태가 될 때까지 기다릴 수 있습니다. 함수가 돌아왔다는 사실과 UART 직렬선에서 마지막 비트까지 모두 전송됐다는 사실은 구분해야 합니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> 문자열 전체를 한 번에 보내는 것처럼 보여도 실제 함수 안에서는 1바이트씩 UART에 기록합니다.</p></section><section class="step-card" id="s06"><span class="step">CODE 06</span><h2>main() 시작 — UART RX/TX FIFO를 비운다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="제어 레지스터 초기화"><code>/*
+     * CTRL_REG bit1 = RX FIFO reset
+     * CTRL_REG bit0 = TX FIFO reset
+     * 0x03 : 두 FIFO를 모두 비운다.
+     * Interrupt bit4는 0이므로 Polling 방식이다.
+     */
+    XUartLite_WriteReg(
+        UARTLITE_BASEADDR,
+        XUL_CONTROL_REG_OFFSET,
+        0x03U
+    );</code></pre>
+<p><strong><code>main()</code>은 프로그램이 시작되는 함수</strong>입니다. 맨 처음 UART Lite 내부에 남았을 수 있는 송신·수신 데이터를 초기화합니다.</p>
+<div class="signal-map" tabindex="0" role="region">UARTLITE_BASEADDR       → 0x40600000
+XUL_CONTROL_REG_OFFSET  → +0x0C
+실제 Control Register   → 0x4060000C
+
+0x03 → 이진수 0000 0011
+              │   └─ bit0 = 1 → TX FIFO 초기화
+              └───── bit1 = 1 → RX FIFO 초기화
+bit4 = 0 → Interrupt 사용 안 함</div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="AXI UART Lite 레지스터"><table><thead><tr><th>Offset</th><th>레지스터</th><th>주요 용도</th></tr></thead><tbody><tr><td data-label="Offset"><code>+0x00</code></td><td data-label="레지스터">RX FIFO</td><td data-label="주요 용도">받은 바이트 읽기</td></tr><tr><td data-label="Offset"><code>+0x04</code></td><td data-label="레지스터">TX FIFO</td><td data-label="주요 용도">보낼 바이트 쓰기</td></tr><tr><td data-label="Offset"><code>+0x08</code></td><td data-label="레지스터">Status Register</td><td data-label="주요 용도">수신 있음·송신 가득 참 확인</td></tr><tr><td data-label="Offset"><code>+0x0C</code></td><td data-label="레지스터">Control Register</td><td data-label="주요 용도">FIFO 초기화·인터럽트 제어</td></tr></tbody></table></div>
+<div class="explain"><strong>WriteReg(Base, Offset, Value)라는 모양</strong><p>첫 번째는 UART의 시작 주소, 두 번째는 내부 레지스터 위치, 세 번째는 실제로 기록할 값입니다. 결국 CPU가 AXI4-Lite를 통해 UART 제어 레지스터에 <code>0x03</code>을 쓰게 됩니다.</p></div>
+<p class="lesson-check"><strong>핵심 확인</strong> 여기서는 UART FIFO만 초기화합니다. FPGA 전체를 다시 설계하거나 CPU 메모리를 지우는 동작이 아닙니다.</p></section><section class="step-card" id="s07"><span class="step">CODE 07</span><h2>시작 안내문 — PC에 글자를 출력한다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="시작 안내문 두 줄"><code>uart_puts(&quot;\r\nAXI UART Lite Echo Ready\r\n&quot;);
+    uart_puts(&quot;Type characters. Received data will be echoed.\r\n&gt; &quot;);</code></pre>
+<p><code>\r</code>은 커서를 줄의 시작으로 옮기는 문자, <code>\n</code>은 다음 줄로 내리는 문자입니다. 화면의 줄바꿈도 UART로 보내는 1바이트 문자들이 조합된 결과입니다.</p>
+<div class="signal-map" tabindex="0" role="region">AXI UART Lite Echo Ready
+Type characters. Received data will be echoed.
+&gt; </div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="송신 바이트 계산"><table><thead><tr><th>출력 대상</th><th>문자 수</th></tr></thead><tbody><tr><td data-label="출력 대상">첫 번째 안내문 (앞뒤 <code>\r\n</code> 포함)</td><td data-label="문자 수">28바이트</td></tr><tr><td data-label="출력 대상">두 번째 안내문 (뒤 <code>\r\n&gt; </code> 포함)</td><td data-label="문자 수">50바이트</td></tr><tr><td data-label="출력 대상">안내문 합계</td><td data-label="문자 수"><strong>78바이트</strong></td></tr></tbody></table></div>
+<div class="explain"><strong>tx_count가 0부터 시작하지 않는 이유</strong><p>Echo 문자를 아직 받지 않았더라도 이 두 개의 안내문을 전송하면서 <code>tx_count</code>가 증가합니다. 안내문 송신 함수들이 모두 반환된 시점의 예상값은 78입니다. 실제 Watch 관찰값과 구별합니다.</p></div>
+<p class="lesson-check"><strong>핵심 확인</strong> 터미널에서 안내문이 보이는 것은 FPGA → PC의 UART TX 경로가 동작한다는 증거입니다.</p></section><section class="step-card" id="s08"><span class="step">CODE 08</span><h2>RecvByte() — 문자가 들어올 때까지 기다린다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="한 바이트 수신·횟수 증가"><code>while (1) {
+        /* RX FIFO에 문자가 들어올 때까지 Blocking 대기 */
+        last_rx = XUartLite_RecvByte(UARTLITE_BASEADDR);
+        rx_count++;</code></pre>
+<div class="lab-mini"><div><b>① 수신 데이터 없음</b>RX FIFO가 비어 있습니다. CPU는 수신 함수 내부에서 기다립니다.</div>
+<div><b>② 문자가 도착</b>UART Lite가 직렬 데이터를 받아 RX FIFO에 넣습니다.</div>
+<div><b>③ CPU가 읽기</b><code>RecvByte()</code>가 한 바이트를 읽고 <code>last_rx</code>에 저장합니다.</div></div>
+<div class="explain"><strong>Blocking(블로킹, 기다리는 방식) + Polling(폴링, 상태 반복 확인)</strong><p><code>XUartLite_RecvByte()</code>는 데이터가 들어오기 전까지 반환하지 않습니다. CPU는 다른 작업을 하지 않고 UART의 수신 가능 상태를 확인합니다. 07장은 가장 단순한 문자 Echo 동작을 이해하기 위한 구조입니다.</p></div>
+<p>이 줄이 끝나면 <code>rx_count++</code>가 실행되어 수신한 바이트 수를 1 증가시킵니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> PC가 아무 문자도 보내지 않으면 <code>RecvByte()</code>에서 계속 기다리는 것이 정상입니다.</p></section><section class="step-card" id="s09"><span class="step">CODE 09</span><h2>SendByte() — 받은 글자를 그대로 돌려준다</h2>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="UART Echo 핵심 송신부"><code>/* 받은 1 Byte를 그대로 PC로 다시 전송 */
+        XUartLite_SendByte(UARTLITE_BASEADDR, last_rx);
+        tx_count++;</code></pre>
+<div class="signal-map" tabindex="0" role="region">PC가 'a' 전송 → RX FIFO에 ASCII 0x61 저장
+                     ↓
+CPU가 last_rx에 0x61 저장
+                     ↓
+SendByte(..., last_rx) → TX FIFO에 0x61 기록
+                     ↓
+UART TX 핀에서 직렬 전송 → PC에 'a' 표시</div>
+<div class="explain"><strong>왜 같은 글자가 돌아올까?</strong><p>수신 데이터에 더하거나 빼는 계산을 전혀 하지 않습니다. <code>last_rx</code>에 저장된 바이트 값을 <code>SendByte()</code>에 그대로 전달하기 때문에 Echo가 됩니다.</p></div>
+<p><code>tx_count++</code>는 TX FIFO로 데이터를 쓰도록 요청한 횟수를 기록합니다. UART 케이블의 물리적인 비트 전송 완료 횟수를 측정한 것은 아닙니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> 수신은 RX FIFO 읽기, 송신은 TX FIFO 쓰기입니다. CPU는 AXI4-Lite 레지스터를 통해 두 동작을 수행합니다.</p></section><section class="step-card" id="s10"><span class="step">CODE 10</span><h2>실제 Basys3 결과 — abc를 보내면 abc가 돌아온다</h2>
+<p>07장 실습에서 moserial은 <code>/dev/ttyUSB2</code>에 <strong>115200 8N1</strong>로 연결됐고, PC에서 전송한 <code>abc</code>가 수신 창에 그대로 표시됐습니다.</p>
+<figure class="manual-figure"><a class="figure-image-link" target="_blank" rel="noopener" href="../../images/soc07/steps/soc07_34_moserial_echo_abc_success.webp"><img src="../../images/soc07/steps/soc07_34_moserial_echo_abc_success.webp" alt="실제 Basys3 UART Lite moserial에서 abc가 수신된 성공 화면" loading="lazy"></a><figcaption><strong>07장 실기 성공 화면</strong> — 시작 안내문 및 <code>abc</code> 반환 확인. 이미지를 클릭하면 원본 크기로 열립니다.</figcaption></figure>
+<div class="signal-map" tabindex="0" role="region">PC 전송   a (0x61)   b (0x62)   c (0x63)
+              ↓          ↓          ↓
+RX FIFO       a          b          c
+              ↓          ↓          ↓
+last_rx      0x61       0x62       0x63
+              ↓          ↓          ↓
+TX FIFO       a          b          c
+              ↓          ↓          ↓
+PC 수신       a          b          c</div>
+<div class="key-result"><strong>실제 검증:</strong> moserial <code>Received ASCII</code>에 <code>abc</code>가 반환된 것을 확인했습니다. 아래 횟수는 이 코드에서 계산한 <em>예상값</em>이지 Debug Watch로 확인한 실측값은 아닙니다.</div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="abc 단독 처리 시 예상 변수 변화"><table><thead><tr><th>상태</th><th>last_rx</th><th>rx_count</th><th>tx_count</th></tr></thead><tbody><tr><td data-label="상태">안내문 두 개 출력 후</td><td data-label="last_rx"><code>0x00</code></td><td data-label="rx_count">0</td><td data-label="tx_count">78</td></tr><tr><td data-label="상태"><code>a</code> Echo 처리 후</td><td data-label="last_rx"><code>0x61</code></td><td data-label="rx_count">1</td><td data-label="tx_count">79</td></tr><tr><td data-label="상태"><code>b</code> Echo 처리 후</td><td data-label="last_rx"><code>0x62</code></td><td data-label="rx_count">2</td><td data-label="tx_count">80</td></tr><tr><td data-label="상태"><code>c</code> Echo 처리 후</td><td data-label="last_rx"><code>0x63</code></td><td data-label="rx_count">3</td><td data-label="tx_count">81</td></tr></tbody></table></div>
+<p class="source-small">위 표는 프로그램 시작 이후 추가 입력이 <code>abc</code>뿐이며, 중간에 다시 실행하거나 종료 문자를 전송하지 않았다고 가정한 계산입니다. moserial 화면에 보이는 누적 TX/RX 바이트와 C 변수값은 서로 다른 항목입니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> 실제 검증된 것은 UART 양방향 문자 Echo이고, 세 변수의 정확한 Watch 관찰값은 별도 확인 항목입니다.</p></section><section class="step-card" id="s11"><span class="step">CODE 11</span><h2>디버그로 확인 — 무엇을 관찰하면 될까?</h2>
+<p>Vitis Debugger(디버거, 프로그램 실행과 변수를 관찰하는 도구)의 Watch에 아래 세 변수를 등록하면 흐름을 쉽게 볼 수 있습니다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Watch 대상과 확인 내용"><table><thead><tr><th>표현식</th><th>확인할 내용</th></tr></thead><tbody><tr><td data-label="표현식"><code>last_rx</code></td><td data-label="확인할 내용">마지막 문자의 ASCII 값</td></tr><tr><td data-label="표현식"><code>rx_count</code></td><td data-label="확인할 내용">받은 바이트 수</td></tr><tr><td data-label="표현식"><code>tx_count</code></td><td data-label="확인할 내용">안내문까지 포함한 UART 송신 함수 기록 수</td></tr></tbody></table></div>
+<ol class="step-seq">
+<li><h3>실제 성공한 실행 순서</h3><p>Vitis 상단 <code>launch.json</code> 탭을 열어 07장 ELF와 Bitstream을 확인 → <strong>Debug</strong> 실행 → 일시 정지 상태면 <strong>Continue(F5)</strong>를 실행합니다.</p></li>
+<li><h3>Watch에 변수 추가</h3><p><code>last_rx</code>, <code>rx_count</code>, <code>tx_count</code>를 등록하고, 문자 전송 후 프로그램을 일시 정지해 값을 확인합니다.</p></li>
+<li><h3>관찰한 값과 예상값 비교</h3><p><code>abc</code>만 보냈다면 마지막 문자는 <code>c</code>이므로 <code>last_rx</code>는 <code>0x63</code>으로 예상됩니다. 실제 수신 문자 수와 다시 실행한 횟수에 따라 카운터는 달라질 수 있습니다.</p></li>
+</ol>
+<div class="explain"><strong>실습 확인 질문</strong><p>① <code>text++</code>는 왜 필요한가? ② 문자가 오지 않으면 CPU는 어느 함수에서 멈춰 있는가? ③ 처음부터 <code>tx_count</code>가 증가하는 이유는 무엇인가? ④ RX/TX FIFO는 CPU의 Local BRAM과 같은 곳인가?</p></div>
+<p class="note"><code>launch.json</code> 탭을 먼저 여는 순서는 이번 Vivado/Vitis 2024.2 환경에서 성공한 절차입니다. 그 탭을 여는 것 자체가 문제 해결의 원인이라는 결론은 아닙니다.</p>
+<p class="lesson-check"><strong>핵심 확인</strong> 디버그로 멈춰 있는 동안에는 UART 수신 반복문이 진행하지 않으므로 Echo가 지연될 수 있습니다.</p></section><section class="step-card" id="s12"><span class="step">CODE 12</span><h2>검증된 main.c 전체 원본</h2>
+<p>아래는 GitHub <a href="../../code/soc07/main.c"><code>code/soc07/main.c</code></a>의 원본과 동일한 C 코드입니다. 이번 07.1장은 설명을 추가한 자료일 뿐 <strong>하드웨어 설정이나 실행 코드를 바꾸지 않습니다.</strong></p>
+<div class="wide-code"><pre class="codeblock-pre" tabindex="0" role="region" aria-label="실제 07장 main.c 전체 소스"><code>#include &quot;xparameters.h&quot;
+#include &quot;xuartlite_l.h&quot;
+#include &quot;xil_types.h&quot;
+
+/*
+ * SoC 07 - AXI UART Lite Polling Echo
+ *
+ * Hardware setting:
+ *   Baud Rate : 115200
+ *   Data Bits : 8
+ *   Parity    : None
+ *   Stop Bit  : 1
+ *
+ * PC terminal:
+ *   115200 8N1
+ *   Flow control : None
+ *   Local echo   : Off
+ */
+
+#ifndef SDT
+#define UARTLITE_BASEADDR XPAR_UARTLITE_0_BASEADDR
+#else
+#define UARTLITE_BASEADDR XPAR_XUARTLITE_0_BASEADDR
+#endif
+
+volatile u8  last_rx  = 0U;
+volatile u32 rx_count = 0U;
+volatile u32 tx_count = 0U;
+
+static void uart_puts(const char *text)
+{
+    while (*text != '\0') {
+        XUartLite_SendByte(UARTLITE_BASEADDR, (u8)*text);
+        tx_count++;
+        text++;
+    }
+}
+
+int main(void)
+{
+    /*
+     * CTRL_REG bit1 = RX FIFO reset
+     * CTRL_REG bit0 = TX FIFO reset
+     * 0x03 : 두 FIFO를 모두 비운다.
+     * Interrupt bit4는 0이므로 Polling 방식이다.
+     */
+    XUartLite_WriteReg(
+        UARTLITE_BASEADDR,
+        XUL_CONTROL_REG_OFFSET,
+        0x03U
+    );
+
+    uart_puts(&quot;\r\nAXI UART Lite Echo Ready\r\n&quot;);
+    uart_puts(&quot;Type characters. Received data will be echoed.\r\n&gt; &quot;);
+
+    while (1) {
+        /* RX FIFO에 문자가 들어올 때까지 Blocking 대기 */
+        last_rx = XUartLite_RecvByte(UARTLITE_BASEADDR);
+        rx_count++;
+
+        /* 받은 1 Byte를 그대로 PC로 다시 전송 */
+        XUartLite_SendByte(UARTLITE_BASEADDR, last_rx);
+        tx_count++;
+    }
+
+    return 0;
+}</code></pre></div>
+<div class="key-result"><strong>한 문장으로 정리:</strong> UART를 초기화하고 → 시작 안내문을 출력하고 → 1바이트를 수신하고 → 같은 1바이트를 보내고 → 무한 반복합니다.</div>
+<p class="source-small"><a href="07_axi_uart_lite.html">07장 Vivado/Vitis 따라하기로 돌아가기</a> · <a href="../../code/soc07/main.c">GitHub 실제 소스 열기</a> · <a href="https://docs.amd.com/r/en-US/pg142-axi-uartlite">AMD AXI UART Lite Product Guide PG142</a></p>
+<p class="lesson-check"><strong>핵심 확인</strong> C 코드를 이해했다면 07장을 다시 구성할 필요 없이 08장 AXI Timer로 이어갈 수 있습니다.</p></section><nav class="chapter-nav"><a href="07_axi_uart_lite.html">← SoC 07 GUI 실습</a><a href="../../index.html">전체 목차</a><a href="08_axi_timer.html">SoC 08 →</a></nav>
+</main></div><footer class="site-footer">BASYS3 · MicroBlaze V SoC 실습 교재</footer></body></html>
