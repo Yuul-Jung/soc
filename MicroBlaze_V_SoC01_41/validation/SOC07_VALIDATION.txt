@@ -20,3 +20,11 @@ Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixtu
 
 2026-10-19 finishing review: navigation / layout / source identity PASS.
 Hardware execution results unchanged; no new target or board run.
+
+2026-10-27 documentation update:
+Official PG142 figure references added: Figure 1-1, 2-1, 2-2, 2-3, 2-4, 4-1, 5-1, 6-1.
+Digilent Basys 3 Reference Manual Figure 6 linked to publisher-hosted PDF.
+Sections 26-27 added for PG142 official example design and VHDL test bench (descriptive material only).
+Publisher-hosted PDF iframe rendering on GitHub Pages / mobile: NOT INDEPENDENTLY VERIFIED. Direct-PDF fallback links provided.
+Vivado 2024.2 official example test bench simulation: NOT RUN.
+MicroBlaze V target build / Basys3 Echo verification: NOT RUN.
