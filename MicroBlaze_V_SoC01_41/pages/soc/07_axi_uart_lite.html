@@ -158,6 +158,12 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 .step-result,.step-caution{display:block;padding:8px 10px;margin-top:8px;font-size:.89rem;border-radius:4px}
 .step-result{background:var(--good-bg);color:var(--good)}.step-caution{background:var(--warn-bg);color:var(--warn)}
 @media(max-width:600px){.procedure>li{padding:11px 11px 11px 43px}.procedure>li:before{left:9px}}
+
+/* 실습 우선 탐색 — 개념 절에서 절차 절로 바로 이동 */
+.lab-jump{margin:0 0 19px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
+.lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -249,6 +255,7 @@ main[tabindex="-1"]:focus{outline:none}
 <main id="main-content" tabindex="-1">
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 05 AXI</span><span class="arrow">→</span><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage"><strong>SoC 07 AXI UART Lite</strong></span><span class="arrow">→</span><span class="stage">SoC 08 AXI Timer</span></div></div>
 
+<nav class="lab-jump" aria-label="지금 실습할 단계"><strong>따라하기 빠른 이동 · 메뉴를 누르면 해당 작업으로 이동합니다</strong><div class="jump-links"><a href="#s01">1. 프로젝트 복제</a><a href="#s05">2. UART 외부 포트</a><a href="#s08">3. 주소 확인</a><a href="#s13">4. Vitis·실행</a><a href="#s15">5. Echo 확인</a></div></nav>
 <section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>06장 성공 프로젝트 → 07장 복제</h2>
 
 <p><strong>07장은 06장 성공 프로젝트를 복제하여 이어서 진행합니다.</strong> 처음부터 SoC를 새로 만들지 않으며 06장 원본은 수정하지 않습니다.</p>
@@ -850,7 +857,7 @@ SOC07 VERILOG UARTLITE SELF-CHECK PASS</div>
 
 <nav class="chapter-nav"><a href="06_axi_gpio.html">← SoC 06</a><a href="../../index.html">전체 목차</a><a href="08_axi_timer.html">SoC 08 →</a></nav>
 </main></div>
-<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+<footer class="site-footer">BASYS3 · MicroBlaze V SoC 실습 교재</footer>
 
 
 </body></html>
