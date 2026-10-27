@@ -164,6 +164,19 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 .lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
 .lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
 .lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
+
+/* SoC07 : 이론 / 실습 / 검증 구획 구분 */
+.chapter-phase{border-top:3px solid var(--accent);padding:18px 20px;margin:25px 0 16px;background:#F5F6F9;}
+.chapter-phase strong{display:block;font-weight:800;font-size:1.04rem;}
+.chapter-phase p{margin:5px 0 0;font-size:.88rem;line-height:1.6;}
+.chapter-phase.phase-practice{border-top-color:#356B51;background:#F3F8F5;}
+.chapter-phase.phase-verify{border-top-color:#9A6020;background:#FCF7ED;}
+.chapter-phase.phase-optional{border-top-color:#888;background:#F5F5F5;}
+.timeline .timeline-phase{margin:13px 7px 5px;padding:7px 9px;background:#F0F1F4;color:#42485B;font-size:.78rem;font-weight:800;list-style:none;}
+.optional-theory{margin:12px 0 0;border:1px solid var(--line);background:#fff;}
+.optional-theory>summary{cursor:pointer;font-weight:700;padding:12px 15px;color:var(--accent);}
+.optional-theory-body{padding:4px 16px 16px;}
+@media(max-width:600px){.chapter-phase{padding:12px 14px}.optional-theory-body{padding:4px 10px 12px}}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -225,10 +238,22 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="hero-brief"><article><h2>PC → FPGA</h2><p>터미널 문자가 B18 RX로 들어온다.</p></article><article><h2>MicroBlaze V</h2><p>RX FIFO를 읽고 같은 Byte를 TX FIFO에 쓴다.</p></article><article><h2>FPGA → PC</h2><p>A18 TX를 통해 같은 문자가 터미널로 돌아온다.</p></article></div>
 </div></header>
 
-<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden=""><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html" selected="">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc07_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc07">이 장 검증</a></div></div><p class="nav-title">SOC 07 · LEARNING FLOW</p><p class="nav-help">PC → RX FIFO → CPU → TX FIFO → PC</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>06장 프로젝트 복제</span></a></li>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden=""><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html" selected="">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc07_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc07">이 장 검증</a></div></div><p class="nav-title">SOC 07 · LEARNING FLOW</p><p class="nav-help">PC → RX FIFO → CPU → TX FIFO → PC</p><ol class="timeline">
+<li class="timeline-phase">A. 이론 · 먼저 이해하기</li>
+<li><a href="#s18"><span class="n">01</span><span>UART 전송 구조 · 8N1</span></a></li>
+<li><a href="#s19"><span class="n">02</span><span>AXI UART Lite 내부 구조</span></a></li>
+<li><a href="#s20"><span class="n">03</span><span>UART Register Map</span></a></li>
+<li class="timeline-phase">이론 심화 · 선택</li>
+<li><a href="#s21"><span class="n">01</span><span>RX FIFO 상세</span></a></li>
+<li><a href="#s22"><span class="n">02</span><span>TX FIFO 상세</span></a></li>
+<li><a href="#s23"><span class="n">03</span><span>Status Register 상세</span></a></li>
+<li><a href="#s24"><span class="n">04</span><span>Control Register 상세</span></a></li>
+<li><a href="#s25"><span class="n">05</span><span>Polling · AXI 상세</span></a></li>
+<li class="timeline-phase">B. Vivado/Vitis 실습</li>
+<li><a href="#s01"><span class="n">01</span><span>06장 프로젝트 복제</span></a></li>
 <li><a href="#s02"><span class="n">02</span><span>AXI UART Lite IP 추가</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>UART IP 통신 설정</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>AXI · Clock · Reset 연결</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>UART 통신 설정</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>AXI · Clock · Reset</span></a></li>
 <li><a href="#s05"><span class="n">05</span><span>UART 외부 포트</span></a></li>
 <li><a href="#s06"><span class="n">06</span><span>Wrapper · Top 지정</span></a></li>
 <li><a href="#s07"><span class="n">07</span><span>UART XDC</span></a></li>
@@ -237,26 +262,115 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s10"><span class="n">10</span><span>Vitis Platform</span></a></li>
 <li><a href="#s11"><span class="n">11</span><span>Vitis Application</span></a></li>
 <li><a href="#s12"><span class="n">12</span><span>Echo C 프로그램</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>Build · FPGA Program · Debug</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>Build · Debug</span></a></li>
 <li><a href="#s14"><span class="n">14</span><span>Ubuntu moserial</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>실제 Echo 확인</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>Debugger Watch</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>오류 점검</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>UART 통신 · 8N1</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>UART Lite 내부 구조</span></a></li>
-<li><a href="#s20"><span class="n">20</span><span>Register Map</span></a></li>
-<li><a href="#s21"><span class="n">21</span><span>RX FIFO</span></a></li>
-<li><a href="#s22"><span class="n">22</span><span>TX FIFO</span></a></li>
-<li><a href="#s23"><span class="n">23</span><span>Status Register</span></a></li>
-<li><a href="#s24"><span class="n">24</span><span>Control Register</span></a></li>
-<li><a href="#s25"><span class="n">25</span><span>Polling · Driver</span></a></li>
-<li><a href="#s26"><span class="n">26</span><span>AMD 공식 예제 (선택)</span></a></li>
-<li><a href="#s27"><span class="n">27</span><span>Verilog 시뮬레이션 (선택)</span></a></li><li><a href="#summary"><span class="n">28</span><span>완료 판정 기준</span></a></li><li><a href="#sources"><span class="n">29</span><span>공식 매뉴얼 및 근거</span></a></li></ol></aside>
+<li class="timeline-phase">C. 실제 동작 검증</li>
+<li><a href="#s15"><span class="n">01</span><span>abc Echo 실기 성공</span></a></li>
+<li><a href="#s16"><span class="n">02</span><span>Debugger Watch</span></a></li>
+<li><a href="#s17"><span class="n">03</span><span>오류 점검</span></a></li>
+<li class="timeline-phase">D. 추가 자료 · 선택</li>
+<li><a href="#s26"><span class="n">01</span><span>AMD 공식 예제 (선택)</span></a></li>
+<li><a href="#s27"><span class="n">02</span><span>Verilog 시뮬레이션 (선택)</span></a></li>
+<li class="timeline-phase">완료 · 출처</li>
+<li><a href="#summary"><span class="n">✓</span><span>07장 완료 기준</span></a></li>
+<li><a href="#sources"><span class="n">↗</span><span>공식 매뉴얼 및 근거</span></a></li>
+</ol></aside>
 <main id="main-content" tabindex="-1">
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 05 AXI</span><span class="arrow">→</span><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage"><strong>SoC 07 AXI UART Lite</strong></span><span class="arrow">→</span><span class="stage">SoC 08 AXI Timer</span></div></div>
 
-<nav class="lab-jump" aria-label="지금 실습할 단계"><strong>따라하기 빠른 이동 · 메뉴를 누르면 해당 작업으로 이동합니다</strong><div class="jump-links"><a href="#s01">1. 프로젝트 복제</a><a href="#s05">2. UART 외부 포트</a><a href="#s08">3. 주소 확인</a><a href="#s13">4. Vitis·실행</a><a href="#s15">5. Echo 확인</a></div></nav>
-<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>06장 성공 프로젝트 → 07장 복제</h2>
+<nav class="lab-jump" aria-label="07장 이론과 실습 빠른 이동">
+<strong>학습 순서 · 이론 → 실습 → 결과 검증</strong>
+<div class="jump-links">
+<a href="#s18">A. UART 핵심 이론</a>
+<a href="#s01">B. Vivado/Vitis 따라하기</a>
+<a href="#s15">C. 실제 Echo 성공 화면</a>
+<a href="#s26">D. 선택 검증</a>
+</div></nav>
+<div class="chapter-phase phase-theory"><strong>A · 핵심 이론</strong><p>UART 데이터가 RX FIFO → MicroBlaze V → TX FIFO로 이동하는 원리와 주소 구조를 먼저 이해합니다.</p></div>
+
+<section class="step-card" id="s18"><span class="step">이론 01</span><h2>실습으로 연결한 UART 통신 흐름 · 8N1</h2>
+
+<div class="signal-map" tabindex="0" role="region">Ubuntu moserial Outgoing
+     │ USB-UART / FT2232HQ
+     ▼
+Basys3 B18 · UART_0_rxd → RX FIFO → AXI Read → MicroBlaze V
+                                             │ Echo
+Basys3 A18 · UART_0_txd ← TX FIFO ← AXI Write ──────┘
+     │ USB-UART / FT2232HQ
+     ▼
+Ubuntu moserial Received ASCII</div>
+<p>UART <strong>8N1</strong>은 <strong>Start 1비트(0) → Data 8비트 → Parity 없음 → Stop 1비트(1)</strong> 형식입니다. Idle 상태의 RX/TX는 High(1)입니다. 115200 bit/s가 IP와 PC에서 일치해야 합니다.</p>
+
+</section>
+
+<section class="step-card" id="s19"><span class="step">이론 02</span><h2>AXI UART Lite 내부 구조</h2>
+<figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png" alt="AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조</strong><br>AXI Interface, RX/TX FIFO, Status/Control Register와 UART 제어 구조.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5" target="_blank" rel="noopener">AMD PG142 · 5쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure><p>AXI4-Lite 레지스터 접근과 직렬 RX/TX 신호 사이에서 각각 16문자 깊이의 RX/TX FIFO(피포, 먼저 들어온 데이터를 먼저 꺼내는 버퍼)가 동작합니다.</p>
+</section>
+
+<section class="step-card" id="s20"><span class="step">이론 03</span><h2>UART Register Map</h2>
+<figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_table02_04_registers.png" target="_blank" rel="noopener" aria-label="AMD PG142 Table 2-4 · 원본 주소 맵 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_table02_04_registers.png" alt="AMD PG142 Table 2-4 · 원본 주소 맵 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Table 2-4 · 원본 주소 맵</strong><br>RX +0x00, TX +0x04, STAT +0x08, CTRL +0x0C.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9" target="_blank" rel="noopener">AMD PG142 · 9쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_table02_04_registers.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x00</code></td><td data-label="Register" role="cell">RX FIFO</td><td data-label="Access" role="cell">Read</td><td data-label="역할" role="cell">수신 Byte 읽기</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x04</code></td><td data-label="Register" role="cell">TX FIFO</td><td data-label="Access" role="cell">Write</td><td data-label="역할" role="cell">송신 Byte 쓰기</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x08</code></td><td data-label="Register" role="cell">STAT_REG</td><td data-label="Access" role="cell">Read</td><td data-label="역할" role="cell">FIFO·Error 상태</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x0C</code></td><td data-label="Register" role="cell">CTRL_REG</td><td data-label="Access" role="cell">Write</td><td data-label="역할" role="cell">FIFO Reset·Interrupt Enable</td></tr>
+</tbody></table></div>
+</section>
+
+<div class="chapter-phase phase-optional"><strong>선택해서 읽는 이론 심화</strong><p>FIFO·Status·Control 레지스터와 Polling 상세 내용은 제목을 눌러 펼칩니다. 실습부터 진행해도 됩니다.</p></div>
+
+<section class="step-card" id="s21"><span class="step">이론 심화 01</span><h2>RX FIFO</h2><details class="optional-theory"><summary>상세 설명 및 공식 도표 펼치기</summary><div class="optional-theory-body">
+<p>RX FIFO는 16-entry이며 수신된 Character를 저장한다. 8-bit 설정에서는 유효 Data가 bit <code>[7:0]</code>에 들어온다.</p>
+<div class="flow">PC Character → Serial RX → RX Control → RX FIFO → AXI Read → MicroBlaze V</div>
+<div class="warn">RX FIFO가 비어 있을 때 직접 Read Transaction을 발행하면 PG142 기준 SLVERR가 발생할 수 있다. Driver의 Blocking Receive 함수는 Data가 들어올 때까지 기다린 뒤 읽는다.</div><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_01_rx_fifo.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-1 · RX FIFO 비트 배치 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_01_rx_fifo.png" alt="AMD PG142 Figure 2-1 · RX FIFO 비트 배치 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-1 · RX FIFO 비트 배치</strong><br>데이터 비트 수 8일 때 유효 수신 데이터는 bit[7:0].<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9" target="_blank" rel="noopener">AMD PG142 · 9쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_01_rx_fifo.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
+</div></details></section>
+
+<section class="step-card" id="s22"><span class="step">이론 심화 02</span><h2>TX FIFO</h2><details class="optional-theory"><summary>상세 설명 및 공식 도표 펼치기</summary><div class="optional-theory-body">
+<p>TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.</p>
+<div class="flow">MicroBlaze V → AXI Write → TX FIFO → TX Control → Serial TX → PC</div>
+<div class="warn">TX FIFO가 Full일 때 직접 Write하면 SLVERR가 발생할 수 있다. <code>XUartLite_SendByte()</code>는 FIFO가 쓸 수 있을 때까지 확인한 뒤 1 Byte를 전송한다.</div><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_02_tx_fifo.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-2 · TX FIFO 비트 배치 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_02_tx_fifo.png" alt="AMD PG142 Figure 2-2 · TX FIFO 비트 배치 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-2 · TX FIFO 비트 배치</strong><br>송신 데이터는 하위 8비트에 기록된다.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10" target="_blank" rel="noopener">AMD PG142 · 10쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_02_tx_fifo.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
+</div></details></section>
+
+<section class="step-card" id="s23"><span class="step">이론 심화 03</span><h2>Status Register</h2><details class="optional-theory"><summary>상세 설명 및 공식 도표 펼치기</summary><div class="optional-theory-body">
+<div class="table-wrap" tabindex="0" role="region" aria-label="Status Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">이름</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Bit" role="cell">7</td><td data-label="이름" role="cell">Parity Error</td><td data-label="의미" role="cell">Parity 오류</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">6</td><td data-label="이름" role="cell">Frame Error</td><td data-label="의미" role="cell">Stop Bit 오류</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">5</td><td data-label="이름" role="cell">Overrun Error</td><td data-label="의미" role="cell">RX FIFO Full 상태에서 새 Character 수신</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="이름" role="cell">Interrupt Enabled</td><td data-label="의미" role="cell">Interrupt Enable 상태</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">3</td><td data-label="이름" role="cell">TX FIFO Full</td><td data-label="의미" role="cell">송신 FIFO 가득 참</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">2</td><td data-label="이름" role="cell">TX FIFO Empty</td><td data-label="의미" role="cell">송신 FIFO 비어 있음</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="이름" role="cell">RX FIFO Full</td><td data-label="의미" role="cell">수신 FIFO 가득 참</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="이름" role="cell">RX FIFO Valid Data</td><td data-label="의미" role="cell">수신할 Data가 존재</td></tr>
+</tbody></table></div><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_04_status.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-4 · Status Register · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_04_status.png" alt="AMD PG142 Figure 2-4 · Status Register · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-4 · Status Register</strong><br>RX FIFO 유효 bit0, TX FIFO Full bit3 등 비트 위치를 원본과 대조한다.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11" target="_blank" rel="noopener">AMD PG142 · 11쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_04_status.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
+</div></details></section>
+
+<section class="step-card" id="s24"><span class="step">이론 심화 04</span><h2>Control Register</h2><details class="optional-theory"><summary>상세 설명 및 공식 도표 펼치기</summary><div class="optional-theory-body">
+<div class="table-wrap" tabindex="0" role="region" aria-label="Control Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">기능</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="기능" role="cell">Interrupt Enable</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="기능" role="cell">RX FIFO Reset/Clear</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="기능" role="cell">TX FIFO Reset/Clear</td></tr>
+</tbody></table></div>
+<p>이번 코드에서는 시작할 때 <code>0x03</code>을 써서 RX/TX FIFO를 비우고 bit4는 0으로 유지하여 Interrupt를 사용하지 않는다.</p><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_03_control.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-3 · Control Register · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_03_control.png" alt="AMD PG142 Figure 2-3 · Control Register · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-3 · Control Register</strong><br>TX FIFO Clear bit0, RX FIFO Clear bit1, Interrupt Enable bit4.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10" target="_blank" rel="noopener">AMD PG142 · 10쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_03_control.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
+</div></details></section>
+
+<section class="step-card" id="s25"><span class="step">이론 심화 05</span><h2>Polling · C Driver · AXI 트랜잭션</h2><details class="optional-theory"><summary>상세 설명 및 공식 도표 펼치기</summary><div class="optional-theory-body">
+
+<p>Polling(폴링, CPU가 상태를 반복적으로 확인하는 방식)은 인터럽트 없이 UART 상태를 읽고 데이터가 준비됐을 때 FIFO를 접근합니다.</p>
+<div class="signal-map" tabindex="0" role="region">수신: STATUS +0x08 bit0 확인 → RX FIFO +0x00 읽기 → last_rx
+송신: STATUS +0x08 bit3 확인 → TX FIFO +0x04 쓰기
+초기화: CONTROL +0x0C에 0x03 쓰기 → RX/TX FIFO Clear</div>
+<div class="table-wrap" role="region" tabindex="0" aria-label="C 함수와 AXI 레지스터"><table><thead><tr><th>C 함수</th><th>AXI 동작</th></tr></thead><tbody>
+<tr><td><code>XUartLite_RecvByte(Base)</code></td><td>RX FIFO Valid Data 대기 → Base+0x00 Read</td></tr>
+<tr><td><code>XUartLite_SendByte(Base, ch)</code></td><td>TX FIFO Full 여부 확인 → Base+0x04 Write</td></tr>
+<tr><td><code>XUartLite_WriteReg(..., 0x03)</code></td><td>Base+0x0C Write → 두 FIFO 초기화</td></tr>
+</tbody></table></div>
+<p>05장의 AXI4-Lite Read/Write가 07장에서 실제 UART 데이터 이동에 사용됩니다.</p>
+
+</div></details></section>
+
+<div class="chapter-phase phase-practice"><strong>B · Vivado/Vitis 따라하기 실습</strong><p>06장 성공 프로젝트를 보존하고 UART Lite를 추가한 뒤 실제 보드에서 실행합니다.</p></div>
+
+<section class="step-card" id="s01"><span class="step">실습 01</span><h2>06장 성공 프로젝트 → 07장 복제</h2>
 
 <p><strong>07장은 06장 성공 프로젝트를 복제하여 이어서 진행합니다.</strong> 처음부터 SoC를 새로 만들지 않으며 06장 원본은 수정하지 않습니다.</p>
 <div class="flow">06장 .xpr → 07장 Save As → 새 .bd Save As → 소스 경로 점검 → UART IP 추가</div>
@@ -275,7 +389,7 @@ main[tabindex="-1"]:focus{outline:none}
 
 </section>
 
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>AXI UART Lite IP 추가</h2>
+<section class="step-card" id="s02"><span class="step">실습 02</span><h2>AXI UART Lite IP 추가</h2>
 
 <ol class="step-seq"><li><h3>07장 Block Design 열기</h3><p><strong>Sources → Design Sources</strong>에서 <code>soc07_axi_uartlite.bd</code>를 더블클릭합니다.</p></li>
 <li><h3>Add IP</h3><p>Block Design 빈 곳에서 우클릭 → <strong>Add IP</strong> → <code>AXI Uartlite</code>를 검색하여 추가합니다.</p></li>
@@ -284,7 +398,7 @@ main[tabindex="-1"]:focus{outline:none}
 
 </section>
 
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI UART Lite 통신 설정 · 115200 8N1</h2>
+<section class="step-card" id="s03"><span class="step">실습 03</span><h2>AXI UART Lite 통신 설정 · 115200 8N1</h2>
 
 <ol class="step-seq"><li><h3>Customize IP 열기</h3><p><code>axi_uartlite_0</code>를 더블클릭합니다.</p></li>
 <li><h3>통신값 입력</h3><p><strong>Baud Rate 115200</strong>, <strong>Data Bits 8</strong>, <strong>Parity None</strong>을 지정합니다. UART Lite의 Stop Bit는 1입니다. AXI CLK Frequency는 실제 연결된 시스템 클록을 기준으로 06장 설정 <code>100 MHz</code>와 일치하는지 확인합니다.</p></li>
@@ -299,11 +413,11 @@ main[tabindex="-1"]:focus{outline:none}
 
 </section>
 
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>AXI · Clock · Reset 연결</h2><ol class="procedure"><li><strong>Run Connection Automation 실행</strong><p>Diagram에서 <code>axi_uartlite_0/S_AXI</code>를 확인합니다. 상단 <b>Run Connection Automation</b>에서 UART의 <code>S_AXI</code>만 선택하고, 기존 CPU <code>M_AXI_DP</code>의 AXI 경로를 사용합니다.</p><span class="step-result">기대 화면: 기존 <code>axi_smc</code>에서 <code>axi_uartlite_0/S_AXI</code>로 AXI 선이 연결됩니다.</span></li><li><strong>기존 AXI GPIO 유지 확인</strong><p><code>microblaze_riscv_0/M_AXI_DP → axi_smc</code>를 따라가며 06장 <code>axi_gpio_0/S_AXI</code>가 남아 있는지, UART가 별도 출력으로 분기하는지 확인합니다. 실제 화면에서 확인된 <code>M01_AXI</code>처럼 출력 번호는 Vivado Diagram 값에 따릅니다.</p><span class="step-caution">주의: 06장 GPIO 연결을 해제하거나 SmartConnect를 중복 생성하지 않습니다.</span></li><li><strong>Clock·Reset 연결 확인</strong><p>UART의 <code>s_axi_aclk</code>가 기존 100 MHz AXI Clock, <code>s_axi_aresetn</code>이 기존 Active-Low 주변장치 Reset과 연결되는지 확인합니다.</p><span class="step-result">기대 화면: AXI, 클록, 리셋 신호가 모두 연결되어 있습니다.</span></li></ol><div class="signal-map">microblaze_riscv_0/M_AXI_DP → axi_smc<br>　├─ axi_gpio_0/S_AXI (06장 유지)<br>　└─ axi_uartlite_0/S_AXI (07장 추가)</div></section>
+<section class="step-card" id="s04"><span class="step">실습 04</span><h2>AXI · Clock · Reset 연결</h2><ol class="procedure"><li><strong>Run Connection Automation 실행</strong><p>Diagram에서 <code>axi_uartlite_0/S_AXI</code>를 확인합니다. 상단 <b>Run Connection Automation</b>에서 UART의 <code>S_AXI</code>만 선택하고, 기존 CPU <code>M_AXI_DP</code>의 AXI 경로를 사용합니다.</p><span class="step-result">기대 화면: 기존 <code>axi_smc</code>에서 <code>axi_uartlite_0/S_AXI</code>로 AXI 선이 연결됩니다.</span></li><li><strong>기존 AXI GPIO 유지 확인</strong><p><code>microblaze_riscv_0/M_AXI_DP → axi_smc</code>를 따라가며 06장 <code>axi_gpio_0/S_AXI</code>가 남아 있는지, UART가 별도 출력으로 분기하는지 확인합니다. 실제 화면에서 확인된 <code>M01_AXI</code>처럼 출력 번호는 Vivado Diagram 값에 따릅니다.</p><span class="step-caution">주의: 06장 GPIO 연결을 해제하거나 SmartConnect를 중복 생성하지 않습니다.</span></li><li><strong>Clock·Reset 연결 확인</strong><p>UART의 <code>s_axi_aclk</code>가 기존 100 MHz AXI Clock, <code>s_axi_aresetn</code>이 기존 Active-Low 주변장치 Reset과 연결되는지 확인합니다.</p><span class="step-result">기대 화면: AXI, 클록, 리셋 신호가 모두 연결되어 있습니다.</span></li></ol><div class="signal-map">microblaze_riscv_0/M_AXI_DP → axi_smc<br>　├─ axi_gpio_0/S_AXI (06장 유지)<br>　└─ axi_uartlite_0/S_AXI (07장 추가)</div></section>
 
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>UART RX/TX 외부 포트 생성</h2><ol class="procedure"><li><strong>현재 <code>UART_0</code> 외부 인터페이스 확인</strong><p>앞선 07장 GUI에서 <code>UART_0</code>를 이미 만들었다면 그대로 사용합니다. 별도의 <code>RsRx</code>/<code>RsTx</code> 포트를 중복 생성하지 않습니다.</p><span class="step-result">기대 화면: UART 외부 인터페이스 하나에 수신 RX와 송신 TX가 포함됩니다.</span></li><li><strong>신호 방향 확인</strong><p>Diagram에서 UART 인터페이스를 펼쳐 <code>rx</code>가 FPGA Input, <code>tx</code>가 FPGA Output인지 확인합니다. 개별 핀 방식이라면 <code>rx</code>/<code>tx</code>를 각각 <b>Make External</b>로 만든 후 하나씩 방향을 확인합니다.</p></li><li><strong>저장·Wrapper 포트명 확인</strong><p><b>Ctrl+S</b>로 BD를 저장한 뒤 06절에서 새 Wrapper를 생성하고, 최상위 모듈 선언의 실제 RX/TX 포트명을 적습니다.</p><span class="step-caution">주의: <code>UART_0</code> 인터페이스명과 최상위 Verilog 포트명은 다를 수 있습니다. Wrapper 확인 전에는 XDC에 이름을 단정하지 않습니다.</span></li></ol><p>Basys3 USB-UART 핀: FPGA RX는 <code>B18</code>, FPGA TX는 <code>A18</code>입니다. 근거: <a href="https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc" target="_blank" rel="noopener">Digilent Basys-3 Master XDC</a>.</p></section>
+<section class="step-card" id="s05"><span class="step">실습 05</span><h2>UART RX/TX 외부 포트 생성</h2><ol class="procedure"><li><strong>현재 <code>UART_0</code> 외부 인터페이스 확인</strong><p>앞선 07장 GUI에서 <code>UART_0</code>를 이미 만들었다면 그대로 사용합니다. 별도의 <code>RsRx</code>/<code>RsTx</code> 포트를 중복 생성하지 않습니다.</p><span class="step-result">기대 화면: UART 외부 인터페이스 하나에 수신 RX와 송신 TX가 포함됩니다.</span></li><li><strong>신호 방향 확인</strong><p>Diagram에서 UART 인터페이스를 펼쳐 <code>rx</code>가 FPGA Input, <code>tx</code>가 FPGA Output인지 확인합니다. 개별 핀 방식이라면 <code>rx</code>/<code>tx</code>를 각각 <b>Make External</b>로 만든 후 하나씩 방향을 확인합니다.</p></li><li><strong>저장·Wrapper 포트명 확인</strong><p><b>Ctrl+S</b>로 BD를 저장한 뒤 <a href="#s06">Wrapper 생성 절</a>에서 새 Wrapper를 생성하고, 최상위 모듈 선언의 실제 RX/TX 포트명을 적습니다.</p><span class="step-caution">주의: <code>UART_0</code> 인터페이스명과 최상위 Verilog 포트명은 다를 수 있습니다. Wrapper 확인 전에는 XDC에 이름을 단정하지 않습니다.</span></li></ol><p>Basys3 USB-UART 핀: FPGA RX는 <code>B18</code>, FPGA TX는 <code>A18</code>입니다. 근거: <a href="https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc" target="_blank" rel="noopener">Digilent Basys-3 Master XDC</a>.</p></section>
 
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Design Sources · Wrapper 생성 · Top 지정</h2>
+<section class="step-card" id="s06"><span class="step">실습 06</span><h2>Design Sources · Wrapper 생성 · Top 지정</h2>
 
 <p><strong>Wrapper(래퍼, Block Design을 최상위 FPGA 포트와 연결하는 HDL)는 UART IP와 외부 포트를 모두 만든 뒤 생성합니다.</strong></p>
 <ol class="step-seq"><li><h3>새 Block Design 선택</h3><p><strong>Sources → Design Sources</strong>에서 <code>soc07_axi_uartlite.bd</code>를 선택합니다.</p></li>
@@ -314,26 +428,26 @@ main[tabindex="-1"]:focus{outline:none}
 
 </section>
 
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Basys3 UART 핀 XDC 추가</h2><ol class="procedure"><li><strong>07장 XDC 열기</strong><p><b>Sources → Constraints</b>에서 07장에 독립 복사된 XDC를 엽니다. Clock·Reset·GPIO 핀 제약은 유지합니다.</p></li><li><strong>Wrapper 포트 이름 확인</strong><p>06절에서 생성한 Wrapper의 <code>module ... (...)</code> 안에서 RX/TX 실제 포트명을 확인합니다. <code>UART_0</code>로 외부화했으면 <code>RsRx/RsTx</code>와 다를 수 있습니다.</p></li><li><strong>UART 핀 두 줄 추가</strong><p>아래 코드는 실제 Wrapper 포트명이 <code>RsRx</code>/<code>RsTx</code>일 경우에만 그대로 사용합니다. 실제 이름이 다르면 <code>get_ports</code>의 대상만 실제 Wrapper 포트명으로 바꿉니다.</p><span class="step-result">기대 화면: RX와 TX 핀이 한 개씩 지정되고, 기존 GPIO/Clock/Reset XDC는 변경되지 않습니다.</span></li></ol><pre class="codeblock-pre"><code>## UART RX: PC → FPGA · B18
-set_property -dict { PACKAGE_PIN B18 IOSTANDARD LVCMOS33 } [get_ports RsRx]
+<section class="step-card" id="s07"><span class="step">실습 07</span><h2>Basys3 UART 핀 XDC 추가</h2><ol class="procedure"><li><strong>07장 XDC 열기</strong><p><b>Sources → Constraints</b>에서 07장에 독립 복사된 XDC를 엽니다. Clock·Reset·GPIO 핀 제약은 유지합니다.</p></li><li><strong>Wrapper 포트 이름 확인</strong><p><a href="#s06">Wrapper 생성 절</a>에서 생성한 최상위 <code>soc07_axi_uartlite_wrapper</code>의 RX/TX 이름이 <code>UART_0_rxd</code>/<code>UART_0_txd</code>인지 확인합니다. 이 프로젝트는 <code>UART_0</code> 인터페이스를 외부화했습니다.</p></li><li><strong>UART 핀 두 줄 추가</strong><p>이번 07장 자동 생성 모듈과 Wrapper의 실제 UART 포트명은 <code>UART_0_rxd</code>와 <code>UART_0_txd</code>입니다. 아래 두 줄을 그대로 입력합니다.</p><span class="step-result">기대 화면: RX와 TX 핀이 한 개씩 지정되고, 기존 GPIO/Clock/Reset XDC는 변경되지 않습니다.</span></li></ol><pre class="codeblock-pre"><code>## UART RX: PC → FPGA · B18
+set_property -dict { PACKAGE_PIN B18 IOSTANDARD LVCMOS33 } [get_ports UART_0_rxd]
 ## UART TX: FPGA → PC · A18
-set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]</code></pre><p class="step-caution">예시 포트명이 Wrapper에 없으면 이 XDC 상태로 Bitstream을 진행하지 않습니다. 이 두 줄은 <b>포트명 확인 후 적용할 예시</b>입니다.</p></section>
+set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports UART_0_txd]</code></pre><p class="step-result"><strong>실제 확인:</strong> 위 두 포트로 XDC를 수정한 후 07장 Bitstream Generation이 성공했고, Setup WNS <code>+0.817 ns</code> 및 타이밍 위반 0건이 확인됐습니다.</p></section>
 
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Address Editor · UART 주소 할당</h2>
+<section class="step-card" id="s08"><span class="step">실습 08</span><h2>Address Editor · UART 주소 할당</h2>
 
 <ol class="step-seq"><li><h3>Address Editor 열기</h3><p>Vivado Block Design 상단의 <strong>Address Editor</strong> 탭을 선택합니다.</p></li>
 <li><h3>UART 주소 배치</h3><p><code>axi_uartlite_0/S_AXI</code>가 <strong>Unassigned</strong> 상태이면 <strong>Assign All</strong> 또는 해당 세그먼트의 주소 할당 기능을 실행합니다.</p></li>
-<li><h3>주소 기록</h3><p>UART Lite에 표시되는 실제 <strong>Base Address</strong>와 <strong>High Address</strong>를 확인합니다. 기존 BRAM·GPIO 범위와 겹치지 않는지 확인합니다. 임의의 기준 주소를 성공값으로 적지 않습니다.</p></li></ol>
+<li><h3>주소 기록</h3><p>UART Lite에 표시되는 실제 <strong>Base Address</strong>와 <strong>High Address</strong>를 확인합니다. 기존 BRAM·GPIO 범위와 겹치지 않는지 확인합니다. 아래 값은 실제 07장 Address Editor와 Vitis <code>xparameters.h</code>에서 확인된 값입니다.</p></li></ol>
 <div class="table-wrap" role="region" tabindex="0" aria-label="기존 및 신규 주소 비교"><table><thead><tr><th>구분</th><th>확인할 범위</th></tr></thead><tbody>
 <tr><td>Local BRAM</td><td><code>0x00000000 ~ 0x00003FFF</code> · 16 KiB 유지</td></tr>
-<tr><td>AXI GPIO</td><td>06장 실제 Address Editor 주소 유지</td></tr>
-<tr><td>AXI UART Lite</td><td>새로 할당된 실제 Base/High Address 기록</td></tr>
+<tr><td>AXI GPIO</td><td><code>0x40000000 ~ 0x4000FFFF</code> · 64 KiB</td></tr>
+<tr><td>AXI UART Lite</td><td><code>0x40600000 ~ 0x4060FFFF</code> · 64 KiB</td></tr>
 </tbody></table></div>
 <p class="lesson-check"><strong>화면 확인</strong> UART가 주소 공간에 배치되며 GPIO·BRAM과 충돌하지 않습니다.</p>
 
-<p class="step-caution">참고 L04의 <code>0x4002_0000</code>은 별도 예제 주소입니다. 07장 프로젝트에서는 실제 Address Editor의 Base/High Address가 우선합니다.</p></section>
+<p class="step-result"><strong>실제 확인:</strong> AXI GPIO <code>0x40000000</code>, AXI UART Lite <code>0x40600000</code>, Local BRAM 16 KiB가 07장 실제 Address Editor에서 확인됐습니다. 보조 예제의 다른 주소를 적용하지 않습니다.</p></section>
 
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Validate Design → Bitstream → XSA</h2>
+<section class="step-card" id="s09"><span class="step">실습 09</span><h2>Validate Design → Bitstream → XSA</h2>
 
 <ol class="step-seq"><li><h3>설계 검증</h3><p>Block Design을 저장하고 <strong>Validate Design</strong>을 실행합니다. AXI·Clock·Reset 오류가 없는지 확인합니다.</p></li>
 <li><h3>Output Products 준비</h3><p>필요하면 <code>soc07_axi_uartlite.bd</code>에서 <strong>Generate Output Products</strong>를 실행하고 새 Wrapper가 Top인지 확인합니다.</p></li>
@@ -343,30 +457,30 @@ set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]</cod
 
 </section>
 
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Vitis · 07장 Platform 생성</h2>
+<section class="step-card" id="s10"><span class="step">실습 10</span><h2>Vitis · 07장 Platform 생성</h2>
 
 <p>Vitis Unified IDE(비티스 통합 개발환경) 2024.2에서 <strong>06장 성공 Platform은 유지</strong>하고 07장 XSA 기반의 새 Platform을 만듭니다.</p>
 <ol class="step-seq"><li><h3>Workspace 열기</h3><p>Vitis에서 기존 Workspace <code>/home/jung/soc/sw</code>를 엽니다.</p></li>
 <li><h3>New Platform</h3><p>메뉴 <strong>File → New Component → Platform</strong>을 선택합니다. 새 Platform 이름은 <code>soc07_axi_uartlite_platform</code>을 권장합니다.</p></li>
-<li><h3>07장 XSA 지정</h3><p><strong>Browse</strong>에서 9절에서 생성한 <code>soc07_axi_uartlite.xsa</code>를 선택합니다. 06장 XSA를 선택하지 않습니다.</p></li>
+<li><h3>07장 XSA 지정</h3><p><strong>Browse</strong>에서 <a href="#s09">Bitstream 생성 절</a>에서 생성한 <code>soc07_axi_uartlite.xsa</code>를 선택합니다. 06장 XSA를 선택하지 않습니다.</p></li>
 <li><h3>Processor·Domain·Build</h3><p>CPU <code>microblaze_riscv_0</code>를 대상으로 <strong>standalone</strong> Domain을 선택·생성한 뒤 Finish와 <strong>Build</strong>를 진행합니다.</p></li></ol>
 <p class="lesson-check"><strong>화면 확인</strong> 07장 Platform이 06장 Platform과 별도로 생성되고 07장 XSA·MicroBlaze V CPU를 참조합니다.</p>
 <p class="minor"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Creating-a-Platform-Component-from-XSA" target="_blank" rel="noopener">AMD UG1400 (2024.2) · Platform 생성 공식 절차</a></p>
 
 </section>
 
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Vitis · Echo Application 생성</h2>
+<section class="step-card" id="s11"><span class="step">실습 11</span><h2>Vitis · Echo Application 생성</h2>
 
 <ol class="step-seq"><li><h3>New Application</h3><p><strong>File → New Component → Application</strong>을 실행하고 이름을 <code>soc07_axi_uartlite</code>로 지정합니다.</p></li>
 <li><h3>07장 Platform 연결</h3><p>Platform을 <code>soc07_axi_uartlite_platform</code>, Domain을 07장 standalone의 <code>microblaze_riscv_0</code>로 선택합니다.</p></li>
-<li><h3>main.c 추가</h3><p>Application의 <code>src</code>에 12절의 <code>main.c</code>를 추가합니다. 기본 예제에 다른 <code>main()</code>이 있다면 중복 컴파일되지 않게 정리합니다.</p></li>
+<li><h3>main.c 추가</h3><p>Application의 <code>src</code>에 <a href="#s12">Echo C 프로그램 절</a>의 <code>main.c</code>를 추가합니다. 기본 예제에 다른 <code>main()</code>이 있다면 중복 컴파일되지 않게 정리합니다.</p></li>
 <li><h3>Base Address 심볼 확인</h3><p>새 Platform의 <code>xparameters.h</code>에 생성된 UART Lite Base Address Macro를 확인합니다. 코드의 매크로와 이름이 다르면 실제 생성된 심볼에 맞춥니다.</p></li></ol>
 <p class="lesson-check"><strong>화면 확인</strong> 07장 Application과 Platform이 연결되고 <code>main.c</code>를 빌드할 준비가 됩니다.</p>
 <p class="minor"><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded/Creating-an-Application-Component" target="_blank" rel="noopener">AMD UG1400 (2024.2) · Application 생성 공식 절차</a></p>
 
 </section>
 
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>main.c · UART 문자 Echo 코드</h2>
+<section class="step-card" id="s12"><span class="step">실습 12</span><h2>main.c · UART 문자 Echo 코드</h2>
 
 <p>Vitis 07장 Application의 <code>src/main.c</code>에 다음 <strong>전체 코드</strong>를 입력합니다. <a href="../../code/soc07/main.c">원본 C 코드 보기</a>.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="Echo 프로그램 · 소스 코드"><code>#include "xparameters.h"
@@ -447,7 +561,7 @@ int main(void)
 
 </section>
 
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Vitis Build · FPGA Program · Debug</h2>
+<section class="step-card" id="s13"><span class="step">실습 13</span><h2>Vitis Build · FPGA Program · Debug</h2>
 
 <ol class="step-seq"><li><h3>Build</h3><p>07장 Platform Build를 마친 뒤 <strong>07장 Application Build</strong>를 실행합니다. 오류 없이 <code>soc07_axi_uartlite.elf</code>를 생성했는지 확인합니다.</p></li>
 <li><h3>FPGA Program</h3><p>Basys3의 J4 USB 연결을 확인하고 07장 Bitstream으로 <strong>Program Device</strong>를 실행합니다.</p></li>
@@ -458,7 +572,7 @@ int main(void)
 
 </section>
 
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Ubuntu · moserial 포트 연결</h2>
+<section class="step-card" id="s14"><span class="step">실습 14</span><h2>Ubuntu · moserial 포트 연결</h2>
 
 <p><strong>moserial</strong>(모시리얼, 그래픽 시리얼 통신 프로그램)에서 실제 Basys3 USB-UART 장치를 연결합니다.</p>
 <ol class="step-seq"><li><h3>USB 장치 식별</h3><p>Basys3 연결 상태에서 <code>ls -l /dev/serial/by-id/</code>로 USB 장치의 고유 이름과 실제 <code>/dev/ttyUSB*</code> 경로를 확인합니다.</p></li>
@@ -488,10 +602,12 @@ moserial</code></pre>
 
 </section>
 
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>실제 실행 결과 · 문자 abc Echo 성공</h2>
+<div class="chapter-phase phase-verify"><strong>C · 실기 검증 및 오류 점검</strong><p>Debug와 moserial에서 확인한 결과를 성공 사례로 판단합니다.</p></div>
+
+<section class="step-card" id="s15"><span class="step">검증 01</span><h2>실제 실행 결과 · 문자 abc Echo 성공</h2>
 <ol class="step-seq">
 <li><h3>moserial 연결</h3><p>Basys3 USB-UART 포트를 열고 <strong>115200 / 8N1 / Flow Control None</strong>으로 설정합니다. 이번 실습에서 확인된 장치는 <code>/dev/ttyUSB2</code>입니다. PC가 자체 표시하는 로컬 에코는 끕니다.</p></li>
-<li><h3>07장 ELF 실행</h3><p>13절 순서대로 <code>launch.json</code> 탭을 열어 설정을 확인하고 <strong>Debug</strong>를 실행한 뒤, CPU가 멈춰 있으면 <strong>Continue(F5)</strong>를 누릅니다.</p></li>
+<li><h3>07장 ELF 실행</h3><p><a href="#s13">Vitis Debug 절차</a>대로 <code>launch.json</code> 탭을 열어 설정을 확인하고 <strong>Debug</strong>를 실행한 뒤, CPU가 멈춰 있으면 <strong>Continue(F5)</strong>를 누릅니다.</p></li>
 <li><h3>시작 안내문 확인</h3><p>moserial의 <strong>Received ASCII</strong>에 <code>AXI UART Lite Echo Ready</code>와 <code>Type characters. Received data will be echoed.</code>가 나타나는지 확인합니다. 이번 캡처에는 디버그 실행 과정에서 시작 안내문이 두 번 출력된 상태가 보입니다. 재시작이 원인인지는 별도 확정하지 않습니다.</p></li>
 <li><h3>abc 송신·수신 비교</h3><p>PC에서 <code>abc</code>를 송신했고, moserial의 <strong>Received ASCII</strong>에 <code>abc</code>가 반환되어 <strong>PC → FPGA UART RX → MicroBlaze V → FPGA UART TX → PC</strong> 경로의 양방향 통신이 확인됐습니다. 이번 화면에는 <code>TX: 17</code>, <code>RX: 159</code>도 표시됩니다.</p></li>
 </ol>
@@ -502,7 +618,7 @@ Type characters. Received data will be echoed.
 <p class="step-result"><strong>실기 검증 성공:</strong> 2026-10-27, Basys3 + Vitis Unified IDE 2024.2 + moserial에서 115200 8N1 UART Echo 동작 확인. <code>A</code>, <code>B</code>, <code>1</code>의 개별 Watch 관찰은 별도 확장 확인 항목입니다.</p>
 </section>
 
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Vitis Debugger · Watch 변수 확인</h2>
+<section class="step-card" id="s16"><span class="step">검증 02</span><h2>Vitis Debugger · Watch 변수 확인</h2>
 
 <ol class="step-seq"><li><h3>Watch 열기</h3><p>07장 애플리케이션 Debug 세션에서 <strong>Watch</strong>에 <code>last_rx</code>, <code>rx_count</code>, <code>tx_count</code>를 추가합니다.</p></li>
 <li><h3>문자 A 입력</h3><p>moserial에서 <code>A</code>를 보낸 뒤 수신 처리 중단점에서 <code>last_rx</code>가 <code>0x41</code>인지 확인합니다. 프로그램이 계속 실행 중이면 Debug 변수가 바로 갱신되지 않을 수 있으므로 잠시 중단하여 확인합니다.</p></li>
@@ -511,7 +627,7 @@ Type characters. Received data will be echoed.
 
 </section>
 
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>오류가 발생할 때 점검</h2>
+<section class="step-card" id="s17"><span class="step">검증 03</span><h2>오류가 발생할 때 점검</h2>
 
 <p>오류 증상을 먼저 구분하고 해당 항목만 확인합니다. 06장 성공 회로를 새로 만들 필요는 없습니다.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
@@ -527,85 +643,9 @@ Type characters. Received data will be echoed.
 
 </section>
 
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>실습으로 연결한 UART 통신 흐름 · 8N1</h2>
+<div class="chapter-phase phase-optional"><strong>D · 선택 참고·추가 검증</strong><p>AMD 공식 Example Design과 독립 테스트벤치는 필수 Basys3 실습과 구별합니다.</p></div>
 
-<div class="signal-map" tabindex="0" role="region">Ubuntu moserial Outgoing
-     │ USB-UART / FT2232HQ
-     ▼
-Basys3 B18 · UART_0_rxd → RX FIFO → AXI Read → MicroBlaze V
-                                             │ Echo
-Basys3 A18 · UART_0_txd ← TX FIFO ← AXI Write ──────┘
-     │ USB-UART / FT2232HQ
-     ▼
-Ubuntu moserial Received ASCII</div>
-<p>UART <strong>8N1</strong>은 <strong>Start 1비트(0) → Data 8비트 → Parity 없음 → Stop 1비트(1)</strong> 형식입니다. Idle 상태의 RX/TX는 High(1)입니다. 115200 bit/s가 IP와 PC에서 일치해야 합니다.</p>
-
-</section>
-
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>AXI UART Lite 내부 구조</h2>
-<figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png" alt="AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조</strong><br>AXI Interface, RX/TX FIFO, Status/Control Register와 UART 제어 구조.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5" target="_blank" rel="noopener">AMD PG142 · 5쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig01_01_axi_uartlite.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure><p>AXI4-Lite 레지스터 접근과 직렬 RX/TX 신호 사이에서 각각 16문자 깊이의 RX/TX FIFO(피포, 먼저 들어온 데이터를 먼저 꺼내는 버퍼)가 동작합니다.</p>
-</section>
-
-<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>UART Register Map</h2>
-<figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_table02_04_registers.png" target="_blank" rel="noopener" aria-label="AMD PG142 Table 2-4 · 원본 주소 맵 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_table02_04_registers.png" alt="AMD PG142 Table 2-4 · 원본 주소 맵 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Table 2-4 · 원본 주소 맵</strong><br>RX +0x00, TX +0x04, STAT +0x08, CTRL +0x0C.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9" target="_blank" rel="noopener">AMD PG142 · 9쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_table02_04_registers.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">Access</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x00</code></td><td data-label="Register" role="cell">RX FIFO</td><td data-label="Access" role="cell">Read</td><td data-label="역할" role="cell">수신 Byte 읽기</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x04</code></td><td data-label="Register" role="cell">TX FIFO</td><td data-label="Access" role="cell">Write</td><td data-label="역할" role="cell">송신 Byte 쓰기</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x08</code></td><td data-label="Register" role="cell">STAT_REG</td><td data-label="Access" role="cell">Read</td><td data-label="역할" role="cell">FIFO·Error 상태</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x0C</code></td><td data-label="Register" role="cell">CTRL_REG</td><td data-label="Access" role="cell">Write</td><td data-label="역할" role="cell">FIFO Reset·Interrupt Enable</td></tr>
-</tbody></table></div>
-</section>
-
-<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>RX FIFO</h2>
-<p>RX FIFO는 16-entry이며 수신된 Character를 저장한다. 8-bit 설정에서는 유효 Data가 bit <code>[7:0]</code>에 들어온다.</p>
-<div class="flow">PC Character → Serial RX → RX Control → RX FIFO → AXI Read → MicroBlaze V</div>
-<div class="warn">RX FIFO가 비어 있을 때 직접 Read Transaction을 발행하면 PG142 기준 SLVERR가 발생할 수 있다. Driver의 Blocking Receive 함수는 Data가 들어올 때까지 기다린 뒤 읽는다.</div><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_01_rx_fifo.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-1 · RX FIFO 비트 배치 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_01_rx_fifo.png" alt="AMD PG142 Figure 2-1 · RX FIFO 비트 배치 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-1 · RX FIFO 비트 배치</strong><br>데이터 비트 수 8일 때 유효 수신 데이터는 bit[7:0].<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9" target="_blank" rel="noopener">AMD PG142 · 9쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_01_rx_fifo.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
-</section>
-
-<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>TX FIFO</h2>
-<p>TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.</p>
-<div class="flow">MicroBlaze V → AXI Write → TX FIFO → TX Control → Serial TX → PC</div>
-<div class="warn">TX FIFO가 Full일 때 직접 Write하면 SLVERR가 발생할 수 있다. <code>XUartLite_SendByte()</code>는 FIFO가 쓸 수 있을 때까지 확인한 뒤 1 Byte를 전송한다.</div><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_02_tx_fifo.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-2 · TX FIFO 비트 배치 · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_02_tx_fifo.png" alt="AMD PG142 Figure 2-2 · TX FIFO 비트 배치 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-2 · TX FIFO 비트 배치</strong><br>송신 데이터는 하위 8비트에 기록된다.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10" target="_blank" rel="noopener">AMD PG142 · 10쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_02_tx_fifo.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
-</section>
-
-<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Status Register</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Status Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">이름</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Bit" role="cell">7</td><td data-label="이름" role="cell">Parity Error</td><td data-label="의미" role="cell">Parity 오류</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">6</td><td data-label="이름" role="cell">Frame Error</td><td data-label="의미" role="cell">Stop Bit 오류</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">5</td><td data-label="이름" role="cell">Overrun Error</td><td data-label="의미" role="cell">RX FIFO Full 상태에서 새 Character 수신</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="이름" role="cell">Interrupt Enabled</td><td data-label="의미" role="cell">Interrupt Enable 상태</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">3</td><td data-label="이름" role="cell">TX FIFO Full</td><td data-label="의미" role="cell">송신 FIFO 가득 참</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">2</td><td data-label="이름" role="cell">TX FIFO Empty</td><td data-label="의미" role="cell">송신 FIFO 비어 있음</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="이름" role="cell">RX FIFO Full</td><td data-label="의미" role="cell">수신 FIFO 가득 참</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="이름" role="cell">RX FIFO Valid Data</td><td data-label="의미" role="cell">수신할 Data가 존재</td></tr>
-</tbody></table></div><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_04_status.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-4 · Status Register · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_04_status.png" alt="AMD PG142 Figure 2-4 · Status Register · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-4 · Status Register</strong><br>RX FIFO 유효 bit0, TX FIFO Full bit3 등 비트 위치를 원본과 대조한다.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11" target="_blank" rel="noopener">AMD PG142 · 11쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_04_status.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
-</section>
-
-<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Control Register</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Control Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">기능</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="기능" role="cell">Interrupt Enable</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="기능" role="cell">RX FIFO Reset/Clear</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="기능" role="cell">TX FIFO Reset/Clear</td></tr>
-</tbody></table></div>
-<p>이번 코드에서는 시작할 때 <code>0x03</code>을 써서 RX/TX FIFO를 비우고 bit4는 0으로 유지하여 Interrupt를 사용하지 않는다.</p><figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/pg142_fig02_03_control.png" target="_blank" rel="noopener" aria-label="AMD PG142 Figure 2-3 · Control Register · 큰 그림 열기"><img src="../../images/soc07/vendor/pg142_fig02_03_control.png" alt="AMD PG142 Figure 2-3 · Control Register · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>AMD PG142 Figure 2-3 · Control Register</strong><br>TX FIFO Clear bit0, RX FIFO Clear bit1, Interrupt Enable bit4.<br><span class="figure-source">원문: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10" target="_blank" rel="noopener">AMD PG142 · 10쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/pg142_fig02_03_control.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
-</section>
-
-<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>Polling · C Driver · AXI 트랜잭션</h2>
-
-<p>Polling(폴링, CPU가 상태를 반복적으로 확인하는 방식)은 인터럽트 없이 UART 상태를 읽고 데이터가 준비됐을 때 FIFO를 접근합니다.</p>
-<div class="signal-map" tabindex="0" role="region">수신: STATUS +0x08 bit0 확인 → RX FIFO +0x00 읽기 → last_rx
-송신: STATUS +0x08 bit3 확인 → TX FIFO +0x04 쓰기
-초기화: CONTROL +0x0C에 0x03 쓰기 → RX/TX FIFO Clear</div>
-<div class="table-wrap" role="region" tabindex="0" aria-label="C 함수와 AXI 레지스터"><table><thead><tr><th>C 함수</th><th>AXI 동작</th></tr></thead><tbody>
-<tr><td><code>XUartLite_RecvByte(Base)</code></td><td>RX FIFO Valid Data 대기 → Base+0x00 Read</td></tr>
-<tr><td><code>XUartLite_SendByte(Base, ch)</code></td><td>TX FIFO Full 여부 확인 → Base+0x04 Write</td></tr>
-<tr><td><code>XUartLite_WriteReg(..., 0x03)</code></td><td>Base+0x0C Write → 두 FIFO 초기화</td></tr>
-</tbody></table></div>
-<p>05장의 AXI4-Lite Read/Write가 07장에서 실제 UART 데이터 이동에 사용됩니다.</p>
-
-</section>
-
-<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>선택 참고 · AMD 공식 Example Design</h2>
+<section class="step-card" id="s26"><span class="step">선택 검증 01</span><h2>선택 참고 · AMD 공식 Example Design</h2>
 
 <div class="note">AMD PG142 공식 예제는 07장의 MicroBlaze V 프로젝트와 <strong>별개</strong>입니다. PC Echo 필수 실습에는 포함하지 않습니다.</div>
 
@@ -620,7 +660,7 @@ Ubuntu moserial Received ASCII</div>
 
 </section>
 
-<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>선택 검증 · Verilog 테스트벤치</h2>
+<section class="step-card" id="s27"><span class="step">선택 검증 02</span><h2>선택 검증 · Verilog 테스트벤치</h2>
 
 <div class="note">아래 예제는 별도 선택 검증 자료입니다. <strong>실제 Xilinx IP 시뮬레이션은 아직 수행하지 않았습니다.</strong> Verilog 구문 검사를 FPGA 동작 검증으로 취급하지 않습니다.</div>
 
@@ -831,8 +871,6 @@ SOC07 VERILOG UARTLITE SELF-CHECK PASS</div>
 
 
 </section>
-
-
 
 <section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>07장 완료 판정 기준</h2>
 <p>아래는 실제 Vivado/Vitis/moserial 화면에서 확인한 07장 결과입니다. UART Echo는 보드에서 검증됐으며, 개별 Watch 변수값은 아직 확인되지 않았습니다.</p>
