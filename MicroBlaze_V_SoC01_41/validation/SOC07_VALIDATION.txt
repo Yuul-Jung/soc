@@ -28,3 +28,14 @@ Sections 26-27 added for PG142 official example design and VHDL test bench (desc
 Publisher-hosted PDF iframe rendering on GitHub Pages / mobile: NOT INDEPENDENTLY VERIFIED. Direct-PDF fallback links provided.
 Vivado 2024.2 official example test bench simulation: NOT RUN.
 MicroBlaze V target build / Basys3 Echo verification: NOT RUN.
+
+2026-10-27 adversarial correction / static-browser-verilog QA:
+Original official-figure render failure fixed: removed embedded cross-origin PDF iframe/object. All 10 original figure crops now reside under images/soc07/vendor/ with source PDF SHA256 and per-PNG SHA256 manifest. Original figures inspected individually against PG142/Digilent visual layouts. Digilent raster source is an archival mirror of its original publisher manual; PDF source link points to Digilent.
+SoC07 sections 03,04,07,12-16,26,27 display local original figure PNGs, not custom-redrawn illustrations.
+Browser QA GitHub Actions workflow: .github/workflows/soc07-adversarial-check.yml.
+Baseline run 40452860970: PASS, 10/10 loaded images, navigation 27/27, no broken images, no horizontal overflow at 1440/1024/390/320 px, original image SHA256 matched manifest.
+Verilog-2005 bench committed at code/soc07/tb_soc07_axi_uartlite.v. Icarus Verilog -g2005 compile with interface-only stub: PASS (syntax and declared-port compatibility ONLY; stub is not a functional model or Vivado IP implementation). Bench recreates official TX 'A' validation purpose and adds RX 'B'/AXI RX read/Echo 'B' coverage. It does not reproduce official vendor VHDL source line by line.
+PG142 legacy GUI Figure 4-1 shows baud 9600. SoC07 Vivado configuration is 115200 8N1; old figure is illustration, not a tested SoC07 GUI screenshot.
+Vivado 2024.2 generated UART Lite IP simulation: NOT RUN.
+MicroBlaze V target Build/ELF/debug and Basys3 07 Echo: NOT RUN.
+Actual Vivado GUI screenshots and on-board UART verification: NOT RUN.
