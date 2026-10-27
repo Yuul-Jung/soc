@@ -117,7 +117,7 @@ jobs:
               page=b.new_page(viewport={"width":width,"height":900},device_scale_factor=1)
               page.goto(html,wait_until="load")
               # The manual uses lazy images: force an actual decode for ALL figures.
-              page.locator("figure.official-original-figure img").first.wait_for()
+              page.locator("figure.official-original-figure img").first.wait_for(state="attached")
               page.evaluate("""async () => {
                 const imgs=[...document.querySelectorAll('figure.official-original-figure img')];
                 for(const img of imgs) img.loading='eager';
