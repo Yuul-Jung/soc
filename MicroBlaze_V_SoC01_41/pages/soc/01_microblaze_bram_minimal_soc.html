@@ -345,7 +345,7 @@ Load/Store → Data-side Bus → DLMB → BRAM → Data Read/Write</div>
 <div class="ok">01장에서는 위 IP가 생성됐는지만 확인한다. 외부 포트 설정, 클록 주파수 상세 설정, Reset 배선, Validate Design은 02장에서 수행한다.</div>
 </section>
 <section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>Basys3 XDC — 02장에서 사용할 핀 확인</h2>
-<p>Digilent 공식 <code>Basys-3-Master.xdc</code>에서 Clock과 Center Button Reset의 핀 번호를 확인한다. 외부 포트 생성과 XDC 최종 적용은 02장에서 한다.</p>
+<p>Digilent 공식 <code>Basys-3-Master.xdc</code>를 Vivado <strong>Add Sources → Add or create constraints → Add Files</strong>로 등록한다. Clock과 Center Button Reset의 핀 번호를 확인한다. 실제 외부 포트 생성과 XDC 제약의 유효성 검증은 02장에서 완료한다.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="Basys3 XDC — 필요한 줄만 원본에서 활성화 · 소스 코드"><code>## Clock signal
 set_property -dict { PACKAGE_PIN W5 IOSTANDARD LVCMOS33 } [get_ports clk]
 create_clock -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
@@ -357,7 +357,7 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <tr role="row"><td data-label="XDC" role="cell"><code>period 10.00</code></td><td data-label="의미" role="cell">100 MHz의 1주기 = 10 ns</td><td data-label="검증" role="cell">Timing Engine에 Primary Clock 정의</td></tr>
 <tr role="row"><td data-label="XDC" role="cell"><code>PACKAGE_PIN U18</code></td><td data-label="의미" role="cell">Center Push Button</td><td data-label="검증" role="cell">Digilent Master XDC의 <code>btnC</code></td></tr>
 </tbody></table></div>
-<div class="warn">위 XDC는 02장 적용 전 확인하는 기준이다. Digilent 예제의 <code>create_clock -add</code> 대신 이 프로젝트에서 후속 검증한 <strong><code>-add</code> 없는 명령</strong>을 표시했다. 01장에서는 아직 외부 포트가 없으므로 적용·Validate Design을 실행하지 않는다. Block Design에서 생성된 외부 포트 이름이 <code>clk_0</code>, <code>reset_0</code>처럼 되어 있다면 XDC를 억지로 바꾸기 전에 포트 이름을 먼저 의도한 이름으로 정리한다. <strong>HDL/BD 포트명 ↔ XDC <code>get_ports</code> 이름이 정확히 같아야 한다.</strong></div>
+<div class="warn">XDC 파일에서는 사용할 W5 / U18 줄만 활성화한다. Digilent 예제의 <code>create_clock -add</code> 대신 이 프로젝트에서 후속 검증한 <strong><code>-add</code> 없는 명령</strong>을 표시했다. 01장에서는 아직 BD 외부 포트를 만들지 않으므로 Validate Design을 실행하지 않는다. Block Design에서 생성된 외부 포트 이름이 <code>clk_0</code>, <code>reset_0</code>처럼 되어 있다면 XDC를 억지로 바꾸기 전에 포트 이름을 먼저 의도한 이름으로 정리한다. <strong>HDL/BD 포트명 ↔ XDC <code>get_ports</code> 이름이 정확히 같아야 한다.</strong></div>
 </section>
 <section class="step-card" id="s12"><span class="step">SECTION 12 · GUI 실습</span><h2>Diagram 저장 · 구성 확인</h2>
 <ol class="step-seq">
@@ -376,7 +376,7 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 <li>ILMB와 DLMB가 Local BRAM으로 연결된다.</li>
 <li>MDM V Debug Module이 연결된다.</li>
 <li>Clocking Wizard와 Processor System Reset IP가 생성되어 있다.</li>
-<li>Basys3 공식 XDC의 W5 / U18 / 10 ns 기준을 확인했다. 외부 연결·제약 적용은 02장에서 한다.</li>
+<li>Basys-3-Master.xdc를 Constraints에 등록하고 W5 / U18 / 10 ns 기준을 확인했다. 외부 포트 연결과 제약 검증은 02장에서 한다.</li>
 <li><code>soc01_mb_bram.bd</code>를 저장했다.</li>
 <li>아직 GPIO/UART/Timer/Interrupt/NPU를 추가하지 않았다.</li>
 </ul>
