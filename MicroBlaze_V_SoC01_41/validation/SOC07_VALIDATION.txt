@@ -45,3 +45,8 @@ Original Digilent Figure 6, PG142 Figures 1-1, 2-1, 2-2, 2-3, 2-4, 4-1, 5-1, 6-1
 QA rerun GitHub Actions 40453311442: SUCCESS after latest image asset regeneration and document commits. 10/10 original figure PNG images displayed by Chromium at 1440/1024/390/320 px; no page horizontal overflow, 27/27 anchors and relative paths; image integrity hashes match manifest; Icarus Verilog-2005 compilation against interface-only IP stub PASS.
 GitHub Pages direct visual confirmation in this environment: NOT AVAILABLE (headless browser against built local HTML passed; Pages deploy tracked separately).
 Generated Xilinx IP execution in Vivado/XSim and Basys3 board: NOT RUN.
+
+2026-10-27 moserial-only serial procedure update:
+SoC07 HTML and Markdown replaced minicom with moserial GUI; /dev/serial/by-id/ identification, moserial Port Setup 115200 8N1, Handshake None, Echo received data Off, Connect, Outgoing ASCII + No end + Send, Sent/Received ASCII comparison, expected startup message order FPGA Program -> moserial Connect -> ELF Run.
+Ubuntu moserial GUI behavior cross-checked against GNOME moserial documentation; actual application and Basys3 hardware screen: NOT VERIFIED.
+Documentation/browser QA after HTML commit 9e0f32dde: SUCCESS, GitHub Actions run 40456152097 (source images/links/27 navigation, 4 viewport image rendering, Verilog syntax stub).
