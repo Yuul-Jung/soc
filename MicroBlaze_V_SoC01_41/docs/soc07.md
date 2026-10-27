@@ -6,7 +6,7 @@
 
 ## 실습 목표
 
-터미널에 A를 입력하면 FPGA가 A를 수신하고 MicroBlaze V가 같은 Byte를 다시 송신한다. Terminal Local Echo는 끄고 실제 FPGA Echo만 보이도록 한다.
+moserial의 Outgoing에서 A를 전송하면 FPGA가 수신하고 MicroBlaze V가 같은 Byte를 다시 송신한다. Echo received data는 끄고 Received ASCII에서 보드의 응답을 확인한다.
 
 
 ## 전체 통신 경로
@@ -341,40 +341,58 @@ int main(void)
 | XUartLite_WriteReg(...CTRL..., 0x03) | Base+0x0C에 Write → RX/TX FIFO Clear |
 
 
-## Ubuntu 터미널
+## Ubuntu moserial 설정 및 통신
 
-기존 터미널 도구를 사용한다. 장치명은 PC 환경마다 달라질 수 있으므로 먼저 확인한다.
+**moserial(모시리얼, 그래픽 시리얼 통신 프로그램)**에서 PC ↔ Basys3 UART를 송수신한다. 먼저 실제 USB 시리얼 장치명을 확인한다.
 
+### 1. 장치 확인 및 실행
 
-```text
-## 1. UART 장치 확인
+```bash
+# Basys3의 USB-UART 장치명과 연결된 /dev/ttyUSB* 확인
 ls -l /dev/serial/by-id/
 
-## 2. minicom 설치
-sudo apt install minicom
+# 프로그램 설치(최초 1회)
+sudo apt install moserial
 
-## 3. 예시 실행
-## 실제 장치명은 /dev/serial/by-id/ 결과에 맞춘다.
-minicom -D /dev/ttyUSB1 -b 115200
+# moserial GUI 실행
+moserial
 ```
 
+- `ls -l /dev/serial/by-id/`: USB 시리얼 장치 이름과 실제 장치 경로를 확인한다.
+- `sudo apt install moserial`: Ubuntu에 moserial을 설치한다. 기존 설치 시 생략한다.
+- `moserial`: moserial의 그래픽 창을 연다.
+- 장치 번호는 PC마다 다르다. 출력된 경로를 기준으로 `/dev/ttyUSB0`, `/dev/ttyUSB1` 등 실제 UART 포트를 선택한다.
 
-| Terminal 설정 | 값 |
+### 2. Port Setup 설정
+
+| 설정 항목 | 값 |
 | --- | --- |
-| Baud | 115200 |
-| Data | 8 bit |
+| Device | 실제 UART 포트 (예: `/dev/ttyUSB1`) |
+| Baud Rate | 115200 |
+| Data Bits | 8 |
 | Parity | None |
-| Stop | 1 |
-| Hardware Flow Control | Off |
-| Software Flow Control | Off |
-| Local Echo | Off |
+| Stop Bits | 1 |
+| Handshake | None (흐름 제어 없음) |
+| Read / Write | 둘 다 허용 |
+| Echo received data | Off |
 
-ls -l /dev/serial/by-id/는 연결된 Serial 장치를 사람이 읽기 쉬운 이름으로 확인하는 명령이다. minicom은 해당 Serial Port를 115200 bit/s로 열어 문자 송수신을 확인한다.
+**Echo received data**는 moserial이 수신한 문자를 FPGA로 다시 자동 송신하는 기능이다. 보드에서도 Echo를 하므로 이 항목은 Off로 유지하여 무한 반복을 방지한다.
+
+### 3. Connect 및 Echo 확인
+
+1. moserial에서 **Connect**를 누르고 **Received ASCII** 수신 화면을 연다.
+2. Vivado에서 FPGA를 Program한 다음, Vitis ELF를 실행하여 **Received ASCII**에 시작 메시지가 출력되는지 확인한다.
+3. **Outgoing** 입력란에 `A`를 입력한다. 송신 형식은 **ASCII**, 줄 종료는 **No end**로 설정한 뒤 **Send**를 누른다.
+4. **Sent ASCII**는 PC가 보낸 `A`를 나타내고, **Received ASCII**는 FPGA가 다시 전송한 `A`를 나타낸다. 같은 방법으로 `B`, `1`을 검증한다.
+
+**No end**는 CR/LF를 덧붙이지 않으므로 1회 Send에 문자 1바이트만 전송한다. 두 화면에 같은 문자가 보이는 것은 정상이며 중복 Echo를 뜻하지 않는다.
+
+참고: [Ubuntu moserial 패키지](https://packages.ubuntu.com/noble/moserial) · [GNOME moserial](https://github.com/GNOME/moserial)
 
 
 ## 실행 결과
 
-FPGA Program → Terminal 연결 → ELF Run 순서로 진행한다. 정상이라면 시작 문자열이 나타난다.
+FPGA Program → moserial Connect → ELF Run 순서로 진행한다. moserial의 Received ASCII에 시작 문자열이 나타난다.
 
 
 ```text
@@ -383,7 +401,7 @@ Type characters. Received data will be echoed.
 >
 ```
 
-이후 키보드에서 A, B, 1을 입력하면 같은 Character가 FPGA를 거쳐 되돌아온다.
+이후 moserial Outgoing에서 ASCII, No end로 A, B, 1을 각각 Send하면, Sent ASCII와 Received ASCII에서 송신 및 FPGA Echo를 구분하여 확인할 수 있다.
 
 
 ## Debugger 확인
@@ -425,9 +443,9 @@ SoC 05의 AR/R Read와 AW/W/B Write가 UART FIFO 접근으로 실제 적용된�
 | 증상 | 원인 후보 | 확인 |
 | --- | --- | --- |
 | 아무 글자도 안 보임 | TX Pin·Baud·XSA 문제 | A18, 115200, 최신 Platform |
-| 입력해도 Echo 없음 | RX Pin 또는 Terminal 장치 오류 | B18, 실제 /dev/tty* |
-| 문자가 깨짐 | Baud / Data / Parity 불일치 | 115200 8N1 양쪽 동일 |
-| 문자가 두 번 보임 | Terminal Local Echo On | Local Echo Off |
+| 입력해도 Echo 없음 | RX Pin 또는 moserial 포트·연결 오류 | B18, 실제 /dev/ttyUSB*, Connect |
+| 문자가 깨짐 | Baud / Data / Parity 불일치 | moserial과 AXI UART Lite 모두 115200 8N1 |
+| 같은 문자가 반복 송수신됨 | moserial Echo received data On | Echo received data Off |
 | Build Macro 없음 | XSA/Platform 미갱신 또는 Instance 명칭 차이 | xparameters.h |
 | 수신 첫 글자가 이상함 | 기존 FIFO Data | 시작 시 FIFO Clear 확인 |
 | RX/TX가 서로 바뀜 | 방향 관점 혼동 | B18=FPGA RX, A18=FPGA TX |
@@ -484,7 +502,7 @@ SoC 05의 AR/R Read와 AW/W/B Write가 UART FIFO 접근으로 실제 적용된�
 - Status bit0과 bit3의 의미를 이해한다.
 - FIFO Clear를 위해 Control bit1/bit0을 사용했다.
 - XSA와 Vitis Platform을 갱신했다.
-- Terminal을 115200 8N1, Flow Control Off, Local Echo Off로 설정했다.
+- moserial을 115200 8N1, Handshake None, Echo received data Off로 설정하고 Outgoing은 No end로 송신했다.
 - PC 입력 Byte를 RX FIFO에서 읽고 TX FIFO로 다시 썼다.
 - 실제 보드 실행에서 Echo 결과를 확인했다.
 
