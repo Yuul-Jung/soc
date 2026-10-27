@@ -246,6 +246,9 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="table-wrap" tabindex="0" role="region" aria-label="06장과 07장 시작 프로젝트 비교"><table><thead><tr><th>항목</th><th>06장 · 성공 프로젝트</th><th>07장 · 작업용 복제 프로젝트</th></tr></thead><tbody>
 <tr><td>Vivado 이름</td><td><code>soc06_axi_gpio</code> (원본 보존)</td><td><code>soc07_axi_uartlite</code> (별도 저장)</td></tr>
 <tr><td>프로젝트 파일</td><td><code>/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr</code></td><td><code>/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code></td></tr>
+<tr><td>Design Sources · BD</td><td><code>soc06_axi_gpio.bd</code></td><td><code>soc07_axi_uartlite.bd</code> (07장 새 이름)</td></tr>
+<tr><td>HDL Wrapper / Top</td><td><code>soc06_axi_gpio_wrapper</code></td><td><code>soc07_axi_uartlite_wrapper</code> (07장 새 이름)</td></tr>
+<tr><td>Constraints</td><td>06장 Clock·Reset·Switch·LED XDC</td><td>복제 후 독립 보관, UART RX/TX 제약 추가</td></tr>
 <tr><td>기존 IP</td><td>MicroBlaze V·BRAM·AXI GPIO·Clock·Reset·SmartConnect</td><td>복제하여 그대로 유지</td></tr>
 <tr><td>이번 장의 신규 IP</td><td>없음</td><td><code>axi_uartlite_0</code></td></tr>
 <tr><td>Vitis</td><td>06장 Platform·GPIO Application 보존</td><td>07장 XSA로 별도 Platform·UART Echo Application 제작</td></tr>
@@ -253,9 +256,12 @@ main[tabindex="-1"]:focus{outline:none}
 <ol class="step-seq">
 <li><h3>06장 성공 프로젝트 열기</h3><p>Vivado 2024.2에서 <code>/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr</code>을 엽니다.</p></li>
 <li><h3>07장 프로젝트로 Save As(다른 이름으로 저장)</h3><p><strong>File → Project → Save As</strong>를 실행합니다. 프로젝트 이름은 <code>soc07_axi_uartlite</code>로, 최종 <code>.xpr</code> 경로는 <code>/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code>로 맞춥니다. 폴더 선택 방식은 실제 창에서 확인합니다.</p></li>
-<li><h3>소스 독립성 확인</h3><p>Vivado 프로젝트명과 Sources의 Block Design·XDC 파일 경로를 확인합니다. 수정할 소스가 06장 폴더를 가리키면 반드시 07장 프로젝트 내부로 별도 복사합니다. <strong>07장 복제본의 소스 독립성이 확인되기 전에는 IP를 추가하지 않습니다.</strong></p></li>
+<li><h3>07장 Block Design으로 Save As</h3><p>복제된 07장 프로젝트의 기존 <code>soc06_axi_gpio.bd</code>를 열어 <strong>File → Save Block Design As</strong>를 실행합니다. 새 이름은 <code>soc07_axi_uartlite</code>로 지정하고 <strong>Local to Project</strong> 및 <strong>Add to Design Sources</strong>로 새 프로젝트에 보관합니다. 06장에서 검증된 MicroBlaze V·BRAM·<code>axi_gpio_0</code> 구성을 유지합니다.</p></li>
+<li><h3>Design Sources의 새 Wrapper 지정</h3><p>새 <code>soc07_axi_uartlite.bd</code>에서 <strong>Create HDL Wrapper → Let Vivado manage wrapper and auto-update</strong>를 실행합니다. 생성된 <code>soc07_axi_uartlite_wrapper</code>를 <strong>Set as Top</strong>으로 지정합니다.</p></li>
+<li><h3>기존 Wrapper와 소스 경로 정리</h3><p>복제본에 남은 <code>soc06_axi_gpio_wrapper</code>는 필요하면 <strong>Remove File from Project</strong>로 07장 프로젝트 목록에서만 제거합니다. <strong>Delete files from disk는 선택하지 않습니다.</strong> Block Design과 XDC가 06장 폴더를 직접 가리키는지 확인해 07장 내부의 독립 파일을 사용합니다.</p></li>
+<li><h3>기존 IP와 제약 보존 확인</h3><p>06장의 AXI GPIO, Clock, Reset과 기존 GPIO 핀 제약이 유지되었는지 확인합니다. 07장에서 UART를 추가할 때에는 별도 XDC의 UART RX/TX 핀 제약을 추가합니다. <strong>06장의 하드웨어와 Vitis 산출물은 변경하지 않습니다.</strong></p></li>
 </ol>
-<p class="lesson-check"><strong>화면 확인</strong> 새 프로젝트 이름·<code>.xpr</code> 위치·Block Design 및 XDC 실제 경로가 07장 전용이며, 원본 06장 회로는 보존됩니다.</p>
+<p class="lesson-check"><strong>화면 확인</strong> 새 프로젝트 <code>soc07_axi_uartlite.xpr</code>, Design Sources의 <code>soc07_axi_uartlite.bd</code>, Top <code>soc07_axi_uartlite_wrapper</code>, 독립된 XDC와 기존 <code>axi_gpio_0</code>를 확인한 뒤에만 UART IP를 추가합니다.</p>
 <div class="note"><strong>실습 목표</strong> moserial에서 전송한 문자 <code>A</code>를 AXI UART Lite가 받고 MicroBlaze V가 같은 문자를 돌려주면 <strong>Received ASCII</strong>에 표시됩니다. moserial의 <strong>Echo received data</strong>는 Off로 유지합니다.</div></section>
 
 <section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>전체 통신 경로</h2>
