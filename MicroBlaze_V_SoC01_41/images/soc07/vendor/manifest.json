@@ -1,0 +1,187 @@
+{
+  "source": {
+    "amd": {
+      "url": "https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content",
+      "sha256": "025fc42d3db841afa2c46ed32873baf3b73302dd4021f227129eb55107375dcf",
+      "pages": 26
+    },
+    "digilent": {
+      "url": "https://physics.umd.edu/hep/drew/programmable/basys3_rm.pdf",
+      "sha256": "4401a74b4b616b9b5cc23d9d5400cd1e7c24817999c0ae04850f356360828d6e",
+      "pages": 19
+    }
+  },
+  "figures": [
+    {
+      "figure": "Digilent Figure 6",
+      "file": "digilent_fig06_basys3_uart.png",
+      "page": 7,
+      "source": "digilent",
+      "fraction": [
+        0.29,
+        0.685,
+        0.72,
+        0.83
+      ],
+      "sha256": "1bfcfc2c71b15f6ec8fd46af349f54893633e34e194822d7fc2bead36e214902",
+      "pixels": [
+        1029,
+        434
+      ]
+    },
+    {
+      "figure": "PG142 Figure 1-1",
+      "file": "pg142_fig01_01_axi_uartlite.png",
+      "page": 5,
+      "source": "amd",
+      "fraction": [
+        0.16,
+        0.29,
+        0.9,
+        0.57
+      ],
+      "sha256": "69afb1f6cc29f1a7b461b7f72190e7436e1f3da62b945bba7d8fcee0a61c4310",
+      "pixels": [
+        1269,
+        622
+      ]
+    },
+    {
+      "figure": "PG142 Table 2-4",
+      "file": "pg142_table02_04_registers.png",
+      "page": 9,
+      "source": "amd",
+      "fraction": [
+        0.15,
+        0.445,
+        0.93,
+        0.595
+      ],
+      "sha256": "5aa6e48b1387a0bd0ec98639b6591a1e5e8cbfd2109bc5364875eddfb8ac05a6",
+      "pixels": [
+        1337,
+        334
+      ]
+    },
+    {
+      "figure": "PG142 Figure 2-1",
+      "file": "pg142_fig02_01_rx_fifo.png",
+      "page": 9,
+      "source": "amd",
+      "fraction": [
+        0.16,
+        0.765,
+        0.91,
+        0.875
+      ],
+      "sha256": "c563fe6583f84cedd363ca0ba7a18a4bc1d3953ba8ae9a78556faa0515cb7b03",
+      "pixels": [
+        1286,
+        245
+      ]
+    },
+    {
+      "figure": "PG142 Figure 2-2",
+      "file": "pg142_fig02_02_tx_fifo.png",
+      "page": 10,
+      "source": "amd",
+      "fraction": [
+        0.16,
+        0.35,
+        0.91,
+        0.495
+      ],
+      "sha256": "e136f2e5d85ea1d1846e0bffb890ce22e40582df727d8fe74c8688434cf4ae31",
+      "pixels": [
+        1286,
+        322
+      ]
+    },
+    {
+      "figure": "PG142 Figure 2-3",
+      "file": "pg142_fig02_03_control.png",
+      "page": 10,
+      "source": "amd",
+      "fraction": [
+        0.16,
+        0.735,
+        0.91,
+        0.885
+      ],
+      "sha256": "7e97c774c0b10ddece45d6d01d4dcbfa828a4d73fed0abed498465f7a33c5468",
+      "pixels": [
+        1286,
+        334
+      ]
+    },
+    {
+      "figure": "PG142 Figure 2-4",
+      "file": "pg142_fig02_04_status.png",
+      "page": 11,
+      "source": "amd",
+      "fraction": [
+        0.16,
+        0.53,
+        0.91,
+        0.74
+      ],
+      "sha256": "de6424cebe0dd721f301dca791bb2370d7eccb62b4236a3ec50d9093e4f9d15b",
+      "pixels": [
+        1286,
+        467
+      ]
+    },
+    {
+      "figure": "PG142 Figure 4-1",
+      "file": "pg142_fig04_01_vivado_gui.png",
+      "page": 15,
+      "source": "amd",
+      "fraction": [
+        0.16,
+        0.14,
+        0.9,
+        0.655
+      ],
+      "sha256": "5da9ec1d1a9bc8da2b176a90cfb17bd3a00686c44123c6e4bc77763d786db9f5",
+      "pixels": [
+        1269,
+        1143
+      ]
+    },
+    {
+      "figure": "PG142 Figure 5-1",
+      "file": "pg142_fig05_01_example_design.png",
+      "page": 18,
+      "source": "amd",
+      "fraction": [
+        0.19,
+        0.455,
+        0.89,
+        0.815
+      ],
+      "sha256": "d3be66f9f7f5dffee7eb527e121200ef34ba1a68df55bdd39d21ca1a7dcbde84",
+      "pixels": [
+        1201,
+        799
+      ]
+    },
+    {
+      "figure": "PG142 Figure 6-1",
+      "file": "pg142_fig06_01_testbench.png",
+      "page": 21,
+      "source": "amd",
+      "fraction": [
+        0.22,
+        0.39,
+        0.88,
+        0.765
+      ],
+      "sha256": "bcbb85bccf6427464903f0d3ac2cda301407cc3608a34bc49918def46984121d",
+      "pixels": [
+        1132,
+        833
+      ]
+    }
+  ],
+  "method": "Unmodified raster crops of official PDF figures, no redraw"
+}
