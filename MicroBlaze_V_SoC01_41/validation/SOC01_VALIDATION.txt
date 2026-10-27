@@ -20,3 +20,12 @@ Official-header syntax checks PASS: 0 (host compiler / synthetic parameter fixtu
 
 2026-10-19 finishing review: navigation / layout / source identity PASS.
 Hardware execution results unchanged; no new target or board run.
+
+2026-10-28 SoC 01 walkthrough revision (GitHub publication):
+- Existing 01 HTML revised against SoC 07 GUI walkthrough structure; same 14 sections and 4 existing image links retained.
+- Version badge and AMD reference links aligned to Vivado/UG 2024.2; the pre-existing 2026.1 AMD figure images are explicitly labeled as later official examples, not verified 2024.2 screenshots.
+- Existing GUI screenshots dedicated to SoC 01: NONE FOUND in tracked chapter image assets; no screenshot fabricated and no empty evidence ZIP generated.
+- Project: soc01_microblaze_bram.xpr; block design: soc01_mb_bram.bd; local BRAM 16 KiB. Address 0x00000000 to 0x00003FFF previously confirmed in SoC 04 session; this revision did not rerun hardware.
+- Clock W5 / reset U18 XDC example uses create_clock without -add, matching final SoC 02 method; XDC registration belongs to SoC 01, external wiring and validation to SoC 02.
+- This pass performed GitHub source inspection, chapter structure/anchor checks and checked file listings. Browser rendering, target synthesis, Bitstream, Vitis build and Basys3 board execution NOT RERUN in this edit.
+- GitHub main updates include commits 3f405acd592cfbfa0614fc9c4493a5b0d48055b7 and 4693393fb5f0e3b2d07317be16eae1a4f2629598.
