@@ -144,6 +144,17 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 
 
 .manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+
+/* Publisher-hosted originals: embeds link to the authoritative manuals without copying the figures. */
+.official-source-view{margin:18px 0 24px;background:#fff;border:1px solid var(--line);padding:14px;max-width:100%}
+.official-source-view iframe{display:block;width:100%;height:620px;border:1px solid var(--line);background:#fff}
+.official-source-caption{text-align:center;color:var(--ink-2);font-size:.88rem;line-height:1.6;padding:12px 8px 4px}
+.official-source-caption p{margin:6px 0 10px}
+.official-source-caption a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.official-source-details{margin:16px 0 24px;border:1px solid var(--line);padding:10px;background:#fff}
+.official-source-details summary{cursor:pointer;color:var(--accent);font-weight:700;padding:7px 10px}
+.official-source-details .official-source-view{margin:12px 0 0}
+@media(max-width:680px){.official-source-view{padding:7px}.official-source-view iframe{height:450px}.official-source-caption{font-size:.8rem}}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -229,6 +240,8 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s23"><span class="n">23</span><span>Debugger 확인</span></a></li>
 <li><a href="#s24"><span class="n">24</span><span>AXI Transaction 추적</span></a></li>
 <li><a href="#s25"><span class="n">25</span><span>오류 점검</span></a></li>
+<li><a href="#s26"><span class="n">26</span><span>AMD 공식 예제 설계</span></a></li>
+<li><a href="#s27"><span class="n">27</span><span>공식 Test Bench 검증</span></a></li>
 <li><a href="#summary"><span class="n">26</span><span>완료 체크리스트</span></a></li>
 <li><a href="#sources"><span class="n">27</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside>
 <main id="main-content" tabindex="-1">
@@ -257,7 +270,7 @@ MicroBlaze V
 </section>
 
 <section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Basys3 USB-UART</h2>
-<figure class="manual-figure"><a href="https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7" target="_blank" rel="noopener" class="figure-image-link" aria-label="Digilent 공식 Basys 3 Reference Manual 7페이지 Figure 6 (새 탭)"><img src="https://www.physics.umd.edu/hep/drew/495/usb-serial.png" loading="lazy" referrerpolicy="no-referrer" alt="Digilent 원본 Figure 6: Micro-USB J4, FT2232, Artix-7 JTAG와 UART 연결, TXD에서 B18, A18에서 RXD" /></a><figcaption><strong>Digilent Basys 3 Reference Manual · Figure 6 원본 도판</strong><br>FT2232HQ의 TXD는 FPGA B18(RX)에, FPGA A18(TX)는 FT2232HQ의 RXD에 연결된다.<br><span class="figure-source">출처: <a href="https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7" target="_blank" rel="noopener">Digilent 공식 원문 · Page 7 · Figure 6</a></span><br><a href="https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7" target="_blank" rel="noopener" class="figure-original">공식 원문 열기 ↗</a></figcaption></figure>
+<div class="official-source-view"><iframe src="https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="Digilent Figure 6 · Basys3 USB-UART 연결 원본 · 원본 PDF 7쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>Digilent Figure 6 · Basys3 USB-UART 연결 원본</strong><p>FT2232HQ TXD → FPGA B18(RX), FPGA A18(TX) → FT2232HQ RXD. J4는 JTAG와 UART를 함께 제공한다.</p><a href="https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7" target="_blank" rel="noopener">공식 PDF 원문 · 7쪽 직접 열기 ↗</a></div></div>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Basys3 USB-UART · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">기능</th><th scope="col" role="columnheader">FPGA Pin</th><th scope="col" role="columnheader">Top Port</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="기능" role="cell">PC → FPGA Receive</td><td data-label="FPGA Pin" role="cell"><code>B18</code></td><td data-label="Top Port" role="cell"><code>RsRx</code></td></tr>
 <tr role="row"><td data-label="기능" role="cell">FPGA → PC Transmit</td><td data-label="FPGA Pin" role="cell"><code>A18</code></td><td data-label="Top Port" role="cell"><code>RsTx</code></td></tr>
@@ -265,7 +278,7 @@ MicroBlaze V
 <p>J4 하나로 FPGA Programming/JTAG와 USB-UART를 함께 사용할 수 있으며 두 기능은 독립적으로 동작한다.</p><p>MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 <code>xparameters.h</code>의 심볼을 사용한다.</p></section>
 
 <section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>AXI UART Lite 내부 구조</h2>
-<figure class="manual-figure"><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5" target="_blank" rel="noopener" class="figure-image-link" aria-label="AMD 공식 PG142 5페이지 Figure 1-1 (새 탭)"><img src="https://i-blog.csdnimg.cn/blog_migrate/d8d53e3a09194157a138f9f2268af047.png" loading="lazy" referrerpolicy="no-referrer" alt="AMD PG142 원본 Figure 1-1: AXI4-Lite Interface, AXI Interface, Receive/Transmit Data FIFO, Status/Control Register, BRG, RX/TX Control, Interrupt Control 구조" /></a><figcaption><strong>AMD PG142 · Figure 1-1 원본 도판</strong><br>AXI4-Lite를 통해 수신·송신 FIFO 및 제어·상태 레지스터에 접근한다.<br><span class="figure-source">출처: <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5" target="_blank" rel="noopener">AMD 공식 원문 · Page 5 · Figure 1-1</a></span><br><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5" target="_blank" rel="noopener" class="figure-original">공식 원문 열기 ↗</a></figcaption></figure>
+<div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조 원본 · 원본 PDF 5쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 1-1 · AXI UART Lite 내부 구조 원본</strong><p>AXI4-Lite, RX/TX FIFO, 상태·제어 레지스터, Baud Rate Generator, RX/TX 제어 관계.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=5" target="_blank" rel="noopener">공식 PDF 원문 · 5쪽 직접 열기 ↗</a></div></div>
 <p>RX FIFO와 TX FIFO는 각각 16-character 깊이를 가지며 AXI4-Lite Register 접근으로 CPU가 데이터를 읽고 쓴다.</p></section>
 
 <section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>UART Frame · 8N1</h2>
@@ -299,7 +312,7 @@ MicroBlaze V
 <object class="manual-embed" data="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15" type="application/pdf">
 <a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15" target="_blank">PG142 Page 15 열기</a>
 </object></details>
-</section>
+<details class="official-source-details"><summary>AMD PG142 Figure 4-1 · 공식 IP 설정 화면 · 원본 도판 펼쳐 보기</summary><div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 4-1 · 공식 IP 설정 화면 · 원본 PDF 15쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 4-1 · 공식 IP 설정 화면</strong><p>2017년 공개 문서의 화면이므로 Vivado 2024.2 GUI와 다를 수 있다. 실제 설정은 현재 Vivado 창에서 확인한다.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=15" target="_blank" rel="noopener">공식 PDF 원문 · 15쪽 직접 열기 ↗</a></div></div></details></section>
 
 <section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>AXI 연결</h2>
 <div class="signal-map" tabindex="0" role="region" aria-label="08절 신호 및 실행 흐름">MicroBlaze V M_AXI
@@ -348,12 +361,12 @@ set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]
 <section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>RX FIFO</h2>
 <p>RX FIFO는 16-entry이며 수신된 Character를 저장한다. 8-bit 설정에서는 유효 Data가 bit <code>[7:0]</code>에 들어온다.</p>
 <div class="flow">PC Character → Serial RX → RX Control → RX FIFO → AXI Read → MicroBlaze V</div>
-<div class="warn">RX FIFO가 비어 있을 때 직접 Read Transaction을 발행하면 PG142 기준 SLVERR가 발생할 수 있다. Driver의 Blocking Receive 함수는 Data가 들어올 때까지 기다린 뒤 읽는다.</div></section>
+<div class="warn">RX FIFO가 비어 있을 때 직접 Read Transaction을 발행하면 PG142 기준 SLVERR가 발생할 수 있다. Driver의 Blocking Receive 함수는 Data가 들어올 때까지 기다린 뒤 읽는다.</div><details class="official-source-details"><summary>AMD PG142 Figure 2-1 · RX FIFO 비트 배치 · 원본 도판 펼쳐 보기</summary><div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 2-1 · RX FIFO 비트 배치 · 원본 PDF 9쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 2-1 · RX FIFO 비트 배치</strong><p>수신 문자 데이터는 8-bit 설정 기준 하위 8비트에 놓인다.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=9" target="_blank" rel="noopener">공식 PDF 원문 · 9쪽 직접 열기 ↗</a></div></div></details></section>
 
 <section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>TX FIFO</h2>
 <p>TX FIFO도 16-entry이며 CPU가 전송할 Byte를 쓴다.</p>
 <div class="flow">MicroBlaze V → AXI Write → TX FIFO → TX Control → Serial TX → PC</div>
-<div class="warn">TX FIFO가 Full일 때 직접 Write하면 SLVERR가 발생할 수 있다. <code>XUartLite_SendByte()</code>는 FIFO가 쓸 수 있을 때까지 확인한 뒤 1 Byte를 전송한다.</div></section>
+<div class="warn">TX FIFO가 Full일 때 직접 Write하면 SLVERR가 발생할 수 있다. <code>XUartLite_SendByte()</code>는 FIFO가 쓸 수 있을 때까지 확인한 뒤 1 Byte를 전송한다.</div><details class="official-source-details"><summary>AMD PG142 Figure 2-2 · TX FIFO 비트 배치 · 원본 도판 펼쳐 보기</summary><div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 2-2 · TX FIFO 비트 배치 · 원본 PDF 10쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 2-2 · TX FIFO 비트 배치</strong><p>송신 데이터 역시 하위 8비트에 기록한다.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10" target="_blank" rel="noopener">공식 PDF 원문 · 10쪽 직접 열기 ↗</a></div></div></details></section>
 
 <section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Status Register</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Status Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">이름</th><th scope="col" role="columnheader">의미</th></tr></thead><tbody role="rowgroup">
@@ -365,7 +378,7 @@ set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]
 <tr role="row"><td data-label="Bit" role="cell">2</td><td data-label="이름" role="cell">TX FIFO Empty</td><td data-label="의미" role="cell">송신 FIFO 비어 있음</td></tr>
 <tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="이름" role="cell">RX FIFO Full</td><td data-label="의미" role="cell">수신 FIFO 가득 참</td></tr>
 <tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="이름" role="cell">RX FIFO Valid Data</td><td data-label="의미" role="cell">수신할 Data가 존재</td></tr>
-</tbody></table></div></section>
+</tbody></table></div><details class="official-source-details"><summary>AMD PG142 Figure 2-4 · Status Register 비트 배치 · 원본 도판 펼쳐 보기</summary><div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 2-4 · Status Register 비트 배치 · 원본 PDF 11쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 2-4 · Status Register 비트 배치</strong><p>RX FIFO 유효 데이터(bit 0), TX FIFO Full(bit 3) 등 주요 상태 위치.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=11" target="_blank" rel="noopener">공식 PDF 원문 · 11쪽 직접 열기 ↗</a></div></div></details></section>
 
 <section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Control Register</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Control Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">기능</th></tr></thead><tbody role="rowgroup">
@@ -373,7 +386,7 @@ set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]
 <tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="기능" role="cell">RX FIFO Reset/Clear</td></tr>
 <tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="기능" role="cell">TX FIFO Reset/Clear</td></tr>
 </tbody></table></div>
-<p>이번 코드에서는 시작할 때 <code>0x03</code>을 써서 RX/TX FIFO를 비우고 bit4는 0으로 유지하여 Interrupt를 사용하지 않는다.</p></section>
+<p>이번 코드에서는 시작할 때 <code>0x03</code>을 써서 RX/TX FIFO를 비우고 bit4는 0으로 유지하여 Interrupt를 사용하지 않는다.</p><details class="official-source-details"><summary>AMD PG142 Figure 2-3 · Control Register 비트 배치 · 원본 도판 펼쳐 보기</summary><div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 2-3 · Control Register 비트 배치 · 원본 PDF 10쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 2-3 · Control Register 비트 배치</strong><p>bit 0은 TX FIFO 초기화, bit 1은 RX FIFO 초기화, bit 4는 인터럽트 활성화.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=10" target="_blank" rel="noopener">공식 PDF 원문 · 10쪽 직접 열기 ↗</a></div></div></details></section>
 
 <section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>Polling 방식</h2>
 <div class="signal-map" tabindex="0" role="region" aria-label="17절 신호 및 실행 흐름">while (1)
@@ -494,7 +507,7 @@ minicom -D /dev/ttyUSB1 -b 115200</code></pre>
 <p><code>ls -l /dev/serial/by-id/</code>는 연결된 Serial 장치를 사람이 읽기 쉬운 이름으로 확인하는 명령이다. <code>minicom</code>은 해당 Serial Port를 115200 bit/s로 열어 문자 송수신을 확인한다.</p></section>
 
 <section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>실행 결과</h2>
-<p>FPGA Program → ELF Run → Terminal 연결 순서로 진행한다. 정상이라면 시작 문자열이 나타난다.</p>
+<p>FPGA Program → PC Terminal 연결 → ELF Run 순서로 진행한다. 정상이라면 시작 문자열이 나타난다.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="실행 결과 · 소스 코드"><code>AXI UART Lite Echo Ready
 Type characters. Received data will be echoed.
 &gt; </code></pre>
@@ -536,20 +549,51 @@ MicroBlaze V last_rx
 <tr role="row"><td data-label="증상" role="cell">RX/TX가 서로 바뀜</td><td data-label="원인 후보" role="cell">방향 관점 혼동</td><td data-label="확인" role="cell">B18=FPGA RX, A18=FPGA TX</td></tr>
 </tbody></table></div></section>
 
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 07 완료 체크리스트</h2>
+<section class="step-card" id="s26"><span class="step">SECTION 26</span><h2>AMD 공식 Example Design · 예제 설계</h2>
+<p>AMD PG142 Chapter 5의 공식 예제는 <strong>MicroBlaze V 없이</strong> AXI Traffic Generator(AXI 트래픽 제너레이터, 시험용 AXI 접근 생성기)가 AXI UART Lite에 데이터를 기록하는 별도 설계이다.</p>
+<div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=18&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 5-1 · Example Design Block Diagram · 원본 PDF 18쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 5-1 · Example Design Block Diagram</strong><p>원본의 Clock Generator, AXI Traffic Generator, DUT(검증 대상 IP) 관계. KC705 기준 예제이며 Basys3 SoC Block Design과 동일한 회로가 아니다.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=18" target="_blank" rel="noopener">공식 PDF 원문 · 18쪽 직접 열기 ↗</a></div></div>
+<ol class="step-seq">
+<li><h3>공식 예제 열기</h3><p>Vivado에서 AXI UART Lite IP의 <strong>Open IP Example Design</strong> 기능을 선택한다. 원본 SoC 프로젝트와 분리된 별도 예제 프로젝트로 연다.</p></li>
+<li><h3>데이터 전송 경로 읽기</h3><p>ATG가 AXI4-Lite를 통해 TX FIFO에 ASCII <code>0x41</code>을 쓴다. UART 송신 포트에서는 문자 <code>A</code>가 출력된다.</p></li>
+<li><h3>코드와 실제 설계 구분</h3><p>예제에는 <code>&lt;component_name&gt;_exdes.vhd</code>, <code>clock_gen.vhd</code>, <code>atg_*.coe</code>가 포함된다. 이 파일들은 공식 예제 생성 시 제공되는 것이며 이 교재에서 별도로 작성한 MicroBlaze 프로그램이 아니다.</p></li>
+</ol>
+<div class="note"><strong>범위:</strong> 공식 PG142 예제는 KC705 보드를 대상으로 설명한다. Basys3 핀 제약을 그대로 대입하거나 07장 성공 프로젝트를 교체하지 않는다.</div></section>
+
+<section class="step-card" id="s27"><span class="step">SECTION 27</span><h2>AMD 공식 Test Bench · 시뮬레이션 확인</h2>
+<p>PG142 Chapter 6은 예제 설계에 포함된 VHDL Test Bench(테스트벤치, 회로를 자동 시험하는 코드)를 설명한다. 실제 FPGA 다운로드와 별도로 UART 송신 동작을 시뮬레이션한다.</p>
+<div class="official-source-view"><iframe src="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=21&amp;view=FitH&amp;toolbar=0&amp;navpanes=0" title="AMD PG142 Figure 6-1 · Test Bench Block Diagram · 원본 PDF 21쪽" loading="lazy" referrerpolicy="no-referrer"></iframe><div class="official-source-caption"><strong>AMD PG142 Figure 6-1 · Test Bench Block Diagram</strong><p>원본 구조: Clock &amp; Reset Generation → 공식 예제 설계 → Test Status. 테스트벤치는 UART TX 결과가 ASCII 문자 A(0x41)인지 검사한다.</p><a href="https://docs.amd.com/api/khub/documents/dB1MAeh~uLG7FE62a5_QbA/content#page=21" target="_blank" rel="noopener">공식 PDF 원문 · 21쪽 직접 열기 ↗</a></div></div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="공식 테스트벤치 검증 요소"><table><thead><tr><th>항목</th><th>원문 기준 동작</th></tr></thead><tbody>
+<tr><td>Test Bench 파일</td><td><code>&lt;component_name&gt;_exdes_tb.vhd</code> · 공식 예제 프로젝트의 Simulation Sources</td></tr>
+<tr><td>클록</td><td>테스트벤치가 200 MHz 입력 클록 생성 · 예제 내부에서 100 MHz AXI 클록 생성</td></tr>
+<tr><td>리셋</td><td>초기 Reset 신호 생성</td></tr>
+<tr><td>입력 자극</td><td>ATG가 AXI4-Lite Write를 사용하여 TX FIFO에 <code>0x41</code> 기록</td></tr>
+<tr><td>출력 검사</td><td>직렬 TX를 수신·변환하여 ASCII <code>A</code>인지 비교</td></tr>
+<tr><td>기대 결과</td><td><code>Test Completed Successfully</code> · 실패 또는 시간 초과는 별도 진단</td></tr>
+</tbody></table></div>
+<ol class="step-seq">
+<li><h3>Simulation Sources 확인</h3><p>독립적으로 생성한 공식 Example Design 프로젝트에서 <code>*_exdes_tb.vhd</code> 파일을 확인한다.</p></li>
+<li><h3>Run Behavioral Simulation 실행</h3><p>Vivado의 <strong>Run Simulation → Run Behavioral Simulation</strong>에서 공식 테스트벤치를 실행한다. 실제 2024.2 화면은 실습 시 확인한다.</p></li>
+<li><h3>파형과 결과 확인</h3><p><code>clock_in</code>, <code>reset</code>, <code>tx</code> 신호의 파형과 시뮬레이션 로그를 확인한다. 종료 메시지가 성공이면 공식 예제의 송신 경로가 검증된 것이다.</p></li>
+</ol>
+<div class="warn"><strong>검증 범위 구분:</strong> 공식 테스트벤치는 UART Lite의 송신 문자 <code>A</code>를 시험한다. Basys3 + MicroBlaze V의 PC 입력 문자 Echo를 검증하는 실습과 같지 않다. 실제 보드 결과와 공식 예제의 예상 결과를 혼동하지 않는다.</div>
+<div class="note">본 교재에 수록한 공식 시뮬레이션 결과는 PG142의 기대 동작이다. 이 환경에서 Vivado 2024.2의 생성·실행·파형은 아직 확인되지 않았으므로 실제 성공 화면은 실습 후 반영한다.</div></section>
+
+
+
+<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 07 실습 확인 항목</h2>
 <ul>
-<li>[ ] AXI UART Lite를 MicroBlaze V AXI Master에 연결했다.</li>
-<li>[ ] Baud 115200, Data 8, Parity None으로 설정했다.</li>
-<li>[ ] UART RX를 B18, TX를 A18에 연결했다.</li>
-<li>[ ] Address Editor에서 실제 UART Lite Base Address를 확인했다.</li>
-<li>[ ] RX FIFO +0x00, TX FIFO +0x04, STATUS +0x08, CONTROL +0x0C를 구분한다.</li>
-<li>[ ] RX/TX FIFO가 각각 16-character 깊이임을 이해한다.</li>
-<li>[ ] Status bit0과 bit3의 의미를 이해한다.</li>
-<li>[ ] FIFO Clear를 위해 Control bit1/bit0을 사용했다.</li>
-<li>[ ] XSA와 Vitis Platform을 갱신했다.</li>
-<li>[ ] Terminal을 115200 8N1, Flow Control Off, Local Echo Off로 설정했다.</li>
-<li>[ ] PC 입력 Byte를 RX FIFO에서 읽고 TX FIFO로 다시 썼다.</li>
-<li>[ ] 실제 보드 실행에서 Echo 결과를 확인했다.</li>
+<li>AXI UART Lite를 MicroBlaze V AXI Master에 연결했다.</li>
+<li>Baud 115200, Data 8, Parity None으로 설정했다.</li>
+<li>UART RX를 B18, TX를 A18에 연결했다.</li>
+<li>Address Editor에서 실제 UART Lite Base Address를 확인했다.</li>
+<li>RX FIFO +0x00, TX FIFO +0x04, STATUS +0x08, CONTROL +0x0C를 구분한다.</li>
+<li>RX/TX FIFO가 각각 16-character 깊이임을 이해한다.</li>
+<li>Status bit0과 bit3의 의미를 이해한다.</li>
+<li>FIFO Clear를 위해 Control bit1/bit0을 사용했다.</li>
+<li>XSA와 Vitis Platform을 갱신했다.</li>
+<li>Terminal을 115200 8N1, Flow Control Off, Local Echo Off로 설정했다.</li>
+<li>PC 입력 Byte를 RX FIFO에서 읽고 TX FIFO로 다시 썼다.</li>
+<li>실제 보드 실행에서 Echo 결과를 확인했다.</li>
 </ul>
 <div class="flow">SoC 07 완료 → SoC 08 AXI Timer</div></section>
 
