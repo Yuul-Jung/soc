@@ -40,6 +40,15 @@
 
 ## 4. Vivado·Vitis GUI 실습
 
+### 모든 장 시작 시 기존 프로젝트 인계 순서를 표시한다
+
+- 첫 SECTION에 **출발 원본 `.xpr` → 새 프로젝트 `.xpr` → Design Sources의 기존 `.bd` → 새 `.bd` → 새 HDL Wrapper / Set as Top → 기존 Wrapper Remove from Project → IP Status → 신규 IP 추가** 흐름을 명시한다.
+- 실제 GUI 캡처가 이미 있으면 당시의 성공 화면과 작업 순서로 교재를 복원한다. **사용자에게 같은 지시나 캡처를 반복 요청하지 않는다.**
+- `File → Project → Save As`는 프로젝트 복제이고, **`File → Save Block Design As`와 `Create HDL Wrapper`는 별도의 단계**다. 프로젝트명만 바뀌었다고 Design Sources까지 정리됐다고 쓰지 않는다.
+- 원래 Wrapper는 **Remove File from Project**로만 정리하고 **Delete files from disk**는 선택하지 않는다. 공유 XDC·Block Design 파일 경로도 확인하여 이전 장 원본을 수정하지 않는다.
+- 예시: 06장은 `soc01_microblaze_bram.xpr` → `soc06_axi_gpio.xpr`, `soc01_mb_bram.bd` → `soc06_axi_gpio.bd`, `soc06_axi_gpio_wrapper` 생성 후 Top 지정, 기존 IP 9개 Up-to-date 확인, 다음에 AXI GPIO를 추가했다.
+- 07장은 성공한 `soc06_axi_gpio.xpr`에서 출발해 별도 `soc07_axi_uartlite.xpr`, `soc07_axi_uartlite.bd`, `soc07_axi_uartlite_wrapper`를 준비하는 순서로 안내한다. 해당 장에서 실제 검증하기 전까지 예정 절차를 성공 기록으로 표시하지 않는다.
+
 - 검증된 성공 프로젝트의 HW/SW 프로젝트, XSA·ELF·코드를 임의로 삭제·이동하거나 덮어쓰지 않는다.
 - 이전 장과 연결되는 실습은 성공 Block Design·Clock·Reset·BRAM·AXI 설정을 보존한다. 회로 구성이 바뀌면 `/home/jung/soc/hw/socNN_...`으로 새 프로젝트를 만들어 분리하고, 이전 프로젝트 소스를 참조하여 함께 수정하는 위험이 없는지 점검한다.
 - IP 이름, 실제 핀·포트, AXI 클록·리셋, Address Editor 주소, XDC, wrapper, `xparameters.h`를 실제 GUI에서 확인한 값으로 적는다. **예시 주소나 포트 이름을 실측 성공값처럼 확정하지 않는다.**
