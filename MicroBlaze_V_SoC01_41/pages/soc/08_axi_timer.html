@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
-<meta content="Basys3 MicroBlaze V SoC에 AXI Timer를 추가하여 100 MHz Clock 기준 0.5초 Polling Timer와 AXI GPIO LED Blink를 구현하는 실습 자료." name="description">
-<title>SoC 08 · AXI Timer</title><style>
+<meta content="Vivado/Vitis 2024.2에서 07장 SoC를 복제하고 AXI Timer 추가, 0.5초 LED 점멸 프로그램을 따라 하는 절차형 실습서." name="description">
+<title>SoC 08 · AXI Timer | 단계별 따라하기</title><style>
 
 :root{
   --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
@@ -204,206 +204,141 @@ main[tabindex="-1"]:focus{outline:none}
 <div class="hero-brief"><article><h2>Timer</h2><p>100 MHz Clock을 50,000,000회 세어 약 0.5초를 만든다.</p></article><article><h2>CPU</h2><p>Timer 만료 Flag를 Polling으로 확인한다.</p></article><article><h2>LED</h2><p>만료할 때마다 LED0를 반전해 약 1초 Blink 주기를 만든다.</p></article></div>
 </div></header>
 
-<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html" selected>SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc08_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc08">이 장 검증</a></div></div><p class="nav-title">SOC 08 · LEARNING FLOW</p><p class="nav-help">Clock → Counter → Expire → CPU → LED</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>실습 목표</span></a></li>
-<li><a href="#s02"><span class="n">02</span><span>기존 SoC에 Timer 추가</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>AXI Timer 내부 구조</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>두 개의 32-bit Timer</span></a></li>
-<li><a href="#s05"><span class="n">05</span><span>Clock와 Prescaler</span></a></li>
-<li><a href="#s06"><span class="n">06</span><span>Timer Mode</span></a></li>
-<li><a href="#s07"><span class="n">07</span><span>IP 추가</span></a></li>
-<li><a href="#s08"><span class="n">08</span><span>AXI 연결</span></a></li>
-<li><a href="#s09"><span class="n">09</span><span>Address Editor</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>Register Map</span></a></li>
-<li><a href="#s11"><span class="n">11</span><span>TCSR0 핵심 비트</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>TLR0 · TCR0</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>0.5초 계산</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>Auto Reload</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>Polling 만료 확인</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>LED Toggle 구조</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>XDC 유지</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>XSA · Vitis 갱신</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>Timer + GPIO 프로그램</span></a></li>
-<li><a href="#s20"><span class="n">20</span><span>Driver API와 Register</span></a></li>
-<li><a href="#s21"><span class="n">21</span><span>실행 순서</span></a></li>
-<li><a href="#s22"><span class="n">22</span><span>눈으로 확인하는 결과</span></a></li>
-<li><a href="#s23"><span class="n">23</span><span>Debugger 확인</span></a></li>
-<li><a href="#s24"><span class="n">24</span><span>AXI Transaction 추적</span></a></li>
-<li><a href="#s25"><span class="n">25</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">26</span><span>완료 체크리스트</span></a></li>
-<li><a href="#sources"><span class="n">27</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside>
+<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html" selected>SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc08_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc08">이 장 검증</a></div></div><p class="nav-title">SOC 08 · LEARNING FLOW</p><p class="nav-help">07장 복제 → Timer 추가 → 0.5초 LED 확인</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>실습 범위</span></a></li>
+<li><a href="#s02"><span class="n">02</span><span>07장 프로젝트 확인</span></a></li>
+<li><a href="#s03"><span class="n">03</span><span>08장 Project Save As</span></a></li>
+<li><a href="#s04"><span class="n">04</span><span>Block Design Save As</span></a></li>
+<li><a href="#s05"><span class="n">05</span><span>AXI Timer IP 추가</span></a></li>
+<li><a href="#s06"><span class="n">06</span><span>AXI·Clock·Reset 연결</span></a></li>
+<li><a href="#s07"><span class="n">07</span><span>Address Editor·Validate</span></a></li>
+<li><a href="#s08"><span class="n">08</span><span>Wrapper·XDC</span></a></li>
+<li><a href="#s09"><span class="n">09</span><span>Bitstream 생성</span></a></li>
+<li><a href="#s10"><span class="n">10</span><span>XSA 내보내기</span></a></li>
+<li><a href="#s11"><span class="n">11</span><span>Vitis Platform</span></a></li>
+<li><a href="#s12"><span class="n">12</span><span>Vitis Application</span></a></li>
+<li><a href="#s13"><span class="n">13</span><span>main.c 작성</span></a></li>
+<li><a href="#s14"><span class="n">14</span><span>Build·Program·Run</span></a></li>
+<li><a href="#s15"><span class="n">15</span><span>Debugger Watch</span></a></li>
+<li><a href="#s16"><span class="n">16</span><span>LED0 관찰</span></a></li>
+<li><a href="#s17"><span class="n">17</span><span>오류 점검</span></a></li>
+<li><a href="#s18"><span class="n">18</span><span>Timer 내부 구조</span></a></li>
+<li><a href="#s19"><span class="n">19</span><span>Timer Register</span></a></li>
+<li><a href="#s20"><span class="n">20</span><span>0.5초 계산</span></a></li>
+<li><a href="#s21"><span class="n">21</span><span>Polling 동작</span></a></li>
+<li><a href="#s22"><span class="n">22</span><span>Driver API</span></a></li><li><a href="#summary"><span class="n">23</span><span>실습 결과 정리</span></a></li><li><a href="#sources"><span class="n">24</span><span>공식 문서·출처</span></a></li></ol></aside>
 <main id="main-content" tabindex="-1">
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage">SoC 07 AXI UART Lite</span><span class="arrow">→</span><span class="stage"><strong>SoC 08 AXI Timer</strong></span><span class="arrow">→</span><span class="stage">SoC 09 AXI Interrupt Controller</span></div></div>
 
-<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>실습 목표</h2>
-<div class="flow">100 MHz Clock → AXI Timer → 0.5초 만료 → MicroBlaze V Polling → AXI GPIO → LED0 Toggle</div>
-<p>LED0는 0.5초마다 상태가 바뀐다. 따라서 OFF 0.5초 → ON 0.5초 → OFF 0.5초로 반복되며 한 번의 완전한 ON/OFF Cycle은 약 1초이다.</p></section>
+<section class="step-card" id="s01"><span class="step">절차 01</span><h2>08장 실습 결과와 진행 범위</h2>
 
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>기존 SoC에 Timer 추가</h2>
-<p>SoC 06의 AXI GPIO와 SoC 07의 AXI UART Lite는 그대로 유지하고 <code>axi_timer_0</code>만 추가한다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="02절 신호 및 실행 흐름">MicroBlaze V
-   │
-   ▼
-SmartConnect
-   ├─ AXI GPIO ──────▶ LED[15:0]
-   ├─ AXI UART Lite ─▶ PC Terminal
-   └─ AXI Timer
-          │
-          └─ Polling으로 만료 상태 확인</div>
-<p>Timer에는 별도의 외부 FPGA Pin이 필요하지 않는다.</p></section>
+<p>07장의 <strong>MicroBlaze V + BRAM + AXI GPIO + AXI UART Lite</strong> 성공 구성을 복제하여, <code>axi_timer_0</code>만 추가한다. Timer 0의 만료를 CPU가 <strong>Polling(폴링, 주기적으로 상태를 읽는 방식)</strong>으로 확인하고 LED0를 0.5초마다 반전한다.</p>
+<div class="flow">07장 프로젝트 복제 → AXI Timer 추가 → AXI 연결 → 주소 할당 → Bitstream → XSA → Vitis 프로그램 → LED0 확인</div>
+<div class="note">LED0는 0.5초마다 ON/OFF 상태가 바뀌며 전체 점멸 주기는 약 1초이다. 인터럽트 컨트롤러 구성은 09장에서 진행한다. 아래 화면 확인 기준은 실습 지침이며, 실제 보드 성공 판정은 측정·스크린샷 확인 후에 한다.</div>
+</section>
 
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI Timer 내부 구조</h2>
-<figure class="manual-figure"><a href="../../images/soc08/pg079_axi_timer_block.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI Timer internal block diagram · 원본 보기 (새 탭)"><img src="../../images/soc08/pg079_axi_timer_block.svg" alt="AXI Timer internal block diagram">
-</a><figcaption>AMD PG079 Functional Description의 Block Diagram을 기준으로 재작성한 구조도.
-<span class="figure-source">원문: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description" target="_blank" rel="noopener">AMD PG079 · Functional Description</a></span><br><a href="../../images/soc08/pg079_axi_timer_block.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI Timer internal block diagram · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<p>AXI Timer는 AXI4-Lite Slave Interface와 두 개의 Timer/Counter Module을 가진다. 각 Timer는 Load Register, Counter Register, Control/Status Register를 갖는다.</p><p>MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 <code>xparameters.h</code>의 심볼을 사용한다.</p></section>
+<section class="step-card" id="s02"><span class="step">절차 02</span><h2>시작 화면 — 07장 프로젝트 점검</h2>
 
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>두 개의 32-bit Timer</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="두 개의 32-bit Timer · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구분</th><th scope="col" role="columnheader">Timer 0</th><th scope="col" role="columnheader">Timer 1</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="구분" role="cell">Control/Status</td><td data-label="Timer 0" role="cell"><code>TCSR0</code></td><td data-label="Timer 1" role="cell"><code>TCSR1</code></td></tr>
-<tr role="row"><td data-label="구분" role="cell">Load</td><td data-label="Timer 0" role="cell"><code>TLR0</code></td><td data-label="Timer 1" role="cell"><code>TLR1</code></td></tr>
-<tr role="row"><td data-label="구분" role="cell">Counter</td><td data-label="Timer 0" role="cell"><code>TCR0</code></td><td data-label="Timer 1" role="cell"><code>TCR1</code></td></tr>
-<tr role="row"><td data-label="구분" role="cell">SoC 08</td><td data-label="Timer 0" role="cell"><strong>사용</strong></td><td data-label="Timer 1" role="cell">미사용</td></tr>
-</tbody></table></div>
-<p>두 Counter를 Cascade하면 64-bit Counter로 사용할 수 있지만 이번 장에서는 Timer 0 하나만 사용한다.</p></section>
+<p>Vivado 2024.2에서 07장 성공 프로젝트를 열어 현재 구성과 실제 파일 경로를 확인한다.</p>
+<ol class="step-seq"><li><h3>프로젝트 열기</h3><p>File → Open Project에서 <code>/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code>을 선택한다.</p></li>
+<li><h3>Block Design 열기</h3><p>Sources → Design Sources에서 <code>soc07_axi_uartlite.bd</code>를 열고 <code>microblaze_riscv_0</code>, <code>axi_gpio_0</code>, <code>axi_uartlite_0</code>, 기존 AXI 연결을 확인한다.</p></li>
+<li><h3>클록·XDC 확인</h3><p>07장에서 사용한 AXI 주변장치 클록 주파수, Reset 연결, Basys3 LED 및 UART XDC가 정상인지 확인한다.</p></li></ol>
+<div class="note">확인 화면: 07장 AXI GPIO와 UART Lite가 함께 보이는 Block Design. 07장 원본이 정상인지 확인하기 전에는 구조를 변경하지 않는다.</div>
+</section>
 
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Clock와 Prescaler</h2>
-<p>PG079는 Timer Module의 Clock Rate가 <code>s_axi_aclk</code>이며 별도의 Prescaling을 하지 않는다고 설명한다. 현재 시스템 Clock은 100 MHz이므로 Timer도 100 MHz를 직접 센다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="05절 신호 및 실행 흐름">100 MHz
-→ 1 Clock = 10 ns
-→ 100,000,000 Clocks = 1 s
-→ 50,000,000 Clocks  = 0.5 s</div></section>
+<section class="step-card" id="s03"><span class="step">절차 03</span><h2>프로젝트 복제 — 08장 Save As</h2>
 
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Timer Mode</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Timer Mode · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Mode</th><th scope="col" role="columnheader">기능</th><th scope="col" role="columnheader">SoC 08</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Mode" role="cell">Generate</td><td data-label="기능" role="cell">설정한 시간 간격 만료 생성</td><td data-label="SoC 08" role="cell"><strong>사용</strong></td></tr>
-<tr role="row"><td data-label="Mode" role="cell">Capture</td><td data-label="기능" role="cell">외부 Event 시 Counter 값 저장</td><td data-label="SoC 08" role="cell">미사용</td></tr>
-<tr role="row"><td data-label="Mode" role="cell">PWM</td><td data-label="기능" role="cell">Timer 0/1을 이용한 PWM 생성</td><td data-label="SoC 08" role="cell">미사용</td></tr>
-<tr role="row"><td data-label="Mode" role="cell">Cascade</td><td data-label="기능" role="cell">두 Counter를 64-bit로 결합</td><td data-label="SoC 08" role="cell">미사용</td></tr>
-</tbody></table></div>
-<p>이번 장은 Generate + Down Count + Auto Reload로 구성한다.</p></section>
+<ol class="step-seq"><li><h3>Save As 메뉴</h3><p>07장 프로젝트가 열린 상태에서 File → Project → Save As(다른 이름으로 저장)를 실행한다.</p></li>
+<li><h3>새 이름과 폴더</h3><p>프로젝트 이름에 <code>soc08_axi_timer</code>를 지정하고 최종 경로가 <code>/home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xpr</code>이 되도록 폴더를 지정한다.</p></li>
+<li><h3>복제된 파일 확인</h3><p>저장 후 Vivado 상단 프로젝트 이름과 Project Location을 확인하여 08장 프로젝트로 전환되었는지 확인한다.</p></li></ol>
+<div class="note">07장 원본 <code>soc07_axi_uartlite.xpr</code>은 수정하거나 삭제하지 않는다. 화면 확인: 새로 열린 08장 프로젝트 이름과 경로.</div>
+</section>
 
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>IP 추가</h2>
-<ol class="step-seq">
-<li><h3>Add IP</h3><p>Vivado Block Design에서 <strong>AXI Timer</strong>를 추가한다.</p></li>
-<li><h3>Instance</h3><p>기본 이름 <code>axi_timer_0</code>을 사용한다.</p></li>
-<li><h3>Timer Width</h3><p>32-bit 기본 Counter를 사용한다.</p></li>
-<li><h3>Interrupt</h3><p>IP의 Interrupt Port는 생성될 수 있지만 SoC 08에서는 CPU Interrupt 경로에 연결하지 않는다.</p></li>
-</ol></section>
+<section class="step-card" id="s04"><span class="step">절차 04</span><h2>Block Design 복제 — 이름과 Top 분리</h2>
 
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>AXI 연결</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="08절 신호 및 실행 흐름">MicroBlaze V M_AXI
-      │
-      ▼
-SmartConnect
-      │
-      ▼
-axi_timer_0/S_AXI
+<ol class="step-seq"><li><h3>Block Design Save As</h3><p>08장 프로젝트 안의 기존 <code>soc07_axi_uartlite.bd</code>를 열고 File → Save Block Design As를 선택한다.</p></li>
+<li><h3>08장 BD 만들기</h3><p>새 이름은 <code>soc08_axi_timer</code>로 입력하고 프로젝트 내부(Local to Project)에 저장한다. 가능한 경우 Add to Design Sources를 선택한다.</p></li>
+<li><h3>기존 IP 확인</h3><p>새 <code>soc08_axi_timer.bd</code>에 07장의 MicroBlaze V, BRAM, AXI GPIO, UART Lite 및 Clock/Reset이 유지됐는지 확인한다.</p></li>
+<li><h3>Wrapper는 연결 완료 후</h3><p>새 BD의 AXI Timer와 연결을 완료한 뒤 Sources에서 Create HDL Wrapper를 실행하고 Let Vivado manage wrapper and auto-update를 선택한다. <code>soc08_axi_timer_wrapper</code>를 Set as Top으로 설정한다.</p></li></ol>
+<div class="note">이전 Wrapper를 디스크에서 삭제하지 않는다. 새 Wrapper가 생성되고 Top으로 지정된 뒤 필요 시 프로젝트 목록에서만 옛 Wrapper를 정리한다.</div>
+</section>
 
-clk_wiz/clk_out1 ─────────────▶ s_axi_aclk
-proc_sys_reset/peripheral_aresetn ─▶ s_axi_aresetn</div>
-<p>Timer는 AXI4-Lite Slave이므로 SoC 05에서 배운 Memory-Mapped Read/Write 방식으로 Register를 제어한다.</p></section>
+<section class="step-card" id="s05"><span class="step">절차 05</span><h2>AXI Timer IP 추가 및 설정</h2>
 
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Address Editor</h2>
-<p><code>axi_timer_0/S_AXI</code>에 실제 Base Address를 할당한다. 문서나 C 코드에 임의 주소를 고정하지 않고, Vivado가 생성한 XSA와 <code>xparameters.h</code>의 Macro를 사용한다.</p>
-<div class="flow">Address Editor → AXI Timer Base → XSA → xparameters.h → XTmrCtr Driver</div></section>
+<ol class="step-seq"><li><h3>IP 추가</h3><p>08장 Block Design의 빈 공간을 우클릭하고 Add IP → <strong>AXI Timer</strong>를 검색하여 삽입한다.</p></li>
+<li><h3>IP 인스턴스 확인</h3><p>블록 이름 <code>axi_timer_0</code>을 확인하고, 두 번 클릭하여 Customize IP 설정 창을 연다.</p></li>
+<li><h3>타이머 설정</h3><p>Counter Width는 32-bit를 사용하며 Timer 0의 Generate Mode + Down Count + Auto Reload는 C 드라이버에서 지정한다. IP에 제공되는 선택 항목은 실제 창의 기본값과 비교한다.</p></li>
+<li><h3>Interrupt 미사용</h3><p>이번 장에서는 <code>interrupt</code> 출력 신호를 MicroBlaze V에 연결하지 않는다. 인터럽트 방식은 09장에서 다룬다.</p></li></ol>
+<div class="note">화면 확인: 기존 GPIO/UART Lite 블록이 그대로 있고 <code>axi_timer_0</code> 블록이 한 개만 추가된 상태.</div>
+</section>
 
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Register Map</h2>
-<figure class="manual-figure"><a href="../../images/soc08/pg079_timer_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI Timer register map · 원본 보기 (새 탭)"><img src="../../images/soc08/pg079_timer_register_map.svg" alt="AXI Timer register map">
-</a><figcaption>AMD PG079 Register Space Table 1 기준 재작성.
-<span class="figure-source">원문: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space" target="_blank" rel="noopener">AMD PG079 · Register Space</a></span><br><a href="../../images/soc08/pg079_timer_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI Timer register map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x00</code></td><td data-label="Register" role="cell"><code>TCSR0</code></td><td data-label="역할" role="cell">Timer 0 Control / Status</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x04</code></td><td data-label="Register" role="cell"><code>TLR0</code></td><td data-label="역할" role="cell">Timer 0 Load Value</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x08</code></td><td data-label="Register" role="cell"><code>TCR0</code></td><td data-label="역할" role="cell">Timer 0 현재 Counter</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x10</code></td><td data-label="Register" role="cell"><code>TCSR1</code></td><td data-label="역할" role="cell">Timer 1 Control / Status</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x14</code></td><td data-label="Register" role="cell"><code>TLR1</code></td><td data-label="역할" role="cell">Timer 1 Load Value</td></tr>
-<tr role="row"><td data-label="Offset" role="cell"><code>+0x18</code></td><td data-label="Register" role="cell"><code>TCR1</code></td><td data-label="역할" role="cell">Timer 1 현재 Counter</td></tr>
-</tbody></table></div></section>
+<section class="step-card" id="s06"><span class="step">절차 06</span><h2>AXI·Clock·Reset 포트 연결</h2>
 
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>TCSR0 핵심 비트</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="TCSR0 핵심 비트 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">이름</th><th scope="col" role="columnheader">SoC 08</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="Bit" role="cell">8</td><td data-label="이름" role="cell"><code>T0INT</code></td><td data-label="SoC 08" role="cell">Timer 만료 Event Flag · Write 1 to Clear</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">7</td><td data-label="이름" role="cell"><code>ENT0</code></td><td data-label="SoC 08" role="cell">Timer Enable</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">6</td><td data-label="이름" role="cell"><code>ENIT0</code></td><td data-label="SoC 08" role="cell">Interrupt Output Enable · <strong>0</strong></td></tr>
-<tr role="row"><td data-label="Bit" role="cell">5</td><td data-label="이름" role="cell"><code>LOAD0</code></td><td data-label="SoC 08" role="cell">TLR0 값을 TCR0에 Load</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="이름" role="cell"><code>ARHT0</code></td><td data-label="SoC 08" role="cell">Auto Reload</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="이름" role="cell"><code>UDT0</code></td><td data-label="SoC 08" role="cell">1 = Down Count</td></tr>
-<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="이름" role="cell"><code>MDT0</code></td><td data-label="SoC 08" role="cell">0 = Generate Mode</td></tr>
-</tbody></table></div></section>
+<ol class="step-seq"><li><h3>AXI 데이터 경로</h3><p><code>microblaze_riscv_0/M_AXI_DP</code>의 기존 AXI Master 경로를 유지하면서 AXI SmartConnect에 <code>axi_timer_0/S_AXI</code>를 연결한다. 07장의 GPIO/UART 연결을 제거하지 않는다.</p></li>
+<li><h3>Clock 연결</h3><p><code>axi_timer_0/s_axi_aclk</code>를 다른 AXI 주변장치가 사용 중인 동일한 AXI Clock Net에 연결한다. <strong>실제 연결 Net의 주파수가 100 MHz인지</strong> 확인한다.</p></li>
+<li><h3>Reset 연결</h3><p><code>axi_timer_0/s_axi_aresetn</code>에 기존 <code>peripheral_aresetn</code>을 연결한다. <code>aresetn</code>은 Active-Low(0일 때 리셋)이다.</p></li>
+<li><h3>자동 연결 후 재확인</h3><p>Connection Automation을 사용했다면 Timer S_AXI, Clock, Reset이 의도한 기존 경로로 연결됐는지 선을 따라 확인한다.</p></li></ol>
+<div class="flow">MicroBlaze V / M_AXI_DP → 기존 AXI SmartConnect → axi_timer_0 / S_AXI</div>
+<div class="note">다른 Clock Domain을 새로 만들지 않는다. IP/포트의 실제 인스턴스 접두사는 복제된 07장 화면에서 확인한다.</div>
+</section>
 
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>TLR0 · TCR0</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="12절 신호 및 실행 흐름">TLR0
- │  시작값 저장
- ▼
-LOAD
- │
- ▼
-TCR0
-49,999,998
-49,999,997
-49,999,996
-...
-2
-1
-0
- │
- ▼
-Timer Expired
- │
- └─ Auto Reload → 다시 TLR0 값부터 Down Count</div></section>
+<section class="step-card" id="s07"><span class="step">절차 07</span><h2>Address Editor와 Validate Design</h2>
 
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>0.5초 계산</h2>
-<p>PG079의 32-bit Down-count Generate Mode 식을 그대로 사용한다.</p>
-<div class="signal-map" tabindex="0" role="region" aria-label="13절 신호 및 실행 흐름">TIMING_INTERVAL = (TLR0 + 2) × AXI_CLOCK_PERIOD
+<ol class="step-seq"><li><h3>주소 할당</h3><p>Block Design의 Address Editor 탭을 열어 <code>axi_timer_0/S_AXI</code> 주소 세그먼트를 찾는다. 비할당(Unassigned) 상태라면 Assign All 또는 해당 세그먼트의 주소 할당 기능을 실행한다.</p></li>
+<li><h3>주소 기록</h3><p>자동 배정된 Timer Base Address와 Range를 실제 화면에 나온 값 그대로 기록한다. 07장 GPIO/UART Lite의 주소와 겹치지 않는지 확인한다.</p></li>
+<li><h3>설계 검사</h3><p>Block Design의 Tools → Validate Design 또는 상단 Validate Design을 실행한다. 오류가 있다면 먼저 Clock/Reset/AXI 연결을 확인한다.</p></li>
+<li><h3>저장</h3><p>Validation이 통과하면 Ctrl+S로 08장 Block Design을 저장한다.</p></li></ol>
+<div class="note">Timer Base Address는 예시 값을 고정하지 않는다. 실제 주소는 08장 XSA와 Vitis의 <code>xparameters.h</code>에서 다시 확인한다.</div>
+</section>
 
-AXI_CLOCK_PERIOD = 10 ns
-목표 시간 = 0.5 s = 500,000,000 ns
+<section class="step-card" id="s08"><span class="step">절차 08</span><h2>HDL Wrapper·Top·XDC 확인</h2>
 
-500,000,000 ns
-= (TLR0 + 2) × 10 ns
+<ol class="step-seq"><li><h3>Wrapper 생성/갱신</h3><p>새 <code>soc08_axi_timer.bd</code>에서 Create HDL Wrapper가 완료되었는지 확인하고 <code>soc08_axi_timer_wrapper</code>를 Set as Top으로 지정한다.</p></li>
+<li><h3>포트 비교</h3><p>07장에서 사용한 Clock, Reset, Switch, LED, UART RX/TX 포트가 새 Wrapper에도 그대로 나오는지 확인한다.</p></li>
+<li><h3>XDC 유지</h3><p>기존 Basys3 Clock·Reset·Switch·LED·UART XDC를 그대로 사용한다. Timer는 FPGA 내부 IP이므로 신규 외부 Pin 제약은 추가하지 않는다.</p></li>
+<li><h3>참조 파일 검사</h3><p>Sources → Constraints에서 08장에 연결된 XDC 파일이 올바른 경로인지 확인한다. 07장 파일을 수정하는 방식은 피한다.</p></li></ol>
+<div class="note">이미 Wrapper를 생성했다면 중복 생성하지 않는다. 확인 화면: 08장 Wrapper가 Top으로 표시되고 기존 외부 포트가 유지됨.</div>
+</section>
 
-TLR0 + 2 = 50,000,000
+<section class="step-card" id="s09"><span class="step">절차 09</span><h2>Bitstream 생성</h2>
 
-TLR0 = 49,999,998
-     = 0x02FAF07E</div>
-<p>따라서 코드의 <code>TIMER_RESET_VALUE</code>는 <code>49,999,998</code>이다.</p></section>
+<ol class="step-seq"><li><h3>설계 저장</h3><p>새 프로젝트와 Block Design의 변경 사항을 저장한다.</p></li>
+<li><h3>Generate Bitstream</h3><p>Flow Navigator → PROGRAM AND DEBUG → Generate Bitstream을 클릭한다. Vivado가 필요 시 Synthesis, Implementation을 순서대로 실행한다.</p></li>
+<li><h3>완료 상태 확인</h3><p>Bitstream 생성 완료와 Error 0건을 확인하고 Messages의 Critical Warning은 원인을 확인한다.</p></li>
+<li><h3>산출물 확인</h3><p>08장 프로젝트의 새 Wrapper에 대한 <code>.bit</code>가 생성되었는지 확인한다.</p></li></ol>
+<div class="note">이전 07장의 Bitstream 성공은 08장의 성공을 뜻하지 않는다. 08장 Bitstream이 실제 생성되어야 다음 단계로 진행한다.</div>
+</section>
 
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Auto Reload</h2>
-<figure class="manual-figure"><a href="../../images/soc08/timer_500ms_led_toggle.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="500 ms timer and LED toggle timing · 원본 보기 (새 탭)"><img src="../../images/soc08/timer_500ms_led_toggle.svg" alt="500 ms timer and LED toggle timing">
-</a><figcaption>0.5초 만료 때마다 Auto Reload되고 LED0를 반전하는 실습 흐름.<br><a href="../../images/soc08/timer_500ms_led_toggle.svg" target="_blank" rel="noopener" class="figure-original" aria-label="500 ms timer and LED toggle timing · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
-<p><code>XTC_AUTO_RELOAD_OPTION</code>을 사용하면 Counter가 만료된 뒤 Load Value를 다시 불러와 반복 Count한다.</p></section>
+<section class="step-card" id="s10"><span class="step">절차 10</span><h2>Bitstream 포함 XSA 내보내기</h2>
 
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>Polling 만료 확인</h2>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Polling 만료 확인 · 소스 코드"><code>if (XTmrCtr_IsExpired(&amp;Timer, TIMER0)) {
-    clear_timer_expired();
+<ol class="step-seq"><li><h3>Export Hardware</h3><p>Vivado 2024.2에서 File → Export → Export Hardware를 실행한다.</p></li>
+<li><h3>Include Bitstream</h3><p>하드웨어 내보내기 창에서 Include Bitstream을 선택한다.</p></li>
+<li><h3>08장 XSA 저장</h3><p>파일 이름과 경로를 <code>/home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xsa</code>로 지정한다.</p></li>
+<li><h3>파일 검증</h3><p>내보내기 완료 후 생성된 파일의 이름과 위치가 맞는지 확인한다.</p></li></ol>
+<div class="note">07장의 XSA는 덮어쓰지 않는다. 08장 XSA는 08장 Bitstream을 포함해야 한다.</div>
+</section>
 
-    expire_count++;
+<section class="step-card" id="s11"><span class="step">절차 11</span><h2>Vitis Unified IDE — 08장 Platform 생성</h2>
 
-    led_state ^= LED0_MASK;
-    XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
-}</code></pre>
-<p><code>XTmrCtr_IsExpired()</code>는 TCSR0의 만료 Event Flag를 Polling한다. Interrupt 출력은 활성화하지 않는다.</p></section>
+<ol class="step-seq"><li><h3>Workspace 열기</h3><p>Vitis Unified IDE 2024.2의 기존 Workspace <code>/home/jung/soc/sw</code>를 연다.</p></li>
+<li><h3>새 Platform</h3><p>File → New Component → Platform을 선택한다. 새 Platform 이름은 <code>soc08_axi_timer_platform</code>으로 지정한다.</p></li>
+<li><h3>하드웨어 선택</h3><p>Hardware Specification으로 <code>/home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xsa</code>를 선택한다.</p></li>
+<li><h3>Processor/Domain 확인</h3><p>Processor를 <code>microblaze_riscv_0</code>, OS를 <code>standalone</code>으로 선택한다. 제시되는 Domain을 확인하고 Platform을 생성한다.</p></li>
+<li><h3>Platform Build</h3><p>새 08장 Platform을 Build한 뒤 BSP에 <code>gpio</code>와 <code>tmrctr</code> 드라이버가 포함됐는지 확인한다.</p></li></ol>
+<div class="note">06·07장 성공 Platform을 새 XSA로 덮어쓰지 않는다. 이미 08장 Platform을 만든 경우에만 2024.2의 <code>vitis-comp.json → Switch XSA</code>로 새 XSA를 반영한다.</div>
+</section>
 
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>LED Toggle 구조</h2>
-<div class="signal-map" tabindex="0" role="region" aria-label="16절 신호 및 실행 흐름">LED0 OFF : led_state = 0x00000000
-          ↓ 0.5 s
-LED0 ON  : led_state = 0x00000001
-          ↓ 0.5 s
-LED0 OFF : led_state = 0x00000000
-          ↓
-         반복</div>
-<p>비트 XOR 연산 <code>led_state ^= 0x1</code>로 LED0만 반전한다.</p></section>
+<section class="step-card" id="s12"><span class="step">절차 12</span><h2>08장 Application 생성과 코드 위치</h2>
 
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>XDC 유지</h2>
-<p>AXI Timer 자체는 외부 Pin이 없다. LED 출력은 기존 SoC 06 AXI GPIO를 그대로 사용하므로 기존 Basys3 Switch/LED XDC를 유지한다.</p>
-<div class="flow">Timer = 내부 IP · 신규 XDC 없음 → LED0 = 기존 AXI GPIO/XDC 사용</div></section>
+<ol class="step-seq"><li><h3>Application 생성</h3><p>File → New Component → Application을 실행한다. 이름은 <code>soc08_axi_timer_blink</code>로 지정한다.</p></li>
+<li><h3>Platform 선택</h3><p>방금 만든 <code>soc08_axi_timer_platform</code>과 <code>standalone_microblaze_riscv_0</code> Domain(실제 표시명 확인)을 지정한다.</p></li>
+<li><h3>main.c 편집</h3><p>Application의 Sources에서 <code>main.c</code>를 열고 다음 절차 13의 C 코드를 입력한다.</p></li>
+<li><h3>주소 Macro 확인</h3><p>08장 Platform의 <code>xparameters.h</code>에서 <code>XTMRCTR</code>·<code>XGPIO</code> 관련 이름을 확인한 뒤 C 코드의 Classic/SDT 분기에 맞춰 컴파일한다.</p></li></ol>
+<div class="note">코드에서 사용할 주소 매크로는 생성된 BSP가 기준이다. 07장 소프트웨어 Application은 수정하지 않는다.</div>
+</section>
 
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>XSA · Vitis 갱신</h2>
-<div class="flow">AXI Timer 추가 → Validate → Bitstream → Export XSA → Vitis Platform Update → BSP Regenerate → Build</div>
-<p>Vitis의 <code>xparameters.h</code>에서 Timer Instance Macro가 생성되었는지 확인한다. Classic Flow는 <code>XPAR_TMRCTR_0_DEVICE_ID</code>, SDT Flow는 <code>XPAR_XTMRCTR_0_BASEADDR</code> 형태를 사용한다.</p></section>
+<section class="step-card" id="s13"><span class="step">절차 13</span><h2>main.c — AXI Timer + AXI GPIO 코드</h2>
 
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Timer + GPIO 프로그램</h2>
-<p>아래 코드는 SoC 08 실습을 위해 작성한 교육용 코드이며 Timer Driver API는 AMD embeddedsw의 Polling Example과 현재 Driver 정의를 기준으로 사용한다.</p>
+<p>07장 UART 통신 기능은 하드웨어에 그대로 두고, 08장 Application은 Timer 만료 때 LED0만 반전한다. 다음 코드는 실제 보드에서 아직 검증하지 않은 <strong>실습용 코드</strong>이다.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="Timer + GPIO 프로그램 · 소스 코드"><code>#include "xparameters.h"
 #include "xtmrctr.h"
 #include "xgpio.h"
@@ -531,6 +466,9 @@ int main(void)
         return XST_FAILURE;
     }
 
+    /* GPIO Channel 1을 LED 출력으로 설정: 0은 출력, 1은 입력 */
+    XGpio_SetDataDirection(&amp;Gpio, LED_CHANNEL, 0x0000U);
+
     /* LED0 initially OFF */
     XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
 
@@ -551,28 +489,36 @@ int main(void)
 
     return XST_SUCCESS;
 }
-</code></pre></section>
+</code></pre>
+<div class="note">06장 코드와 마찬가지로 <code>XGpio_SetDataDirection(&amp;Gpio, LED_CHANNEL, 0x0000U)</code>을 추가해 LED Channel을 출력으로 설정했다. 생성된 드라이버 심볼과 실제 AXI 클록이 100 MHz인지 확인한 뒤 Build한다.</div>
+</section>
 
-<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Driver API와 Register</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Driver API와 Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">API</th><th scope="col" role="columnheader">Hardware 동작</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetResetValue()</code></td><td data-label="Hardware 동작" role="cell"><code>TLR0</code>에 시작값 설정</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetOptions()</code></td><td data-label="Hardware 동작" role="cell">TCSR0의 Down Count / Auto Reload 등 설정</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_Start()</code></td><td data-label="Hardware 동작" role="cell">Timer Enable 후 Count 시작</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_GetValue()</code></td><td data-label="Hardware 동작" role="cell"><code>TCR0</code> 현재값 Read</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_IsExpired()</code></td><td data-label="Hardware 동작" role="cell">TCSR0의 Event Flag 확인</td></tr>
-<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetControlStatusReg()</code></td><td data-label="Hardware 동작" role="cell">T0INT에 1을 써서 만료 Flag Clear</td></tr>
-</tbody></table></div></section>
+<section class="step-card" id="s14"><span class="step">절차 14</span><h2>Application Build · FPGA Program · Run</h2>
 
-<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>실행 순서</h2>
-<ol class="step-seq">
-<li><h3>Vivado</h3><p>AXI Timer를 추가하고 Address Editor에서 주소를 할당한다.</p></li>
-<li><h3>Bitstream</h3><p>Validate → Synthesis → Implementation → Bitstream을 생성한다.</p></li>
-<li><h3>Vitis</h3><p>새 XSA로 Platform을 갱신하고 Application을 Build한다.</p></li>
-<li><h3>Program / Run</h3><p>Basys3를 Program하고 ELF를 실행한다.</p></li>
-<li><h3>LED0</h3><p>LED0가 약 0.5초 간격으로 ON/OFF 되는지 관찰한다.</p></li>
-</ol></section>
+<ol class="step-seq"><li><h3>Build</h3><p>Vitis에서 <code>soc08_axi_timer_blink</code> Application을 Build한다. <code>xtmrctr.h</code>, <code>xgpio.h</code>, 주소 Macro 관련 오류가 없고 <code>.elf</code>가 생성되는지 확인한다.</p></li>
+<li><h3>보드 연결</h3><p>Basys3를 USB/JTAG로 연결하고 전원을 확인한다.</p></li>
+<li><h3>FPGA Program</h3><p>08장 XSA/Bitstream과 일치하는 이미지로 FPGA를 Program한다. 07장의 이전 Bitstream을 사용하지 않는다.</p></li>
+<li><h3>Application 실행</h3><p>08장 Application의 ELF를 선택해 Run 또는 Debug를 실행한다. Debug 세션 진입 시 기존 환경에서 확인된 <code>launch.json</code> 상단 탭 선택 절차를 적용할 수 있다.</p></li>
+<li><h3>LED0 확인</h3><p>LED0가 0.5초 간격으로 ON/OFF되는지 관찰한다. 나머지 LED는 이 Application에서 제어하지 않는다.</p></li></ol>
+<div class="note">화면 확인: Build 성공, Program 완료, 실행 중인 08장 ELF. LED0의 실제 동작을 확인하기 전에는 '실습 성공'으로 표기하지 않는다.</div>
+</section>
 
-<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>눈으로 확인하는 결과</h2>
+<section class="step-card" id="s15"><span class="step">절차 15</span><h2>Debugger Watch — Timer 동작 검증</h2>
+
+<ol class="step-seq"><li><h3>Debug 진입</h3><p>08장 ELF로 Debug를 시작한 뒤 일시정지할 위치에 Breakpoint를 설정한다.</p></li>
+<li><h3>Watch 등록</h3><p>변수 <code>timer_value</code>, <code>expire_count</code>, <code>led_state</code>를 Watch에 등록한다.</p></li>
+<li><h3>값 확인</h3><p>연속 실행 중 <code>expire_count</code>가 증가하는지, <code>led_state</code>가 0과 1 사이에서 번갈아 변하는지 확인한다.</p></li>
+<li><h3>주의</h3><p>일시정지 중에는 CPU Polling도 멈추므로 Watch 값만으로 실제 보드 0.5초 주기를 입증할 수 없다. LED 실측과 함께 판단한다.</p></li></ol>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Debugger 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">변수</th><th scope="col" role="columnheader">확인 내용</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="변수" role="cell"><code>timer_value</code></td><td data-label="확인 내용" role="cell">현재 Down Counter 값</td></tr>
+<tr role="row"><td data-label="변수" role="cell"><code>expire_count</code></td><td data-label="확인 내용" role="cell">0.5초 만료 횟수</td></tr>
+<tr role="row"><td data-label="변수" role="cell"><code>led_state</code></td><td data-label="확인 내용" role="cell">0 / 1 Toggle 상태</td></tr>
+</tbody></table></div>
+<div class="note">07장 이후 확정되지 않은 Debug 원인에 대한 추측은 교재에 넣지 않는다.</div>
+</section>
+
+<section class="step-card" id="s16"><span class="step">절차 16</span><h2>예상 실행 결과와 보드 확인</h2>
+
 <div class="table-wrap" tabindex="0" role="region" aria-label="눈으로 확인하는 결과 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">경과 시간</th><th scope="col" role="columnheader"><code>expire_count</code></th><th scope="col" role="columnheader">LED0</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="경과 시간" role="cell">시작</td><td data-label="expire_count" role="cell">0</td><td data-label="LED0" role="cell">OFF</td></tr>
 <tr role="row"><td data-label="경과 시간" role="cell">약 0.5 s</td><td data-label="expire_count" role="cell">1</td><td data-label="LED0" role="cell">ON</td></tr>
@@ -580,17 +526,136 @@ int main(void)
 <tr role="row"><td data-label="경과 시간" role="cell">약 1.5 s</td><td data-label="expire_count" role="cell">3</td><td data-label="LED0" role="cell">ON</td></tr>
 <tr role="row"><td data-label="경과 시간" role="cell">약 2.0 s</td><td data-label="expire_count" role="cell">4</td><td data-label="LED0" role="cell">OFF</td></tr>
 </tbody></table></div>
-<div class="note">표는 설정식에 따른 예상 동작이다. 실제 LED 주기는 보드에서 실행하여 확인한다.</div></section>
+<div class="note">이 표는 100 MHz 클록과 타이머 설정식에서 계산한 <strong>예상 동작</strong>이다. 실제 성공 화면·실측 시간은 Basys3에서 확인한 뒤 순서대로 추가한다. 완료 표시 전 실제 결과와 구분한다.</div>
+</section>
 
-<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Debugger 확인</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Debugger 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">변수</th><th scope="col" role="columnheader">확인 내용</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="변수" role="cell"><code>timer_value</code></td><td data-label="확인 내용" role="cell">현재 Down Counter 값</td></tr>
-<tr role="row"><td data-label="변수" role="cell"><code>expire_count</code></td><td data-label="확인 내용" role="cell">0.5초 만료 횟수</td></tr>
-<tr role="row"><td data-label="변수" role="cell"><code>led_state</code></td><td data-label="확인 내용" role="cell">0 / 1 Toggle 상태</td></tr>
+<section class="step-card" id="s17"><span class="step">절차 17</span><h2>오류 발생 시 한 단계씩 확인</h2>
+
+<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="증상" role="cell">LED가 너무 빠르게 깜빡임</td><td data-label="원인 후보" role="cell">Clock/Load 계산 오류</td><td data-label="확인" role="cell">100 MHz, 49,999,998 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">LED가 한 번만 변함</td><td data-label="원인 후보" role="cell">Auto Reload 미설정</td><td data-label="확인" role="cell"><code>XTC_AUTO_RELOAD_OPTION</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">LED가 계속 빠르게 반전</td><td data-label="원인 후보" role="cell">만료 Flag를 Clear하지 않음</td><td data-label="확인" role="cell">T0INT Write-1-to-Clear 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Timer가 움직이지 않음</td><td data-label="원인 후보" role="cell">Enable/Clock/Reset 문제</td><td data-label="확인" role="cell"><code>XTmrCtr_Start</code>, <code>s_axi_aclk</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">Build Macro 없음</td><td data-label="원인 후보" role="cell">XSA/Platform 미갱신</td><td data-label="확인" role="cell"><code>xparameters.h</code></td></tr>
+<tr role="row"><td data-label="증상" role="cell">GPIO LED가 안 켜짐</td><td data-label="원인 후보" role="cell">기존 SoC 06 AXI GPIO/XDC 문제</td><td data-label="확인" role="cell">Channel 1 Output, LED XDC 확인</td></tr>
+<tr role="row"><td data-label="증상" role="cell">Interrupt가 발생하지 않음</td><td data-label="원인 후보" role="cell">정상</td><td data-label="확인" role="cell">SoC 08은 Polling, Interrupt는 SoC 09</td></tr>
 </tbody></table></div>
-<p><code>timer_value</code>는 매우 빠르게 감소하므로 Breakpoint에서 매번 정확히 같은 값으로 보이지 않는 것이 정상이다.</p></section>
+<div class="note">문제가 생기면 한 번에 여러 설정을 바꾸지 않는다. 직전 성공 화면과 비교해 AXI 연결 → XSA/Platform → 코드 → LED 방향 설정 순서로 원인을 좁힌다.</div>
+</section>
 
-<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>AXI Transaction 추적</h2>
+<section class="step-card" id="s18"><span class="step">절차 18</span><h2>핵심 개념 — AXI Timer 구조</h2>
+
+<figure class="manual-figure"><a href="../../images/soc08/pg079_axi_timer_block.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI Timer internal block diagram · 원본 보기 (새 탭)"><img src="../../images/soc08/pg079_axi_timer_block.svg" alt="AXI Timer internal block diagram">
+</a><figcaption>AMD PG079 Functional Description의 Block Diagram을 기준으로 재작성한 구조도.
+<span class="figure-source">원문: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description" target="_blank" rel="noopener">AMD PG079 · Functional Description</a></span><br><a href="../../images/soc08/pg079_axi_timer_block.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI Timer internal block diagram · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p>AXI Timer는 AXI4-Lite Slave Interface와 두 개의 Timer/Counter Module을 가진다. 각 Timer는 Load Register, Counter Register, Control/Status Register를 갖는다.</p><p>MicroBlaze V의 Peripheral AXI 경로를 활성화하여 IP를 연결한다. 하드웨어 변경 후 XSA와 V용 Platform/BSP를 갱신하고 생성된 <code>xparameters.h</code>의 심볼을 사용한다.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="두 개의 32-bit Timer · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">구분</th><th scope="col" role="columnheader">Timer 0</th><th scope="col" role="columnheader">Timer 1</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="구분" role="cell">Control/Status</td><td data-label="Timer 0" role="cell"><code>TCSR0</code></td><td data-label="Timer 1" role="cell"><code>TCSR1</code></td></tr>
+<tr role="row"><td data-label="구분" role="cell">Load</td><td data-label="Timer 0" role="cell"><code>TLR0</code></td><td data-label="Timer 1" role="cell"><code>TLR1</code></td></tr>
+<tr role="row"><td data-label="구분" role="cell">Counter</td><td data-label="Timer 0" role="cell"><code>TCR0</code></td><td data-label="Timer 1" role="cell"><code>TCR1</code></td></tr>
+<tr role="row"><td data-label="구분" role="cell">SoC 08</td><td data-label="Timer 0" role="cell"><strong>사용</strong></td><td data-label="Timer 1" role="cell">미사용</td></tr>
+</tbody></table></div>
+<p>두 Counter를 Cascade하면 64-bit Counter로 사용할 수 있지만 이번 장에서는 Timer 0 하나만 사용한다.</p>
+<p>PG079는 Timer Module의 Clock Rate가 <code>s_axi_aclk</code>이며 별도의 Prescaling을 하지 않는다고 설명한다. 현재 시스템 Clock은 100 MHz이므로 Timer도 100 MHz를 직접 센다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="05절 신호 및 실행 흐름">100 MHz
+→ 1 Clock = 10 ns
+→ 100,000,000 Clocks = 1 s
+→ 50,000,000 Clocks  = 0.5 s</div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Timer Mode · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Mode</th><th scope="col" role="columnheader">기능</th><th scope="col" role="columnheader">SoC 08</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Mode" role="cell">Generate</td><td data-label="기능" role="cell">설정한 시간 간격 만료 생성</td><td data-label="SoC 08" role="cell"><strong>사용</strong></td></tr>
+<tr role="row"><td data-label="Mode" role="cell">Capture</td><td data-label="기능" role="cell">외부 Event 시 Counter 값 저장</td><td data-label="SoC 08" role="cell">미사용</td></tr>
+<tr role="row"><td data-label="Mode" role="cell">PWM</td><td data-label="기능" role="cell">Timer 0/1을 이용한 PWM 생성</td><td data-label="SoC 08" role="cell">미사용</td></tr>
+<tr role="row"><td data-label="Mode" role="cell">Cascade</td><td data-label="기능" role="cell">두 Counter를 64-bit로 결합</td><td data-label="SoC 08" role="cell">미사용</td></tr>
+</tbody></table></div>
+<p>이번 장은 Generate + Down Count + Auto Reload로 구성한다.</p>
+
+</section>
+
+<section class="step-card" id="s19"><span class="step">절차 19</span><h2>핵심 개념 — Timer 레지스터</h2>
+
+<figure class="manual-figure"><a href="../../images/soc08/pg079_timer_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI Timer register map · 원본 보기 (새 탭)"><img src="../../images/soc08/pg079_timer_register_map.svg" alt="AXI Timer register map">
+</a><figcaption>AMD PG079 Register Space Table 1 기준 재작성.
+<span class="figure-source">원문: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space" target="_blank" rel="noopener">AMD PG079 · Register Space</a></span><br><a href="../../images/soc08/pg079_timer_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI Timer register map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Register Map · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Offset</th><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x00</code></td><td data-label="Register" role="cell"><code>TCSR0</code></td><td data-label="역할" role="cell">Timer 0 Control / Status</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x04</code></td><td data-label="Register" role="cell"><code>TLR0</code></td><td data-label="역할" role="cell">Timer 0 Load Value</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x08</code></td><td data-label="Register" role="cell"><code>TCR0</code></td><td data-label="역할" role="cell">Timer 0 현재 Counter</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x10</code></td><td data-label="Register" role="cell"><code>TCSR1</code></td><td data-label="역할" role="cell">Timer 1 Control / Status</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x14</code></td><td data-label="Register" role="cell"><code>TLR1</code></td><td data-label="역할" role="cell">Timer 1 Load Value</td></tr>
+<tr role="row"><td data-label="Offset" role="cell"><code>+0x18</code></td><td data-label="Register" role="cell"><code>TCR1</code></td><td data-label="역할" role="cell">Timer 1 현재 Counter</td></tr>
+</tbody></table></div>
+<div class="table-wrap" tabindex="0" role="region" aria-label="TCSR0 핵심 비트 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Bit</th><th scope="col" role="columnheader">이름</th><th scope="col" role="columnheader">SoC 08</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="Bit" role="cell">8</td><td data-label="이름" role="cell"><code>T0INT</code></td><td data-label="SoC 08" role="cell">Timer 만료 Event Flag · Write 1 to Clear</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">7</td><td data-label="이름" role="cell"><code>ENT0</code></td><td data-label="SoC 08" role="cell">Timer Enable</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">6</td><td data-label="이름" role="cell"><code>ENIT0</code></td><td data-label="SoC 08" role="cell">Interrupt Output Enable · <strong>0</strong></td></tr>
+<tr role="row"><td data-label="Bit" role="cell">5</td><td data-label="이름" role="cell"><code>LOAD0</code></td><td data-label="SoC 08" role="cell">TLR0 값을 TCR0에 Load</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">4</td><td data-label="이름" role="cell"><code>ARHT0</code></td><td data-label="SoC 08" role="cell">Auto Reload</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">1</td><td data-label="이름" role="cell"><code>UDT0</code></td><td data-label="SoC 08" role="cell">1 = Down Count</td></tr>
+<tr role="row"><td data-label="Bit" role="cell">0</td><td data-label="이름" role="cell"><code>MDT0</code></td><td data-label="SoC 08" role="cell">0 = Generate Mode</td></tr>
+</tbody></table></div>
+<div class="signal-map" tabindex="0" role="region" aria-label="12절 신호 및 실행 흐름">TLR0
+ │  시작값 저장
+ ▼
+LOAD
+ │
+ ▼
+TCR0
+49,999,998
+49,999,997
+49,999,996
+...
+2
+1
+0
+ │
+ ▼
+Timer Expired
+ │
+ └─ Auto Reload → 다시 TLR0 값부터 Down Count</div>
+
+</section>
+
+<section class="step-card" id="s20"><span class="step">절차 20</span><h2>핵심 계산 — 0.5초 Timer Load Value</h2>
+
+<p>PG079의 32-bit Down-count Generate Mode 식을 그대로 사용한다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="13절 신호 및 실행 흐름">TIMING_INTERVAL = (TLR0 + 2) × AXI_CLOCK_PERIOD
+
+AXI_CLOCK_PERIOD = 10 ns
+목표 시간 = 0.5 s = 500,000,000 ns
+
+500,000,000 ns
+= (TLR0 + 2) × 10 ns
+
+TLR0 + 2 = 50,000,000
+
+TLR0 = 49,999,998
+     = 0x02FAF07E</div>
+<p>따라서 코드의 <code>TIMER_RESET_VALUE</code>는 <code>49,999,998</code>이다.</p>
+<figure class="manual-figure"><a href="../../images/soc08/timer_500ms_led_toggle.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="500 ms timer and LED toggle timing · 원본 보기 (새 탭)"><img src="../../images/soc08/timer_500ms_led_toggle.svg" alt="500 ms timer and LED toggle timing">
+</a><figcaption>0.5초 만료 때마다 Auto Reload되고 LED0를 반전하는 실습 흐름.<br><a href="../../images/soc08/timer_500ms_led_toggle.svg" target="_blank" rel="noopener" class="figure-original" aria-label="500 ms timer and LED toggle timing · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure>
+<p><code>XTC_AUTO_RELOAD_OPTION</code>을 사용하면 Counter가 만료된 뒤 Load Value를 다시 불러와 반복 Count한다.</p>
+<div class="note">공식 식을 적용하려면 <code>s_axi_aclk</code>가 실제로 100 MHz여야 한다. 클록이 다른 경우 주파수를 먼저 확인하고 Reset Value를 다시 계산한다.</div>
+</section>
+
+<section class="step-card" id="s21"><span class="step">절차 21</span><h2>Polling과 LED Toggle의 연결</h2>
+
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="Polling 만료 확인 · 소스 코드"><code>if (XTmrCtr_IsExpired(&amp;Timer, TIMER0)) {
+    clear_timer_expired();
+
+    expire_count++;
+
+    led_state ^= LED0_MASK;
+    XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+}</code></pre>
+<p><code>XTmrCtr_IsExpired()</code>는 TCSR0의 만료 Event Flag를 Polling한다. Interrupt 출력은 활성화하지 않는다.</p>
+<div class="signal-map" tabindex="0" role="region" aria-label="16절 신호 및 실행 흐름">LED0 OFF : led_state = 0x00000000
+          ↓ 0.5 s
+LED0 ON  : led_state = 0x00000001
+          ↓ 0.5 s
+LED0 OFF : led_state = 0x00000000
+          ↓
+         반복</div>
+<p>비트 XOR 연산 <code>led_state ^= 0x1</code>로 LED0만 반전한다.</p>
 <div class="signal-map" tabindex="0" role="region" aria-label="24절 신호 및 실행 흐름">[초기 설정]
 MicroBlaze V
   → AXI Write → TLR0 = 49,999,998
@@ -602,36 +667,31 @@ MicroBlaze V
   → 만료 확인
   → AXI Write → TCSR0 Event Flag Clear
   → AXI Write → GPIO_DATA LED0 Toggle</div>
-<p>Timer는 Clock을 Hardware에서 독립적으로 세지만, Polling에서는 CPU가 AXI Read를 반복하여 Event Flag를 확인한다.</p></section>
+<p>Timer는 Clock을 Hardware에서 독립적으로 세지만, Polling에서는 CPU가 AXI Read를 반복하여 Event Flag를 확인한다.</p>
 
-<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>오류 점검</h2>
-<div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">원인 후보</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup">
-<tr role="row"><td data-label="증상" role="cell">LED가 너무 빠르게 깜빡임</td><td data-label="원인 후보" role="cell">Clock/Load 계산 오류</td><td data-label="확인" role="cell">100 MHz, 49,999,998 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">LED가 한 번만 변함</td><td data-label="원인 후보" role="cell">Auto Reload 미설정</td><td data-label="확인" role="cell"><code>XTC_AUTO_RELOAD_OPTION</code></td></tr>
-<tr role="row"><td data-label="증상" role="cell">LED가 계속 빠르게 반전</td><td data-label="원인 후보" role="cell">만료 Flag를 Clear하지 않음</td><td data-label="확인" role="cell">T0INT Write-1-to-Clear 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Timer가 움직이지 않음</td><td data-label="원인 후보" role="cell">Enable/Clock/Reset 문제</td><td data-label="확인" role="cell"><code>XTmrCtr_Start</code>, <code>s_axi_aclk</code></td></tr>
-<tr role="row"><td data-label="증상" role="cell">Build Macro 없음</td><td data-label="원인 후보" role="cell">XSA/Platform 미갱신</td><td data-label="확인" role="cell"><code>xparameters.h</code></td></tr>
-<tr role="row"><td data-label="증상" role="cell">GPIO LED가 안 켜짐</td><td data-label="원인 후보" role="cell">기존 SoC 06 AXI GPIO/XDC 문제</td><td data-label="확인" role="cell">Channel 1 Output, LED XDC 확인</td></tr>
-<tr role="row"><td data-label="증상" role="cell">Interrupt가 발생하지 않음</td><td data-label="원인 후보" role="cell">정상</td><td data-label="확인" role="cell">SoC 08은 Polling, Interrupt는 SoC 09</td></tr>
-</tbody></table></div></section>
+</section>
 
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 08 완료 체크리스트</h2>
-<ul>
-<li>[ ] 기존 AXI GPIO와 AXI UART Lite를 유지한 상태에서 AXI Timer를 추가했다.</li>
-<li>[ ] AXI Timer가 AXI4-Lite Slave임을 이해한다.</li>
-<li>[ ] Timer 0의 TCSR0, TLR0, TCR0 역할을 구분한다.</li>
-<li>[ ] Timer Clock이 100 MHz이고 별도 Prescaler가 없음을 이해한다.</li>
-<li>[ ] Generate Mode + Down Count + Auto Reload를 사용했다.</li>
-<li>[ ] 0.5초에 필요한 TLR0가 <code>49,999,998 = 0x02FAF07E</code>임을 계산할 수 있다.</li>
-<li>[ ] Interrupt Output을 사용하지 않고 Polling으로 만료를 확인했다.</li>
-<li>[ ] T0INT가 Write-1-to-Clear임을 이해한다.</li>
-<li>[ ] 0.5초마다 LED0를 Toggle한다.</li>
-<li>[ ] LED의 전체 ON/OFF Cycle이 약 1초임을 이해한다.</li>
-<li>[ ] Debugger에서 <code>timer_value</code>, <code>expire_count</code>, <code>led_state</code>를 확인했다.</li>
-<li>[ ] 다음 장에서 Polling을 AXI Interrupt Controller 기반 Interrupt 구조로 변경할 준비가 되었다.</li>
-</ul>
-<div class="flow">SoC 08 완료 → SoC 09 AXI Interrupt Controller</div></section>
+<section class="step-card" id="s22"><span class="step">절차 22</span><h2>Driver API와 하드웨어 Register</h2>
 
+<div class="table-wrap" tabindex="0" role="region" aria-label="Driver API와 Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">API</th><th scope="col" role="columnheader">Hardware 동작</th></tr></thead><tbody role="rowgroup">
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetResetValue()</code></td><td data-label="Hardware 동작" role="cell"><code>TLR0</code>에 시작값 설정</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetOptions()</code></td><td data-label="Hardware 동작" role="cell">TCSR0의 Down Count / Auto Reload 등 설정</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_Start()</code></td><td data-label="Hardware 동작" role="cell">Timer Enable 후 Count 시작</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_GetValue()</code></td><td data-label="Hardware 동작" role="cell"><code>TCR0</code> 현재값 Read</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_IsExpired()</code></td><td data-label="Hardware 동작" role="cell">TCSR0의 Event Flag 확인</td></tr>
+<tr role="row"><td data-label="API" role="cell"><code>XTmrCtr_SetControlStatusReg()</code></td><td data-label="Hardware 동작" role="cell">T0INT에 1을 써서 만료 Flag Clear</td></tr>
+</tbody></table></div>
+
+</section>
+<section class="step-card summary" id="summary"><span class="step">핵심 정리</span><h2>08장 확인 결과 기록</h2>
+<p>프로젝트 확인 → 08장 프로젝트 복제 → Timer 연결 → Address Editor → Validate → Bitstream → XSA → Vitis Build → Basys3 실행 순서로 진행한다.</p>
+<ul><li>새 프로젝트: <code>/home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xpr</code></li>
+<li>새 Block Design: <code>soc08_axi_timer.bd</code></li>
+<li>새 Platform: <code>soc08_axi_timer_platform</code></li>
+<li>새 Application: <code>soc08_axi_timer_blink</code></li>
+<li>예상 결과: LED0 0.5초마다 반전, 전체 점멸 주기 약 1초(100 MHz 클록 기준)</li></ul>
+<div class="note">실제 Board·Debugger 성공값과 단계별 스크린샷은 확인된 후에만 교재에 반영한다. 09장 인터럽트 구성은 여기서 반복하거나 앞당겨 구현하지 않는다.</div>
+<div class="flow">SoC 08 AXI Timer Polling → SoC 09 AXI Interrupt Controller</div></section>
 <section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup">
 <tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer" target="_blank" rel="noopener">AMD PG079 · AXI Timer v2.0 · 2025-08-15</a></td><td data-label="확인 항목" role="cell">AXI4-Lite Timer 구조, Timer Mode, Register, Counter</td></tr>
