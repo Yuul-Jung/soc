@@ -20,3 +20,28 @@ Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixtu
 
 2026-10-19 finishing review: navigation / layout / source identity PASS.
 Hardware execution results unchanged; no new target or board run.
+
+2026-10-26 user-operated Vivado/Vitis 2024.2 practical session:
+- Original project actually opened: /home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr.
+- File -> Project -> Save As to 06: /home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr.
+- Old Block Design soc01_mb_bram -> Save Block Design As -> soc06_axi_gpio (Local to Project, Add to Design Sources, Include Comments, Freeze boundary disabled).
+- Create HDL Wrapper via 'Let Vivado manage wrapper and auto-update'; soc06_axi_gpio_wrapper Set as Top.
+- Old soc01_mb_bram_wrapper removed FROM PROJECT ONLY; source files on disk preserved.
+- Report IP Status: existing 9 IPs Up-to-date / No changes required before adding AXI GPIO.
+- AXI GPIO added, connected to M_AXI_DP via SmartConnect, 16-bit LED output and 16-bit SW input, Interrupt disabled.
+- Vivado Bitstream generation: user GUI verified SUCCESS.
+- Export XSA: soc06_axi_gpio.xsa file reviewed and export verified.
+- Vitis Platform Build: soc06_axi_gpio_platform user GUI verified SUCCESS.
+- Vitis Application/ELF Build: soc06_axi_gpio user GUI verified SUCCESS.
+- Vitis launch.json Debug: user GUI verified successful entry.
+- Physical switch-to-LED 1:1 response on Basys3: NOT VERIFIED by accessible board-operation evidence.
+- 2026-10-27 33 chronological accepted screenshots from 74 review candidates were previously archived as soc06_axi_gpio_검증스크린샷_시간순.zip (18 Vivado, 5 Vitis Platform/Build, 6 Application, 4 Build/Debug; error/intermediate screenshots excluded). The original archive exists in the Project's personal Library; its ZIP bytes were not materializable for direct incorporation into this GitHub revision. Do NOT claim the photos were newly embedded in the HTML.
+- The 2026-10-19 NOT RUN rows above are historical report status from the pre-lab publication, not a claim that the later user-run Vivado/Vitis GUI session did not occur.
+
+2026-10-27 restoration of chronological textbook steps:
+- SoC06 HTML SECTION 02 restored project lineage, Save As, Save Block Design As, Design Sources, new HDL Wrapper / Set Top, safe old wrapper removal, 9-IP healthy status, independent XDC.
+- SECTION 06 wrapper re-generation explanation updated, with correct 3-line Tcl Console code.
+- Markdown soc06.md now follows the actual course sequence and matches HDL wrapper's sw_tri_i[15:0], led_tri_o[15:0] port names.
+- Both shipped copies of code/soc06/basys3_axi_gpio.xdc corrected (16 switches + 16 LEDs). The original successfully used user-side Vivado XDC was not modified.
+- Source/static/browser regression: GitHub Actions 40461135917 SUCCESS. Passed 01->06 lineage, BD/wrapper/Top references, 16/16 XDC port mappings, 16/16 section anchors, picture links, and no horizontal page overflow at 1440 / 1024 / 390 / 320px.
+- This QA verifies published source/static/browser integrity, not physical Basys3 LED response or a rerun of Vivado on the assistant environment.
