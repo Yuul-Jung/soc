@@ -50,3 +50,14 @@ Generated Xilinx IP execution in Vivado/XSim and Basys3 board: NOT RUN.
 SoC07 HTML and Markdown replaced minicom with moserial GUI; /dev/serial/by-id/ identification, moserial Port Setup 115200 8N1, Handshake None, Echo received data Off, Connect, Outgoing ASCII + No end + Send, Sent/Received ASCII comparison, expected startup message order FPGA Program -> moserial Connect -> ELF Run.
 Ubuntu moserial GUI behavior cross-checked against GNOME moserial documentation; actual application and Basys3 hardware screen: NOT VERIFIED.
 Documentation/browser QA after HTML commit 9e0f32dde: SUCCESS, GitHub Actions run 40456152097 (source images/links/27 navigation, 4 viewport image rendering, Verilog syntax stub).
+
+
+2026-10-27 procedure-first editorial revision:
+The SoC07 HTML has been reorganized while retaining 27 navigable instructional sections, 10 official source figures, the complete C Echo program, and the Verilog optional testbench.
+Sections 01-17 now follow the actual hands-on path: 06 project cloning and isolated BD -> IP add and configure -> AXI/clock/reset -> external UART ports -> HDL wrapper / Set as Top -> XDC -> Address Editor -> Validate / Bitstream / XSA -> new Vitis Platform -> new Application -> main.c -> Build / FPGA program -> moserial -> practical Echo comparison -> Watch -> troubleshooting.
+Sections 18-27 place architecture and register explanations, vendor example design, and optional RTL simulation after the primary lab path.
+Vivado wrapper creation has been moved to after the UART external ports. Earlier web editor edits accidentally repeated Add IP in the "source path review" item and placed a nested heading around Wrapper/XDC; rewritten into separate valid chronological steps.
+Mirror Markdown docs/soc07.md now follows the same procedural sequence and explicitly preserves SoC06 hardware/software artifacts.
+GitHub Actions SoC07 adversarial QA run 40468753620: SUCCESS (27/27 section navigation, 10/10 PNG images and checksums, 1440/1024/390/320 viewport no horizontal overflow, Verilog port/syntax-only checks).
+GitHub Pages deployment of HTML edit commit e519a9eac0aa: SUCCESS (run 40468753079).
+No new actual Vivado 2024.2 XSim simulation, Basys3 implementation, Vitis target build, moserial Echo verification, or real GUI screenshots were performed in this documentation revision. These remain UNVERIFIED.
