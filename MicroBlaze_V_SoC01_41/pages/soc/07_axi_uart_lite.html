@@ -148,6 +148,22 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 .official-original-figure img{display:block;max-width:100%;max-height:780px;object-fit:contain;width:auto;height:auto;margin:0 auto}
 .official-original-figure figcaption{max-width:1100px;margin:14px auto 4px}
 @media(max-width:600px){.official-original-figure{padding:9px}}
+
+/* GUI 실습 절차: 한 조작씩 따라하기 */
+.procedure{list-style:none;counter-reset:proc;padding:0;display:grid;gap:10px;margin:14px 0}
+.procedure>li{position:relative;counter-increment:proc;border:1px solid var(--line);border-radius:7px;padding:12px 14px 12px 52px;background:var(--card);min-width:0}
+.procedure>li:before{content:counter(proc,decimal-leading-zero);position:absolute;left:13px;top:14px;color:var(--accent);font-size:.85rem;font-weight:700}
+.procedure strong{display:block;margin-bottom:5px}
+.procedure p{margin:4px 0}
+.step-result,.step-caution{display:block;padding:8px 10px;margin-top:8px;font-size:.89rem;border-radius:4px}
+.step-result{background:var(--good-bg);color:var(--good)}.step-caution{background:var(--warn-bg);color:var(--warn)}
+@media(max-width:600px){.procedure>li{padding:11px 11px 11px 43px}.procedure>li:before{left:9px}}
+
+/* 실습 우선 탐색 — 개념 절에서 절차 절로 바로 이동 */
+.lab-jump{margin:0 0 19px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
+.lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -239,6 +255,7 @@ main[tabindex="-1"]:focus{outline:none}
 <main id="main-content" tabindex="-1">
 <div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 05 AXI</span><span class="arrow">→</span><span class="stage">SoC 06 AXI GPIO</span><span class="arrow">→</span><span class="stage"><strong>SoC 07 AXI UART Lite</strong></span><span class="arrow">→</span><span class="stage">SoC 08 AXI Timer</span></div></div>
 
+<nav class="lab-jump" aria-label="지금 실습할 단계"><strong>따라하기 빠른 이동 · 메뉴를 누르면 해당 작업으로 이동합니다</strong><div class="jump-links"><a href="#s01">1. 프로젝트 복제</a><a href="#s05">2. UART 외부 포트</a><a href="#s08">3. 주소 확인</a><a href="#s13">4. Vitis·실행</a><a href="#s15">5. Echo 확인</a></div></nav>
 <section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>06장 성공 프로젝트 → 07장 복제</h2>
 
 <p><strong>07장은 06장 성공 프로젝트를 복제하여 이어서 진행합니다.</strong> 처음부터 SoC를 새로 만들지 않으며 06장 원본은 수정하지 않습니다.</p>
@@ -282,34 +299,9 @@ main[tabindex="-1"]:focus{outline:none}
 
 </section>
 
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>AXI · Clock · Reset 연결</h2>
+<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>AXI · Clock · Reset 연결</h2><ol class="procedure"><li><strong>Run Connection Automation 실행</strong><p>Diagram에서 <code>axi_uartlite_0/S_AXI</code>를 확인합니다. 상단 <b>Run Connection Automation</b>에서 UART의 <code>S_AXI</code>만 선택하고, 기존 CPU <code>M_AXI_DP</code>의 AXI 경로를 사용합니다.</p><span class="step-result">기대 화면: 기존 <code>axi_smc</code>에서 <code>axi_uartlite_0/S_AXI</code>로 AXI 선이 연결됩니다.</span></li><li><strong>기존 AXI GPIO 유지 확인</strong><p><code>microblaze_riscv_0/M_AXI_DP → axi_smc</code>를 따라가며 06장 <code>axi_gpio_0/S_AXI</code>가 남아 있는지, UART가 별도 출력으로 분기하는지 확인합니다. 실제 화면에서 확인된 <code>M01_AXI</code>처럼 출력 번호는 Vivado Diagram 값에 따릅니다.</p><span class="step-caution">주의: 06장 GPIO 연결을 해제하거나 SmartConnect를 중복 생성하지 않습니다.</span></li><li><strong>Clock·Reset 연결 확인</strong><p>UART의 <code>s_axi_aclk</code>가 기존 100 MHz AXI Clock, <code>s_axi_aresetn</code>이 기존 Active-Low 주변장치 Reset과 연결되는지 확인합니다.</p><span class="step-result">기대 화면: AXI, 클록, 리셋 신호가 모두 연결되어 있습니다.</span></li></ol><div class="signal-map">microblaze_riscv_0/M_AXI_DP → axi_smc<br>　├─ axi_gpio_0/S_AXI (06장 유지)<br>　└─ axi_uartlite_0/S_AXI (07장 추가)</div></section>
 
-<ol class="step-seq"><li><h3>연결 자동화 실행</h3><p><code>axi_uartlite_0/S_AXI</code>에서 <strong>Run Connection Automation</strong>을 실행합니다. 기존 MicroBlaze V의 <code>M_AXI_DP</code> 경로를 선택합니다.</p></li>
-<li><h3>SmartConnect 분기 확인</h3><p>기존 <code>axi_smc</code>를 통해 <code>axi_gpio_0/S_AXI</code>와 <code>axi_uartlite_0/S_AXI</code>가 각각 연결됐는지 확인합니다. 필요하면 SmartConnect의 Master Interface 출력 수를 늘립니다.</p></li>
-<li><h3>클록·리셋 연결 확인</h3><p>UART의 <code>s_axi_aclk</code>를 기존 100 MHz 시스템 AXI 클록에, <code>s_axi_aresetn</code>을 기존 Active-Low Peripheral Reset에 연결하고 떠 있는 신호가 없는지 확인합니다.</p></li></ol>
-<div class="signal-map" tabindex="0" role="region">microblaze_riscv_0 / M_AXI_DP
-       │
-       ▼
-    axi_smc
-       ├─────▶ axi_gpio_0 / S_AXI       (06장 유지)
-       └─────▶ axi_uartlite_0 / S_AXI  (07장 추가)
-clk_wiz/clk_out1 ───────▶ s_axi_aclk
-peripheral_aresetn ─────▶ s_axi_aresetn</div>
-<p class="lesson-check"><strong>화면 확인</strong> 기존 GPIO 연결을 유지하면서 UART의 AXI·Clock·Reset도 모두 연결됩니다.</p>
-
-</section>
-
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>UART RX/TX 외부 포트 생성</h2>
-
-<ol class="step-seq"><li><h3>RX 외부 포트</h3><p><code>axi_uartlite_0/rx</code>를 우클릭 → <strong>Make External</strong>을 실행하고 외부 포트명을 <code>RsRx</code>로 지정합니다.</p></li>
-<li><h3>TX 외부 포트</h3><p><code>axi_uartlite_0/tx</code>도 <strong>Make External</strong>을 실행하고 외부 포트명을 <code>RsTx</code>로 지정합니다.</p></li>
-<li><h3>방향 확인 및 저장</h3><p><code>RsRx</code>는 FPGA 기준 <strong>Input</strong>, <code>RsTx</code>는 <strong>Output</strong>인지 확인하고 <strong>Ctrl+S</strong>로 Block Design을 저장합니다.</p></li></ol>
-<div class="table-wrap" role="region" tabindex="0" aria-label="UART 외부 핀 연결"><table><thead><tr><th>포트</th><th>FPGA 방향</th><th>Basys3 핀</th></tr></thead><tbody>
-<tr><td><code>RsRx</code></td><td>Input</td><td><code>B18</code></td></tr><tr><td><code>RsTx</code></td><td>Output</td><td><code>A18</code></td></tr></tbody></table></div>
-<figure class="manual-figure official-original-figure"><a class="figure-image-link" href="../../images/soc07/vendor/digilent_fig06_basys3_uart.png" target="_blank" rel="noopener" aria-label="Digilent Figure 6 · Basys3 USB-UART 연결 · 큰 그림 열기"><img src="../../images/soc07/vendor/digilent_fig06_basys3_uart.png" alt="Digilent Figure 6 · Basys3 USB-UART 연결 · 공식 PDF 도판에서 직접 추출한 그림" loading="lazy" decoding="async"></a><figcaption><strong>Digilent Figure 6 · Basys3 USB-UART 연결</strong><br>FT2232HQ의 TXD는 B18(FPGA RX), RXD는 A18(FPGA TX)와 연결된다.<br><span class="figure-source">원문: <a href="https://digilent.com/reference/_media/reference/programmable-logic/basys-3/basys3_rm.pdf#page=7" target="_blank" rel="noopener">Digilent Basys 3 Reference Manual · 7쪽 원문 열기 ↗</a></span><br><a class="figure-original" href="../../images/soc07/vendor/digilent_fig06_basys3_uart.png" target="_blank" rel="noopener">원본 그림 크게 보기 ↗</a></figcaption></figure>
-<p class="lesson-check"><strong>화면 확인</strong> BD 바깥쪽에 <code>RsRx</code>, <code>RsTx</code>가 보입니다. 자동 생성 이름에 접미사가 붙었다면 Wrapper에서 실제 이름을 다시 확인합니다.</p>
-
-</section>
+<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>UART RX/TX 외부 포트 생성</h2><ol class="procedure"><li><strong>현재 <code>UART_0</code> 외부 인터페이스 확인</strong><p>앞선 07장 GUI에서 <code>UART_0</code>를 이미 만들었다면 그대로 사용합니다. 별도의 <code>RsRx</code>/<code>RsTx</code> 포트를 중복 생성하지 않습니다.</p><span class="step-result">기대 화면: UART 외부 인터페이스 하나에 수신 RX와 송신 TX가 포함됩니다.</span></li><li><strong>신호 방향 확인</strong><p>Diagram에서 UART 인터페이스를 펼쳐 <code>rx</code>가 FPGA Input, <code>tx</code>가 FPGA Output인지 확인합니다. 개별 핀 방식이라면 <code>rx</code>/<code>tx</code>를 각각 <b>Make External</b>로 만든 후 하나씩 방향을 확인합니다.</p></li><li><strong>저장·Wrapper 포트명 확인</strong><p><b>Ctrl+S</b>로 BD를 저장한 뒤 06절에서 새 Wrapper를 생성하고, 최상위 모듈 선언의 실제 RX/TX 포트명을 적습니다.</p><span class="step-caution">주의: <code>UART_0</code> 인터페이스명과 최상위 Verilog 포트명은 다를 수 있습니다. Wrapper 확인 전에는 XDC에 이름을 단정하지 않습니다.</span></li></ol><p>Basys3 USB-UART 핀: FPGA RX는 <code>B18</code>, FPGA TX는 <code>A18</code>입니다. 근거: <a href="https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc" target="_blank" rel="noopener">Digilent Basys-3 Master XDC</a>.</p></section>
 
 <section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>Design Sources · Wrapper 생성 · Top 지정</h2>
 
@@ -322,19 +314,10 @@ peripheral_aresetn ─────▶ s_axi_aresetn</div>
 
 </section>
 
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Basys3 UART 핀 XDC 추가</h2>
-
-<ol class="step-seq"><li><h3>07장 XDC 열기</h3><p><strong>Sources → Constraints</strong>에서 07장 프로젝트 내부에 보관된 XDC를 엽니다. 기존 Clock·Reset·Switch·LED 제약은 그대로 유지합니다.</p></li>
-<li><h3>RX/TX 제약 입력</h3><p>아래 <code>B18</code>·<code>A18</code> 두 줄을 추가합니다.</p></li>
-<li><h3>최상위 포트와 일치 확인</h3><p><strong>Ctrl+S</strong>로 저장하고 XDC <code>get_ports</code>의 <code>RsRx</code>·<code>RsTx</code>가 새 Wrapper의 실제 최상위 Port명과 완전히 일치하는지 확인합니다.</p></li></ol>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="XDC · 소스 코드"><code>## Basys3 USB-RS232 Interface
-## Digilent Basys-3-Master.xdc 원본 핀 기준
+<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Basys3 UART 핀 XDC 추가</h2><ol class="procedure"><li><strong>07장 XDC 열기</strong><p><b>Sources → Constraints</b>에서 07장에 독립 복사된 XDC를 엽니다. Clock·Reset·GPIO 핀 제약은 유지합니다.</p></li><li><strong>Wrapper 포트 이름 확인</strong><p>06절에서 생성한 Wrapper의 <code>module ... (...)</code> 안에서 RX/TX 실제 포트명을 확인합니다. <code>UART_0</code>로 외부화했으면 <code>RsRx/RsTx</code>와 다를 수 있습니다.</p></li><li><strong>UART 핀 두 줄 추가</strong><p>아래 코드는 실제 Wrapper 포트명이 <code>RsRx</code>/<code>RsTx</code>일 경우에만 그대로 사용합니다. 실제 이름이 다르면 <code>get_ports</code>의 대상만 실제 Wrapper 포트명으로 바꿉니다.</p><span class="step-result">기대 화면: RX와 TX 핀이 한 개씩 지정되고, 기존 GPIO/Clock/Reset XDC는 변경되지 않습니다.</span></li></ol><pre class="codeblock-pre"><code>## UART RX: PC → FPGA · B18
 set_property -dict { PACKAGE_PIN B18 IOSTANDARD LVCMOS33 } [get_ports RsRx]
-set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]
-</code></pre>
-<p class="lesson-check"><strong>화면 확인</strong> <code>RsRx → B18</code>, <code>RsTx → A18</code>이며 기존 GPIO 제약도 유지됩니다.</p>
-
-</section>
+## UART TX: FPGA → PC · A18
+set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]</code></pre><p class="step-caution">예시 포트명이 Wrapper에 없으면 이 XDC 상태로 Bitstream을 진행하지 않습니다. 이 두 줄은 <b>포트명 확인 후 적용할 예시</b>입니다.</p></section>
 
 <section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Address Editor · UART 주소 할당</h2>
 
@@ -348,7 +331,7 @@ set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports RsTx]
 </tbody></table></div>
 <p class="lesson-check"><strong>화면 확인</strong> UART가 주소 공간에 배치되며 GPIO·BRAM과 충돌하지 않습니다.</p>
 
-</section>
+<p class="step-caution">참고 L04의 <code>0x4002_0000</code>은 별도 예제 주소입니다. 07장 프로젝트에서는 실제 Address Editor의 Base/High Address가 우선합니다.</p></section>
 
 <section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>Validate Design → Bitstream → XSA</h2>
 
@@ -517,7 +500,7 @@ Type characters. Received data will be echoed.
 <div class="flow">PC Outgoing A → FPGA B18(RX) → MicroBlaze V → FPGA A18(TX) → PC Received ASCII A</div>
 <div class="warn"><strong>검증 상태:</strong> 위 문자열은 코드 기준 <strong>예상 출력</strong>입니다. 현재까지 07장 실제 보드·moserial 결과는 검증되지 않았으며 성공 스크린샷으로 표시하지 않습니다.</div>
 
-</section>
+<p class="step-result">실제 완료 판정은 로컬 에코를 끈 상태에서 송신한 <code>A</code>, <code>B</code>, <code>1</code>을 FPGA를 거쳐 각각 한 번 수신했을 때입니다. 보드 검증 전에는 기대 결과로 표시합니다.</p></section>
 
 <section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Vitis Debugger · Watch 변수 확인</h2>
 
@@ -874,7 +857,7 @@ SOC07 VERILOG UARTLITE SELF-CHECK PASS</div>
 
 <nav class="chapter-nav"><a href="06_axi_gpio.html">← SoC 06</a><a href="../../index.html">전체 목차</a><a href="08_axi_timer.html">SoC 08 →</a></nav>
 </main></div>
-<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+<footer class="site-footer">BASYS3 · MicroBlaze V SoC 실습 교재</footer>
 
 
 </body></html>
