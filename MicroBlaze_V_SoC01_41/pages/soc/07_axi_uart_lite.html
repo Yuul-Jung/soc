@@ -451,9 +451,9 @@ int main(void)
 
 <ol class="step-seq"><li><h3>Build</h3><p>07장 Platform Build를 마친 뒤 <strong>07장 Application Build</strong>를 실행합니다. 오류 없이 <code>soc07_axi_uartlite.elf</code>를 생성했는지 확인합니다.</p></li>
 <li><h3>FPGA Program</h3><p>Basys3의 J4 USB 연결을 확인하고 07장 Bitstream으로 <strong>Program Device</strong>를 실행합니다.</p></li>
-<li><h3>Debug 설정</h3><p>07장 Application의 <strong>Debug / Launch Configuration</strong>에서 Processor는 <code>microblaze_riscv_0</code>, ELF는 07장 파일로 선택합니다.</p></li>
-<li><h3>실행 준비</h3><p>실제 실행 순서는 <strong>FPGA Program → moserial Connect → Vitis ELF Run/Continue</strong>입니다. 다음 절에서 moserial을 연결한 후 ELF를 실행합니다.</p></li></ol>
-<div class="note"><strong>기존 Vitis Debug 환경 참고:</strong> 이전 성공 실습에서는 중앙 상단 <code>launch.json</code> 탭을 열어 설정 화면을 표시한 뒤 Debug에 정상 진입했습니다. 원인은 확정하지 않았으므로 필수 원리로 단정하지 않습니다.</div>
+<li><h3><code>launch.json</code> 설정 화면 열기</h3><p>Vitis 화면 중앙 상단의 <strong><code>launch.json</code> 탭</strong>을 먼저 클릭합니다. Launch Config <code>soc07_axi_uartlite_app_hw_1</code>, Target Setup Mode <code>Baremetal Debug</code>, Processor <code>microblaze_riscv_0</code>, 07장 Bitstream과 <code>soc07_axi_uartlite.elf</code>를 확인합니다. <code>launch.json</code>은 실행 파일이 아니라 다운로드·디버그 설정 파일입니다.</p></li>
+<li><h3>Debug → Continue</h3><p>moserial을 연결한 상태에서 왼쪽 아래 <strong>FLOW → Debug</strong>를 실행합니다. CPU가 <code>PAUSED ON STEP</code>으로 멈춰 있으면 <strong>Continue(F5)</strong>를 클릭합니다. 화면에서 <code>uart_puts()</code>가 시작 안내문을 출력하고 수신 대기 루프로 진행합니다.</p></li></ol>
+<div class="note"><strong>실제 07장 확인 순서:</strong> <code>launch.json</code> 탭 열기 → Debug 실행 → <code>PAUSED ON STEP</code> → Continue(F5) → moserial에 안내문 출력 → 문자 Echo 확인. 탭을 먼저 열었을 때 정상 진입한 것은 실습에서 관찰한 절차이며, 오류의 근본 원인이 <code>launch.json</code> 탭에 있다는 뜻은 아닙니다.</div>
 <p class="lesson-check"><strong>화면 확인</strong> 07장 ELF 빌드와 FPGA Program이 실제 성공했는지 확인합니다.</p>
 
 </section>
@@ -474,7 +474,7 @@ sudo apt install moserial
 # moserial 그래픽 프로그램 실행
 moserial</code></pre>
 <div class="table-wrap" tabindex="0" role="region" aria-label="moserial 포트 설정"><table role="table"><thead><tr><th>설정 항목</th><th>값</th></tr></thead><tbody>
-<tr><td>Device</td><td>장치 확인 결과에 해당하는 실제 UART 포트, 예: <code>/dev/ttyUSB1</code></td></tr>
+<tr><td>Device</td><td>장치 확인 결과에 해당하는 실제 UART 포트, 예: <code>/dev/ttyUSB2</code></td></tr>
 <tr><td>Baud Rate</td><td><code>115200</code></td></tr>
 <tr><td>Data Bits</td><td><code>8</code></td></tr>
 <tr><td>Parity</td><td><code>None</code></td></tr>
@@ -484,23 +484,23 @@ moserial</code></pre>
 <tr><td>Echo received data</td><td><code>Off</code> (PC가 받은 바이트를 다시 FPGA로 자동 전송하지 않음)</td></tr>
 </tbody></table></div>
 <p>명령 설명: <code>ls</code>는 장치 경로를 확인하고, <code>apt install</code>은 moserial 설치, <code>moserial</code>은 그래픽 프로그램 실행에 사용됩니다. 포트 접근 오류가 발생할 때만 <code>dialout</code> 권한을 확인합니다.</p>
-<p class="lesson-check"><strong>화면 확인</strong> Basys3의 실제 USB-UART 장치에 연결됐으며 로컬 자동 재송신(Echo received data)은 꺼져 있습니다.</p>
+<p class="lesson-check"><strong>화면 확인</strong> 실제 07장 성공 캡처에서는 <code>/dev/ttyUSB2 OPEN 115200,8N1</code> 상태가 확인됐습니다. 이 장치 번호는 다른 PC·다른 연결에서는 달라질 수 있습니다. RX 수신 문자를 PC에서 자동 재송신하는 옵션과 터미널 로컬 에코를 구분해 확인합니다.</p>
 
 </section>
 
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>실행 결과 · A 송신 → A 수신</h2>
-
-<ol class="step-seq"><li><h3>07장 ELF 실행</h3><p>13절에서 FPGA Program을 확인한 뒤 moserial이 Connect된 상태에서 Vitis 07장 ELF를 <strong>Run/Continue</strong>합니다. moserial <strong>Received ASCII</strong>에 아래 시작 문자열이 나타나는지 확인합니다.</p></li>
-<li><h3>문자 A 전송</h3><p>moserial <strong>Outgoing</strong>에 <code>A</code>를 입력합니다. <strong>ASCII</strong>, 줄 종료 <strong>No end</strong>를 선택한 후 <strong>Send</strong>합니다.</p></li>
-<li><h3>에코 비교</h3><p><strong>Sent ASCII</strong>의 <code>A</code>와 <strong>Received ASCII</strong>의 <code>A</code>가 각각 나타나는지 확인합니다. 이어서 <code>B</code>, <code>1</code>도 같은 방법으로 비교합니다.</p></li>
-<li><h3>완료 기준</h3><p>전송한 세 문자가 FPGA를 경유하여 같은 문자로 돌아와야 Echo가 정상입니다. 반복되거나 수신되지 않으면 17절 점검표로 이동합니다.</p></li></ol>
-<pre class="codeblock-pre" tabindex="0" role="region" aria-label="실행 결과 · 예상 수신 문자열"><code>AXI UART Lite Echo Ready
+<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>실제 실행 결과 · 문자 abc Echo 성공</h2>
+<ol class="step-seq">
+<li><h3>moserial 연결</h3><p>Basys3 USB-UART 포트를 열고 <strong>115200 / 8N1 / Flow Control None</strong>으로 설정합니다. 이번 실습에서 확인된 장치는 <code>/dev/ttyUSB2</code>입니다. PC가 자체 표시하는 로컬 에코는 끕니다.</p></li>
+<li><h3>07장 ELF 실행</h3><p>13절 순서대로 <code>launch.json</code> 탭을 열어 설정을 확인하고 <strong>Debug</strong>를 실행한 뒤, CPU가 멈춰 있으면 <strong>Continue(F5)</strong>를 누릅니다.</p></li>
+<li><h3>시작 안내문 확인</h3><p>moserial의 <strong>Received ASCII</strong>에 <code>AXI UART Lite Echo Ready</code>와 <code>Type characters. Received data will be echoed.</code>가 나타나는지 확인합니다. 이번 캡처에는 디버그 실행 과정에서 시작 안내문이 두 번 출력된 상태가 보입니다. 재시작이 원인인지는 별도 확정하지 않습니다.</p></li>
+<li><h3>abc 송신·수신 비교</h3><p>PC에서 <code>abc</code>를 송신했고, moserial의 <strong>Received ASCII</strong>에 <code>abc</code>가 반환되어 <strong>PC → FPGA UART RX → MicroBlaze V → FPGA UART TX → PC</strong> 경로의 양방향 통신이 확인됐습니다. 이번 화면에는 <code>TX: 17</code>, <code>RX: 159</code>도 표시됩니다.</p></li>
+</ol>
+<pre class="codeblock-pre" tabindex="0" role="region" aria-label="실제 확인된 moserial 수신 일부"><code>AXI UART Lite Echo Ready
 Type characters. Received data will be echoed.
-&gt; </code></pre>
-<div class="flow">PC Outgoing A → FPGA B18(RX) → MicroBlaze V → FPGA A18(TX) → PC Received ASCII A</div>
-<div class="warn"><strong>검증 상태:</strong> 위 문자열은 코드 기준 <strong>예상 출력</strong>입니다. 현재까지 07장 실제 보드·moserial 결과는 검증되지 않았으며 성공 스크린샷으로 표시하지 않습니다.</div>
-
-<p class="step-result">실제 완료 판정은 로컬 에코를 끈 상태에서 송신한 <code>A</code>, <code>B</code>, <code>1</code>을 FPGA를 거쳐 각각 한 번 수신했을 때입니다. 보드 검증 전에는 기대 결과로 표시합니다.</p></section>
+&gt; abc</code></pre>
+<div class="flow">PC Outgoing abc → FPGA B18(RX) → MicroBlaze V → FPGA A18(TX) → PC Received ASCII abc</div>
+<p class="step-result"><strong>실기 검증 성공:</strong> 2026-10-27, Basys3 + Vitis Unified IDE 2024.2 + moserial에서 115200 8N1 UART Echo 동작 확인. <code>A</code>, <code>B</code>, <code>1</code>의 개별 Watch 관찰은 별도 확장 확인 항목입니다.</p>
+</section>
 
 <section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Vitis Debugger · Watch 변수 확인</h2>
 
@@ -532,9 +532,9 @@ Type characters. Received data will be echoed.
 <div class="signal-map" tabindex="0" role="region">Ubuntu moserial Outgoing
      │ USB-UART / FT2232HQ
      ▼
-Basys3 B18 · RsRx → RX FIFO → AXI Read → MicroBlaze V
+Basys3 B18 · UART_0_rxd → RX FIFO → AXI Read → MicroBlaze V
                                              │ Echo
-Basys3 A18 · RsTx ← TX FIFO ← AXI Write ──────┘
+Basys3 A18 · UART_0_txd ← TX FIFO ← AXI Write ──────┘
      │ USB-UART / FT2232HQ
      ▼
 Ubuntu moserial Received ASCII</div>
@@ -835,13 +835,13 @@ SOC07 VERILOG UARTLITE SELF-CHECK PASS</div>
 
 
 <section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>07장 완료 판정 기준</h2>
-<p>아래는 <strong>실습에서 확인해야 할 조건</strong>이며, 07장 실제 FPGA·Vitis·moserial Echo 성공은 아직 검증되지 않았습니다.</p>
+<p>아래는 실제 Vivado/Vitis/moserial 화면에서 확인한 07장 결과입니다. UART Echo는 보드에서 검증됐으며, 개별 Watch 변수값은 아직 확인되지 않았습니다.</p>
 <ol class="lesson-actions">
 <li>06장 원본을 보존하며 07장 Project·BD·Wrapper·XDC를 독립적으로 구성했습니다.</li>
 <li>기존 AXI GPIO를 유지하고 UART Lite의 AXI·Clock·Reset·외부 RX/TX를 연결했습니다.</li>
 <li>07장 Bitstream·XSA·Vitis Platform·Application의 실제 빌드 성공을 확인했습니다.</li>
 <li>moserial이 115200 8N1, Handshake None, Echo received data Off 상태입니다.</li>
-<li>실제 Basys3를 통해 보낸 문자 <code>A/B/1</code>이 각각 동일하게 돌아오는지 확인했습니다.</li>
+<li>실제 Basys3를 통해 보낸 <code>abc</code>가 moserial의 <strong>Received ASCII</strong>에 그대로 반환되는 것을 확인했습니다.</li>
 </ol>
 <div class="flow">실제 Echo 성공 확인 → 08장 AXI Timer</div></section>
 
