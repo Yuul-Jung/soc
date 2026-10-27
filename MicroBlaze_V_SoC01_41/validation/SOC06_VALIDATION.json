@@ -40,5 +40,46 @@
     "body_code_unchanged": true,
     "viewport_and_text_zoom": "PASS",
     "target_and_board_run": "NOT_RUN"
+  },
+  "later_user_gui_session_2026_10_26": {
+    "provenance": "Prior conversation user-uploaded Vivado/Vitis GUI screenshots; not a current rerun in assistant environment",
+    "project_start": "/home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr",
+    "project_copy": "/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr",
+    "block_design_source": "soc01_mb_bram",
+    "block_design_saved_as": "soc06_axi_gpio",
+    "top_wrapper": "soc06_axi_gpio_wrapper",
+    "old_wrapper_handling": "Remove File from Project; files on disk preserved",
+    "existing_ip_status": "9 Up-to-date / No changes required",
+    "bitstream": "USER_GUI_VERIFIED_SUCCESS",
+    "xsa_export": "USER_GUI_VERIFIED_SUCCESS",
+    "vitis_platform_build": "USER_GUI_VERIFIED_SUCCESS",
+    "vitis_application_elf_build": "USER_GUI_VERIFIED_SUCCESS",
+    "vitis_launch_json_debug": "USER_GUI_VERIFIED_SUCCESS",
+    "basys3_switch_led_1to1": "NOT_VERIFIED_BY_BOARD_OPERATION_EVIDENCE",
+    "screenshot_archive": {
+      "file_name": "soc06_axi_gpio_검증스크린샷_시간순.zip",
+      "success_images": 33,
+      "reviewed_candidates": 74,
+      "groups": {
+        "Vivado": 18,
+        "Vitis Platform/Build": 5,
+        "Vitis Application": 6,
+        "Build/Debug": 4
+      },
+      "stored_in": "User Library",
+      "images_embedded_in_current_html": false,
+      "raw_bytes_available_to_this_revision": false
+    }
+  },
+  "latest_textbook_qa_2026_10_27": {
+    "source": "GitHub Actions 40461135917",
+    "result": "SUCCESS",
+    "checks": [
+      "16 chapter anchors",
+      "reconstructed project chronological steps",
+      "corrected primary/working XDC 16 SW and 16 LED ports",
+      "browser images loaded and no horizontal document overflow at 1440, 1024, 390, 320px"
+    ],
+    "board_run": "NOT_RETESTED"
   }
 }
