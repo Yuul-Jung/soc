@@ -1,22 +1,33 @@
-SoC 08 · MicroBlaze V
+SoC 08 · Basys3 MicroBlaze V AXI Timer
+Verified hardware lab on 2026-10-28 (user-supplied Vivado/Vitis screenshots and physical LED observation)
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+Vivado project: /home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xpr
+Block Design: soc08_axi_timer.bd
+AXI GPIO BASEADDR: 0x40000000
+AXI UART Lite BASEADDR: 0x40600000
+AXI Timer BASEADDR: 0x41C00000
+Local BRAM: 0x00000000 - 0x00003FFF (16 KiB)
+AXI Timer clock: 100 MHz, 32-bit, Down Count, Auto Reload, Timer0
+TLR0 0.5-second target: 49,999,998 = 0x02FAF07E (PG079 Generate Mode)
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+Validate Design: PASS (0 errors / 0 critical warnings)
+Implementation: PASS, WNS +0.675 ns, WHS +0.035 ns, TNS 0.000 ns, THS 0.000 ns
+DRC: 8 warnings observed (PDRC family) — requires separate investigation; not marked clean
+Estimated on-chip power: 0.200 W (LOW confidence; not measured)
+Bitstream: generated; hardware export include bitstream
+XSA: soc08_axi_timer_wrapper.xsa
+Platform: soc08_axi_timer_platform, Build PASS
+Application: soc08_axi_timer, ELF build PASS
+Debug: successful; CPU microblaze_riscv_0; Run/Continue successful
+Basys3 board: LED0 repeat blinking observed (functional PASS)
+Timing measurement of exact 0.5 s period: NOT PERFORMED
+Watch after Resume/Pause:
+  timer_value  = 0x028816E6
+  expire_count = 0x00000025 (37 timer expirations)
+  led_state    = 0x00000001 (LED0 ON)
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+Source of evidence: user-provided sequential GUI screenshots and user report of physical board operation. Verified conceptual/register details against AMD PG079. FPGA hardware was run by user, not assistant.
+Official sources:
+https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description
+https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space
+https://docs.amd.com/r/en-US/pg079-axi-timer/Generate-Mode
