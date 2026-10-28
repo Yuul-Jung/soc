@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta name="description" content="SoC 10.1 통합 C 코드 쉽게 이해하기: GPIO, UART Lite Polling, Timer Interrupt, AXI INTC 및 최종 LED 비트 조합">
+<title>SoC 10.1 · GPIO·UART·Timer 통합 C 코드 쉽게 이해하기</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+
+.official-original-figure img{display:block;max-width:100%;max-height:780px;object-fit:contain;width:auto;height:auto;margin:0 auto}
+.official-original-figure figcaption{max-width:1100px;margin:14px auto 4px}
+@media(max-width:600px){.official-original-figure{padding:9px}}
+
+/* GUI 실습 절차: 한 조작씩 따라하기 */
+.procedure{list-style:none;counter-reset:proc;padding:0;display:grid;gap:10px;margin:14px 0}
+.procedure>li{position:relative;counter-increment:proc;border:1px solid var(--line);border-radius:7px;padding:12px 14px 12px 52px;background:var(--card);min-width:0}
+.procedure>li:before{content:counter(proc,decimal-leading-zero);position:absolute;left:13px;top:14px;color:var(--accent);font-size:.85rem;font-weight:700}
+.procedure strong{display:block;margin-bottom:5px}
+.procedure p{margin:4px 0}
+.step-result,.step-caution{display:block;padding:8px 10px;margin-top:8px;font-size:.89rem;border-radius:4px}
+.step-result{background:var(--good-bg);color:var(--good)}.step-caution{background:var(--warn-bg);color:var(--warn)}
+@media(max-width:600px){.procedure>li{padding:11px 11px 11px 43px}.procedure>li:before{left:9px}}
+
+/* 실습 우선 탐색 — 개념 절에서 절차 절로 바로 이동 */
+.lab-jump{margin:0 0 19px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
+.lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
+
+/* SoC07 : 이론 / 실습 / 검증 구획 구분 */
+.chapter-phase{border-top:3px solid var(--accent);padding:18px 20px;margin:25px 0 16px;background:#F5F6F9;}
+.chapter-phase strong{display:block;font-weight:800;font-size:1.04rem;}
+.chapter-phase p{margin:5px 0 0;font-size:.88rem;line-height:1.6;}
+.chapter-phase.phase-practice{border-top-color:#356B51;background:#F3F8F5;}
+.chapter-phase.phase-verify{border-top-color:#9A6020;background:#FCF7ED;}
+.chapter-phase.phase-optional{border-top-color:#888;background:#F5F5F5;}
+.timeline .timeline-phase{margin:13px 7px 5px;padding:7px 9px;background:#F0F1F4;color:#42485B;font-size:.78rem;font-weight:800;list-style:none;}
+.optional-theory{margin:12px 0 0;border:1px solid var(--line);background:#fff;}
+.optional-theory>summary{cursor:pointer;font-weight:700;padding:12px 15px;color:var(--accent);}
+.optional-theory-body{padding:4px 16px 16px;}
+@media(max-width:600px){.chapter-phase{padding:12px 14px}.optional-theory-body{padding:4px 10px 12px}}
+
+/* 07장 실제 Vivado/Vitis 캡처: 단계별 이미지, 클릭 확대 */
+.soc07-shot{margin:14px 0 16px;padding:12px;border:1px solid var(--line);background:#fff;border-radius:10px;max-width:100%;box-sizing:border-box;}
+.soc07-shot a{display:block;max-width:100%;}
+.soc07-shot img{width:100%;height:auto;max-height:740px;display:block;object-fit:contain;object-position:left top;border-radius:5px;border:1px solid #e3e6ea;background:#fff;}
+.soc07-shot figcaption{display:block;font-size:.86rem;color:#465164;margin-top:8px;line-height:1.65;}
+.soc07-shot figcaption strong{display:inline;font-size:inherit;}
+.soc07-shot.is-success{border-left:4px solid #37835d;}
+.soc07-shot.is-estimate{border-left:4px solid #b58d39;}
+.soc07-shot .shot-source{font-size:.76rem;color:#747e8c;}
+.soc07-shot.is-procedure{border-left:4px solid #6f87b6;}
+@media(max-width:600px){.soc07-shot{padding:6px}.soc07-shot img{max-height:none}.soc07-shot figcaption{font-size:.82rem}}
+
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script><style>
+/* 07.1 C 코드 이해 페이지: 07장 공통 색상과 레이아웃 유지 */
+.lesson-lead{font-size:1rem;line-height:1.85;color:var(--ink-2);}
+.explain{padding:13px 16px;background:#F5F3FB;border-left:4px solid var(--accent);margin:14px 0 17px;line-height:1.75;}
+.explain strong{color:#34268E;}
+.explain p{margin:4px 0 0;}
+.memory-demo{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.memory-demo .cell{flex:1;min-width:78px;padding:14px 10px;text-align:center;background:#F7F6FB;border:1px solid #D8D3EF;border-radius:8px;}
+.memory-demo .cell strong{display:block;font-size:1.2rem;color:#322099}
+.memory-demo .cell small{display:block;margin-top:7px;font-size:.78rem;color:#697081}
+.lab-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.lab-mini>div{padding:15px 12px;border:1px solid #DDDDF0;background:#F8F8FC;border-radius:10px;line-height:1.55;}
+.lab-mini b{display:block;color:#33218F;margin-bottom:5px;}
+.key-result{padding:16px;border-left:4px solid #24754A;background:#EFF8F2;line-height:1.8;margin:18px 0;}
+.source-small{font-size:.84rem;line-height:1.7;color:#666F7A;}
+.step-card p{line-height:1.85;}
+.codeblock-pre{margin-top:12px;margin-bottom:14px;}
+.step-card .table-wrap{margin-top:12px;margin-bottom:15px;}
+.wide-code{max-height:980px;overflow:auto;}
+.wide-code pre{margin:0;}
+.phase-marker{margin:23px 0 15px;padding:15px 18px;border-top:3px solid var(--accent);background:#F5F3FB;font-weight:800}
+@media(max-width:720px){.lab-mini{grid-template-columns:1fr}.explain{padding:12px}.memory-demo .cell{min-width:70px}}
+</style></head><body><a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10</a><span class="sep">/</span><strong>SoC 10.1</strong></div><div class="brand">BASYS3 · MICRO BLAZE V</div></div></div><header class="hero"><div class="hero-grid"></div><div class="hero-inner"><p class="hero-kicker">Basys3 + MicroBlaze V · SoC 10.1 · 10장 보조 설명</p><h1>GPIO·UART·Timer 통합 C 코드 쉽게 이해하기</h1><p class="hero-desc">기존 10장 main.c를 기능별로 나누어 코드 → 쉬운 해설 → CPU·메모리·AXI 하드웨어 동작 순서로 살펴봅니다.</p><div class="hero-meta"><span class="chip">C 코드 풀이</span><span class="chip">GPIO Ch1/Ch2</span><span class="chip">UART Polling</span><span class="chip">Timer Interrupt</span><span class="chip">LED Bit Mask</span></div><div class="hero-brief"><article><h2>코드</h2><p>실제 함수와 표현 중심으로 읽습니다.</p></article><article><h2>CPU·메모리</h2><p>변수·비트 값을 따라갑니다.</p></article><article><h2>AXI 장치</h2><p>GPIO·UART·Timer를 함께 연결합니다.</p></article></div></div></header><div class="wrap"><aside class="flow-nav" aria-label="10.1장 코드 풀이 세부 목차"><div class="reader-tools"><form hidden=""><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="07_1_uart_echo_c_code_guide.html">SoC 07.1 · UART Echo C 코드 풀이</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="09_1_axi_interrupt_c_code_guide.html">SoC 09.1 · Timer Interrupt C 코드 풀이</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="10_1_integration_c_code_guide.html" selected="">SoC 10.1 · 통합 C 코드 풀이</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="10_microblaze_gpio_uart_timer_integration.html">10장 GUI 실습</a><a href="../../index.html">전체 목차</a></div></div><p class="nav-title">SOC 10.1 · CODE READING</p><p class="nav-help">SW + UART + Timer IRQ → Main → LED</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>전체 흐름</span></a></li><li><a href="#s02"><span class="n">02</span><span>헤더 파일</span></a></li><li><a href="#s03"><span class="n">03</span><span>LED 역할 상수</span></a></li><li><a href="#s04"><span class="n">04</span><span>주소 매크로</span></a></li><li><a href="#s05"><span class="n">05</span><span>객체와 변수</span></a></li><li><a href="#s06"><span class="n">06</span><span>UartPutChar·UartPutString</span></a></li><li><a href="#s07"><span class="n">07</span><span>16진수 출력</span></a></li><li><a href="#s08"><span class="n">08</span><span>PrintHelp·PrintStatus</span></a></li><li><a href="#s09"><span class="n">09</span><span>TimerCallback</span></a></li><li><a href="#s10"><span class="n">10</span><span>InitGpio</span></a></li><li><a href="#s11"><span class="n">11</span><span>InitTimer</span></a></li><li><a href="#s12"><span class="n">12</span><span>SetupInterruptSystem</span></a></li><li><a href="#s13"><span class="n">13</span><span>InitUart</span></a></li><li><a href="#s14"><span class="n">14</span><span>HandleUartCommand</span></a></li><li><a href="#s15"><span class="n">15</span><span>UART 명령</span></a></li><li><a href="#s16"><span class="n">16</span><span>UpdateLedOutput</span></a></li><li><a href="#s17"><span class="n">17</span><span>main() 초기화</span></a></li><li><a href="#s18"><span class="n">18</span><span>while(1)</span></a></li><li><a href="#s19"><span class="n">19</span><span>Debug Watch</span></a></li><li><a href="#s20"><span class="n">20</span><span>main.c 전체 원본</span></a></li></ol></aside><main id="main-content" tabindex="-1"><div class="overview-card"><h2>10장과 10.1장의 차이</h2><div class="stage-flow"><span class="stage"><a href="10_microblaze_gpio_uart_timer_integration.html">10장 · Vivado/Vitis 따라하기</a></span><span class="arrow">→</span><span class="stage"><strong>10.1장 · C 코드 풀이</strong></span><span class="arrow">→</span><span class="stage"><a href="11_register_map_design_principles.html">11장 · Register Map</a></span></div><p class="lesson-lead">새 하드웨어를 만들지 않습니다. 이미 배운 세 주변장치 기능을 하나의 C 프로그램으로 통합하는 방법을 읽습니다.</p><div class="warn">이 교재의 통합 C 코드는 아직 Basys3에서 실행·디버그 검증되지 않은 교육용 초안입니다. 실제 xparameters.h와 IRQ ID를 확인한 뒤 확정합니다.</div></div><nav class="lab-jump" aria-label="핵심 내용 바로 이동"><strong>핵심 내용 바로 보기</strong><div class="jump-links"><a href="#s01">전체 흐름</a><a href="#s03">LED 비트 분리</a><a href="#s14">UART 명령</a><a href="#s16">LED 합성</a><a href="#s20">Watch</a><a href="#s21">전체 코드</a></div></nav><section class="step-card" id="s01"><span class="step">CODE 01</span><h2>전체 흐름 — 네 IP를 한 프로그램에 연결</h2><pre class="codeblock-pre" tabindex="0"><code>PC moserial (&#39;1&#39;,&#39;0&#39;,&#39;r&#39;,&#39;h&#39;) → UART Lite RX FIFO → CPU Main Loop
+SW[15:0] → AXI GPIO Ch2 → CPU Main Loop
+Timer 0 만료 → AXI INTC → CPU ISR → interrupt_count 증가
+CPU Main → SW[13:0] + UART LED14 + Timer LED15 → GPIO Ch1 → LED[15:0]</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>하드웨어는 09장의 AXI GPIO·UART Lite·Timer·INTC를 그대로 사용합니다. Main은 스위치를 읽고 UART 명령을 처리하며 LED 출력 하나를 계산합니다. Timer Callback은 인터럽트 횟수만 증가시킵니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>새 AXI IP를 추가하는 실습이 아닙니다. MicroBlaze V가 여러 기존 주변장치의 데이터를 한 프로그램에서 함께 사용합니다.</p></div></section><section class="step-card" id="s02"><span class="step">CODE 02</span><h2>헤더 파일 — 주변장치 함수를 가져온다</h2><pre class="codeblock-pre" tabindex="0"><code>#include &quot;xparameters.h&quot;
+#include &quot;xgpio.h&quot;
+#include &quot;xuartlite_l.h&quot;
+#include &quot;xtmrctr.h&quot;
+#include &quot;xstatus.h&quot;
+#include &quot;xil_types.h&quot;
+#include &quot;xil_exception.h&quot;
+
+#ifdef SDT
+#include &quot;xinterrupt_wrap.h&quot;
+#else
+#include &quot;xintc.h&quot;
+#endif</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>xparameters.h에는 생성된 하드웨어 주소와 장치 이름이 담깁니다. xgpio.h는 스위치·LED, xuartlite_l.h는 UART FIFO, xtmrctr.h는 타이머, xintc.h·xinterrupt_wrap.h는 인터럽트 연결에 사용합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>09장 XSA로 만든 실제 BSP에서 해당 헤더와 매크로를 확인합니다. SDT 정의가 있으면 SDT 쪽 코드만, 없으면 Classic 코드만 컴파일합니다.</p></div></section><section class="step-card" id="s03"><span class="step">CODE 03</span><h2>LED 역할 상수 — 비트 영역을 서로 겹치지 않게</h2><pre class="codeblock-pre" tabindex="0"><code>#define GPIO_LED_CHANNEL        1U
+#define GPIO_SW_CHANNEL         2U
+
+#define SW_LED_MASK             0x00003FFFU
+#define UART_LED_MASK           0x00004000U
+#define HEARTBEAT_LED_MASK      0x00008000U
+
+#define TIMER0                  0U
+#define TIMER_TICKS_500MS       50000000U
+#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>SW_LED_MASK는 하위 14비트(LED0~13), UART_LED_MASK는 14번 비트, HEARTBEAT_LED_MASK는 15번 비트만 선택합니다. 같은 GPIO 레지스터를 여러 기능이 나눠 쓸 때 핵심이 되는 규칙입니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>예를 들어 SW0만 ON이면 하위 영역은 0x0001이고, UART로 LED14를 켜면 0x4000 비트가 추가됩니다. LED15는 Timer 횟수의 홀짝으로 결정됩니다.</p></div></section><section class="step-card" id="s04"><span class="step">CODE 04</span><h2>주소 매크로 — Classic과 SDT 비교</h2><pre class="codeblock-pre" tabindex="0"><code>#ifndef SDT
+#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
+#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
+#define TIMER_INTERRUPT_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
+#define UART_BASEADDR           XPAR_UARTLITE_0_BASEADDR
+#else
+#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
+#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
+#define UART_BASEADDR           XPAR_XUARTLITE_0_BASEADDR
+#endif</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Classic 경로는 XPAR_GPIO_0_DEVICE_ID처럼 장치 ID로 드라이버를 초기화합니다. SDT 경로는 GPIO·Timer의 Base Address를 사용합니다. UART는 두 경로 모두 Base Address를 통해 레지스터에 접근합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>주소와 장치 번호는 실제 Vivado Address Editor 및 Vitis BSP의 xparameters.h가 기준입니다. 이 예제의 매크로 이름은 검증 전입니다.</p></div></section><section class="step-card" id="s05"><span class="step">CODE 05</span><h2>객체와 변수 — 누가 어떤 상태를 기억할까?</h2><pre class="codeblock-pre" tabindex="0"><code>static XGpio Gpio;
+static XTmrCtr Timer;
+
+#ifndef SDT
+static XIntc Intc;
+#endif
+
+volatile u32 interrupt_count = 0U;
+volatile u32 switch_value    = 0U;
+volatile u32 led_state       = 0U;
+volatile u8  last_uart_rx    = 0U;
+
+static u32 uart_led_state = 0U;</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Gpio와 Timer는 드라이버 객체입니다. interrupt_count는 ISR이 증가시키는 값, switch_value는 최근 스위치 입력, led_state는 실제 GPIO에 쓴 마지막 값, last_uart_rx는 마지막 받은 문자입니다. uart_led_state는 LED14 명령 상태만 저장합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>volatile은 ISR과 Main 사이에서 공유되는 값에 대한 컴파일러 접근 최적화를 제한합니다. volatile만으로 동시 접근 경쟁을 완전히 방지하지는 않습니다.</p></div></section><section class="step-card" id="s06"><span class="step">CODE 06</span><h2>UartPutChar·UartPutString — 글자 보내기</h2><pre class="codeblock-pre" tabindex="0"><code>static void UartPutChar(u8 ch)
+{
+    XUartLite_SendByte(UART_BASEADDR, ch);
+}
+
+static void UartPutString(const char *text)
+{
+    while (*text != &#39;\0&#39;) {
+        UartPutChar((u8)*text);
+        text++;
+    }
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>UartPutChar는 UART 송신 레지스터에 한 바이트를 보냅니다. UartPutString은 문자열의 끝 문자 &#39;\0&#39;이 나올 때까지 한 글자씩 전송합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>CPU가 UART Lite의 TX FIFO에 바이트를 쓰면 UART 하드웨어가 비트를 순서대로 전송합니다. SendByte가 송신 공간을 기다리는 동안 CPU가 짧게 대기할 수 있습니다.</p></div></section><section class="step-card" id="s07"><span class="step">CODE 07</span><h2>16진수 출력 — 4비트 묶음을 문자로 바꾼다</h2><pre class="codeblock-pre" tabindex="0"><code>static void UartPutHexNibble(u8 value)
+{
+    value &amp;= 0x0FU;
+
+    if (value &lt; 10U) {
+        UartPutChar((u8)(&#39;0&#39; + value));
+    } else {
+        UartPutChar((u8)(&#39;A&#39; + (value - 10U)));
+    }
+}
+
+static void UartPutHex16(u16 value)
+{
+    int shift;
+
+    for (shift = 12; shift &gt;= 0; shift -= 4) {
+        UartPutHexNibble((u8)(value &gt;&gt; shift));
+    }
+}
+
+static void UartPutHex32(u32 value)
+{
+    int shift;
+
+    for (shift = 28; shift &gt;= 0; shift -= 4) {
+        UartPutHexNibble((u8)(value &gt;&gt; shift));
+    }
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>UartPutHexNibble은 하위 4비트를 0~9 또는 A~F 문자로 바꿉니다. UartPutHex16은 16비트 수를 네 글자, UartPutHex32는 32비트 수를 여덟 글자 16진수로 출력합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>16진수 한 글자는 4비트입니다. 따라서 16비트 스위치·LED 값은 4글자이고 인터럽트 횟수 32비트는 8글자로 나타냅니다.</p></div></section><section class="step-card" id="s08"><span class="step">CODE 08</span><h2>PrintHelp·PrintStatus — PC 터미널에 안내하기</h2><pre class="codeblock-pre" tabindex="0"><code>static void PrintHelp(void)
+{
+    UartPutString(&quot;\r\nCommands\r\n&quot;);
+    UartPutString(&quot;  1 : LED14 ON\r\n&quot;);
+    UartPutString(&quot;  0 : LED14 OFF\r\n&quot;);
+    UartPutString(&quot;  r : Read status\r\n&quot;);
+    UartPutString(&quot;  h : Help\r\n&quot;);
+}
+
+static void PrintStatus(void)
+{
+    UartPutString(&quot;\r\nSW=0x&quot;);
+    UartPutHex16((u16)switch_value);
+    UartPutString(&quot; LED=0x&quot;);
+    UartPutHex16((u16)led_state);
+    UartPutString(&quot; IRQ=0x&quot;);
+    UartPutHex32(interrupt_count);
+    UartPutString(&quot;\r\n&quot;);
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>h 명령이면 1·0·r·h 안내를, r 명령이면 현재 스위치 값·LED 값·인터럽트 횟수를 출력합니다. 각 값 앞에 SW=0x, LED=0x, IRQ=0x를 붙여 구분합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>r 응답은 PrintStatus를 호출하는 순간에 Main이 읽고 보유한 값의 표시입니다. 출력 중 스위치나 카운터가 바뀔 수 있으므로 시점이 완전히 동일한 원자적 스냅샷은 아닙니다.</p></div></section><section class="step-card" id="s09"><span class="step">CODE 09</span><h2>TimerCallback — 인터럽트에서는 카운터만 증가</h2><pre class="codeblock-pre" tabindex="0"><code>static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
+{
+    (void)CallBackRef;
+    (void)TmrCtrNumber;
+    interrupt_count++;
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>타이머가 만료되면 Timer 드라이버 Handler가 이 Callback을 실행합니다. 사용하지 않는 인자는 (void)로 처리하고 interrupt_count++만 수행합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>Main Loop가 UART 송신 중이어도 Timer 인터럽트가 활성화되어 있으면 CPU는 잠시 인터럽트 처리를 실행하고 원래 프로그램으로 돌아갑니다.</p></div></section><section class="step-card" id="s10"><span class="step">CODE 10</span><h2>InitGpio — AXI GPIO 드라이버 초기화</h2><pre class="codeblock-pre" tabindex="0"><code>static int InitGpio(void)
+{
+#ifndef SDT
+    return XGpio_Initialize(&amp;Gpio, GPIO_DEVICE_ID);
+#else
+    return XGpio_Initialize(&amp;Gpio, GPIO_BASEADDR);
+#endif
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>XGpio_Initialize 함수에 장치 ID 또는 Base Address를 전달하여 기존 GPIO IP를 사용할 준비를 합니다. 이 예제는 Channel 1 LED 출력과 Channel 2 스위치 입력을 전제로 합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>실제 AXI GPIO IP가 두 채널로 설정되어 있어야 합니다. 코드만으로 하드웨어의 GPIO 채널 개수를 바꿀 수는 없습니다.</p></div></section><section class="step-card" id="s11"><span class="step">CODE 11</span><h2>InitTimer — 08장 설정에 인터럽트 사용</h2><pre class="codeblock-pre" tabindex="0"><code>static int InitTimer(void)
+{
+    int status;
+
+#ifndef SDT
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
+#else
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
+#endif
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
+    XTmrCtr_SetOptions(
+        &amp;Timer,
+        TIMER0,
+        XTC_DOWN_COUNT_OPTION |
+        XTC_AUTO_RELOAD_OPTION |
+        XTC_INT_MODE_OPTION
+    );
+    XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
+
+    return XST_SUCCESS;
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Timer를 초기화하고 SelfTest를 수행합니다. TimerCallback을 등록한 뒤 감소 계수·자동 재적재·인터럽트 모드를 설정하고 49,999,998을 Load 값으로 사용합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>설정상 Timer 입력 클록이 100 MHz일 때 만료 간격은 약 0.5초입니다. 정확한 실측 간격은 아직 확인하지 않았습니다.</p></div></section><section class="step-card" id="s12"><span class="step">CODE 12</span><h2>SetupInterruptSystem — 인터럽트의 함수 경로 등록</h2><pre class="codeblock-pre" tabindex="0"><code>static int SetupInterruptSystem(void)
+{
+    int status;
+
+#ifndef SDT
+    status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Connect(
+        &amp;Intc,
+        TIMER_INTERRUPT_ID,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        (void *)&amp;Timer
+    );
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XIntc_Enable(&amp;Intc, TIMER_INTERRUPT_ID);
+
+    Xil_ExceptionInit();
+    Xil_ExceptionRegisterHandler(
+        XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler,
+        &amp;Intc
+    );
+    Xil_ExceptionEnable();
+#else
+    status = XSetupInterruptSystem(
+        &amp;Timer,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        Timer.Config.IntrId,
+        Timer.Config.IntrParent,
+        XINTERRUPT_DEFAULT_PRIORITY
+    );
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+#endif
+
+    return XST_SUCCESS;
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Classic 구성은 AXI INTC 초기화 → Timer Handler 등록 → INTC 시작 → 해당 인터럽트 허용 → CPU 예외 등록과 활성화 순서입니다. SDT 구성은 XSetupInterruptSystem을 사용합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>Timer interrupt 신호는 AXI INTC와 CPU로 전달되고, CPU는 등록된 핸들러 함수를 실행합니다. 실제 인터럽트 ID와 CPU 예외 설정은 09장 실습에서 확정합니다.</p></div></section><section class="step-card" id="s13"><span class="step">CODE 13</span><h2>InitUart — UART 수신·송신 FIFO 비우기</h2><pre class="codeblock-pre" tabindex="0"><code>static void InitUart(void)
+{
+    /* RX/TX FIFO clear. UART interrupt remains disabled. */
+    XUartLite_WriteReg(
+        UART_BASEADDR,
+        XUL_CONTROL_REG_OFFSET,
+        0x03U
+    );
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>XUartLite_WriteReg로 AXI UART Lite의 Control Register에 0x03을 기록해 RX/TX FIFO를 초기화합니다. UART의 하드웨어 인터럽트는 별도로 활성화하지 않습니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>UART에서 수신된 오래된 문자가 남지 않도록 초기화합니다. 09장의 Timer Interrupt와 달리 UART는 Main에서 데이터 유무를 직접 확인합니다.</p></div></section><section class="step-card" id="s14"><span class="step">CODE 14</span><h2>HandleUartCommand — 문자 없으면 바로 돌아온다</h2><pre class="codeblock-pre" tabindex="0"><code>static void HandleUartCommand(void)
+{
+    if (XUartLite_IsReceiveEmpty(UART_BASEADDR)) {
+        return;
+    }
+
+    last_uart_rx = XUartLite_RecvByte(UART_BASEADDR);
+
+    switch (last_uart_rx) {
+    case &#39;1&#39;:
+        uart_led_state = UART_LED_MASK;
+        UartPutString(&quot;\r\nLED14=ON\r\n&quot;);
+        break;
+
+    case &#39;0&#39;:
+        uart_led_state = 0U;
+        UartPutString(&quot;\r\nLED14=OFF\r\n&quot;);
+        break;
+
+    case &#39;r&#39;:
+    case &#39;R&#39;:
+        PrintStatus();
+        break;
+
+    case &#39;h&#39;:
+    case &#39;H&#39;:
+        PrintHelp();
+        break;
+
+    case &#39;\r&#39;:
+    case &#39;\n&#39;:
+        break;
+
+    default:
+        UartPutString(&quot;\r\nUnknown command. Press h.\r\n&quot;);
+        break;
+    }
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>XUartLite_IsReceiveEmpty가 참이면 즉시 return하여 스위치·LED 처리를 계속합니다. 문자가 있다면 RecvByte로 하나를 읽고 switch 문으로 1·0·r·h를 처리합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>Blocking Receive를 무조건 호출하는 코드와 달리 수신 문자가 없을 때 Main Loop가 멈추지 않습니다. 다만 출력 문자열을 전송하는 순간에는 잠시 기다릴 수 있습니다.</p></div></section><section class="step-card" id="s15"><span class="step">CODE 15</span><h2>UART 명령 — 1·0·r·h를 어떻게 구분할까?</h2><pre class="codeblock-pre" tabindex="0"><code>case &#39;1&#39;: uart_led_state = UART_LED_MASK; /* LED14 ON */
+case &#39;0&#39;: uart_led_state = 0U;            /* LED14 OFF */
+case &#39;r&#39;: PrintStatus();                  /* 현재값 */
+case &#39;h&#39;: PrintHelp();                    /* 도움말 */
+/* 실제 코드는 case 사이에 break가 있습니다. */</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>문자 1은 LED14 비트를 켜도록 기억하고, 0은 끕니다. r은 현재 상태를 보여주고 h는 명령 안내를 보여줍니다. CR/LF는 건너뛰고 나머지 문자는 Unknown command로 처리합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>UART 명령은 led_state 전체를 직접 덮어쓰지 않습니다. LED14 전용 상태만 바꾸므로 SW·Timer가 담당하는 LED들과 충돌하지 않습니다.</p></div></section><section class="step-card" id="s16"><span class="step">CODE 16</span><h2>UpdateLedOutput — 최종 LED 값을 한 번에 계산</h2><pre class="codeblock-pre" tabindex="0"><code>static void UpdateLedOutput(void)
+{
+    u32 new_led_state;
+    u32 heartbeat_state;
+
+    if ((interrupt_count &amp; 1U) != 0U) {
+        heartbeat_state = HEARTBEAT_LED_MASK;
+    } else {
+        heartbeat_state = 0U;
+    }
+
+    new_led_state =
+        (switch_value &amp; SW_LED_MASK) |
+        uart_led_state |
+        heartbeat_state;
+
+    if (new_led_state != led_state) {
+        led_state = new_led_state;
+        XGpio_DiscreteWrite(
+            &amp;Gpio,
+            GPIO_LED_CHANNEL,
+            led_state
+        );
+    }
+}</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>인터럽트 횟수가 홀수면 LED15를 켭니다. switch_value의 하위 14비트, UART로 제어하는 LED14 상태, Timer의 LED15 상태를 비트 OR로 합쳐 new_led_state를 만듭니다. 최종값이 달라졌을 때만 GPIO에 기록합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>예를 들어 SW0=1, UART LED14 ON, IRQ 횟수 홀수라면 최종 LED 비트는 0xC001입니다. 이는 코드 계산 예시이지 보드 실측값이 아닙니다.</p></div></section><section class="step-card" id="s17"><span class="step">CODE 17</span><h2>main() 초기화 — 주변장치를 준비한 뒤 Timer 시작</h2><pre class="codeblock-pre" tabindex="0"><code>int main(void)
+{
+    int status;
+
+    status = InitGpio();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    InitUart();
+
+    status = InitTimer();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = SetupInterruptSystem();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    led_state = 0U;
+    XGpio_DiscreteWrite(&amp;Gpio, GPIO_LED_CHANNEL, led_state);
+
+    UartPutString(&quot;\r\nSoC 10 Integrated System Ready\r\n&quot;);
+    PrintHelp();
+
+    XTmrCtr_Start(&amp;Timer, TIMER0);</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>GPIO 초기화 → UART FIFO 초기화 → Timer 초기화 → 인터럽트 등록 → LED OFF → 준비 문자열 송신 → Timer 시작 순서입니다. 각 장치 초기화가 실패하면 실행을 계속하지 않습니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>인터럽트가 발생하기 전에 관련 드라이버와 CPU 인터럽트 경로를 먼저 준비합니다.</p></div></section><section class="step-card" id="s18"><span class="step">CODE 18</span><h2>while(1) — Switch·UART·LED 처리 반복</h2><pre class="codeblock-pre" tabindex="0"><code>while (1) {
+        switch_value = XGpio_DiscreteRead(
+            &amp;Gpio,
+            GPIO_SW_CHANNEL
+        );
+
+        HandleUartCommand();
+        UpdateLedOutput();
+    }</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Main Loop는 GPIO Channel 2에서 스위치를 읽고, UART 수신 명령을 확인한 다음 현재 인터럽트 카운터에 맞춰 하나의 LED 출력값을 계산합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>Timer의 인터럽트는 Main Loop와 별개 시점에 발생합니다. Main의 UART는 Polling이지만 Timer 만료를 계속 폴링하는 08장과 구분됩니다.</p></div></section><section class="step-card" id="s19"><span class="step">CODE 19</span><h2>Debug Watch — 네 변수의 의미</h2><pre class="codeblock-pre" tabindex="0"><code>switch_value      // 가장 최근 읽은 SW 값
+last_uart_rx      // 마지막 받은 UART 문자
+interrupt_count   // Timer Callback 누적 횟수
+led_state         // 최종 LED[15:0] 출력값</code></pre><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>스위치를 변경하면 switch_value, UART 문자를 보내면 last_uart_rx, Timer 인터럽트가 실행되면 interrupt_count, 최종 합성값이 바뀌면 led_state가 변경될 것으로 예상됩니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>모두 예상 동작입니다. 실제 Watch 화면·값과 LED 반응이 확인되기 전에는 10장 성공으로 표시하지 않습니다.</p></div></section><section class="step-card" id="s20"><span class="step">CODE 20</span><h2>main.c 전체 원본 — 한 번에 복사</h2><p class="lesson-lead">10장 본문에 포함된 기존 교육용 통합 코드를 빠짐없이 제공합니다. 하드웨어 주소와 인터럽트 번호는 09장 Vitis BSP에서 확인해야 합니다.</p><pre class="codeblock-pre" tabindex="0"><code><code>#include "xparameters.h"
+#include "xgpio.h"
+#include "xuartlite_l.h"
+#include "xtmrctr.h"
+#include "xstatus.h"
+#include "xil_types.h"
+#include "xil_exception.h"
+
+#ifdef SDT
+#include "xinterrupt_wrap.h"
+#else
+#include "xintc.h"
+#endif
+
+/*
+ * SoC 10 - MicroBlaze V + GPIO + UART + Timer + AXI INTC Integration
+ *
+ * GPIO Channel 1 : LED[15:0] output
+ * GPIO Channel 2 : SW[15:0] input
+ *
+ * LED ownership:
+ *   LED[13:0] : SW[13:0] mirror
+ *   LED14     : UART command control ('1' = ON, '0' = OFF)
+ *   LED15     : Timer interrupt heartbeat
+ *
+ * UART : Polling, 115200 8N1
+ * Timer: 100 MHz, 0.5 s interval, Down Count + Auto Reload + Interrupt
+ * IRQ  : AXI Timer -&gt; AXI INTC -&gt; MicroBlaze V
+ */
+
+#define GPIO_LED_CHANNEL        1U
+#define GPIO_SW_CHANNEL         2U
+
+#define SW_LED_MASK             0x00003FFFU
+#define UART_LED_MASK           0x00004000U
+#define HEARTBEAT_LED_MASK      0x00008000U
+
+#define TIMER0                  0U
+#define TIMER_TICKS_500MS       50000000U
+#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)
+
+#ifndef SDT
+#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
+#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
+#define TIMER_INTERRUPT_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
+#define UART_BASEADDR           XPAR_UARTLITE_0_BASEADDR
+#else
+#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
+#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
+#define UART_BASEADDR           XPAR_XUARTLITE_0_BASEADDR
+#endif
+
+static XGpio Gpio;
+static XTmrCtr Timer;
+
+#ifndef SDT
+static XIntc Intc;
+#endif
+
+volatile u32 interrupt_count = 0U;
+volatile u32 switch_value    = 0U;
+volatile u32 led_state       = 0U;
+volatile u8  last_uart_rx    = 0U;
+
+static u32 uart_led_state = 0U;
+
+static void UartPutChar(u8 ch)
+{
+    XUartLite_SendByte(UART_BASEADDR, ch);
+}
+
+static void UartPutString(const char *text)
+{
+    while (*text != '\0') {
+        UartPutChar((u8)*text);
+        text++;
+    }
+}
+
+static void UartPutHexNibble(u8 value)
+{
+    value &amp;= 0x0FU;
+
+    if (value &lt; 10U) {
+        UartPutChar((u8)('0' + value));
+    } else {
+        UartPutChar((u8)('A' + (value - 10U)));
+    }
+}
+
+static void UartPutHex16(u16 value)
+{
+    int shift;
+
+    for (shift = 12; shift &gt;= 0; shift -= 4) {
+        UartPutHexNibble((u8)(value &gt;&gt; shift));
+    }
+}
+
+static void UartPutHex32(u32 value)
+{
+    int shift;
+
+    for (shift = 28; shift &gt;= 0; shift -= 4) {
+        UartPutHexNibble((u8)(value &gt;&gt; shift));
+    }
+}
+
+static void PrintHelp(void)
+{
+    UartPutString("\r\nCommands\r\n");
+    UartPutString("  1 : LED14 ON\r\n");
+    UartPutString("  0 : LED14 OFF\r\n");
+    UartPutString("  r : Read status\r\n");
+    UartPutString("  h : Help\r\n");
+}
+
+static void PrintStatus(void)
+{
+    UartPutString("\r\nSW=0x");
+    UartPutHex16((u16)switch_value);
+    UartPutString(" LED=0x");
+    UartPutHex16((u16)led_state);
+    UartPutString(" IRQ=0x");
+    UartPutHex32(interrupt_count);
+    UartPutString("\r\n");
+}
+
+static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
+{
+    (void)CallBackRef;
+    (void)TmrCtrNumber;
+    interrupt_count++;
+}
+
+static int InitGpio(void)
+{
+#ifndef SDT
+    return XGpio_Initialize(&amp;Gpio, GPIO_DEVICE_ID);
+#else
+    return XGpio_Initialize(&amp;Gpio, GPIO_BASEADDR);
+#endif
+}
+
+static int InitTimer(void)
+{
+    int status;
+
+#ifndef SDT
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
+#else
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
+#endif
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
+    XTmrCtr_SetOptions(
+        &amp;Timer,
+        TIMER0,
+        XTC_DOWN_COUNT_OPTION |
+        XTC_AUTO_RELOAD_OPTION |
+        XTC_INT_MODE_OPTION
+    );
+    XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
+
+    return XST_SUCCESS;
+}
+
+static int SetupInterruptSystem(void)
+{
+    int status;
+
+#ifndef SDT
+    status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Connect(
+        &amp;Intc,
+        TIMER_INTERRUPT_ID,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        (void *)&amp;Timer
+    );
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XIntc_Enable(&amp;Intc, TIMER_INTERRUPT_ID);
+
+    Xil_ExceptionInit();
+    Xil_ExceptionRegisterHandler(
+        XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler,
+        &amp;Intc
+    );
+    Xil_ExceptionEnable();
+#else
+    status = XSetupInterruptSystem(
+        &amp;Timer,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        Timer.Config.IntrId,
+        Timer.Config.IntrParent,
+        XINTERRUPT_DEFAULT_PRIORITY
+    );
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+#endif
+
+    return XST_SUCCESS;
+}
+
+static void InitUart(void)
+{
+    /* RX/TX FIFO clear. UART interrupt remains disabled. */
+    XUartLite_WriteReg(
+        UART_BASEADDR,
+        XUL_CONTROL_REG_OFFSET,
+        0x03U
+    );
+}
+
+static void HandleUartCommand(void)
+{
+    if (XUartLite_IsReceiveEmpty(UART_BASEADDR)) {
+        return;
+    }
+
+    last_uart_rx = XUartLite_RecvByte(UART_BASEADDR);
+
+    switch (last_uart_rx) {
+    case '1':
+        uart_led_state = UART_LED_MASK;
+        UartPutString("\r\nLED14=ON\r\n");
+        break;
+
+    case '0':
+        uart_led_state = 0U;
+        UartPutString("\r\nLED14=OFF\r\n");
+        break;
+
+    case 'r':
+    case 'R':
+        PrintStatus();
+        break;
+
+    case 'h':
+    case 'H':
+        PrintHelp();
+        break;
+
+    case '\r':
+    case '\n':
+        break;
+
+    default:
+        UartPutString("\r\nUnknown command. Press h.\r\n");
+        break;
+    }
+}
+
+static void UpdateLedOutput(void)
+{
+    u32 new_led_state;
+    u32 heartbeat_state;
+
+    if ((interrupt_count &amp; 1U) != 0U) {
+        heartbeat_state = HEARTBEAT_LED_MASK;
+    } else {
+        heartbeat_state = 0U;
+    }
+
+    new_led_state =
+        (switch_value &amp; SW_LED_MASK) |
+        uart_led_state |
+        heartbeat_state;
+
+    if (new_led_state != led_state) {
+        led_state = new_led_state;
+        XGpio_DiscreteWrite(
+            &amp;Gpio,
+            GPIO_LED_CHANNEL,
+            led_state
+        );
+    }
+}
+
+int main(void)
+{
+    int status;
+
+    status = InitGpio();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    InitUart();
+
+    status = InitTimer();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = SetupInterruptSystem();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    led_state = 0U;
+    XGpio_DiscreteWrite(&amp;Gpio, GPIO_LED_CHANNEL, led_state);
+
+    UartPutString("\r\nSoC 10 Integrated System Ready\r\n");
+    PrintHelp();
+
+    XTmrCtr_Start(&amp;Timer, TIMER0);
+
+    while (1) {
+        switch_value = XGpio_DiscreteRead(
+            &amp;Gpio,
+            GPIO_SW_CHANNEL
+        );
+
+        HandleUartCommand();
+        UpdateLedOutput();
+    }
+
+    return XST_SUCCESS;
+}</code></code></pre><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>09장 하드웨어가 검증된 후 10장 Application을 별도로 빌드해야 합니다. 이 페이지는 코드 풀이 자료이며 실행 성공을 주장하지 않습니다.</p></div></section><div class="chapter-nav"><a href="10_microblaze_gpio_uart_timer_integration.html">← SoC 10 GUI 실습</a><a href="../../index.html">전체 목차</a><a href="11_register_map_design_principles.html">SoC 11 →</a></div></main></div><footer class="site-footer">Basys3 + MicroBlaze V SoC · Chapter 10.1 · C 코드 쉬운 풀이</footer></body></html>
