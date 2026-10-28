@@ -239,6 +239,7 @@ main[tabindex="-1"]:focus{outline:none}
 <li><a href="#s17"><span class="n">17</span><span>XDC 유지</span></a></li>
 <li><a href="#s18"><span class="n">18</span><span>XSA · Vitis 갱신</span></a></li>
 <li><a href="#s19"><span class="n">19</span><span>Timer + GPIO 프로그램</span></a></li>
+<li><a href="08_1_axi_timer_c_code_guide.html"><span class="n">↳</span><span>08.1 · Timer C 코드 풀이</span></a></li>
 <li><a href="#s20"><span class="n">20</span><span>Driver API와 Register</span></a></li>
 <li><a href="#s21"><span class="n">21</span><span>실행 순서</span></a></li>
 <li><a href="#s22"><span class="n">22</span><span>눈으로 확인하는 결과</span></a></li>
@@ -418,56 +419,36 @@ LED0 OFF : led_state = 0x00000000
 <section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Validate → Bitstream → XSA → Vitis</h2><ol class="procedure"><li><strong>Block Design 검증</strong><p><b>Ctrl+S → Validate Design(F6)</b>. 오류나 Critical Warning을 점검하고 원인 없는 경고를 무시하지 않습니다.</p></li><li><strong>Wrapper·Top·XDC 대조</strong><p>08장 BD가 별도라면 <b>Create HDL Wrapper</b> 후 <b>Set as Top</b>을 확인합니다. 기존 UART/GPIO/Clock/Reset 외부 포트 및 XDC는 유지합니다.</p></li><li><strong>08장 하드웨어 내보내기</strong><p><b>Generate Bitstream</b> 성공 후 <b>File → Export → Export Hardware</b>에서 <b>Include bitstream</b>을 선택하고 08장 XSA를 별도로 저장합니다.</p><span class="step-result">기대 화면: 08장 Bitstream과 새 XSA 파일이 생성됩니다.</span></li><li><strong>08장 플랫폼 분리</strong><p>Vitis Workspace <code>/home/jung/soc/sw</code>에서 <b>File → New Component → Platform</b>을 열어 08장 XSA로 새 Platform을 만듭니다. 07장 Platform은 덮어쓰지 않습니다.</p></li><li><strong>드라이버 확인</strong><p>Platform Build 후 <code>xparameters.h</code>에 Timer 주소 매크로가 생성됐는지 확인하고, 19절의 코드를 사용하는 새 Application을 만듭니다.</p></li></ol></section>
 
 <section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Timer + GPIO 프로그램</h2>
-<p>아래 코드는 SoC 08 실습을 위해 작성한 교육용 코드이며 Timer Driver API는 AMD embeddedsw의 Polling Example과 현재 Driver 정의를 기준으로 사용한다.</p>
+<p>아래 소스는 실제 Vitis Debug 성공 화면의 <code>main.c</code>와 변수명·함수명을 일치시켰습니다. Timer Driver API는 AMD embeddedsw 정의를 기준으로 확인했습니다.</p>
 <pre class="codeblock-pre" tabindex="0" role="region" aria-label="Timer + GPIO 프로그램 · 소스 코드"><code>#include "xparameters.h"
 #include "xtmrctr.h"
 #include "xgpio.h"
 #include "xstatus.h"
 #include "xil_types.h"
 
-/*
- * SoC 08 - AXI Timer Polling + AXI GPIO LED Blink
- *
- * Timer clock : 100 MHz
- * Clock period: 10 ns
- *
- * Down-count Generate Mode:
- *   interval = (TLR0 + 2) * 10 ns
- *
- * 0.5 s:
- *   50,000,000 clocks
- *   TLR0 = 50,000,000 - 2
- *        = 49,999,998
- *        = 0x02FAF07E
- *
- * Timer expires every 0.5 s.
- * LED0 toggles at every expiration.
- * Therefore LED0 ON/OFF full cycle is about 1 s.
- */
+/* SoC08: Timer0 0.5초 Polling, 기존 AXI GPIO LED0 출력 */
+#define TIMER0                 0U
+#define GPIO_LED_CHANNEL       1U
+#define LED0_MASK              0x00000001U
 
-#define TIMER0                  0U
-#define LED_CHANNEL             1U
-#define LED0_MASK               0x00000001U
-
-#define TIMER_CLOCK_HZ          100000000U
-#define TIMER_INTERVAL_MS       500U
-#define TIMER_TICKS_500MS       50000000U
-#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)
+/* 100 MHz × 0.5 s = 50,000,000 clocks, PG079: TLR + 2 */
+#define TIMER_RESET_VALUE      (50000000U - 2U)
 
 #ifndef SDT
-#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
-#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
+#define TIMER_DEVICE_ID        XPAR_TMRCTR_0_DEVICE_ID
+#define GPIO_DEVICE_ID         XPAR_GPIO_0_DEVICE_ID
 #else
-#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
-#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
+#define TIMER_BASEADDR         XPAR_XTMRCTR_0_BASEADDR
+#define GPIO_BASEADDR          XPAR_XGPIO_0_BASEADDR
 #endif
 
 static XTmrCtr Timer;
 static XGpio Gpio;
 
-volatile u32 led_state    = 0U;
+/* Vitis Debug Watch로 확인할 변수 */
 volatile u32 expire_count = 0U;
-volatile u32 timer_value  = 0U;
+volatile u32 led_state = 0U;
+volatile u32 timer_value = 0U;
 
 static int init_gpio(void)
 {
@@ -481,92 +462,49 @@ static int init_gpio(void)
 static int init_timer(void)
 {
     int status;
-
 #ifndef SDT
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
 #else
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
 #endif
-
-    if (status != XST_SUCCESS) {
-        return status;
-    }
-
+    if (status != XST_SUCCESS) return status;
     status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
-    if (status != XST_SUCCESS) {
-        return status;
-    }
+    if (status != XST_SUCCESS) return status;
 
-    /*
-     * Polling Generate Mode:
-     * - Down Count
-     * - Auto Reload
-     * - Interrupt output is NOT enabled
-     */
-    XTmrCtr_SetOptions(
-        &amp;Timer,
-        TIMER0,
-        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION
-    );
-
+    /* (유지) Down Count + Auto Reload, Interrupt 출력은 미사용 */
+    XTmrCtr_SetOptions(&amp;Timer, TIMER0,
+        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION);
     XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
     XTmrCtr_Start(&amp;Timer, TIMER0);
-
     return XST_SUCCESS;
 }
 
+/* 만료 비트 T0INT는 1을 쓰면 0으로 지워진다. */
 static void clear_timer_expired(void)
 {
-    u32 csr;
-
-    /*
-     * T0INT is Write-1-to-Clear.
-     * Keep the current control bits and write 1 only to the event flag.
-     */
-    csr = XTmrCtr_GetControlStatusReg(Timer.BaseAddress, TIMER0);
-
-    XTmrCtr_SetControlStatusReg(
-        Timer.BaseAddress,
-        TIMER0,
-        csr | XTC_CSR_INT_OCCURED_MASK
-    );
+    u32 csr = XTmrCtr_GetControlStatusReg(Timer.BaseAddress, TIMER0);
+    XTmrCtr_SetControlStatusReg(Timer.BaseAddress, TIMER0,
+        csr | XTC_CSR_INT_OCCURED_MASK);
 }
 
 int main(void)
 {
-    int status;
+    if (init_gpio() != XST_SUCCESS) return XST_FAILURE;
+    if (init_timer() != XST_SUCCESS) return XST_FAILURE;
 
-    status = init_gpio();
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
-    status = init_timer();
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
-    /* LED0 initially OFF */
-    XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+    /* LED0 초기 소등: 기존 AXI GPIO 채널 1 출력 */
+    XGpio_DiscreteWrite(&amp;Gpio, GPIO_LED_CHANNEL, led_state);
 
     while (1) {
-        /* Debugger에서 현재 down-counter 값을 관찰할 수 있다. */
         timer_value = XTmrCtr_GetValue(&amp;Timer, TIMER0);
-
         if (XTmrCtr_IsExpired(&amp;Timer, TIMER0)) {
             clear_timer_expired();
-
             expire_count++;
-
-            /* LED0 toggle */
-            led_state ^= LED0_MASK;
-            XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+            led_state ^= LED0_MASK;  /* 0 → 1 → 0 반복 */
+            XGpio_DiscreteWrite(&amp;Gpio, GPIO_LED_CHANNEL, led_state);
         }
     }
-
-    return XST_SUCCESS;
-}
-</code></pre></section>
+}</code></pre><div class="note"><strong>코드 한 줄씩 쉽게 풀이</strong><p>이 소스의 <code>GPIO_LED_CHANNEL</code>, <code>TIMER_RESET_VALUE</code>, <code>clear_timer_expired()</code>, <code>led_state ^= LED0_MASK</code>가 무엇을 하는지 07.1장과 같은 형식으로 설명합니다.</p><p><a href="08_1_axi_timer_c_code_guide.html"><strong>SoC 08.1 · AXI Timer C 코드 쉽게 이해하기 →</strong></a></p></div><p><a href="../../code/soc08/main.c">08장 검증 C 소스 원문 열기</a></p></section>
 
 <section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Driver API와 Register</h2>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Driver API와 Register · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">API</th><th scope="col" role="columnheader">Hardware 동작</th></tr></thead><tbody role="rowgroup">
@@ -651,7 +589,7 @@ MicroBlaze V
 <tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_polled_example.c" target="_blank" rel="noopener">AMD embeddedsw · xtmrctr_polled_example.c</a></td><td data-label="확인 항목" role="cell">Polling Example, Classic/SDT 초기화</td></tr>
 </tbody></table></div></section>
 
-<nav class="chapter-nav"><a href="07_axi_uart_lite.html">← SoC 07</a><a href="../../index.html">전체 목차</a><a href="09_axi_interrupt_controller.html">SoC 09 →</a></nav>
+<nav class="chapter-nav"><a href="07_axi_uart_lite.html">← SoC 07</a><a href="08_1_axi_timer_c_code_guide.html">SoC 08.1 · 코드 풀이</a><a href="09_axi_interrupt_controller.html">SoC 09 →</a></nav>
 <section class="step-card" id="soc08-verified-run"><span class="step">실제 실습 검증 · Vivado/Vitis 2024.2</span><h2>08장 실제 성공 결과 · AXI Timer Polling과 LED0</h2><p>08장 프로젝트는 07장 성공본에서 <code>File → Project → Save As</code>를 사용해 <code>/home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xpr</code>로 분리하고, 새 Block Design <code>soc08_axi_timer.bd</code>에 <code>axi_timer_0</code>를 추가했습니다. 기존 AXI GPIO·UART Lite·Local BRAM 및 XDC를 유지하고, AXI SmartConnect의 세 번째 출력으로 Timer의 S_AXI를 연결했습니다.</p><h3>실제 Address Editor 검증</h3><table><thead><tr><th>장치</th><th>Base Address</th><th>Range</th></tr></thead><tbody><tr><td>Local BRAM</td><td><code>0x00000000</code></td><td>16 KiB</td></tr><tr><td>AXI GPIO</td><td><code>0x40000000</code></td><td>64 KiB</td></tr><tr><td>AXI UART Lite</td><td><code>0x40600000</code></td><td>64 KiB</td></tr><tr><td>AXI Timer</td><td><code>0x41C00000</code></td><td>64 KiB</td></tr></tbody></table><h3>Vivado 검증 및 하드웨어 내보내기</h3><ol><li><b>Validate Design</b>: 오류 0건, Critical Warning 0건</li><li><b>Create HDL Wrapper</b>: <code>soc08_axi_timer_wrapper.v</code> 자동 생성, Top 지정; 포트 <code>UART_0_rxd</code>, <code>UART_0_txd</code>, <code>btnC</code>, <code>clk</code>, <code>led_tri_o[15:0]</code>, <code>sw_tri_i[15:0]</code> 확인</li><li><b>Generate Bitstream</b>: 구현 타이밍 WNS +0.675 ns, WHS +0.035 ns, TNS/THS 0 ns; 사용자 타이밍 제약 충족</li><li><b>Report Power</b>: On-chip 약 0.200 W 예측, Confidence LOW — 실측값이 아님</li><li><b>DRC</b>: PDRC 관련 Warning 8건 관측 — 기능 검증 성공과 별도로 원인 점검 필요</li><li><b>File → Export → Export Hardware</b>: Include bitstream 선택, 실제 생성 파일 <code>/home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer_wrapper.xsa</code></li></ol><h3>Vitis 2024.2 Platform부터 ELF까지</h3><ol><li><b>File → New Component → Platform</b>에서 이름 <code>soc08_axi_timer_platform</code>, 위치 <code>/home/jung/soc/sw</code> 지정</li><li>Hardware Design으로 위 XSA 선택, OS <code>standalone</code>, CPU <code>microblaze_riscv_0</code> 선택하여 Platform Build 성공</li><li>생성된 <code>xparameters.h</code>에서 <code>XPAR_XTMRCTR_0_BASEADDR 0x41c00000</code>, <code>XPAR_XTMRCTR_0_CLOCK_FREQUENCY 0x05f5e100</code> 확인(100 MHz)</li><li><b>File → New Component → Application</b>에서 <code>soc08_axi_timer</code> 생성, 08장 Platform 및 <code>standalone_microblaze_riscv_0</code> 선택; Empty Application에 <code>main.c</code> 작성</li><li>Build 완료, <code>soc08_axi_timer.elf</code> 생성 확인; 편집기 진단 표시와 실제 컴파일 성공 여부는 구분</li><li><code>launch.json</code> 탭을 열어 08장 <code>.bit</code>, 08장 <code>.elf</code>, <code>microblaze_riscv_0</code> 확인한 후 Debug 실행</li><li>Debug 일시정지 중에는 LED가 멈추므로 <b>Continue (F5)</b>로 재개. Basys3 LED0 반복 점멸을 실제 관찰</li><li>실행 후 Pause하여 Watch 변수 세 개의 실제 변경값을 검증</li></ol><h3>실제 Watch 최종 성공값</h3><table><thead><tr><th>변수</th><th>관측값</th><th>해석</th></tr></thead><tbody><tr><td><code>timer_value</code></td><td><code>0x028816E6</code></td><td>카운터 현재값</td></tr><tr><td><code>expire_count</code></td><td><code>0x00000025</code></td><td>37회 만료 처리</td></tr><tr><td><code>led_state</code></td><td><code>0x00000001</code></td><td>LED0 ON (홀수 횟수 반전)</td></tr></tbody></table><p><strong>판정:</strong> AXI Timer → MicroBlaze V Polling → AXI GPIO → LED0 실제 동작 성공. 0.5초는 100 MHz와 TLR0 값으로 산출한 목표 간격이며 외부 계측기로 정확도를 측정한 것은 아닙니다. 디버거는 <code>XTmrCtr_IsExpired()</code> 함수 내부에서도 정상적으로 일시정지될 수 있습니다.</p><p>공식 근거: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description" target="_blank" rel="noopener">AMD PG079 Functional Description(원문)</a> · <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Generate-Mode" target="_blank" rel="noopener">AMD PG079 Generate Mode(원문)</a> · <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space" target="_blank" rel="noopener">AMD PG079 Register Space(원문)</a></p></section></main></div>
 <footer class="site-footer">BASYS3 · MicroBlaze V SoC 실습 교재</footer>
 </body></html>
