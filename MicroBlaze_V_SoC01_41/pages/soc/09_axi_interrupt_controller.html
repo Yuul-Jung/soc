@@ -1,372 +1,84 @@
-<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport"><title>SoC 09 · AXI Interrupt Controller</title><style>
-
-:root{
-  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
-  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
-  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
-  --maxw:1560px;--sidebar:260px;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:22px}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
-a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
-
-/* top */
-.topbar{background:#fff;border-bottom:1px solid var(--line)}
-.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
-.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
-.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
-
-/* hero */
-.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
-.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
-.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
-.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
-.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
-.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
-.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
-.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
-.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
-.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
-
-/* main */
-.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
-.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
-.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
-.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
-.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
-.timeline li{position:relative;margin:0;padding:0}
-.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
-.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
-.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
-.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
-main{padding-top:38px;min-width:0}
-.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
-.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
-.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
-
-/* source sections */
-.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
-.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
-.step-anchor{scroll-margin-top:22px}
-.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
-p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
-.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
-.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
-.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
-.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
-.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
-.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
-thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
-
-/* summary/nav */
-.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
-.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
-.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
-.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
-.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
-
-/* index compatibility */
-.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
-.home-section h2,.card h2{margin-top:0}
-
-@media(max-width:920px){
-  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
-  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
-  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
-  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
-}
-@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
-
-
-/* technical figures */
-.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
-.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
-.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
-.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
-
-/* original-source figure references: no technical redraws */
-.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
-.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
-.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
-.source-figure-ref p{margin:6px 0 12px}
-.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
-.source-figure-link:hover{border-color:var(--accent)}
-.resource-table th:first-child,.resource-table td:first-child{width:28%}
-main,.step-card,.overview-card{max-width:100%;min-width:0}
-
-/* Concise self-contained source presentation. */
-.polished-source{border-top:4px solid var(--accent);}
-.source-group{margin:30px 0 0;}
-.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
-.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
-.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
-.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
-.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
-.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
-.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
-.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
-.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
-@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
-
-
-
-/* SoC chapter extensions */
-.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
-.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
-.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
-.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
-.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
-.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
-.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
-.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
-.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
-.manual-figure.compact img{max-height:640px}
-.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
-.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
-.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
-.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
-.gate{border-left:5px solid var(--good);background:var(--good-bg)}
-.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
-.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
-.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
-.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
-@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
-@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
-
-
-.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
-/* GUI 실습 절차: 한 조작씩 따라하기 */
-.procedure{list-style:none;counter-reset:proc;padding:0;display:grid;gap:10px;margin:14px 0}
-.procedure>li{position:relative;counter-increment:proc;border:1px solid var(--line);border-radius:7px;padding:12px 14px 12px 52px;background:var(--card);min-width:0}
-.procedure>li:before{content:counter(proc,decimal-leading-zero);position:absolute;left:13px;top:14px;color:var(--accent);font-size:.85rem;font-weight:700}
-.procedure strong{display:block;margin-bottom:5px}.procedure p{margin:4px 0}
-.step-result,.step-caution{display:block;padding:8px 10px;margin-top:8px;font-size:.89rem;border-radius:4px}
-.step-result{background:var(--good-bg);color:var(--good)}.step-caution{background:var(--warn-bg);color:var(--warn)}
-@media(max-width:600px){.procedure>li{padding:11px 11px 11px 43px}.procedure>li:before{left:9px}}
-/* 실습 우선 탐색 — 개념 절에서 절차 절로 바로 이동 */
-.lab-jump{margin:0 0 19px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
-.lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
-.lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
-.lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
-</style><style>
-/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
-:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
-
-/* Readability and keyboard access; original chapter layout retained. */
-:root{--ink-3:#626975}
-body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
-.skip-link:focus{transform:none}
-:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
-.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
-.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
-.signal-map.signal-table{white-space:normal}
-.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
-.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
-.signal-table thead th{color:#ffd24a;font-size:.84rem}
-.signal-table tbody th{font-weight:600}
-.signal-table td:first-child{color:inherit;font-weight:400}
-.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
-pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
-.codeblock-pre{font-size:.9rem}
-.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
-.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
-.timeline .n{font-size:.75rem}
-.nav-title,.nav-help,.phase{color:#626975}
-.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
-.manual-figure .figure-source{font-size:.8125rem}
-.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.figure-image-link{display:block}
-.figure-image-link:focus-visible{outline-offset:5px}
-.manual-figure.compact img{max-height:none}
-thead th{color:#626975;font-size:.84rem}
-.hero-desc{font-weight:400}
-main[tabindex="-1"]:focus{outline:none}
-@media(max-width:600px){
- .signal-map{padding:15px 12px;font-size:.875rem}
- .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
- .tech-figure,.manual-figure{padding:10px}
- .step-card h2{line-height:1.5;overflow-wrap:anywhere}
- .chip{overflow-wrap:anywhere;max-width:100%}
-}
-@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
-
-
-.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
-@media(max-width:760px){
- table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
- .signal-table td:first-child{background:#252a33}
- .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
-}
-</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head><body>
-<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><span>Basys3 SoC + NPU</span><span class="sep">/</span><strong>SoC 09</strong></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
-<header class="hero"><div class="hero-grid"></div><div class="hero-inner"><p class="hero-kicker">Basys3 SoC + NPU · SoC 09</p><h1>AXI Interrupt Controller - Timer Interrupt와 ISR</h1><p class="hero-desc">SoC 08의 Polling 구조를 Interrupt 구조로 변경한다. AXI Timer가 0.5초마다 interrupt를 발생시키고 AXI Interrupt Controller가 이를 MicroBlaze V에 전달한다.</p><div class="hero-meta"><span class="chip">AXI INTC</span><span class="chip">Timer Interrupt</span><span class="chip">ISR</span><span class="chip">Vector ID</span><span class="chip">Level-High</span><span class="chip">0.5 s</span></div></div></header>
-<div class="wrap"><aside class="flow-nav" aria-label="장별 세부 목차"><div class="reader-tools"><form hidden><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html" selected>SoC 09 · AXI Interrupt Controller</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="../../00_overview/START_HERE.html">공통 사양·실습 순서</a><a href="../../manifests/soc09_manifest.html">실습 파일</a><a href="../../validation/verification.html#soc09">이 장 검증</a></div></div><p class="nav-title">SOC 09 · LEARNING FLOW</p><p class="nav-help">Timer → INTC → CPU → ISR → Main</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>Polling에서 Interrupt로</span></a></li>
-<li><a href="#s02"><span class="n">02</span><span>전체 Hardware 경로</span></a></li>
-<li><a href="#s03"><span class="n">03</span><span>AXI INTC 역할</span></a></li>
-<li><a href="#s04"><span class="n">04</span><span>Timer Interrupt 특성</span></a></li>
-<li><a href="#s05"><span class="n">05</span><span>Interrupt Type 설정</span></a></li>
-<li><a href="#s06"><span class="n">06</span><span>AXI INTC 추가</span></a></li>
-<li><a href="#s07"><span class="n">07</span><span>Timer → INTC 연결</span></a></li>
-<li><a href="#s08"><span class="n">08</span><span>INTC → MicroBlaze V 연결</span></a></li>
-<li><a href="#s09"><span class="n">09</span><span>AXI 연결</span></a></li>
-<li><a href="#s10"><span class="n">10</span><span>Address Editor</span></a></li>
-<li><a href="#s11"><span class="n">11</span><span>INTC Register Map</span></a></li>
-<li><a href="#s12"><span class="n">12</span><span>IER · IPR · IAR · MER</span></a></li>
-<li><a href="#s13"><span class="n">13</span><span>Interrupt ID</span></a></li>
-<li><a href="#s14"><span class="n">14</span><span>Software Handler Chain</span></a></li>
-<li><a href="#s15"><span class="n">15</span><span>ISR는 짧게</span></a></li>
-<li><a href="#s16"><span class="n">16</span><span>Classic Flow</span></a></li>
-<li><a href="#s17"><span class="n">17</span><span>SDT Flow</span></a></li>
-<li><a href="#s18"><span class="n">18</span><span>Timer 설정 변경</span></a></li>
-<li><a href="#s19"><span class="n">19</span><span>Interrupt 프로그램</span></a></li>
-<li><a href="#s20"><span class="n">20</span><span>Polling과 비교</span></a></li>
-<li><a href="#s21"><span class="n">21</span><span>실행 순서</span></a></li>
-<li><a href="#s22"><span class="n">22</span><span>눈으로 확인하는 결과</span></a></li>
-<li><a href="#s23"><span class="n">23</span><span>Debugger 확인</span></a></li>
-<li><a href="#s24"><span class="n">24</span><span>Interrupt 전체 추적</span></a></li>
-<li><a href="#s25"><span class="n">25</span><span>오류 점검</span></a></li>
-<li><a href="#summary"><span class="n">26</span><span>완료 판정 기준</span></a></li>
-<li><a href="#sources"><span class="n">27</span><span>공식 매뉴얼 및 원본 근거</span></a></li></ol></aside><main id="main-content" tabindex="-1">
-<div class="overview-card"><h2>전체 학습 위치</h2><div class="stage-flow"><span class="stage">SoC 08 AXI Timer Polling</span><span class="arrow">→</span><span class="stage"><strong>SoC 09 AXI Interrupt Controller</strong></span><span class="arrow">→</span><span class="stage">SoC 10 GPIO + UART + Timer 통합</span></div></div>
-
-<nav class="lab-jump" aria-label="지금 실습할 단계"><strong>따라하기 빠른 이동 · 메뉴를 누르면 해당 작업으로 이동합니다</strong><div class="jump-links"><a href="#s06">1. INTC 추가</a><a href="#s07">2. Timer 배선</a><a href="#s08">3. CPU 연결</a><a href="#s10">4. 주소 확인</a><a href="#s21">5. 인터럽트 검증</a></div></nav>
-<section class="step-card" id="s01"><span class="step">SECTION 01</span><h2>Polling에서 Interrupt로</h2><div class="table-wrap" tabindex="0" role="region" aria-label="Polling에서 Interrupt로 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">SoC 08 Polling</th><th scope="col" role="columnheader">SoC 09 Interrupt</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="SoC 08 Polling" role="cell">CPU가 Timer 상태를 계속 읽음</td><td data-label="SoC 09 Interrupt" role="cell">Timer가 CPU에 Event를 알림</td></tr><tr role="row"><td data-label="SoC 08 Polling" role="cell"><code>XTmrCtr_IsExpired()</code> 반복</td><td data-label="SoC 09 Interrupt" role="cell">ISR이 Event 발생 시 호출됨</td></tr><tr role="row"><td data-label="SoC 08 Polling" role="cell">CPU 시간이 Polling에 사용됨</td><td data-label="SoC 09 Interrupt" role="cell">평소에는 Main Code 실행 가능</td></tr></tbody></table></div><div class="flow">Polling: CPU → Timer? → Timer? → Timer?<br>Interrupt: Timer → CPU!</div><p class="step-caution">08장의 Timer Polling이 실제 Basys3에서 정상 동작한 상태를 전제로 합니다. 이 페이지의 ISR/LED 결과는 실제 실행·디버그가 확인되기 전까지 예상 결과입니다.</p></section>
-
-<section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>전체 Hardware 경로</h2><figure class="manual-figure"><a href="../../images/soc09/timer_intc_microblaze_path.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="Timer interrupt AXI INTC MicroBlaze V path · 원본 보기 (새 탭)"><img src="../../images/soc09/timer_intc_microblaze_path.svg" alt="Timer interrupt AXI INTC MicroBlaze V path"></a><figcaption>AXI Timer interrupt가 AXI INTC를 거쳐 MicroBlaze V Interrupt 입력으로 전달되는 구조.<span class="figure-source">근거: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Interrupts" target="_blank">AMD PG079</a> · <a href="https://docs.amd.com/v/u/en-US/pg099-axi-intc" target="_blank">AMD PG099</a></span><br><a href="../../images/soc09/timer_intc_microblaze_path.svg" target="_blank" rel="noopener" class="figure-original" aria-label="Timer interrupt AXI INTC MicroBlaze V path · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
-
-<section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>AXI INTC 역할</h2><p>AXI Interrupt Controller는 여러 Peripheral Interrupt 입력을 받아 하나의 <code>irq</code> 출력으로 Processor에 전달한다.</p><div class="signal-map" tabindex="0" role="region" aria-label="03절 신호 및 실행 흐름">Peripheral interrupts → AXI INTC → irq → MicroBlaze V</div></section>
-
-<section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>Timer Interrupt 특성</h2><p>Timer interrupt 조건이 발생하고 ENIT0가 활성화되어 있으면 interrupt 출력이 High가 된다. T0INT는 1을 써서 Clear할 때까지 유지된다.</p><div class="flow">Counter Rollover → T0INT=1 → interrupt=High → ISR 처리 → Clear</div></section>
-
-<section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Interrupt Type 설정</h2><div class="table-wrap" tabindex="0" role="region" aria-label="Interrupt Type 설정 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">설정</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="항목" role="cell">Peripheral Interrupt Type</td><td data-label="설정" role="cell"><strong>Level</strong></td></tr><tr role="row"><td data-label="항목" role="cell">Level Polarity</td><td data-label="설정" role="cell"><strong>High</strong></td></tr><tr role="row"><td data-label="항목" role="cell">Processor IRQ</td><td data-label="설정" role="cell">Level-High</td></tr></tbody></table></div><p>PG099에서 <code>C_KIND_OF_INTR=0</code>은 Level, <code>C_KIND_OF_LVL=1</code>은 Active-High를 의미한다.</p></section>
-
-<section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>09장 작업본 · AXI Interrupt Controller 추가</h2><ol class="procedure"><li><strong>08장 성공 프로젝트 복제</strong><p>Vivado에서 08장 Timer 성공 프로젝트를 열고 <b>File → Project → Save As</b>로 09장용 새 작업본을 만듭니다. 예시 이름은 <code>soc09_axi_intc</code>입니다. 실제 저장 경로를 확인합니다.</p><span class="step-caution">주의: 08장 원본 프로젝트와 XSA/ELF는 덮어쓰지 않습니다.</span></li><li><strong>09장 Block Design 분리</strong><p>새 프로젝트에서 <b>Sources → Design Sources</b>의 BD를 확인합니다. 필요하면 <b>File → Save Block Design As</b>로 독립 저장하고 실제 참조 경로를 확인합니다.</p></li><li><strong>AXI INTC 추가</strong><p>Block Design Diagram에서 <b>+</b>(Add IP) → <b>AXI Interrupt Controller</b>를 검색해 추가합니다.</p><span class="step-result">기대 화면: <code>axi_intc_0</code> 블록이 생성됩니다.</span></li><li><strong>일반 인터럽트 설정</strong><p><code>axi_intc_0</code> 더블클릭 → Fast Interrupt는 사용하지 않고, 입력 인터럽트는 Timer 하나만 사용할 구성으로 설정합니다. 실제 IP 설정창에 보이는 입력 수·유형을 확인하고 저장합니다.</p><span class="step-caution">주의: 다른 장치의 인터럽트나 Fast Interrupt 연결은 09장에 추가하지 않습니다.</span></li></ol></section>
-
-<section class="step-card" id="s07"><span class="step">SECTION 07</span><h2>Timer → AXI INTC 인터럽트 연결</h2><ol class="procedure"><li><strong>Timer interrupt 핀 찾기</strong><p><code>axi_timer_0</code>에서 인터럽트 출력 핀 <code>interrupt</code>를 확인합니다. 08장에서는 사용하지 않았지만 09장에서는 연결합니다.</p></li><li><strong>INTC 입력에 연결</strong><p><code>axi_timer_0/interrupt</code>에서 <code>axi_intc_0/intr</code>의 첫 번째 입력 비트로 드래그하여 연결합니다. 버스 폭이 맞지 않으면 Vivado가 요구하는 폭 구성 또는 Concat 설정을 확인합니다.</p><span class="step-result">기대 화면: Timer 출력에서 INTC 입력 비트 0까지 하나의 인터럽트 경로가 연결됩니다.</span></li><li><strong>Interrupt Type 확인</strong><p>AXI INTC 설정의 Timer 입력에 대한 인터럽트 유형을 Timer 출력 특성과 맞춥니다. 별도 자료의 설정을 무조건 복사하지 말고 PG079/PG099의 IP 정보와 실제 GUI를 대조합니다.</p></li></ol><p>참고: <a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Interrupts" target="_blank" rel="noopener">AMD PG079 · Timer Interrupts</a>, <a href="https://docs.amd.com/r/en-US/pg099-axi-intc" target="_blank" rel="noopener">AMD PG099 · AXI INTC</a>.</p></section>
-
-<section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>INTC → MicroBlaze V 연결</h2><ol class="procedure"><li><strong>MicroBlaze V 인터럽트 포트 확인</strong><p><code>microblaze_riscv_0</code>의 Interrupt 입력이 활성화되어 있는지 Diagram에서 확인합니다. 인터페이스가 없으면 CPU의 Re-customize IP에서 인터럽트 지원 설정을 확인합니다.</p></li><li><strong>INTC 출력 → CPU 입력 연결</strong><p>AXI INTC 인터럽트 출력(AMD PG099에서는 <code>irq</code>)을 MicroBlaze V의 <code>INTERRUPT</code> 입력으로 연결합니다. 실제 Vivado 2024.2 화면에서 표시되는 포트명과 방향을 확인한 뒤 배선합니다.</p><span class="step-result">기대 화면: AXI INTC 출력과 CPU 인터럽트 입력 사이에 한 개의 연결이 생깁니다.</span></li><li><strong>Fast Interrupt 미사용 확인</strong><p>CPU·INTC 양쪽에서 일반 외부 인터럽트 경로를 사용하고 Fast Interrupt를 선택하지 않았는지 확인합니다. CPU의 외부 인터럽트 허용은 이후 Vitis 소프트웨어에서도 설정해야 합니다.</p></li></ol><p class="step-caution">문서나 버전에 따라 인터럽트 신호 표기가 <code>irq</code>, <code>interrupt</code>, <code>INTERRUPT</code>로 달라질 수 있습니다. 이름만 같게 만드는 것이 아니라 <b>INTC 출력 → MicroBlaze V 입력</b> 방향을 확인합니다. <a href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/External-Interrupt" target="_blank" rel="noopener">UG1629 (2024.2) 외부 인터럽트</a>.</p></section>
-
-<section class="step-card" id="s09"><span class="step">SECTION 09</span><h2>INTC AXI · Clock · Reset 연결</h2><ol class="procedure"><li><strong>S_AXI 연결 자동화</strong><p><b>Run Connection Automation</b>을 열고 <code>axi_intc_0/S_AXI</code>만 선택해 기존 CPU <code>M_AXI_DP → axi_smc</code> 주소 버스에 연결합니다. Timer의 인터럽트 신호와 AXI 데이터 버스를 혼동하지 않습니다.</p></li><li><strong>클록·리셋 확인</strong><p><code>axi_intc_0/s_axi_aclk</code>를 기존 AXI Clock에, <code>axi_intc_0/s_axi_aresetn</code>을 Peripheral Reset에 연결합니다.</p><span class="step-result">기대 화면: GPIO·UART·Timer·INTC의 AXI 주소 경로가 모두 유지됩니다.</span></li><li><strong>연결 검증</strong><p>Diagram에서 Timer→INTC→CPU 인터럽트 경로와 CPU→SmartConnect→INTC AXI 경로가 각각 별도로 존재하는지 확인합니다.</p></li></ol></section>
-
-<section class="step-card" id="s10"><span class="step">SECTION 10</span><h2>Address Editor · INTC 주소 할당</h2><ol class="procedure"><li><strong>Address Editor 실행</strong><p>BD에서 <b>Address Editor</b> 탭을 클릭합니다.</p></li><li><strong>INTC 주소 지정</strong><p><code>axi_intc_0/S_AXI</code> 세그먼트가 Unassigned면 할당하고 Master Base Address와 Range를 기록합니다.</p></li><li><strong>기존 범위 보존</strong><p>BRAM, GPIO, UART Lite, Timer의 실제 주소가 전 장과 동일한지 확인하고 INTC 주소 범위가 겹치지 않는지 검사합니다.</p><span class="step-result">기대 화면: 09장 주변장치 주소가 모두 Assigned이고 중복이 없습니다.</span></li></ol><p class="step-caution">참고 L06에 적힌 고정 주소는 별도 프로젝트용입니다. 09장 실제 주소는 Vivado에서 확인한 값으로 작성합니다.</p></section>
-
-<section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>INTC Register Map</h2><figure class="manual-figure"><a href="../../images/soc09/pg099_intc_register_map.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="AXI interrupt controller register map · 원본 보기 (새 탭)"><img src="../../images/soc09/pg099_intc_register_map.svg" alt="AXI interrupt controller register map"></a><figcaption>AMD PG099 Register Address Mapping 기준 재작성.<br><a href="../../images/soc09/pg099_intc_register_map.svg" target="_blank" rel="noopener" class="figure-original" aria-label="AXI interrupt controller register map · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure></section>
-
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>IER · IPR · IAR · MER</h2><div class="table-wrap" tabindex="0" role="region" aria-label="IER · IPR · IAR · MER · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Register</th><th scope="col" role="columnheader">역할</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="Register" role="cell"><code>IER</code></td><td data-label="역할" role="cell">Interrupt Source Enable/Mask</td></tr><tr role="row"><td data-label="Register" role="cell"><code>IPR</code></td><td data-label="역할" role="cell">Pending Interrupt 확인</td></tr><tr role="row"><td data-label="Register" role="cell"><code>IAR</code></td><td data-label="역할" role="cell">처리한 Interrupt Acknowledge</td></tr><tr role="row"><td data-label="Register" role="cell"><code>IVR</code></td><td data-label="역할" role="cell">현재 Interrupt Vector 확인</td></tr><tr role="row"><td data-label="Register" role="cell"><code>MER</code></td><td data-label="역할" role="cell">Master IRQ / Hardware Interrupt Enable</td></tr></tbody></table></div></section>
-
-<section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>Interrupt ID</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Interrupt ID · 소스 코드"><code>#define TIMER_INTERRUPT_ID     XPAR_INTC_0_TMRCTR_0_VEC_ID</code></pre><p>실제 Macro는 Instance 이름에 따라 달라질 수 있으므로 <code>xparameters.h</code>에서 확인한다.</p></section>
-
-<section class="step-card" id="s14"><span class="step">SECTION 14</span><h2>Software Handler Chain</h2><figure class="manual-figure"><a href="../../images/soc09/interrupt_software_chain.svg" target="_blank" rel="noopener" class="figure-image-link" aria-label="interrupt software handler chain · 원본 보기 (새 탭)"><img src="../../images/soc09/interrupt_software_chain.svg" alt="interrupt software handler chain"></a><figcaption>MicroBlaze V Exception → AXI INTC Driver → Timer Driver ISR → 사용자 Callback → Main Loop.<br><a href="../../images/soc09/interrupt_software_chain.svg" target="_blank" rel="noopener" class="figure-original" aria-label="interrupt software handler chain · 원본 보기 (새 탭)">원본 보기 ↗</a></figcaption></figure><div class="flow">XIntc_InterruptHandler → XTmrCtr_InterruptHandler → TimerCallback</div></section>
-
-<section class="step-card" id="s15"><span class="step">SECTION 15</span><h2>ISR는 짧게</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="ISR는 짧게 · 소스 코드"><code>static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SoC 09 · AXI Interrupt Controller</title><style>
+:root{--paper:#F1F2EE;--card:#fff;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#626975;--line:#DDDFD8;--accent:#4635B1;--accent-soft:#EDEAFA;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;--maxw:1520px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans KR','Noto Sans CJK KR',sans-serif;line-height:1.7;overflow-wrap:anywhere}.topbar{background:#fff;border-bottom:1px solid var(--line)}.topbar-inner{max-width:var(--maxw);margin:auto;padding:12px 34px;display:flex;justify-content:space-between;font-size:.86rem}.topbar a{color:inherit}.hero{background:#15171C;color:#F1F2EE}.hero-inner{max-width:var(--maxw);margin:auto;padding:55px 34px}.hero-kicker{color:#FFD24A;font-weight:bold}.hero h1{margin:8px 0;font-size:clamp(1.8rem,3.4vw,3rem)}.hero-desc{color:#BBC0C8;max-width:820px}.hero-meta{display:flex;flex-wrap:wrap;gap:8px}.chip{font-size:.78rem;border:1px solid #50535a;padding:3px 9px}.wrap{max-width:var(--maxw);margin:auto;padding:0 34px 80px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:38px}.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding-top:34px}.nav-title{font-size:.75rem;font-weight:bold;color:var(--ink-3);letter-spacing:.08em}.phase{margin:22px 0 8px;font-size:.75rem;color:var(--ink-3);font-weight:700}.timeline{margin:0;padding:0;list-style:none}.timeline a{display:flex;align-items:start;gap:11px;color:var(--ink-2);font-size:.88rem;text-decoration:none;padding:6px}.timeline a:hover{color:var(--accent)}.n{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid #c9cdc5;text-align:center;font-size:.72rem;line-height:24px}.step-card,.overview-card{background:var(--card);border:1px solid var(--line);padding:28px 34px;margin:16px 0;min-width:0;scroll-margin-top:16px}.step-card h2{font-size:1.35rem;margin:4px 0 15px}.step-card h3{font-size:1rem}.step{display:inline-block;font-size:.73rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px}.note,.ok,.warn{padding:12px 15px;margin:12px 0;border:1px solid var(--line)}.note{background:var(--accent-soft)}.ok{background:var(--good-bg);color:var(--good)}.warn{background:var(--warn-bg);color:var(--warn)}.procedure{list-style:none;counter-reset:proc;margin:14px 0;padding:0;display:grid;gap:10px}.procedure>li{counter-increment:proc;border:1px solid var(--line);padding:14px 17px 14px 52px;position:relative;background:#fbfbf9}.procedure>li:before{content:counter(proc,decimal-leading-zero);position:absolute;left:14px;top:14px;color:var(--accent);font-weight:bold}.procedure strong{display:block}.step-result,.step-caution{display:block;margin-top:7px;padding:7px 9px;font-size:.88rem}.step-result{background:var(--good-bg)}.step-caution{background:var(--warn-bg)}.shot{border:2px dashed #bfc4ce;background:#f7f7fa;border-radius:6px;margin-top:14px;padding:21px;text-align:center;color:#687181;font-size:.87rem}.shot strong{display:block;color:#3f4350}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.89rem}th,td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left}th{background:#f5f4fa}code,pre{font-family:Consolas,monospace}pre{background:#161a21;color:#f3f4fa;padding:17px;overflow:auto}a{color:var(--accent)}.source-figure-ref{border:1px solid var(--line);border-left:4px solid var(--accent);padding:14px;background:#fbfbf9;margin:10px 0}.chapter-nav{display:flex;justify-content:space-between;margin-top:20px}.chapter-nav a{padding:12px;background:white;border:1px solid var(--line)}.site-footer{max-width:var(--maxw);margin:auto;padding:0 34px 35px;color:var(--ink-3);font-size:.8rem}@media(max-width:900px){.wrap{display:block;padding:0 16px}.flow-nav{position:relative;max-height:none;padding:18px 0}.timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.hero-inner{padding:34px 18px}.step-card,.overview-card{padding:20px 17px}}@media(max-width:520px){.timeline{grid-template-columns:1fr}}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script><style>/* 07.1 형식의 코드 풀이 — 09장 확장 */.code-walk{margin:18px 0;padding:18px 20px;background:#fbfbf9;border:1px solid var(--line)}.code-walk h3{margin:0 0 10px;color:var(--ink);font-size:1rem}.code-walk .codeblock-pre{font-size:.84rem;line-height:1.65;white-space:pre;overflow-x:auto}.code-walk p{margin:10px 0 0}.cpu-explain{border-left:3px solid var(--accent);padding:9px 12px;background:var(--accent-soft)}#code-guide .codeblock-pre{overflow-x:auto;max-width:100%}</style></head><body><div class="topbar"><div class="topbar-inner"><div><a href="../../index.html">홈</a> / Basys3 SoC + NPU / <b>SoC 09</b></div><div>Basys3 · Vivado/Vitis 2024.2</div></div></div><header class="hero"><div class="hero-inner"><p class="hero-kicker">Basys3 SoC + NPU · SoC 09</p><h1>AXI Interrupt Controller — Timer Interrupt와 ISR</h1><p class="hero-desc">08장의 Timer Polling을 Interrupt 방식으로 확장합니다. AXI INTC 연결부터 Vitis ISR 실행, Debug Watch 확인까지 실제 화면에 따라 진행합니다.</p><div class="hero-meta"><span class="chip">AXI INTC</span><span class="chip">Timer interrupt</span><span class="chip">ISR</span><span class="chip">Level-High</span><span class="chip">Vitis Unified IDE 2024.2</span></div></div></header><div class="wrap"><aside class="flow-nav" aria-label="09장 세부 목차"><p class="nav-title">SOC 09 · LEARNING FLOW</p><p class="phase">A. 이론 · 먼저 이해하기</p><ol class="timeline"><li><a href="#t01"><span class="n">01</span><span>Polling에서 Interrupt로</span></a></li><li><a href="#t02"><span class="n">02</span><span>AXI Timer → INTC → CPU</span></a></li><li><a href="#t03"><span class="n">03</span><span>AXI Interrupt Controller의 역할</span></a></li><li><a href="#t04"><span class="n">04</span><span>Timer 인터럽트 신호</span></a></li><li><a href="#t05"><span class="n">05</span><span>ISR와 Main Loop의 역할</span></a></li></ol><p class="phase">B. Vivado/Vitis 실습</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>08장 프로젝트 열기</span></a></li><li><a href="#s02"><span class="n">02</span><span>09장 Vivado 프로젝트 Save As</span></a></li><li><a href="#s03"><span class="n">03</span><span>Block Design 독립 저장</span></a></li><li><a href="#s04"><span class="n">04</span><span>AXI Interrupt Controller IP 추가</span></a></li><li><a href="#s05"><span class="n">05</span><span>AXI INTC 기본 설정</span></a></li><li><a href="#s06"><span class="n">06</span><span>Timer interrupt 출력 연결</span></a></li><li><a href="#s07"><span class="n">07</span><span>INTC irq → CPU 입력</span></a></li><li><a href="#s08"><span class="n">08</span><span>INTC AXI·Clock·Reset 연결</span></a></li><li><a href="#s09"><span class="n">09</span><span>Address Editor</span></a></li><li><a href="#s10"><span class="n">10</span><span>Validate Design</span></a></li><li><a href="#s11"><span class="n">11</span><span>HDL Wrapper · Top · XDC 확인</span></a></li><li><a href="#s12"><span class="n">12</span><span>Generate Bitstream · Timing</span></a></li><li><a href="#s13"><span class="n">13</span><span>Export Hardware (XSA)</span></a></li><li><a href="#s14"><span class="n">14</span><span>Vitis 09장 Platform</span></a></li><li><a href="#s15"><span class="n">15</span><span>Vitis 09장 Application</span></a></li><li><a href="#s16"><span class="n">16</span><span>Interrupt main.c 적용</span></a></li><li><a href="#s17"><span class="n">17</span><span>Build · FPGA Program · Debug</span></a></li><li><a href="#s18"><span class="n">18</span><span>Watch · ISR · LED0 확인</span></a></li><li><a href="#s19"><span class="n">19</span><span>최종 교재 · 게시 확인</span></a></li></ol><p class="phase">C. 소스코드 쉬운 풀이 · <a href="09_1_axi_interrupt_c_code_guide.html">09.1장 별도 보기</a></p><ol class="timeline"><li><a href="#code-guide"><span class="n">C</span><span>09장 main.c 코드 쉽게 이해하기</span></a></li></ol><p class="phase">D. 공식 자료 · 완료 판정</p><ol class="timeline"><li><a href="#refs"><span class="n">R</span><span>AMD 공식 문서</span></a></li><li><a href="#finish"><span class="n">F</span><span>최종 완료 기준</span></a></li></ol></aside><main><section class="overview-card"><h2>전체 학습 위치</h2><p>SoC 08 · AXI Timer Polling → <b>SoC 09 · AXI INTC Interrupt</b> → SoC 10 · 통합</p><p class="warn">현재 문서는 09장 실습 기본틀입니다. 성공 이미지, INTC 주소, BSP 매크로 및 실행 수치는 실제 검증한 뒤 반영합니다.</p></section><section class="step-card" id="t01"><span class="step">THEORY 01</span><h2>Polling에서 Interrupt로</h2><p>08장에서는 CPU가 Timer 만료 상태를 반복 확인했습니다. 09장에서는 Timer가 인터럽트를 발생시키면 CPU가 등록된 Handler를 실행합니다.</p><div class="note"><b>확인</b> · 08장 Polling 코드와 09장 Interrupt 코드의 차이를 비교합니다.</div></section><section class="step-card" id="t02"><span class="step">THEORY 02</span><h2>AXI Timer → INTC → CPU</h2><p>Timer의 interrupt 출력은 INTC의 intr 입력에 연결되고, INTC의 irq 출력은 MicroBlaze V의 INTERRUPT 입력에 연결됩니다.</p><div class="note"><b>확인</b> · AXI 주소 버스와 인터럽트 신호선을 구별합니다.</div><pre>axi_timer_0/interrupt
+        │
+        ▼
+axi_intc_0/intr[0]
+axi_intc_0/irq
+        │
+        ▼
+microblaze_riscv_0/INTERRUPT
+        │
+        ▼
+XTmrCtr_InterruptHandler → Callback → Main → LED0</pre></section><section class="step-card" id="t03"><span class="step">THEORY 03</span><h2>AXI Interrupt Controller의 역할</h2><p>인터럽트 원인별 허용·대기·처리 승인을 관리합니다. 이번에는 Timer 입력 하나만 사용합니다.</p><div class="note"><b>확인</b> · PG099에서 IER, IPR, IAR, MER의 의미를 확인합니다.</div><div class="table-wrap"><table><thead><tr><th>레지스터</th><th>기능</th></tr></thead><tbody><tr><td><code>IER</code></td><td>인터럽트 입력별 허용</td></tr><tr><td><code>IPR</code></td><td>대기 중인 인터럽트 확인</td></tr><tr><td><code>IAR</code></td><td>인터럽트 처리 승인</td></tr><tr><td><code>MER</code></td><td>마스터 인터럽트 허용</td></tr></tbody></table></div></section><section class="step-card" id="t04"><span class="step">THEORY 04</span><h2>Timer 인터럽트 신호</h2><p>Timer 0의 인터럽트 발생 상태는 T0INT로 확인하고, 해당 상태는 1을 기록하여 해제합니다.</p><div class="note"><b>확인</b> · PG079의 Timer 0 인터럽트 비트와 자동 재적재 동작을 확인합니다.</div></section><section class="step-card" id="t05"><span class="step">THEORY 05</span><h2>ISR와 Main Loop의 역할</h2><p>Timer Driver의 Handler가 원인을 처리하고 사용자 Callback을 호출합니다. Callback에서는 발생 횟수와 이벤트를 기록하며, LED 출력은 Main에서 처리합니다.</p><div class="note"><b>확인</b> · 인터럽트 등록과 활성화는 Vitis 2024.2 실제 BSP에 맞춥니다.</div></section><section class="step-card" id="s01"><span class="step">LAB 01</span><h2>08장 프로젝트 열기</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>File → Open Project를 선택하고 /home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xpr을 엽니다.</p><span class="step-result">확인 기준: GPIO·UART Lite·Timer·AXI SmartConnect와 CPU가 기존대로 보이는지 확인합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 01</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s02"><span class="step">LAB 02</span><h2>09장 Vivado 프로젝트 Save As</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>File → Project → Save As를 선택합니다. 프로젝트 이름 soc09_axi_interrupt, 최종 위치 /home/jung/soc/hw/soc09_axi_interrupt/soc09_axi_interrupt.xpr을 목표로 저장 창의 경로를 확인합니다.</p><span class="step-result">확인 기준: 08장 원본을 변경하거나 덮어쓰지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 02</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s03"><span class="step">LAB 03</span><h2>Block Design 독립 저장</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>09장 프로젝트에서 기존 Block Design을 확인하고 Save Block Design As 기능으로 soc09_axi_interrupt 이름의 별도 BD를 만듭니다. 실제 GUI에서 경로와 소스 참조를 확인합니다.</p><span class="step-result">확인 기준: 08장 BD 경로를 참조하지 않는지 반드시 검사합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 03</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s04"><span class="step">LAB 04</span><h2>AXI Interrupt Controller IP 추가</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>Diagram의 + (Add IP) → AXI Interrupt Controller를 검색하여 추가합니다.</p><span class="step-result">확인 기준: axi_intc_0가 생성되고 다른 IP는 유지되어야 합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 04</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s05"><span class="step">LAB 05</span><h2>AXI INTC 기본 설정</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>axi_intc_0 더블클릭. Timer 입력 하나, 일반 인터럽트, Level-High를 기준으로 설정 항목을 확인합니다. Fast Interrupt는 사용하지 않습니다.</p><span class="step-result">확인 기준: 실제 IP GUI의 항목 이름·기본값·폭을 먼저 캡처한 뒤 확정합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 05</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s06"><span class="step">LAB 06</span><h2>Timer interrupt 출력 연결</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>axi_timer_0/interrupt → axi_intc_0/intr[0]을 연결합니다. 1비트 입력 폭의 구현 방식을 확인합니다.</p><span class="step-result">확인 기준: GPIO·UART Lite의 인터럽트는 이번 실습에 연결하지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 06</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s07"><span class="step">LAB 07</span><h2>INTC irq → CPU 입력</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>axi_intc_0/irq → microblaze_riscv_0/INTERRUPT를 연결합니다. CPU 포트가 보이지 않으면 CPU Re-customize의 일반 인터럽트 활성화 설정을 점검합니다.</p><span class="step-result">확인 기준: 실제 GUI 포트명과 연결 방향을 확인합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 07</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s08"><span class="step">LAB 08</span><h2>INTC AXI·Clock·Reset 연결</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>Run Connection Automation에서 axi_intc_0의 S_AXI만 연결 대상으로 선택하고 기존 AXI 경로를 유지합니다. s_axi_aclk와 s_axi_aresetn도 연결 상태를 확인합니다.</p><span class="step-result">확인 기준: M_AXI_DP → axi_smc → INTC/S_AXI 경로가 있어야 합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 08</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s09"><span class="step">LAB 09</span><h2>Address Editor</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>axi_intc_0/S_AXI 주소를 할당하고 Base Address, Range를 캡처합니다.</p><span class="step-result">확인 기준: 기존 주소 GPIO 0x40000000, UART 0x40600000, Timer 0x41C00000은 유지합니다. INTC 신규 주소는 화면에서 확정합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 09</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s10"><span class="step">LAB 10</span><h2>Validate Design</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>Diagram의 Validate Design(F6)을 실행하고 결과 메시지와 블록 전체 배선을 확인합니다.</p><span class="step-result">확인 기준: 실제 성공 메시지를 확인하기 전에는 성공 판정하지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 10</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s11"><span class="step">LAB 11</span><h2>HDL Wrapper · Top · XDC 확인</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>Sources에서 관리형 HDL Wrapper와 Top을 확인하고, 외부 보드 핀에 변화가 없으므로 기존 XDC를 유지합니다.</p><span class="step-result">확인 기준: 필요 없는 외부 IRQ 핀이나 XDC 수정은 하지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 11</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s12"><span class="step">LAB 12</span><h2>Generate Bitstream · Timing</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>Generate Bitstream을 실행하고 Implementation의 Timing Summary 및 DRC 메시지를 확인합니다.</p><span class="step-result">확인 기준: WNS와 DRC Warning 개수를 실제 결과로 기록합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 12</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s13"><span class="step">LAB 13</span><h2>Export Hardware (XSA)</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>File → Export → Export Hardware에서 Include bitstream을 지정하고 09장 이름으로 XSA를 저장합니다.</p><span class="step-result">확인 기준: 08장 XSA를 덮어쓰지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 13</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s14"><span class="step">LAB 14</span><h2>Vitis 09장 Platform</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>/home/jung/soc/sw에서 새 Platform soc09_axi_interrupt_platform을 만들고 09장 XSA와 standalone_microblaze_riscv_0 도메인을 선택합니다.</p><span class="step-result">확인 기준: BSP 생성 후 xparameters.h의 INTC·Timer 매크로를 확인합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 14</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s15"><span class="step">LAB 15</span><h2>Vitis 09장 Application</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>Empty Application으로 soc09_axi_interrupt 애플리케이션을 만들어 09장 Platform에 연결합니다.</p><span class="step-result">확인 기준: 08장 앱과 Platform은 유지합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 15</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s16"><span class="step">LAB 16</span><h2>Interrupt main.c 적용</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>현재 BSP의 SDT 구성, xinterrupt_wrap.h, XTmrCtr·XIntc API를 확인한 뒤 최종 검증 코드를 적용합니다.</p><span class="step-result">확인 기준: 하드웨어 매크로와 실제 주소를 추측해서 넣지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 16</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s17"><span class="step">LAB 17</span><h2>Build · FPGA Program · Debug</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>애플리케이션 Build 후 launch.json 설정 탭을 열고 09장 bitstream·ELF를 확인하여 Debug합니다.</p><span class="step-result">확인 기준: 빌드/FPGA Program/Debug 각각 실제 화면으로 검증합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 17</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s18"><span class="step">LAB 18</span><h2>Watch · ISR · LED0 확인</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>interrupt_count, timer_event, led_state를 Watch에 추가하고 실행 중 변화를 확인합니다. LED0 점멸과 ISR 진입/복귀도 확인합니다.</p><span class="step-result">확인 기준: 인터럽트 발생 횟수 증가, LED0의 약 0.5초 반전, ISR 복귀를 각각 증거로 확보합니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 18</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="s19"><span class="step">LAB 19</span><h2>최종 교재 · 게시 확인</h2><ol class="procedure"><li><strong>Vivado / Vitis 화면에서 작업</strong><p>최종 성공 스크린샷을 시간순으로 넣고 오류·중간 이미지를 제외한 다음 기존 GitHub Pages 경로에 게시하여 화면을 확인합니다.</p><span class="step-result">확인 기준: 실제 완료 전까지 예상 결과를 성공 사례로 표시하지 않습니다.</span></li></ol><div class="shot"><strong>실제 GUI 스크린샷 배치 영역 · 19</strong>화면 캡처 후 정상/중간/오류 여부 확인 → 정상 화면만 교재 본문에 반영</div></section><section class="step-card" id="code-guide"><p class="note"><a href="09_1_axi_interrupt_c_code_guide.html"><strong>09.1장 · Interrupt C 코드 쉬운 풀이 독립 페이지 열기</strong></a></p><span class="step">CODE GUIDE · 07.1 STYLE</span><h2>09장 Interrupt C 코드 쉽게 이해하기</h2><p>07.1장과 같은 순서로 <b>코드 → 쉬운 풀이 → CPU·하드웨어에서 일어나는 일</b>을 연결합니다. 같은 코드를 여러 번 길게 반복하지 않고 핵심 구문만 분리했습니다.</p><div class="note"><b>검증 구분</b> · 아래는 09장용 교육 예제 초안입니다. <code>xparameters.h</code>의 장치 ID·주소·SDT 여부 및 실제 빌드·실행 결과는 아직 확인되지 않았습니다. 인터럽트 동작 성공 사례로 사용하지 않습니다.</div><div class="flow">Timer 만료 → INTC → CPU → TimerCallback → timer_event → Main → GPIO LED0</div><article class="code-walk"><h3>01 · 헤더 파일 — 준비된 기능 가져오기</h3><pre class="codeblock-pre"><code>#include &quot;xparameters.h&quot;
+#include &quot;xtmrctr.h&quot;
+#include &quot;xgpio.h&quot;</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> 하드웨어 장치 이름과 Timer·GPIO 제어 함수를 사용하도록 선언합니다. 헤더를 포함했다고 실제 하드웨어가 새로 생기지는 않습니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> Vivado에서 만든 장치 구성 정보는 XSA와 BSP를 통해 C 프로그램에 전달됩니다.</p></article><article class="code-walk"><h3>02 · Timer 간격 — 08장 값 유지</h3><pre class="codeblock-pre"><code>#define TIMER0 0U
+#define TIMER_RESET_VALUE 49999998U</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> Timer 0을 사용하며, 이미 검증된 08장의 재적재 값을 유지합니다. 100 MHz 설정을 전제로 약 0.5초 주기를 목표로 합니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> Timer는 CPU가 계속 읽지 않아도 자체 클록을 세며 동작합니다.</p></article><article class="code-walk"><h3>03 · 변수 세 개 — 발생 횟수와 LED 기억</h3><pre class="codeblock-pre"><code>volatile u32 interrupt_count = 0U;
+volatile u32 timer_event = 0U;
+volatile u32 led_state = 0U;</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> 첫 변수는 인터럽트 횟수, 두 번째는 새 이벤트 발생 표시, 세 번째는 LED0의 현재 상태입니다. volatile은 실행 도중 값이 예상 밖의 시점에 바뀔 수 있음을 컴파일러에 알립니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> Callback과 Main이 같은 메모리 변수를 사용합니다. volatile만으로 동시 접근 문제가 모두 해결되는 것은 아닙니다.</p></article><article class="code-walk"><h3>04 · TimerCallback() — 인터럽트가 오면 기록</h3><pre class="codeblock-pre"><code>static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
 {
     (void)CallBackRef;
     (void)TmrCtrNumber;
-
     interrupt_count++;
     timer_event = 1U;
-}</code></pre><p>Callback은 Interrupt Context에서 실행되므로 event만 기록하고 LED AXI Write는 Main Loop에서 수행한다.</p></section>
-
-<section class="step-card" id="s16"><span class="step">SECTION 16</span><h2>Classic Flow</h2><div class="signal-map" tabindex="0" role="region" aria-label="16절 신호 및 실행 흐름">XIntc_Initialize → XIntc_Connect → XIntc_Start(XIN_REAL_MODE) → XIntc_Enable → Xil_ExceptionRegisterHandler → Xil_ExceptionEnable</div></section>
-
-<section class="step-card" id="s17"><span class="step">SECTION 17</span><h2>SDT Flow</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="SDT Flow · 소스 코드"><code>status = XSetupInterruptSystem(
-    &amp;Timer,
-    (XInterruptHandler)XTmrCtr_InterruptHandler,
-    Timer.Config.IntrId,
-    Timer.Config.IntrParent,
-    XINTERRUPT_DEFAULT_PRIORITY
-);</code></pre><p>SDT Flow에서는 Timer Config의 <code>IntrId</code>와 <code>IntrParent</code>를 사용한다.</p></section>
-
-<section class="step-card" id="s18"><span class="step">SECTION 18</span><h2>Timer 설정 변경</h2><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Timer 설정 변경 · 소스 코드"><code>XTmrCtr_SetOptions(
-    &amp;Timer,
-    TIMER0,
-    XTC_DOWN_COUNT_OPTION |
-    XTC_AUTO_RELOAD_OPTION |
-    XTC_INT_MODE_OPTION
-);</code></pre><p class="step-result">09장에서는 Timer의 Polling 옵션을 Interrupt 옵션으로 전환해야 합니다. 위 설정은 생성된 코드의 Timer 초기화 부분에 들어가며, Interrupt Handler 등록·Enable 단계와 함께 동작해야 합니다.</p></section>
-
-<section class="step-card" id="s19"><span class="step">SECTION 19</span><h2>Interrupt 프로그램</h2><p>다음 코드는 AMD의 현재 XIntc/XTmrCtr/SDT Interrupt 흐름을 기준으로 작성한 교육용 예제이다.</p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="Interrupt 프로그램 · 소스 코드"><code>#include "xparameters.h"
-#include "xtmrctr.h"
-#include "xgpio.h"
-#include "xstatus.h"
-#include "xil_types.h"
-#include "xil_exception.h"
+}</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> Timer 인터럽트가 처리될 때 드라이버가 이 함수를 호출합니다. 발생 횟수를 하나 증가시키고 Main에 알릴 표시만 남깁니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> CPU는 현재 실행 흐름을 잠시 중단하고 인터럽트 처리 경로에 진입합니다. Callback 자체에서 LED 레지스터를 쓰지는 않습니다.</p></article><article class="code-walk"><h3>05 · InitTimer() — 반복 인터럽트 준비</h3><pre class="codeblock-pre"><code>XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
+XTmrCtr_SetOptions(&amp;Timer, TIMER0,
+    XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_INT_MODE_OPTION);
+XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> Callback 연결 → 감소 계수·자동 재적재·인터럽트 사용 → 시작값 설정 순서입니다. 08장 Polling과 가장 크게 달라진 부분은 XTC_INT_MODE_OPTION입니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> Timer의 만료 신호가 발생하면 AXI INTC를 거쳐 CPU로 전달될 수 있도록 준비합니다.</p></article><article class="code-walk"><h3>06 · SetupInterruptSystem() — 인터럽트 길 연결</h3><pre class="codeblock-pre"><code>XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
+    (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
+XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
+Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+    (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> Classic 방식 예시입니다. Timer 인터럽트 번호와 처리 함수를 연결하고, 해당 입력 및 CPU 예외 처리 경로를 허용합니다. SDT 방식에서는 XSetupInterruptSystem()을 사용합니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> Timer → AXI INTC → CPU → Timer Driver → TimerCallback 순서의 연결 관계가 만들어집니다.</p></article><article class="code-walk"><h3>07 · main() — LED를 변경하는 곳</h3><pre class="codeblock-pre"><code>XTmrCtr_Start(&amp;Timer, TIMER0);
+while (1) {
+    if (timer_event != 0U) {
+        timer_event = 0U;
+        led_state ^= 1U;
+        XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+    }
+}</code></pre><p><b>코드 풀이 — 이 코드가 무엇을 하는가?</b> Timer를 시작한 뒤 Main은 이벤트 표시만 확인합니다. 이벤트가 있으면 표시를 지우고 LED0 값을 0↔1로 바꾸어 GPIO에 기록합니다.</p><p class="cpu-explain"><b>CPU·하드웨어에서는?</b> Timer 상태 레지스터를 반복 읽는 08장 Polling과 달리, 여기서는 인터럽트가 남긴 소프트웨어 이벤트를 확인합니다. Main은 여전히 반복 루프를 실행하므로 완전한 저전력 대기 방식은 아닙니다.</p></article><h3>전체 main.c — 한 번에 복사하기</h3><p>위 구문이 포함된 전체 교육용 코드입니다. 실제 Vitis 2024.2 BSP 헤더 확인 후 최종 적용합니다.</p><pre class="codeblock-pre"><code>#include &quot;xparameters.h&quot;     // 하드웨어 주소 및 장치 번호
+#include &quot;xtmrctr.h&quot;         // AXI Timer 드라이버
+#include &quot;xgpio.h&quot;           // AXI GPIO 드라이버
+#include &quot;xstatus.h&quot;         // 성공/실패 반환값
+#include &quot;xil_exception.h&quot;   // CPU 인터럽트 처리
 
 #ifdef SDT
-#include "xinterrupt_wrap.h"
+#include &quot;xinterrupt_wrap.h&quot; // SDT 기반 인터럽트 연결
 #else
-#include "xintc.h"
+#include &quot;xintc.h&quot;          // Classic 기반 AXI INTC 드라이버
 #endif
 
-/*
- * SoC 09 - AXI Interrupt Controller + AXI Timer
- *
- * Hardware path:
- *   axi_timer_0/interrupt
- *      -&gt; axi_intc_0/intr[0]
- *      -&gt; axi_intc_0/irq
- *      -&gt; microblaze_riscv_0/Interrupt
- *
- * Timer:
- *   100 MHz
- *   0.5 s interval
- *   Down Count + Auto Reload + Interrupt
- *
- * User callback:
- *   - interrupt_count++
- *   - timer_event = 1
- *
- * Main loop:
- *   - timer_event 확인
- *   - AXI GPIO LED0 toggle
- */
-
-#define TIMER0                  0U
-#define LED_CHANNEL             1U
-#define LED0_MASK               0x00000001U
-
-#define TIMER_TICKS_500MS       50000000U
-#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)
+#define TIMER0             0U
+#define LED_CHANNEL        1U
+#define TIMER_RESET_VALUE  49999998U // 08장에서 사용한 값
 
 #ifndef SDT
-#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
-#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
-#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
-#define TIMER_INTERRUPT_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
+// 다음 이름은 실제 xparameters.h 확인 후 확정
+#define TIMER_DEVICE_ID    XPAR_TMRCTR_0_DEVICE_ID
+#define GPIO_DEVICE_ID     XPAR_GPIO_0_DEVICE_ID
+#define INTC_DEVICE_ID     XPAR_INTC_0_DEVICE_ID
+#define TIMER_INTR_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
 #else
-#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
-#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
+// 다음 주소 매크로 역시 실제 BSP를 확인
+#define TIMER_BASEADDR     XPAR_XTMRCTR_0_BASEADDR
+#define GPIO_BASEADDR      XPAR_XGPIO_0_BASEADDR
 #endif
 
 static XTmrCtr Timer;
 static XGpio Gpio;
-
 #ifndef SDT
 static XIntc Intc;
 #endif
 
-volatile u32 interrupt_count = 0U;
-volatile u32 timer_event     = 0U;
-volatile u32 led_state       = 0U;
+volatile u32 interrupt_count = 0U; // 발생한 인터럽트 횟수
+volatile u32 timer_event = 0U;     // Main에 전달할 이벤트
+volatile u32 led_state = 0U;       // LED0 상태
 
-/*
- * XTmrCtr_InterruptHandler()가 Timer HW interrupt를 처리한 뒤
- * 이 callback을 Interrupt Context에서 호출한다.
- *
- * ISR/Callback에서는 긴 처리나 출력 작업을 하지 않는다.
- */
+// Timer 드라이버에서 호출하는 사용자 Callback
 static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
 {
     (void)CallBackRef;
     (void)TmrCtrNumber;
-
     interrupt_count++;
     timer_event = 1U;
 }
@@ -383,148 +95,64 @@ static int InitGpio(void)
 static int InitTimer(void)
 {
     int status;
-
 #ifndef SDT
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
 #else
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
 #endif
-
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
+    if (status != XST_SUCCESS) return XST_FAILURE;
 
     status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
+    if (status != XST_SUCCESS) return XST_FAILURE;
 
     XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
-
-    XTmrCtr_SetOptions(
-        &amp;Timer,
-        TIMER0,
-        XTC_DOWN_COUNT_OPTION |
-        XTC_AUTO_RELOAD_OPTION |
-        XTC_INT_MODE_OPTION
-    );
-
+    XTmrCtr_SetOptions(&amp;Timer, TIMER0,
+        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_INT_MODE_OPTION);
     XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
-
     return XST_SUCCESS;
 }
 
 static int SetupInterruptSystem(void)
 {
     int status;
-
 #ifndef SDT
     status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
-    status = XIntc_Connect(
-        &amp;Intc,
-        TIMER_INTERRUPT_ID,
-        (XInterruptHandler)XTmrCtr_InterruptHandler,
-        (void *)&amp;Timer
-    );
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
+    if (status != XST_SUCCESS) return XST_FAILURE;
+    status = XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
+        (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
+    if (status != XST_SUCCESS) return XST_FAILURE;
     status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
-    XIntc_Enable(&amp;Intc, TIMER_INTERRUPT_ID);
-
+    if (status != XST_SUCCESS) return XST_FAILURE;
+    XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
     Xil_ExceptionInit();
-
-    Xil_ExceptionRegisterHandler(
-        XIL_EXCEPTION_ID_INT,
-        (Xil_ExceptionHandler)XIntc_InterruptHandler,
-        &amp;Intc
-    );
-
+    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);
     Xil_ExceptionEnable();
-
 #else
-    status = XSetupInterruptSystem(
-        &amp;Timer,
+    status = XSetupInterruptSystem(&amp;Timer,
         (XInterruptHandler)XTmrCtr_InterruptHandler,
-        Timer.Config.IntrId,
-        Timer.Config.IntrParent,
-        XINTERRUPT_DEFAULT_PRIORITY
-    );
-
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
+        Timer.Config.IntrId, Timer.Config.IntrParent,
+        XINTERRUPT_DEFAULT_PRIORITY);
+    if (status != XST_SUCCESS) return XST_FAILURE;
 #endif
-
     return XST_SUCCESS;
 }
 
 int main(void)
 {
-    int status;
-
-    status = InitGpio();
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
-    status = InitTimer();
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
-
-    status = SetupInterruptSystem();
-    if (status != XST_SUCCESS) {
-        return XST_FAILURE;
-    }
+    if (InitGpio() != XST_SUCCESS) return XST_FAILURE;
+    if (InitTimer() != XST_SUCCESS) return XST_FAILURE;
+    if (SetupInterruptSystem() != XST_SUCCESS) return XST_FAILURE;
 
     XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
-
-    /*
-     * Interrupt path를 모두 준비한 뒤 Timer 시작
-     */
     XTmrCtr_Start(&amp;Timer, TIMER0);
 
     while (1) {
-        /*
-         * Callback은 event만 남긴다.
-         * 실제 AXI GPIO Write는 Main Context에서 수행한다.
-         */
         if (timer_event != 0U) {
             timer_event = 0U;
-
-            led_state ^= LED0_MASK;
+            led_state ^= 1U;
             XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
         }
     }
-
-    return XST_SUCCESS;
-}</code></pre></section>
-
-<section class="step-card" id="s20"><span class="step">SECTION 20</span><h2>Polling과 비교</h2><div class="table-wrap" tabindex="0" role="region" aria-label="Polling과 비교 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">항목</th><th scope="col" role="columnheader">SoC 08</th><th scope="col" role="columnheader">SoC 09</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="항목" role="cell">Timer 확인</td><td data-label="SoC 08" role="cell">Main Loop 반복 Read</td><td data-label="SoC 09" role="cell">Interrupt 발생</td></tr><tr role="row"><td data-label="항목" role="cell">CPU 진입</td><td data-label="SoC 08" role="cell">일반 흐름</td><td data-label="SoC 09" role="cell">Exception/ISR</td></tr><tr role="row"><td data-label="항목" role="cell">LED 처리</td><td data-label="SoC 08" role="cell">Polling 직후</td><td data-label="SoC 09" role="cell">Callback event → Main 처리</td></tr></tbody></table></div></section>
-
-<section class="step-card" id="s21"><span class="step">SECTION 21</span><h2>하드웨어 검증 → Vitis 빌드 → 인터럽트 실행</h2><ol class="procedure"><li><strong>BD 검증 및 저장</strong><p><b>Validate Design(F6)</b> → <b>Ctrl+S</b>로 연결 오류를 검사합니다. 09장 Wrapper/Top/XDC 경로도 확인합니다.</p></li><li><strong>Bitstream·XSA 생성</strong><p><b>Generate Bitstream</b> 성공 후 <b>File → Export → Export Hardware</b>에서 <b>Include bitstream</b>을 선택해 09장 XSA를 별도 저장합니다.</p></li><li><strong>09장 Vitis Platform 준비</strong><p>Workspace <code>/home/jung/soc/sw</code>에서 09장 XSA를 참조하는 Platform을 별도로 만듭니다. standalone Domain의 Interrupt 관련 Driver/예외 연결을 확인합니다. 08장 Platform은 보존합니다.</p></li><li><strong>Application Build</strong><p>19절의 인터럽트 예제 <code>main.c</code>를 09장 Platform으로 빌드하고 ELF를 생성합니다. Classic/SDT 매크로는 현재 생성된 <code>xparameters.h</code>와 대조합니다.</p></li><li><strong>FPGA Program·실행</strong><p>09장 Bitstream을 다운로드하고 09장 ELF를 실행합니다. LED0가 약 0.5초마다 반전하는지, Debugger의 Interrupt Counter가 증가하는지 확인합니다.</p><span class="step-result">예상 결과: 인터럽트 이벤트가 주기적으로 발생하고 ISR이 호출됩니다. 실제 보드에서 확인하기 전에는 성공으로 표시하지 않습니다.</span></li></ol></section>
-
-<section class="step-card" id="s22"><span class="step">SECTION 22</span><h2>눈으로 확인하는 결과</h2><div class="table-wrap" tabindex="0" role="region" aria-label="눈으로 확인하는 결과 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">시간</th><th scope="col" role="columnheader"><code>interrupt_count</code></th><th scope="col" role="columnheader">LED0</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="시간" role="cell">시작</td><td data-label="interrupt_count" role="cell">0</td><td data-label="LED0" role="cell">OFF</td></tr><tr role="row"><td data-label="시간" role="cell">약 0.5 s</td><td data-label="interrupt_count" role="cell">1</td><td data-label="LED0" role="cell">ON</td></tr><tr role="row"><td data-label="시간" role="cell">약 1.0 s</td><td data-label="interrupt_count" role="cell">2</td><td data-label="LED0" role="cell">OFF</td></tr><tr role="row"><td data-label="시간" role="cell">약 1.5 s</td><td data-label="interrupt_count" role="cell">3</td><td data-label="LED0" role="cell">ON</td></tr></tbody></table></div><div class="note">시간은 설정식에 따른 예상 결과이며 실제 보드에서 확인한다.</div></section>
-
-<section class="step-card" id="s23"><span class="step">SECTION 23</span><h2>Debugger 확인</h2><div class="table-wrap" tabindex="0" role="region" aria-label="Debugger 확인 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">변수</th><th scope="col" role="columnheader">정상 동작</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="변수" role="cell"><code>interrupt_count</code></td><td data-label="정상 동작" role="cell">약 0.5초마다 증가</td></tr><tr role="row"><td data-label="변수" role="cell"><code>timer_event</code></td><td data-label="정상 동작" role="cell">ISR에서 1 → Main에서 0</td></tr><tr role="row"><td data-label="변수" role="cell"><code>led_state</code></td><td data-label="정상 동작" role="cell">0 ↔ 1 반복</td></tr></tbody></table></div></section>
-
-<section class="step-card" id="s24"><span class="step">SECTION 24</span><h2>Interrupt 전체 추적</h2><div class="signal-map" tabindex="0" role="region" aria-label="24절 신호 및 실행 흐름">TCR0 rollover → T0INT → Timer interrupt → AXI INTC intr[0] → irq → MicroBlaze V Exception → XIntc_InterruptHandler → XTmrCtr_InterruptHandler → TimerCallback → timer_event=1 → Main Loop → AXI GPIO → LED0</div></section>
-
-<section class="step-card" id="s25"><span class="step">SECTION 25</span><h2>오류 점검</h2><div class="table-wrap" tabindex="0" role="region" aria-label="오류 점검 · 표"><table role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">증상</th><th scope="col" role="columnheader">확인</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="증상" role="cell">LED가 안 깜빡임</td><td data-label="확인" role="cell">Timer→INTC→MicroBlaze V irq 경로</td></tr><tr role="row"><td data-label="증상" role="cell"><code>interrupt_count=0</code></td><td data-label="확인" role="cell"><code>XTC_INT_MODE_OPTION</code>, Vector ID</td></tr><tr role="row"><td data-label="증상" role="cell">계속 재진입</td><td data-label="확인" role="cell">Level-High 설정, Timer Driver ISR 연결</td></tr><tr role="row"><td data-label="증상" role="cell">한 번만 발생</td><td data-label="확인" role="cell">Auto Reload 설정</td></tr><tr role="row"><td data-label="증상" role="cell">Macro 없음</td><td data-label="확인" role="cell">최신 XSA/Platform, <code>xparameters.h</code></td></tr></tbody></table></div></section>
-
-<section class="step-card summary" id="summary"><span class="step">SUMMARY</span><h2>SoC 09 완료 판정 기준</h2><ul><li> AXI Interrupt Controller를 추가했다.</li><li> Timer interrupt를 <code>intr[0]</code>에 연결했다.</li><li> <code>irq</code>를 MicroBlaze V Interrupt에 연결했다.</li><li> Timer Interrupt 입력을 Level-High로 설정했다.</li><li> ISR/IPR/IER/IAR/IVR/MER 역할을 구분한다.</li><li> Classic XIntc 초기화 흐름을 이해한다.</li><li> SDT에서 <code>XSetupInterruptSystem()</code>을 이해한다.</li><li> <code>XTC_INT_MODE_OPTION</code>을 사용한다.</li><li> Callback은 event만 기록한다.</li><li> LED Write는 Main Context에서 수행한다.</li><li> 약 0.5초마다 Interrupt와 LED Toggle을 확인한다.</li></ul><div class="flow">SoC 09 완료 → SoC 10 GPIO + UART + Timer 통합</div></section>
-
-<section class="step-card" id="sources"><span class="step">SOURCE</span><h2>공식 매뉴얼 및 원본 근거</h2><div class="table-wrap" tabindex="0" role="region" aria-label="공식 매뉴얼 및 원본 근거 · 표"><table class="resource-table" role="table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">문서</th><th scope="col" role="columnheader">확인 항목</th></tr></thead><tbody role="rowgroup"><tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/v/u/en-US/pg099-axi-intc" target="_blank">AMD PG099 · AXI Interrupt Controller v4.1</a></td><td data-label="확인 항목" role="cell">Interrupt input/output, Register Map, Level/Edge 설정</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://docs.amd.com/r/en-US/pg079-axi-timer/Interrupts" target="_blank">AMD PG079 · AXI Timer Interrupts</a></td><td data-label="확인 항목" role="cell">Timer interrupt Active-High, T0INT</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c" target="_blank">AMD embeddedsw · xtmrctr_intr_example.c</a></td><td data-label="확인 항목" role="cell">Classic XIntc + SDT interrupt flow</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://xilinx.github.io/embeddedsw.github.io/tmrctr/doc/html/api/xtmrctr_8h.html" target="_blank">AMD XTmrCtr Driver API</a></td><td data-label="확인 항목" role="cell">SetHandler, InterruptHandler, XTC_INT_MODE_OPTION</td></tr><tr role="row"><td data-label="문서" role="cell"><a href="https://github.com/Xilinx/embeddedsw/blob/master/lib/bsp/standalone/src/common/intr/xinterrupt_wrap.c" target="_blank">AMD xinterrupt_wrap.c · 2026</a></td><td data-label="확인 항목" role="cell">SDT interrupt wrapper</td></tr><tr role="row"><td role="cell" data-label="문서"><a href="https://github.com/Xilinx/embeddedsw/blob/97f2baf7f69e9d5f447650110af0d8841e501277/lib/bsp/standalone/src/riscv/xil_exception.h" target="_blank" rel="noopener">AMD Standalone RISC-V · xil_exception.h</a></td><td role="cell" data-label="확인 항목">RISC-V 외부 인터럽트 등록 API와 XIL_EXCEPTION_ID_INT</td></tr></tbody></table></div></section>
-
-<nav class="chapter-nav"><a href="08_axi_timer.html">← SoC 08</a><a href="../../index.html">전체 목차</a><a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10 →</a></nav>
-</main></div><footer class="site-footer">BASYS3 · MicroBlaze V SoC 실습 교재</footer></body></html>
+}
+</code></pre><div class="note"><b>관찰 변수</b> · <code>interrupt_count</code>는 증가, <code>timer_event</code>는 0과 1 사이에서 변화, <code>led_state</code>는 0↔1을 기대합니다. 아직 측정된 값은 아닙니다.</div></section><section class="step-card" id="refs"><span class="step">REFERENCES</span><h2>AMD 공식 문서 및 예제</h2><ul><li><a href="https://docs.amd.com/r/en-US/pg099-axi-intc" target="_blank" rel="noopener">PG099 · AXI Interrupt Controller</a></li><li><a href="https://docs.amd.com/r/en-US/pg079-axi-timer" target="_blank" rel="noopener">PG079 · AXI Timer</a></li><li><a href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide" target="_blank" rel="noopener">UG1629 · MicroBlaze V User Guide</a></li><li><a href="https://docs.amd.com/r/2024.2-English/ug1400-vitis-embedded" target="_blank" rel="noopener">UG1400 · Vitis Embedded Software</a></li><li><a href="https://github.com/Xilinx/embeddedsw/blob/xlnx_rel_v2024.2/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c" target="_blank" rel="noopener">AMD 2024.2 XTmrCtr interrupt example</a></li></ul></section><section class="step-card" id="finish"><span class="step">FINAL</span><h2>09장 완료 판정</h2><p>Validate Design, Bitstream, Timing, XSA, Vitis Build, FPGA Debug, ISR 진입·복귀, interrupt_count 증가, LED0 점멸, 08장 프로젝트 보존, 최종 GUI 스크린샷, GitHub Pages 게시를 실제로 검증한 뒤 완료로 판정합니다.</p></section><div class="chapter-nav"><a href="08_axi_timer.html">← 08장 AXI Timer</a><a href="../../index.html">전체 목차</a><a href="10_microblaze_gpio_uart_timer_integration.html">10장 →</a></div></main></div><footer class="site-footer">Basys3 + MicroBlaze V SoC · Chapter 09 · GUI 실습 기본틀</footer></body></html>
