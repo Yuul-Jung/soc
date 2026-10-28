@@ -49,7 +49,7 @@ footer{color:var(--mut);font-size:.78rem;margin:22px 0}
 <section id="summary" class="panel"><h2>01 · 조사 범위 / 증거 상태</h2>
 <div class="stats"><div class="stat"><small>통합 조사 항목</small><b id="total"></b></div><div class="stat"><small>Digilent Pmod IP</small><b>39</b><small>브리지 2종 별도</small></div><div class="stat"><small>확인된 회로도 원본 URL</small><b id="schematics"></b></div><div class="stat"><small>현재 확인된 보유 수량</small><b id="owned"></b></div></div>
 <div class="notice"><b>증거 단계 구분:</b> ① 정확한 보드/제품 회로도 ② 데이터시트 내부 회로도 ③ 제조사 설계 자료 ④ RTL/IP 소스만 있음 ⑤ 원본 미확보를 분리했습니다. 실물 보유 여부와 전압·핀맵 일치, Vivado/Vitis 2024.2 동작은 별도 검증 대상입니다. 확인된 회로도 URL은 중복 제거하여 집계하며, Basys3 내장 입출력 9개는 보드 회로도 한 부를 공유합니다.</div>
-<p>보유 여부는 아래 표에서 직접 선택하면 현재 브라우저에 기록됩니다. 선택값은 GitHub 서버에 업로드되지 않습니다. <b>실물 사진·모델명·PCB 리비전을 확인한 뒤</b> 우선순위를 최종 확정합니다.</p></section>
+<p>보유 여부는 아래 표에서 직접 선택하면 현재 브라우저에 기록됩니다. 선택값은 GitHub 서버에 업로드되지 않습니다. 다른 브라우저·PC에서도 이어서 사용하려면 JSON 백업/복원 기능을 이용하십시오. <b>실물 사진·모델명·PCB 리비전을 확인한 뒤</b> 우선순위를 최종 확정합니다.</p></section>
 <section class="panel" id="audit"><h2>01-1 · 적대적 검증 기록</h2><div class="tablebox"><table><thead><tr><th>검증 항목</th><th>발견 문제</th><th>개정 결과</th></tr></thead><tbody>
 <tr><td>원본 회로도 집계</td><td>매뉴얼·IP 저장소 URL까지 회로도 28건처럼 표시</td><td>기종 일치 회로도 PDF 주소만 중복 없이 집계하고 나머지는 구분</td></tr>
 <tr><td>미리보기 그림</td><td>제3자 이미지를 제조사 회로도로 오인할 여지</td><td>미검증 이미지를 모두 제거하고 원본 PDF 표시로 교체</td></tr>
@@ -65,7 +65,7 @@ footer{color:var(--mut);font-size:.78rem;margin:22px 0}
 <section id="inventory" class="panel"><h2>03 · 보유 여부를 입력하는 입출력 통합 목록</h2>
 <p class="muted">RTL 및 AXI(악시) 연결은 과제 후보 상태입니다. 우선검토 A/B/C는 실제 보유·가격·안전성·검증 결과를 반영한 최종 순위가 아닙니다. <b>전체 모듈을 보유한 것으로 가정하지 않습니다.</b></p>
 <div class="filters"><input id="q" placeholder="모듈 · 프로토콜 검색" aria-label="모듈 검색"><select id="family"><option value="">모든 출처</option></select><select id="category"><option value="">모든 기능</option></select><select id="evidence"><option value="">모든 근거 단계</option><option value="schematic">기종 일치 회로도 PDF</option><option value="datasheet-with-schematic">데이터시트 내 회로도</option><option value="reference-variant">리비전 불일치 가능</option><option value="design-page">설계 자료 페이지</option><option value="ip-only">RTL/IP만 확보</option><option value="none">원본 미확보</option></select><select id="stock"><option value="">전체 보유 상태</option><option value="yes">보유</option><option value="no">미보유</option><option value="unknown">미확인</option></select></div>
-<div class="line" style="margin-bottom:10px"><button class="btn primary" id="export">보유 조사 CSV 내보내기</button><span id="count" class="hint"></span><span class="hint">우선순위는 보유 확정·회로 대조 뒤 재평가</span></div>
+<div class="line" style="margin-bottom:10px"><button class="btn primary" id="export">보유 조사 CSV 내보내기</button><button class="btn" id="backupJSON">보유 기록 백업(JSON)</button><label class="btn" for="restoreJSON">보유 기록 복원(JSON)</label><input type="file" id="restoreJSON" accept=".json,application/json" style="position:absolute;left:-9999px;width:1px;height:1px"><span id="count" class="hint"></span><span class="hint">우선순위는 보유 확정·회로 대조 뒤 재평가</span></div>
 <div class="tablebox"><table><thead><tr><th>출처</th><th>모듈</th><th>입출력</th><th>통신/제어</th><th>우선검토</th><th>실물 보유</th><th>근거 상태</th><th>원본 / RTL</th><th>주의사항</th></tr></thead><tbody id="rows"></tbody></table></div></section>
 <section id="strategy" class="panel"><h2>04 · 2차 선정 및 RTL → AXI 확장 기준</h2>
 <div class="grid3">
@@ -121,6 +121,21 @@ function card(x){
 $("#featured").innerHTML=FEAT.map(card).join("");
 document.addEventListener("click",e=>{let b=e.target.closest("[data-preview]");if(!b)return;let x=DATA.find(x=>x.n===b.dataset.preview);if(!x||!x.doc)return;$("#pdfTitle").textContent=x.n+" — 외부 공개 원본";$("#pdfFrame").src=x.doc+"#page=1&view=FitH";$("#pdfDialog").showModal()});
 $("#closeModal").addEventListener("click",()=>{$("#pdfDialog").close();$("#pdfFrame").src="about:blank"});
+$("#backupJSON").addEventListener("click",()=>{
+ const subset={}; for(const x of DATA)subset[x.n]=own(x.n);
+ const blob=new Blob([JSON.stringify({version:1,created:new Date().toISOString(),inventory:subset},null,2)],{type:"application/json;charset=utf-8"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="basys3_io_owned_backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+});
+$("#restoreJSON").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  const payload=JSON.parse(await file.text()), input=payload?.inventory;
+  if(payload?.version!==1||!input||typeof input!=="object"||Array.isArray(input))throw Error("보유 기록 형식이 아닙니다.");
+  const approved=new Set(DATA.map(x=>x.n));let n=0;
+  for(const [name,val] of Object.entries(input)){if(approved.has(name)&&["yes","no","unknown"].includes(val)){inv[name]=val;n++}}
+  sav();render();alert(n+"개 항목의 보유 기록을 복원했습니다.");
+ }catch(err){alert("복원 실패: "+err.message)}finally{e.target.value=""}
+});
 $("#export").addEventListener("click",()=>{
 let rows=[["출처","모듈","기능","방향","프로토콜","잠정그룹","보유상태","회로근거","원본링크","IP소스","주의사항"],...DATA.map(x=>[x.f,x.n,x.c,x.dir,x.bus,x.grade,own(x.n),x.kind,x.doc,x.rtl||"",x.pin+" / "+(x.reviewNote||"")])];
 let csv="\ufeff"+rows.map(a=>a.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");
