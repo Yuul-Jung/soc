@@ -57,6 +57,7 @@ footer{color:var(--mut);font-size:.78rem;margin:22px 0}
 <tr><td>브랜드·리비전</td><td>ESP32 DevKit 명칭 불명확; Basys3 매뉴얼을 회로도와 혼동</td><td>ESP32-DevKitC V4 원본 추가; Basys3 8쪽 Rev D.1 회로도 연결</td></tr>
 <tr><td>Digilent IP</td><td>모듈별 RTL 경로 대신 저장소 첫 화면만 연결</td><td>업로드된 component.xml 구조에 맞춘 개별 IP 폴더 연결(39종)</td></tr>
 <tr><td>전기적 안전</td><td>3.3V GPIO / XADC / 5V 모듈 구분 미흡</td><td>전압·I2C 풀업·모터 외부 전원·보드 리비전 확인 경고 강화</td></tr>
+<tr><td>그림 발췌 형식</td><td>원본 PDF를 이미지 파일로 별도 크롭한 상태는 아님</td><td>현재는 공개 PDF 원본을 페이지 내에서 표시. 브라우저가 차단하면 원본 링크로 열람하며, 검수된 PNG 발췌 이미지는 미확보로 기록</td></tr>
 <tr><td>남은 미검증</td><td>원본이 미확보된 저가 센서와 보유·구동 성공 증거 부재</td><td>미확보 표시 유지. 실제 소유 모듈 사진과 제조사 자료 확인 전 추천 확정 금지</td></tr>
 </tbody></table></div><p class="hint">검토 기준: 업로드된 Digilent Vivado 라이브러리 ZIP, Digilent/AMD·Arduino·Espressif·Raspberry Pi·SparkFun 공개 자료. 미러 PDF·외부 서버 열람 가능 여부는 환경마다 달라질 수 있습니다.</p></section>
 <section id="originals" class="panel"><h2>02 · 제조사/공개 원본 회로도 갤러리</h2>
@@ -85,7 +86,7 @@ footer{color:var(--mut);font-size:.78rem;margin:22px 0}
 <div class="unit"><h3>영상/신호 응용</h3><div>조이스틱/센서 → VGA/OLED 그래픽 → UART 명령</div><small>기존 FPGA 영상/표시 구조 활용</small></div></div></section>
 <section id="sources" class="panel"><h2>06 · 출처·라이선스·검증 경계</h2>
 <p>기종 일치 회로도, 데이터시트 내 회로도, 설계자료 페이지, Vivado RTL/IP 소스를 구별하여 연결했습니다. 원본 자체의 저작권·재배포 조건은 각 출처를 따르며, 미확보 제품은 회로도를 보유한 것으로 표시하지 않습니다.</p>
-<p><a href="https://github.com/Digilent/vivado-library">Digilent Vivado IP 원본 저장소</a> · <a href="https://digilent.com/reference/programmable-logic/basys-3/reference-manual">Basys3 보드 매뉴얼</a> · <a href="https://github.com/sparkfun/Motor_Driver-Dual_TB6612FNG">SparkFun TB6612FNG 공개 설계</a> · <a href="https://docs.arduino.cc/hardware/uno-rev3">Arduino UNO 공개 하드웨어</a> · <a href="https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html">Raspberry Pi Pico 공개 설계</a> · <a href="https://learn.adafruit.com/adafruit-huzzah32-esp32-feather/downloads">Adafruit ESP32</a></p>
+<p><a href="https://github.com/Digilent/vivado-library">Digilent Vivado IP 원본 저장소</a> · <a href="https://digilent.com/reference/programmable-logic/basys-3/reference-manual">Basys3 보드 매뉴얼</a> · <a href="https://github.com/sparkfun/Motor_Driver-Dual_TB6612FNG">SparkFun TB6612FNG 공개 설계</a> · <a href="https://docs.arduino.cc/hardware/uno-rev3">Arduino UNO 공개 하드웨어</a> · <a href="https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html">Raspberry Pi Pico 공개 설계</a> · <a href="https://learn.adafruit.com/adafruit-huzzah32-esp32-feather/downloads">Adafruit ESP32</a> · <a href="https://digilent.com/reference/_media/reference/pmod/pmod-interface-specification-1_3_0.pdf">Digilent Pmod 규격</a></p>
 <p class="hint">참고: Digilent 라이브러리의 구형 Pmod AXI/드라이버는 Vivado/Vitis 2024.2 및 MicroBlaze V와의 호환이 확인되지 않았습니다. 최종 프로젝트·보드 검증과 구별합니다.</p></section>
 <footer>Basys3 + MicroBlaze V 교육과정 / 입출력 소자 자료 조사판. 이 페이지는 실습 확정 목차가 아닙니다. GitHub Pages 정적 페이지이며 보유 여부 데이터는 브라우저 로컬에만 저장됩니다.</footer>
 </main></div>
