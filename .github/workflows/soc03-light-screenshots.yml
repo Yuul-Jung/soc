@@ -1,0 +1,50 @@
+name: SoC03 screenshots light-background normalization
+on:
+  push:
+    paths:
+      - .github/workflows/soc03-light-screenshots.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Install image-processing packages
+        run: python -m pip install numpy pillow opencv-python-headless
+      - name: Transform dark Vitis backgrounds without changing screenshot content
+        run: python MicroBlaze_V_SoC01_41/tools/soc03_light_screenshots.py
+      - name: Verify the 03 HTML image targets and save changes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          root = Path("MicroBlaze_V_SoC01_41")
+          page = root / "pages/soc/03_microblaze_bram_program_execution.html"
+          class Check(HTMLParser):
+              def __init__(self): super().__init__(); self.srcs = []
+              def handle_starttag(self, tag, attrs):
+                  if tag == "img":
+                      self.srcs.append(dict(attrs).get("src", ""))
+          doc=Check()
+          doc.feed(page.read_text(encoding="utf-8"))
+          srcs=[s for s in doc.srcs if "/soc03/" in s]
+          assert len(srcs) == 12, f"03 chapter should feature 12 curated GUI captures, not {len(srcs)}"
+          assert all((page.parent/s).resolve().is_file() for s in srcs)
+          assert len(list((root/"images/soc03/dark_originals").glob("*.webp"))) == 21
+          print("PASS: 12 curated images linked; 22 site images; 21 dark originals archived")
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add MicroBlaze_V_SoC01_41/images/soc03/
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m "SoC03: use light-background Vitis screenshots and retain originals"
+            git push origin HEAD:main
+          fi
