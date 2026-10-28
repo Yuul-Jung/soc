@@ -1,0 +1,161 @@
+{
+  "method": "CIELAB luminance remapping with unchanged image dimensions; no text redrawing",
+  "scope": "SoC03 Vitis 2024.2 screenshots",
+  "images": [
+    {
+      "filename": "01_platform_name.webp",
+      "mode": "already-light-original",
+      "dark_before": 0.1008765243902439,
+      "dark_after": 0.1008765243902439,
+      "original_sha256": "8e159669035dd3ee58912621931344bbe00edb2c1d9766380da959f9167d6aef"
+    },
+    {
+      "filename": "02_platform_xsa.webp",
+      "mode": "converted",
+      "dark_before": 0.9816810344827587,
+      "dark_after": 0.005145474137931034,
+      "original_sha256": "1627100c7040f00d1779d42d9069c82015f504e1960d03dbac151be8e32cbbb4"
+    },
+    {
+      "filename": "03_platform_os_processor.webp",
+      "mode": "converted",
+      "dark_before": 0.982354525862069,
+      "dark_after": 0.004768318965517241,
+      "original_sha256": "0a4a74ee506400c5d01133177fd382eabd0a17a966402f7e72409183cf01def8"
+    },
+    {
+      "filename": "04_platform_summary.webp",
+      "mode": "converted",
+      "dark_before": 0.9818426724137931,
+      "dark_after": 0.0042025862068965514,
+      "original_sha256": "47605ac68e401f9095aa4ed134c0ec34cebd208fe29dc92512fc66263c53b13c"
+    },
+    {
+      "filename": "05_platform_created.webp",
+      "mode": "converted",
+      "dark_before": 0.9726023706896552,
+      "dark_after": 0.014008620689655173,
+      "original_sha256": "06a6dcdce594d1758b1a19981affb94d5d7fa36af188d0362a6a14bba72f4823"
+    },
+    {
+      "filename": "06_platform_build_success.webp",
+      "mode": "converted",
+      "dark_before": 0.9648706896551724,
+      "dark_after": 0.017160560344827585,
+      "original_sha256": "5a0fda33350e93ebb54f08827ad208a15b4567f9bca57907e2384bd74dbf64dc"
+    },
+    {
+      "filename": "07_app_name.webp",
+      "mode": "converted",
+      "dark_before": 0.9856411637931034,
+      "dark_after": 0.003286637931034483,
+      "original_sha256": "57813c750f6d881ca90759933eb81c4e51976db65917473b1edb78307acaa98d"
+    },
+    {
+      "filename": "08_app_platform.webp",
+      "mode": "converted",
+      "dark_before": 0.9750808189655172,
+      "dark_after": 0.009348060344827587,
+      "original_sha256": "b9ea224b1c0b6b628191b20467e5fbeea4dacc02b6a024da6a19cf0dac1287d4"
+    },
+    {
+      "filename": "09_app_domain.webp",
+      "mode": "converted",
+      "dark_before": 0.9859644396551724,
+      "dark_after": 0.0034213362068965516,
+      "original_sha256": "65f3dc0f542c655f2467c036ec1c2e4927b1c97f69422cde2f7c6ab67b5dd92a"
+    },
+    {
+      "filename": "10_app_source_skip.webp",
+      "mode": "converted",
+      "dark_before": 0.9865840517241379,
+      "dark_after": 0.0030711206896551725,
+      "original_sha256": "5af5da1accc2bf627311ebc3098c0c094069316fb44a5ff000ad551e53c41a0a"
+    },
+    {
+      "filename": "11_app_summary.webp",
+      "mode": "converted",
+      "dark_before": 0.9843480603448276,
+      "dark_after": 0.004525862068965518,
+      "original_sha256": "c4f8f4de7778beed9a345bf716d0941744da5d46a0d8da78a4490fb5f6abded7"
+    },
+    {
+      "filename": "12_app_created.webp",
+      "mode": "converted",
+      "dark_before": 0.958270474137931,
+      "dark_after": 0.020474137931034482,
+      "original_sha256": "31ca83d71fe20e11808b71a43ff0c24aa115e4afcea4e7a7c455478b1f1f41fd"
+    },
+    {
+      "filename": "13_new_main.webp",
+      "mode": "converted",
+      "dark_before": 0.9765355603448276,
+      "dark_after": 0.0004579741379310345,
+      "original_sha256": "eb510d09359a497187b94d1ef2771e2416cd1bdd38f4becdb7abb2d019d4b1e5"
+    },
+    {
+      "filename": "14_main_code.webp",
+      "mode": "converted",
+      "dark_before": 0.9807112068965518,
+      "dark_after": 0.006142241379310345,
+      "original_sha256": "8e04c3ca56e1e087f2dbdf5c4b6c1152282e084005f98f910afc9cc4478027bc"
+    },
+    {
+      "filename": "15_app_build_success.webp",
+      "mode": "converted",
+      "dark_before": 0.968103448275862,
+      "dark_after": 0.01578663793103448,
+      "original_sha256": "988d516a0b3e31d5f98cd8e254c63122d0dd6b5c38f53f9195efdb9b8e6651ee"
+    },
+    {
+      "filename": "16_linker_bram.webp",
+      "mode": "converted",
+      "dark_before": 0.9771821120689655,
+      "dark_after": 0.013981681034482758,
+      "original_sha256": "37b73e06ae7e3c7cd569c0a95bd49165793fe189a84f4b43b6b6432bd959e3e9"
+    },
+    {
+      "filename": "17_run_debug_settings.webp",
+      "mode": "converted",
+      "dark_before": 0.9844827586206897,
+      "dark_after": 0.009859913793103449,
+      "original_sha256": "266431ff97a897c5c1585e60c8a96d6f7fd43a3a49a536c1c84165f0f65cdd5d"
+    },
+    {
+      "filename": "18_launch_json.webp",
+      "mode": "converted",
+      "dark_before": 0.9797413793103448,
+      "dark_after": 0.013766163793103449,
+      "original_sha256": "785a82d1b4b479a55640fec57ac90b447f660c7c0950e8f4dd61d2ce85179cb5"
+    },
+    {
+      "filename": "19_jtag_error.webp",
+      "mode": "converted",
+      "dark_before": 0.9765086206896552,
+      "dark_after": 0.01597521551724138,
+      "original_sha256": "8a8e1538a17f4c18f7be3f98c676fd2a0c9ea5ea4a6bf2441d4de2d303e8ef6f"
+    },
+    {
+      "filename": "20_main_breakpoint.webp",
+      "mode": "converted",
+      "dark_before": 0.9647090517241379,
+      "dark_after": 0.005280172413793104,
+      "original_sha256": "44864a407292a45b4570d38538d73e237d8dfc9866ea9b40ce0a0492d78d1260"
+    },
+    {
+      "filename": "21_main_recovered.webp",
+      "mode": "converted",
+      "dark_before": 0.9569773706896552,
+      "dark_after": 0.008135775862068966,
+      "original_sha256": "43300b5be9560b0d20eb1f15e35f4cd55fd713ed545a20f328684de56e422bba"
+    },
+    {
+      "filename": "22_watch_step.webp",
+      "mode": "converted",
+      "dark_before": 0.9575161637931034,
+      "dark_after": 0.0071390086206896556,
+      "original_sha256": "45ea1344b8e0e598dc89574b9e6dfb46bd9de8549bf9c9532d8975cb2d3112b9"
+    }
+  ],
+  "note": "Original dark-theme screenshots retained in images/soc03/dark_originals"
+}
