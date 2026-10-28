@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport">
+<meta name="description" content="SoC 09.1 · AXI Timer Interrupt와 ISR C 소스 코드를 CPU·레지스터·인터럽트 흐름에 연결하는 쉬운 해설">
+<title>SoC 09.1 · Timer Interrupt C 코드 쉽게 이해하기</title><style>
+
+:root{
+  --paper:#F1F2EE;--card:#FFFFFF;--ink:#15171C;--ink-2:#4A4F5A;--ink-3:#858B96;
+  --line:#DDDFD8;--line-strong:#C9CCC3;--accent:#4635B1;--accent-soft:#EDEAFA;
+  --yellow:#FFD24A;--good:#1F6F4A;--good-bg:#EEF8F3;--warn:#7A4D14;--warn-bg:#FDF3E7;
+  --maxw:1560px;--sidebar:260px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:22px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:inherit} code,.mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+/* top */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:var(--maxw);margin:0 auto;padding:12px 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;font-size:.88rem;color:var(--ink-2)}
+.breadcrumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.breadcrumb a{text-decoration:none;color:var(--ink)}.breadcrumb .sep{color:#B0B4BC}
+.brand{font-family:"SFMono-Regular",Consolas,monospace;font-size:.75rem;color:var(--ink-3)}
+
+/* hero */
+.hero{position:relative;background:var(--ink);color:#F1F2EE;overflow:hidden;border-bottom:1px solid #111}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,rgba(255,255,255,.052) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.052) 1px,transparent 1px);background-size:28px 28px}
+.hero-inner{position:relative;max-width:var(--maxw);margin:0 auto;padding:72px 34px 58px}
+.hero-kicker{display:inline-block;margin:0 0 16px;padding-bottom:7px;border-bottom:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:.96rem}
+.hero h1{margin:0;max-width:1100px;font-size:clamp(1.9rem,4.2vw,3.15rem);line-height:1.18;letter-spacing:-.03em;word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
+.hero-desc{margin:22px 0 0;max-width:760px;color:#BBC0C8;font-size:1rem;font-weight:300}
+.hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:2px;color:#E6E8EC;font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+.hero-brief{margin-top:38px;padding-top:28px;border-top:1px solid rgba(255,255,255,.14);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hero-brief article{padding:15px 16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.11)}
+.hero-brief h2{margin:0 0 6px;color:#fff;font-size:.9rem}.hero-brief p{margin:0;color:#ADB2BA;font-size:.86rem;line-height:1.62}
+
+/* main */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 34px 92px;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);gap:38px;align-items:start}
+.flow-nav{position:sticky;top:0;max-height:100vh;overflow:auto;padding:38px 0;scrollbar-width:thin}
+.nav-title{margin:0 0 7px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.nav-help{margin:0 0 19px;color:var(--ink-3);font-size:.76rem}.phase{margin:20px 0 7px;font-size:.72rem;font-weight:700;color:var(--ink-3)}
+.timeline{list-style:none;margin:0;padding:0 0 0 10px;position:relative}.timeline::before{content:"";position:absolute;left:20px;top:12px;bottom:12px;width:1px;background:#CFD2CB}
+.timeline li{position:relative;margin:0;padding:0}
+.timeline a{position:relative;display:grid;grid-template-columns:27px 1fr;gap:10px;align-items:start;text-decoration:none;color:var(--ink-2);padding:5px 6px 5px 0;font-size:.80rem;line-height:1.4;transition:color .15s,transform .15s}
+.timeline .n{z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--paper);border:1px solid #C9CDC5;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.64rem;font-weight:700}
+.timeline a:hover{color:var(--accent);transform:translateX(2px)}.timeline a.active{color:var(--accent);font-weight:650}
+.timeline a.active .n{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+main{padding-top:38px;min-width:0}
+.overview-card{background:#FBFBF9;border:1px solid var(--line);margin-bottom:18px;padding:28px 32px}
+.overview-card h2{margin:0 0 16px;font-size:1.24rem}.stage-flow{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:4px 0 8px}
+.stage{min-width:max-content;padding:9px 11px;border:1px solid var(--line);background:#fff;font-size:.82rem;color:var(--ink-2)}.arrow{color:var(--accent);font-weight:800;flex:none}
+
+/* source sections */
+.step-card{background:var(--card);border:1px solid var(--line);padding:32px 40px 36px;margin-bottom:16px;scroll-margin-top:18px}
+.step-card h2{margin:0 0 17px;font-size:1.36rem;letter-spacing:-.025em}.step-card h3{font-size:1rem;margin:24px 0 9px}
+.step-anchor{scroll-margin-top:22px}
+.step{display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 8px;border-radius:2px;margin:3px 0 7px}
+p{color:var(--ink-2)}ul,ol{color:var(--ink-2)}li{margin:5px 0}
+.flow{background:#FBFBF9;border:1px solid var(--line);border-left:3px solid var(--accent);padding:17px 19px;margin:16px 0;font-weight:600;color:#2C2F38;overflow-x:auto}
+.codeblock-pre{margin:12px 0 18px;background:#FBFBF9;color:#282C34;padding:17px 19px;border:1px solid var(--line);border-left:3px solid #B9B2E8;border-radius:0;overflow:auto;line-height:1.72;font-size:.84rem}
+.inline,p code,li code,td code{font-family:"SFMono-Regular",Consolas,monospace;font-size:.87em;background:#F4F4F1;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.note,.warn,.ok{padding:14px 16px;border-radius:0;margin:16px 0;border:1px solid var(--line);font-size:.91rem}
+.note{background:var(--accent-soft);border-color:#DAD4F6;color:#3A2F8C}.warn{background:var(--warn-bg);border-color:#F0DCBE;color:var(--warn)}.ok{background:var(--good-bg);border-color:#CFE8DB;color:#18573C}
+.table-wrap{overflow-x:auto;margin:14px 0 20px}table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;table-layout:auto}th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:break-word}
+thead th{font-size:.78rem;color:var(--ink-3);font-weight:700;border-bottom:1px solid var(--line-strong)}td:first-child{color:var(--ink);font-weight:600}
+
+/* summary/nav */
+.summary{background:#F8F7FD;border:1px solid #D8D3F2;border-left:5px solid var(--accent);color:var(--ink)}.summary h2{color:var(--ink)}.summary li,.summary p{color:var(--ink-2)}.summary code{background:#fff;border-color:#D8D3F2}
+.chapter-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-top:26px}
+.chapter-nav a,.chapter-nav span{display:flex;align-items:center;padding:13px 14px;background:#fff;border:1px solid var(--line);text-decoration:none;font-size:.88rem;color:var(--ink)}
+.chapter-nav .home{justify-content:center}.chapter-nav .next{justify-content:flex-end;text-align:right}.chapter-nav .disabled{color:#A0A5AD;background:#F7F7F4}
+.site-footer{max-width:var(--maxw);margin:0 auto;padding:0 34px 38px;color:var(--ink-3);font-family:"SFMono-Regular",Consolas,monospace;font-size:.76rem}
+
+/* index compatibility */
+.home-main{max-width:1380px;margin:0 auto;padding:42px 30px 90px}.home-section,.card{background:#fff;border:1px solid var(--line);padding:30px 34px}
+.home-section h2,.card h2{margin-top:0}
+
+@media(max-width:920px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 62px}.flow-nav{position:static;max-height:none;padding:28px 0 8px;border-bottom:1px solid var(--line)}
+  .timeline{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.timeline::before{display:none}
+  main{padding-top:26px}.hero-inner{padding:58px 20px 48px}.hero-brief{grid-template-columns:1fr}.topbar-inner{padding:11px 20px}
+  .step-card,.overview-card{padding:24px 21px 27px}.site-footer{padding:0 20px 34px}
+}
+@media(max-width:600px){.timeline{grid-template-columns:1fr}.brand{display:none}.chapter-nav{grid-template-columns:1fr}.chapter-nav .next,.chapter-nav .home{justify-content:flex-start;text-align:left}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+
+/* technical figures */
+.tech-figure{margin:18px 0 24px;padding:14px;background:#FBFBF9;border:1px solid var(--line);overflow-x:auto}
+.tech-figure img{display:block;width:auto;height:auto;max-width:100%;margin:0 auto}
+.tech-figure figcaption{margin-top:10px;color:var(--ink-3);font-size:.78rem;line-height:1.55;text-align:center}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:700px){.source-grid{grid-template-columns:1fr}}
+
+/* original-source figure references: no technical redraws */
+.source-figure-ref{margin:18px 0 24px;padding:22px 24px;background:#FBFBF9;border:1px solid var(--line);border-left:4px solid var(--accent)}
+.source-figure-ref .source-kicker{margin:0 0 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.source-figure-ref h3{margin:0 0 8px;font-size:1.06rem;color:var(--ink)}
+.source-figure-ref p{margin:6px 0 12px}
+.source-figure-link{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;border:1px solid var(--line-strong);text-decoration:none;font-size:.84rem;font-weight:700;color:var(--accent)}
+.source-figure-link:hover{border-color:var(--accent)}
+.resource-table th:first-child,.resource-table td:first-child{width:28%}
+main,.step-card,.overview-card{max-width:100%;min-width:0}
+
+/* Concise self-contained source presentation. */
+.polished-source{border-top:4px solid var(--accent);}
+.source-group{margin:30px 0 0;}
+.source-group>h2{padding-bottom:9px;border-bottom:2px solid var(--accent);}
+.source-file{margin:18px 0 30px;border:1px solid var(--line);background:#fff;}
+.source-file-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;background:#f4f4f1;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;}
+.source-file-header span{font-size:.72rem;font-weight:700;color:var(--accent);}.source-file-header strong{font-size:.84rem;overflow-wrap:anywhere}.source-file-header small{color:var(--ink-3);}
+.full-source-code{margin:0;border:0;border-bottom:1px solid var(--line);}.full-source-code pre{max-height:none;white-space:pre;tab-size:4;}
+.source-explain{padding:18px 20px 20px;}.source-explain h3{margin:0 0 12px}.source-explain p{margin:7px 0}.source-role{display:inline-block;padding:3px 7px;margin-right:5px;background:#eceafc;color:#4635b1;font:700 .7rem/1.2 "IBM Plex Mono",monospace;}
+.source-path{color:var(--ink-3);font-size:.82rem}.external-note{padding:12px 14px;border-left:3px solid #a45a22;background:#fff6ed;}
+.code-repeat-note{padding:9px 12px;border-left:3px solid var(--line);color:var(--ink-3);font-size:.88rem;}
+.verification-link{max-width:1350px;margin:18px auto;padding:0 22px}.verification-link a{display:inline-block;padding:9px 12px;border:1px solid var(--line);background:#fff;text-decoration:none;font-weight:700}
+@media(max-width:760px){.source-file-header{grid-template-columns:1fr}.source-file-header small{text-align:left}}
+
+
+
+/* SoC chapter extensions */
+.lesson-goal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.lesson-goal article{border:1px solid var(--line);background:#FBFBF9;padding:15px 16px}
+.lesson-goal strong{display:block;font-size:.82rem;color:var(--accent);margin-bottom:5px}
+.lesson-goal p{margin:0;font-size:.84rem;line-height:1.55}
+.manual-figure{margin:20px 0 24px;border:1px solid var(--line);background:#fff;padding:14px}
+.manual-figure img{display:block;max-width:100%;height:auto;margin:0 auto;background:#fff}
+.manual-figure figcaption{margin:10px 4px 2px;color:var(--ink-3);font-size:.78rem;line-height:1.58;text-align:center}
+.manual-figure .figure-source{display:block;margin-top:4px;font-size:.74rem}
+.manual-figure .figure-source a{color:var(--accent);font-weight:700;text-decoration:none}
+.manual-figure.compact img{max-height:640px}
+.step-seq{counter-reset:socstep;list-style:none;padding:0;margin:18px 0}
+.step-seq>li{counter-increment:socstep;position:relative;margin:0 0 12px;padding:16px 18px 16px 58px;border:1px solid var(--line);background:#FBFBF9}
+.step-seq>li::before{content:counter(socstep, decimal-leading-zero);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font:700 .7rem/1 "SFMono-Regular",Consolas,monospace}
+.step-seq h3{margin:0 0 7px;font-size:1rem}.step-seq p{margin:5px 0}.step-seq ul{margin:6px 0}
+.gate{border-left:5px solid var(--good);background:var(--good-bg)}
+.danger{border-left:5px solid #A23B3B;background:#FFF2F2;border-top:1px solid #F0CCCC;border-right:1px solid #F0CCCC;border-bottom:1px solid #F0CCCC;padding:14px 16px;margin:16px 0;color:#733}
+.signal-map{font-family:"SFMono-Regular",Consolas,monospace;background:#15171C;color:#E7EAF0;padding:19px 20px;overflow-x:auto;line-height:1.7;margin:16px 0;border-left:4px solid var(--yellow)}
+.acceptance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acceptance div{padding:13px 15px;border:1px solid var(--line);background:#FBFBF9}.acceptance strong{display:block;margin-bottom:4px}
+.version-badge{display:inline-block;padding:3px 8px;border:1px solid rgba(255,255,255,.22);font-family:"SFMono-Regular",Consolas,monospace;font-size:.72rem;color:#E8E8EE}
+@media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
+@media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
+
+
+.manual-embed{width:100%;height:620px;border:1px solid #d1d5db;border-radius:12px;background:#fff}
+
+.official-original-figure img{display:block;max-width:100%;max-height:780px;object-fit:contain;width:auto;height:auto;margin:0 auto}
+.official-original-figure figcaption{max-width:1100px;margin:14px auto 4px}
+@media(max-width:600px){.official-original-figure{padding:9px}}
+
+/* GUI 실습 절차: 한 조작씩 따라하기 */
+.procedure{list-style:none;counter-reset:proc;padding:0;display:grid;gap:10px;margin:14px 0}
+.procedure>li{position:relative;counter-increment:proc;border:1px solid var(--line);border-radius:7px;padding:12px 14px 12px 52px;background:var(--card);min-width:0}
+.procedure>li:before{content:counter(proc,decimal-leading-zero);position:absolute;left:13px;top:14px;color:var(--accent);font-size:.85rem;font-weight:700}
+.procedure strong{display:block;margin-bottom:5px}
+.procedure p{margin:4px 0}
+.step-result,.step-caution{display:block;padding:8px 10px;margin-top:8px;font-size:.89rem;border-radius:4px}
+.step-result{background:var(--good-bg);color:var(--good)}.step-caution{background:var(--warn-bg);color:var(--warn)}
+@media(max-width:600px){.procedure>li{padding:11px 11px 11px 43px}.procedure>li:before{left:9px}}
+
+/* 실습 우선 탐색 — 개념 절에서 절차 절로 바로 이동 */
+.lab-jump{margin:0 0 19px;padding:13px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.lab-jump strong{display:block;margin-bottom:7px;font-size:.95rem}
+.lab-jump .jump-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.lab-jump a{color:var(--accent);font-size:.89rem;text-decoration:underline;text-underline-offset:3px}
+
+/* SoC07 : 이론 / 실습 / 검증 구획 구분 */
+.chapter-phase{border-top:3px solid var(--accent);padding:18px 20px;margin:25px 0 16px;background:#F5F6F9;}
+.chapter-phase strong{display:block;font-weight:800;font-size:1.04rem;}
+.chapter-phase p{margin:5px 0 0;font-size:.88rem;line-height:1.6;}
+.chapter-phase.phase-practice{border-top-color:#356B51;background:#F3F8F5;}
+.chapter-phase.phase-verify{border-top-color:#9A6020;background:#FCF7ED;}
+.chapter-phase.phase-optional{border-top-color:#888;background:#F5F5F5;}
+.timeline .timeline-phase{margin:13px 7px 5px;padding:7px 9px;background:#F0F1F4;color:#42485B;font-size:.78rem;font-weight:800;list-style:none;}
+.optional-theory{margin:12px 0 0;border:1px solid var(--line);background:#fff;}
+.optional-theory>summary{cursor:pointer;font-weight:700;padding:12px 15px;color:var(--accent);}
+.optional-theory-body{padding:4px 16px 16px;}
+@media(max-width:600px){.chapter-phase{padding:12px 14px}.optional-theory-body{padding:4px 10px 12px}}
+
+/* 07장 실제 Vivado/Vitis 캡처: 단계별 이미지, 클릭 확대 */
+.soc07-shot{margin:14px 0 16px;padding:12px;border:1px solid var(--line);background:#fff;border-radius:10px;max-width:100%;box-sizing:border-box;}
+.soc07-shot a{display:block;max-width:100%;}
+.soc07-shot img{width:100%;height:auto;max-height:740px;display:block;object-fit:contain;object-position:left top;border-radius:5px;border:1px solid #e3e6ea;background:#fff;}
+.soc07-shot figcaption{display:block;font-size:.86rem;color:#465164;margin-top:8px;line-height:1.65;}
+.soc07-shot figcaption strong{display:inline;font-size:inherit;}
+.soc07-shot.is-success{border-left:4px solid #37835d;}
+.soc07-shot.is-estimate{border-left:4px solid #b58d39;}
+.soc07-shot .shot-source{font-size:.76rem;color:#747e8c;}
+.soc07-shot.is-procedure{border-left:4px solid #6f87b6;}
+@media(max-width:600px){.soc07-shot{padding:6px}.soc07-shot img{max-height:none}.soc07-shot figcaption{font-size:.82rem}}
+
+</style><style>
+/* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
+:root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
+
+/* Readability and keyboard access; original chapter layout retained. */
+:root{--ink-3:#626975}
+body{font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.skip-link{position:fixed;left:16px;top:12px;z-index:1000;transform:translateY(-180%);padding:10px 16px;background:#fff;color:#33218f;border:3px solid #4635b1;font-weight:700}
+.skip-link:focus{transform:none}
+:focus-visible{outline:3px solid #6547cf;outline-offset:4px}
+.signal-map:focus-visible,pre:focus-visible,.table-wrap:focus-visible{outline-offset:2px}
+.signal-map{white-space:pre;font-family:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans CJK KR",monospace;font-size:.9375rem;line-height:1.8;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.signal-map.signal-table{white-space:normal}
+.signal-table table{min-width:0;width:100%;font-size:.9rem;color:#e7eaf0;line-height:1.7}
+.signal-table th,.signal-table td{color:inherit;padding:10px 12px;border-color:#414650;overflow-wrap:anywhere;word-break:normal}
+.signal-table thead th{color:#ffd24a;font-size:.84rem}
+.signal-table tbody th{font-weight:600}
+.signal-table td:first-child{color:inherit;font-weight:400}
+.signal-table code{font:inherit;background:none;border:0;padding:0;color:inherit}
+pre{font-size:.9rem;line-height:1.75;tab-size:4;max-width:100%;overscroll-behavior-x:contain}
+.codeblock-pre{font-size:.9rem}
+.flow,p,li,td,th,.source-path,.source-file-header strong{overflow-wrap:anywhere}
+.timeline a{font-size:.875rem;line-height:1.55;padding-top:7px;padding-bottom:7px}
+.timeline .n{font-size:.75rem}
+.nav-title,.nav-help,.phase{color:#626975}
+.tech-figure figcaption,.manual-figure figcaption{color:#555d69;font-size:.875rem;line-height:1.7}
+.manual-figure .figure-source{font-size:.8125rem}
+.figure-original{display:inline-block;margin-top:8px;padding:4px 9px;border:1px solid var(--line-strong,#c9ccc3);background:#fff;color:var(--accent,#4635b1);font-size:.8125rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.figure-image-link{display:block}
+.figure-image-link:focus-visible{outline-offset:5px}
+.manual-figure.compact img{max-height:none}
+thead th{color:#626975;font-size:.84rem}
+.hero-desc{font-weight:400}
+main[tabindex="-1"]:focus{outline:none}
+@media(max-width:600px){
+ .signal-map{padding:15px 12px;font-size:.875rem}
+ .signal-table{padding:10px 8px}.signal-table th,.signal-table td{padding:8px 6px;font-size:.8125rem}
+ .tech-figure,.manual-figure{padding:10px}
+ .step-card h2{line-height:1.5;overflow-wrap:anywhere}
+ .chip{overflow-wrap:anywhere;max-width:100%}
+}
+@media(forced-colors:active){:focus-visible{outline:3px solid Highlight}.signal-map{border:1px solid CanvasText}.figure-original{border:1px solid LinkText}}
+
+
+.signal-map{scrollbar-width:auto;scrollbar-color:#9da6b4 #252a33}
+@media(max-width:760px){
+ table thead{display:block!important;position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap!important}
+ .signal-table td:first-child{background:#252a33}
+ .signal-table td::before{color:#ffd24a;font-size:.8125rem;font-weight:700}
+}
+</style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script><style>
+/* 07.1 C 코드 이해 페이지: 07장 공통 색상과 레이아웃 유지 */
+.lesson-lead{font-size:1rem;line-height:1.85;color:var(--ink-2);}
+.explain{padding:13px 16px;background:#F5F3FB;border-left:4px solid var(--accent);margin:14px 0 17px;line-height:1.75;}
+.explain strong{color:#34268E;}
+.explain p{margin:4px 0 0;}
+.memory-demo{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.memory-demo .cell{flex:1;min-width:78px;padding:14px 10px;text-align:center;background:#F7F6FB;border:1px solid #D8D3EF;border-radius:8px;}
+.memory-demo .cell strong{display:block;font-size:1.2rem;color:#322099}
+.memory-demo .cell small{display:block;margin-top:7px;font-size:.78rem;color:#697081}
+.lab-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.lab-mini>div{padding:15px 12px;border:1px solid #DDDDF0;background:#F8F8FC;border-radius:10px;line-height:1.55;}
+.lab-mini b{display:block;color:#33218F;margin-bottom:5px;}
+.key-result{padding:16px;border-left:4px solid #24754A;background:#EFF8F2;line-height:1.8;margin:18px 0;}
+.source-small{font-size:.84rem;line-height:1.7;color:#666F7A;}
+.step-card p{line-height:1.85;}
+.codeblock-pre{margin-top:12px;margin-bottom:14px;}
+.step-card .table-wrap{margin-top:12px;margin-bottom:15px;}
+.wide-code{max-height:980px;overflow:auto;}
+.wide-code pre{margin:0;}
+.phase-marker{margin:23px 0 15px;padding:15px 18px;border-top:3px solid var(--accent);background:#F5F3FB;font-weight:800}
+@media(max-width:720px){.lab-mini{grid-template-columns:1fr}.explain{padding:12px}.memory-demo .cell{min-width:70px}}
+</style></head><body><a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><a href="09_axi_interrupt_controller.html">SoC 09</a><span class="sep">/</span><strong>SoC 09.1</strong></div><div class="brand">BASYS3 · MICRO BLAZE V</div></div></div><header class="hero"><div class="hero-grid"></div><div class="hero-inner"><p class="hero-kicker">Basys3 + MicroBlaze V · SoC 09.1 · 09장 보조 설명</p><h1>Timer Interrupt C 코드 쉽게 이해하기</h1><p class="hero-desc">09장 AXI Interrupt Controller 실습의 main.c를 코드 → 쉬운 풀이 → CPU·하드웨어 동작 순서로 읽습니다.</p><div class="hero-meta"><span class="chip">C 코드 해석</span><span class="chip">AXI Timer</span><span class="chip">AXI INTC</span><span class="chip">ISR / Callback</span><span class="chip">LED0</span></div><div class="hero-brief"><article><h2>코드</h2><p>짧은 구문부터 읽는다.</p></article><article><h2>CPU·메모리</h2><p>인터럽트와 변수를 연결한다.</p></article><article><h2>AXI 장치</h2><p>Timer와 GPIO 제어 경로를 확인한다.</p></article></div></div></header><div class="wrap"><aside class="flow-nav" aria-label="09.1장 코드 풀이 세부 목차"><div class="reader-tools"><form hidden=""><label for="chapter-select">장 이동</label><select class="reader-chapter-select" id="chapter-select"><option value="01_microblaze_bram_minimal_soc.html">SoC 01 · MicroBlaze V + BRAM 최소 SoC</option><option value="02_clock_reset_processor_system_reset.html">SoC 02 · Clock / Reset 구조와 Processor System Reset</option><option value="03_microblaze_bram_program_execution.html">SoC 03 · MicroBlaze V 실행 구조와 BRAM 프로그램 실행</option><option value="04_memory_map_memory_mapped_io.html">SoC 04 · Memory Map과 Memory-Mapped I/O</option><option value="05_axi4_axi4lite_axi4stream.html">SoC 05 · AXI4 / AXI4-Lite / AXI4-Stream 구조</option><option value="06_axi_gpio.html">SoC 06 · AXI GPIO</option><option value="07_axi_uart_lite.html">SoC 07 · AXI UART Lite</option><option value="07_1_uart_echo_c_code_guide.html">SoC 07.1 · UART Echo C 코드 풀이</option><option value="08_axi_timer.html">SoC 08 · AXI Timer</option><option value="09_axi_interrupt_controller.html">SoC 09 · AXI Interrupt Controller</option><option value="09_1_axi_interrupt_c_code_guide.html" selected="">SoC 09.1 · Timer Interrupt C 코드 풀이</option><option value="10_microblaze_gpio_uart_timer_integration.html">SoC 10 · MicroBlaze V + GPIO + UART + Timer 통합</option><option value="11_register_map_design_principles.html">SoC 11 · Register Map 설계 원칙</option><option value="12_custom_axi4lite_slave_basics.html">SoC 12 · Custom AXI4-Lite Slave 기초</option><option value="13_axi_register_read_write_path.html">SoC 13 · AXI Register Read / Write 경로</option><option value="14_register_bank_rtl_controller.html">SoC 14 · Register Bank + RTL Controller 연결</option><option value="15_microblaze_software_driver.html">SoC 15 · MicroBlaze V Software Driver</option><option value="16_vivado_ip_packaging_reuse.html">SoC 16 · Vivado IP Packaging과 재사용</option><option value="17_existing_verilog_rtl_to_ip.html">SoC 17 · 기존 Verilog RTL을 IP로 변환</option><option value="18_uart_pwm_controller_ip.html">SoC 18 · UART / PWM Controller IP화</option><option value="19_axi_control_status_bridge.html">SoC 19 · AXI Control / Status Bridge</option><option value="20_cdc_reset_safe_design.html">SoC 20 · CDC / Reset 안전 설계</option><option value="21_self_checking_assertion_coverage.html">SoC 21 · Self-Checking Testbench / Assertion / Coverage</option><option value="22_timing_critical_path_wns_tns.html">SoC 22 · Timing / Critical Path / WNS / TNS</option><option value="23_resource_power_thermal.html">SoC 23 · Resource / Power / Thermal</option><option value="24_npu_mac_datapath.html">SoC 24 · NPU Datapath / MAC 기본 구조</option><option value="25_pe_parallel_mac_vector_dot_product.html">SoC 25 · PE / Parallel MAC / Vector Dot Product</option><option value="26_vector_dot_product_controller.html">SoC 26 · Vector Dot Product Controller</option><option value="27_local_bram_address_generator_data_feeding.html">SoC 27 · Local BRAM / Address Generator / Data Feeding</option><option value="28_prefetch_fifo_double_buffer_stall_safe_feeding.html">SoC 28 · Prefetch / FIFO / Double Buffer</option><option value="29_data_reuse_weight_stationary_tiling.html">SoC 29 · Data Reuse / Weight Stationary / Tiling</option><option value="30_bias_requantization_rounding_saturation_int8.html">SoC 30 · Bias / Requantization / Rounding / Saturation / int8 Output</option><option value="31_npu_register_map_microblaze_axi_integration.html">SoC 31 · NPU Register Map / MicroBlaze V Control / Accelerator Integration</option><option value="32_npu_done_interrupt_axi_intc_isr.html">SoC 32 · NPU Done Interrupt / AXI Interrupt Controller / ISR</option><option value="33_axi_bram_tensor_buffer_control_data_plane.html">SoC 33 · AXI BRAM Tensor Buffer / Control Plane &amp; Data Plane</option><option value="34_command_descriptor_job_control.html">SoC 34 · Command / Descriptor / Job Control</option><option value="35_full_npu_accelerator_integration.html">SoC 35 · Full NPU Accelerator Integration</option><option value="36_cpu_npu_end_to_end_software_inference.html">SoC 36 · CPU ↔ NPU End-to-End Software / Inference Flow</option><option value="37_performance_baseline_timing_resource_power_throughput.html">SoC 37 · Performance Baseline / Timing / Resource / Power / Throughput</option><option value="38_bottleneck_analysis_pipelined_bram_read.html">SoC 38 · Bottleneck Analysis / Pipelined BRAM Read Optimization</option><option value="39_parallel4_requantization_optimization.html">SoC 39 · 4-Lane Parallel Requantization Optimization</option><option value="40_prefetch_pingpong_data_compute_overlap.html">SoC 40 · Prefetch / Ping-Pong Buffer / Data-Compute Overlap</option><option value="41_group8_cumulative_signoff_matrix.html">SoC 41 · Group 8 Cumulative Sign-off Matrix</option></select><button type="submit">선택한 장 열기</button></form><div class="reader-links"><a href="09_axi_interrupt_controller.html">09장 GUI 실습</a><a href="../../index.html">전체 목차</a></div></div><p class="nav-title">SOC 09.1 · CODE READING</p><p class="nav-help">Timer → INTC → CPU → Callback → Main</p><ol class="timeline"><li><a href="#s01"><span class="n">01</span><span>전체 흐름</span></a></li><li><a href="#s02"><span class="n">02</span><span>헤더 파일</span></a></li><li><a href="#s03"><span class="n">03</span><span>Classic과 SDT</span></a></li><li><a href="#s04"><span class="n">04</span><span>Timer 초기값</span></a></li><li><a href="#s05"><span class="n">05</span><span>전역 변수와 volatile</span></a></li><li><a href="#s06"><span class="n">06</span><span>TimerCallback</span></a></li><li><a href="#s07"><span class="n">07</span><span>InitGpio</span></a></li><li><a href="#s08"><span class="n">08</span><span>InitTimer</span></a></li><li><a href="#s09"><span class="n">09</span><span>SetupInterruptSystem</span></a></li><li><a href="#s10"><span class="n">10</span><span>Main Loop</span></a></li><li><a href="#s11"><span class="n">11</span><span>Watch</span></a></li><li><a href="#s12"><span class="n">12</span><span>main.c 전체 소스</span></a></li></ol></aside><main id="main-content" tabindex="-1"><div class="overview-card"><h2>09장과 09.1장의 차이</h2><div class="stage-flow"><span class="stage"><a href="09_axi_interrupt_controller.html">09장 · Vivado/Vitis 따라하기</a></span><span class="arrow">→</span><span class="stage"><strong>09.1장 · C 소스 이해</strong></span><span class="arrow">→</span><span class="stage"><a href="10_microblaze_gpio_uart_timer_integration.html">10장 · 통합</a></span></div><p class="lesson-lead">새 프로젝트를 생성하지 않습니다. 09장에서 사용할 C 코드의 의미를 설명하는 보조 학습 페이지입니다.</p><div class="warn">09장 하드웨어·소프트웨어는 현재 미검증 상태입니다. 다음 코드의 장치 매크로, 인터럽트 번호, LED 결과는 실제 Vitis 2024.2 BSP와 Basys3에서 확인해야 합니다.</div></div><nav class="lab-jump" aria-label="핵심 내용 바로 이동"><strong>핵심 내용으로 바로 이동</strong><div class="jump-links"><a href="#s01">동작 흐름</a><a href="#s06">Callback</a><a href="#s09">INTC 연결</a><a href="#s10">Main</a><a href="#s12">전체 소스</a></div></nav><section class="step-card" id="s01"><span class="step">CODE 01</span><h2>전체 흐름 — Timer 만료가 LED0를 바꾼다</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>AXI Timer 만료
+  → AXI INTC의 인터럽트 요청
+  → MicroBlaze V 인터럽트 진입
+  → Timer 드라이버 Handler
+  → TimerCallback: interrupt_count 증가
+  → Main: AXI GPIO LED0 반전</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>08장에서는 CPU가 계속 Timer 상태를 읽었습니다. 09장에서는 Timer가 신호를 보내고 CPU가 등록된 처리 함수를 실행합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>중요한 구분: Timer의 interrupt 선과 CPU가 AXI 주소로 INTC 레지스터를 제어하는 경로는 서로 다른 연결입니다.</p></div></section><section class="step-card" id="s02"><span class="step">CODE 02</span><h2>헤더 파일 — CPU와 주변장치용 도구</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>#include &quot;xparameters.h&quot;
+#include &quot;xtmrctr.h&quot;
+#include &quot;xgpio.h&quot;
+#include &quot;xstatus.h&quot;
+#include &quot;xil_exception.h&quot;</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>xparameters.h는 하드웨어에서 생성한 장치 이름과 주소를 담고, xtmrctr.h는 Timer 함수, xgpio.h는 LED GPIO 함수를 제공합니다. 직접 레지스터 주소를 외울 필요가 없습니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>프로그램을 빌드할 때 실제 09장 XSA에서 생성된 BSP 헤더가 필요합니다. 이름이 다른 하드웨어의 헤더를 사용하면 안 됩니다.</p></div></section><section class="step-card" id="s03"><span class="step">CODE 03</span><h2>Classic과 SDT — 어떤 초기화 경로를 쓸까?</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>#ifdef SDT
+#include &quot;xinterrupt_wrap.h&quot;
+#else
+#include &quot;xintc.h&quot;
+#endif</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>SDT 설정에서는 인터럽트 연결을 돕는 공통 함수를 쓰고, Classic 설정에서는 AXI INTC 드라이버를 직접 초기화합니다. 두 코드가 모두 실행되는 것이 아니라 빌드 설정에 따라 하나가 선택됩니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>Vitis 2024.2의 실제 BSP에서 SDT 정의 여부를 확인하고, xparameters.h의 장치 ID·주소·인터럽트 번호를 대조합니다.</p></div></section><section class="step-card" id="s04"><span class="step">CODE 04</span><h2>Timer 초기값 — 100 MHz에서 약 0.5초</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>#define TIMER0             0U
+#define LED_CHANNEL        1U
+#define TIMER_RESET_VALUE  49999998U</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>TIMER0는 첫 번째 타이머, LED_CHANNEL은 GPIO 첫 번째 채널, TIMER_RESET_VALUE는 08장 실습에서 사용한 값 49,999,998을 의미합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>100 MHz 클록의 한 주기는 10 ns입니다. 5천만 클록에 해당하는 간격이 약 0.5초입니다. 이는 설정상 값이고 실제 정밀 계측 결과는 아닙니다.</p></div></section><section class="step-card" id="s05"><span class="step">CODE 05</span><h2>전역 변수와 volatile — 사건을 기억한다</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>volatile u32 interrupt_count = 0U;
+volatile u32 timer_event = 0U;
+volatile u32 led_state = 0U;</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>interrupt_count는 인터럽트가 몇 번 발생했는지 기억합니다. timer_event는 Main에 처리할 일이 생겼음을 알리고, led_state는 LED0가 켜진 상태인지 기록합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>volatile은 ISR과 Main이 공유하는 값의 메모리 접근을 컴파일러가 임의로 없애지 않도록 돕습니다. 다만 경쟁 상태까지 자동으로 해결하지는 않습니다.</p></div></section><section class="step-card" id="s06"><span class="step">CODE 06</span><h2>TimerCallback — ISR은 사건만 표시한다</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
+{
+    (void)CallBackRef;
+    (void)TmrCtrNumber;
+    interrupt_count++;
+    timer_event = 1U;
+}</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Timer가 만료될 때 드라이버가 호출하는 사용자 Callback입니다. (void)는 사용하지 않는 인자에 대한 경고를 피하는 표현입니다. LED를 직접 쓰지 않고 발생 횟수와 이벤트만 기록합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>CPU는 메인 프로그램을 잠시 중단하고 인터럽트 처리를 수행합니다. Timer 드라이버 내부에서 원인 비트 처리 후 이 Callback이 호출됩니다.</p></div></section><section class="step-card" id="s07"><span class="step">CODE 07</span><h2>InitGpio — LED 하드웨어 접근 준비</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>status = XGpio_Initialize(&amp;Gpio, GPIO_DEVICE_ID);
+/* SDT 설정에서는 GPIO_BASEADDR를 사용 */</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>XGpio_Initialize()는 GPIO 드라이버가 어떤 장치를 사용할지 설정합니다. 실제 코드에서는 Classic일 때 장치 ID를, SDT일 때 Base Address를 사용합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>GPIO는 이미 06장에서 검증한 AXI GPIO 하드웨어입니다. 09장은 새로운 LED 회로를 만들지 않습니다.</p></div></section><section class="step-card" id="s08"><span class="step">CODE 08</span><h2>InitTimer — 주기와 인터럽트 옵션 준비</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
+XTmrCtr_SetOptions(&amp;Timer, TIMER0,
+    XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION |
+    XTC_INT_MODE_OPTION);
+XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>SetHandler는 사용자 Callback을 등록하고, SetOptions는 감소 계수·자동 재적재·인터럽트 모드를 사용하도록 설정합니다. SetResetValue는 08장과 같은 초기값을 넣습니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>주기가 끝나면 Timer는 다시 설정된 값부터 계수를 시작합니다. XTC_INT_MODE_OPTION이 누락되면 기대한 Timer 인터럽트가 발생하지 않을 수 있습니다.</p></div></section><section class="step-card" id="s09"><span class="step">CODE 09</span><h2>SetupInterruptSystem — Timer와 CPU 처리 경로 연결</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
+    (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
+XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
+Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+    (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Classic 경로에서 Timer Handler를 인터럽트 번호에 연결한 뒤 활성화합니다. CPU는 먼저 INTC Handler를 실행하고, INTC Handler가 Timer Handler를 호출합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>SDT라면 XSetupInterruptSystem()으로 유사한 경로를 구성합니다. 실제 코드의 두 분기는 컴파일 때 분리됩니다.</p></div></section><section class="step-card" id="s10"><span class="step">CODE 10</span><h2>Main Loop — 이벤트를 받고 LED0를 반전한다</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>XTmrCtr_Start(&amp;Timer, TIMER0);
+while (1) {
+    if (timer_event != 0U) {
+        timer_event = 0U;
+        led_state ^= 1U;
+        XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+    }
+}</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Timer를 시작한 뒤 Main은 새로운 이벤트가 기록되었는지 확인합니다. 이벤트가 있으면 지우고 led_state의 최하위 비트를 뒤집은 다음 GPIO에 보냅니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>08장은 Timer의 하드웨어 상태 레지스터를 반복 읽고, 09장은 ISR이 남긴 소프트웨어 이벤트를 확인합니다. 이벤트 플래그 방식은 처리 중 다수 이벤트가 겹칠 경우 개수를 보존하지 못할 수 있습니다.</p></div></section><section class="step-card" id="s11"><span class="step">CODE 11</span><h2>Watch — 실제로 무엇을 관찰할까?</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>interrupt_count  // 실행 중 증가 예상
+timer_event     // ISR에서 1, Main에서 0
+led_state       // 0 → 1 → 0 → 1</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>실행 중 Debug Watch에서 세 변수를 확인합니다. 인터럽트 수가 증가하는지, Main에서 이벤트를 처리하는지, LED0 상태가 반전하는지를 각각 확인합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>이 표는 기대 동작입니다. 실제 Debug 변수 값과 LED 사진·타이밍 값은 아직 검증되지 않았으므로 성공 화면으로 표시하지 않습니다.</p></div></section><section class="step-card" id="s12"><span class="step">CODE 12</span><h2>main.c 전체 소스 — 한 번에 복사</h2><p class="lesson-lead">09장 기본틀에 포함된 교육용 main.c 전체를 그대로 제공합니다. BSP 헤더와 장치 매크로는 실제 09장 플랫폼에서 확인한 뒤 확정합니다.</p><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>#include &quot;xparameters.h&quot;     // 하드웨어 주소 및 장치 번호
+#include &quot;xtmrctr.h&quot;         // AXI Timer 드라이버
+#include &quot;xgpio.h&quot;           // AXI GPIO 드라이버
+#include &quot;xstatus.h&quot;         // 성공/실패 반환값
+#include &quot;xil_exception.h&quot;   // CPU 인터럽트 처리
+
+#ifdef SDT
+#include &quot;xinterrupt_wrap.h&quot; // SDT 기반 인터럽트 연결
+#else
+#include &quot;xintc.h&quot;          // Classic 기반 AXI INTC 드라이버
+#endif
+
+#define TIMER0             0U
+#define LED_CHANNEL        1U
+#define TIMER_RESET_VALUE  49999998U // 08장에서 사용한 값
+
+#ifndef SDT
+// 다음 이름은 실제 xparameters.h 확인 후 확정
+#define TIMER_DEVICE_ID    XPAR_TMRCTR_0_DEVICE_ID
+#define GPIO_DEVICE_ID     XPAR_GPIO_0_DEVICE_ID
+#define INTC_DEVICE_ID     XPAR_INTC_0_DEVICE_ID
+#define TIMER_INTR_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
+#else
+// 다음 주소 매크로 역시 실제 BSP를 확인
+#define TIMER_BASEADDR     XPAR_XTMRCTR_0_BASEADDR
+#define GPIO_BASEADDR      XPAR_XGPIO_0_BASEADDR
+#endif
+
+static XTmrCtr Timer;
+static XGpio Gpio;
+#ifndef SDT
+static XIntc Intc;
+#endif
+
+volatile u32 interrupt_count = 0U; // 발생한 인터럽트 횟수
+volatile u32 timer_event = 0U;     // Main에 전달할 이벤트
+volatile u32 led_state = 0U;       // LED0 상태
+
+// Timer 드라이버에서 호출하는 사용자 Callback
+static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
+{
+    (void)CallBackRef;
+    (void)TmrCtrNumber;
+    interrupt_count++;
+    timer_event = 1U;
+}
+
+static int InitGpio(void)
+{
+#ifndef SDT
+    return XGpio_Initialize(&amp;Gpio, GPIO_DEVICE_ID);
+#else
+    return XGpio_Initialize(&amp;Gpio, GPIO_BASEADDR);
+#endif
+}
+
+static int InitTimer(void)
+{
+    int status;
+#ifndef SDT
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
+#else
+    status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
+#endif
+    if (status != XST_SUCCESS) return XST_FAILURE;
+
+    status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
+    if (status != XST_SUCCESS) return XST_FAILURE;
+
+    XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
+    XTmrCtr_SetOptions(&amp;Timer, TIMER0,
+        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_INT_MODE_OPTION);
+    XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
+    return XST_SUCCESS;
+}
+
+static int SetupInterruptSystem(void)
+{
+    int status;
+#ifndef SDT
+    status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
+    if (status != XST_SUCCESS) return XST_FAILURE;
+    status = XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
+        (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
+    if (status != XST_SUCCESS) return XST_FAILURE;
+    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
+    if (status != XST_SUCCESS) return XST_FAILURE;
+    XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
+    Xil_ExceptionInit();
+    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);
+    Xil_ExceptionEnable();
+#else
+    status = XSetupInterruptSystem(&amp;Timer,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        Timer.Config.IntrId, Timer.Config.IntrParent,
+        XINTERRUPT_DEFAULT_PRIORITY);
+    if (status != XST_SUCCESS) return XST_FAILURE;
+#endif
+    return XST_SUCCESS;
+}
+
+int main(void)
+{
+    if (InitGpio() != XST_SUCCESS) return XST_FAILURE;
+    if (InitTimer() != XST_SUCCESS) return XST_FAILURE;
+    if (SetupInterruptSystem() != XST_SUCCESS) return XST_FAILURE;
+
+    XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+    XTmrCtr_Start(&amp;Timer, TIMER0);
+
+    while (1) {
+        if (timer_event != 0U) {
+            timer_event = 0U;
+            led_state ^= 1U;
+            XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+        }
+    }
+}
+</code></pre></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>이 코드는 검증 완료된 08장 코드가 아니라 인터럽트 적용을 위한 09장 교육용 초안입니다.</p></div></section><div class="chapter-nav"><a href="09_axi_interrupt_controller.html">← SoC 09 GUI 실습</a><a href="../../index.html">전체 목차</a><a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10 →</a></div></main></div><footer class="site-footer">Basys3 + MicroBlaze V SoC · Chapter 09.1 · C 코드 쉬운 풀이</footer></body></html>
