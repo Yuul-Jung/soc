@@ -1,22 +1,17 @@
-SoC 09 · MicroBlaze V
+SoC 09 · AXI Interrupt Controller
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 실제 확인
+- AXI Timer interrupt → AXI INTC intr[0:0] → AXI INTC interrupt → microblaze_riscv_0 INTERRUPT 연결.
+- AXI INTC Base Address 0x41200000, 기존 16 KiB Local BRAM 유지.
+- Vivado Block Design/XSA와 Vitis Platform soc09_axi_interrupt_platform, Application soc09_axi_interrupt 성공.
+- AXI Timer Handler를 인터럽트에 등록하여 CPU에서 실행하는 구조 검증.
+- Debug WATCH interrupt_count 값이 12 → 35로 증가; led_state 0 → 1 변화 확인.
+- Basys3 LED0 반복 점멸 실기 확인.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- interrupt_count는 Timer 인터럽트 처리 횟수. 일시 정지 시 timer_event=0인 화면은 이벤트가 Main에서 처리된 뒤의 상태일 수 있음.
+- PG099의 IPR/SIE/CIE/IVR은 선택 레지스터이므로 실제 IP 설정에 따라 구현 여부가 달라짐.
+- 인터럽트 주기의 정밀 계측값은 기록되지 않음.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
