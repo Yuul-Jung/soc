@@ -142,6 +142,16 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 @media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
 @media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
 
+
+/* Chapters 01-10: shared top navigation */
+.topbar{background:#fff;border-bottom:1px solid #DDDFD8}
+.topbar .topbar-inner,.topbar .top-inner{max-width:1560px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px}
+.topbar .breadcrumb,.topbar .top-inner>span:first-child{font-size:.86rem;line-height:1.6;color:#4A4F5A}
+.topbar a,.topbar .breadcrumb a{color:#333743;text-decoration:none}
+.topbar a:hover,.topbar .breadcrumb a:hover{text-decoration:underline;color:#4635B1}
+.topbar .breadcrumb strong,.topbar .top-inner b{color:#15171C;font-weight:800}
+.topbar .brand,.topbar .meta{font-size:.76rem;color:#747B86;letter-spacing:0}
+@media(max-width:600px){.topbar .topbar-inner,.topbar .top-inner{padding:10px 14px}}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -194,7 +204,7 @@ main[tabindex="-1"]:focus{outline:none}
 }
 </style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
 <body>
-<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><a href="04_memory_map_memory_mapped_io.html">SoC 04</a><span class="sep">/</span><strong>SoC 05</strong><span class="sep">/</span><a href="06_axi_gpio.html">SoC 06</a></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">Basys3 SoC + NPU</a><span class="sep">/</span><a href="04_memory_map_memory_mapped_io.html">SoC 04</a><span class="sep">/</span><strong>SoC 05</strong><span class="sep">/</span><a href="06_axi_gpio.html">SoC 06</a></div><div class="brand">BASYS3 · MICROBLAZE V SOC</div></div></div>
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 05</p><h1>AXI4 / AXI4-Lite / AXI4-Stream 구조</h1>
 <p class="hero-desc">AXI4·AXI4-Lite·AXI4-Stream의 차이와 5개 채널, VALID/READY 핸드셰이크 및 공식 전송 파형을 이해한다. Local BRAM 접근과 AXI 전송을 구별하고 06장의 실제 AXI GPIO 연결을 준비한다.</p>
@@ -336,5 +346,5 @@ main[tabindex="-1"]:focus{outline:none}
 
 <nav class="chapter-nav"><a href="04_memory_map_memory_mapped_io.html">← SoC 04</a><a href="../../index.html">전체 목차</a><a href="06_axi_gpio.html">SoC 06 →</a></nav>
 </main></div>
-<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+<footer class="site-footer">BASYS3 · MICROBLAZE V SOC</footer>
 </body></html>
