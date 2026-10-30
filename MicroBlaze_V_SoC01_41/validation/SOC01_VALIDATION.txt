@@ -1,31 +1,13 @@
-SoC 01 · MicroBlaze V
+SoC 01 · MicroBlaze V + BRAM 최소 SoC
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 구성 확인
+- Basys3 / Vivado 2024.2 / MicroBlaze V 기본 IP와 Local BRAM 16 KiB 구성.
+- Block Design: soc01_mb_bram.bd; 프로젝트: soc01_microblaze_bram.xpr.
+- CPU Instruction ILMB와 Data DLMB가 공유 Local BRAM에 연결되는 구조.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- 첫 장은 프로젝트·IP 기본 구성과 저장까지 진행하는 단계.
+- Clock/Reset 외부 연결과 Bitstream 생성은 SoC 02에서 완료. SoC 01 자체에서 보드 실행을 검증한 것으로 표시하지 않음.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 0 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
-
-2026-10-28 SoC 01 walkthrough revision (GitHub publication):
-- Existing 01 HTML revised against SoC 07 GUI walkthrough structure; same 14 sections and 4 existing image links retained.
-- Version badge and AMD reference links aligned to Vivado/UG 2024.2; the pre-existing 2026.1 AMD figure images are explicitly labeled as later official examples, not verified 2024.2 screenshots.
-- Existing GUI screenshots dedicated to SoC 01: NONE FOUND in tracked chapter image assets; no screenshot fabricated and no empty evidence ZIP generated.
-- Project: soc01_microblaze_bram.xpr; block design: soc01_mb_bram.bd; local BRAM 16 KiB. Address 0x00000000 to 0x00003FFF previously confirmed in SoC 04 session; this revision did not rerun hardware.
-- Clock W5 / reset U18 XDC example uses create_clock without -add, matching final SoC 02 method; XDC registration belongs to SoC 01, external wiring and validation to SoC 02.
-- This pass performed GitHub source inspection, chapter structure/anchor checks and checked file listings. Browser rendering, target synthesis, Bitstream, Vitis build and Basys3 board execution NOT RERUN in this edit.
-- GitHub main updates include commits 3f405acd592cfbfa0614fc9c4493a5b0d48055b7 and 4693393fb5f0e3b2d07317be16eae1a4f2629598.
+## 판정
+범위 내 완료. 해당 장에서 별도 FPGA 보드 실행은 수행하지 않음.
