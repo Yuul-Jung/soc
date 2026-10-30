@@ -1,22 +1,24 @@
-SoC 10 · MicroBlaze V
+SoC 10 · GPIO UART Timer 통합
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 하드웨어 구현 결과
+- SoC 09 성공 프로젝트 복제, Local BRAM ILMB/DLMB Range 16 KiB → 64 KiB; Base 0x00000000, High 0x0000FFFF.
+- 36 Kbit BRAM 16개 사용 (Block RAM Tile 16/50, 32.0%).
+- 구현 Timing: Setup WNS +1.347 ns / TNS 0; Hold WHS +0.016 ns / THS 0; Pulse Width WPWS +3.000 ns / TPWS 0. 표시된 실패 Endpoint 0.
+- 보고서의 사용자 지정 타이밍 제약 충족. 모든 Unconstrained Path 검사 완료로 확장 주장하지 않음.
+- On-Chip Power 추정 0.205 W, Confidence Level Low; 실측 전력 아님.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## Vitis 및 보드 검증
+- 새 XSA → soc10_integration_platform Platform Build 성공.
+- soc10_integration Application: lscript.ld의 lmb_bram_0 Base 0x0 / Size 0x10000 (64 KiB), Stack 0x400, Heap 0x800.
+- ELF Build Finished successfully: text 12,280 / data 406 / bss 3,752 bytes.
+- 이전 16 KiB BRAM에서 발생한 overflowed by 64 bytes 링크 오류가 64 KiB 구성에서 해소됨.
+- Basys3 실기: SW[13:0]→LED[13:0] 연동, UART 문자 1/0→LED14 ON/OFF, AXI Timer 인터럽트→LED15 반복 점멸 모두 정상.
+- Ubuntu moserial 115200 8N1에서 LED14=ON, LED14=OFF 응답 확인.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
+## 판정 경계
+- LED15의 정확한 점멸 주기와 소비전력은 별도 계측하지 않음.
+- XSim/UVM 시뮬레이션 결과나 전체 비제약 타이밍 경로 분석을 수행한 것으로 간주하지 않음.
+- 실제 보드 동작 확인과 별도 UART 캡처 증거를 구별함.
 
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
