@@ -1,22 +1,14 @@
-SoC 05 · MicroBlaze V
+SoC 05 · AXI 전송 이론
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 기술 내용 확인
+- AXI4 / AXI4-Lite / AXI4-Stream 역할 구분.
+- AXI4-Lite 읽기·쓰기 5개 채널(AW/W/B/AR/R)과 VALID/READY Clock-edge handshake.
+- Write Address와 Write Data 채널은 독립적으로 전달되며, AXI4-Lite Burst 미지원.
+- MicroBlaze V M_AXI_DP와 SmartConnect를 통한 주변장치 연결 개념 확인.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- SoC 05는 이론 장이며, 별도 Vivado/RTL 실습과 보드 실행을 요구하지 않음.
+- AXI GPIO 실제 연결·읽기·쓰기는 SoC 06에서 검증.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 0 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+## 판정
+범위 내 완료. 해당 장에서 별도 FPGA 보드 실행은 수행하지 않음.
