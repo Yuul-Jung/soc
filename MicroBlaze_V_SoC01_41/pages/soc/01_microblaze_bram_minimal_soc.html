@@ -145,6 +145,16 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 @media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
 @media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
 
+
+/* Chapters 01-10: shared top navigation */
+.topbar{background:#fff;border-bottom:1px solid #DDDFD8}
+.topbar .topbar-inner,.topbar .top-inner{max-width:1560px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px}
+.topbar .breadcrumb,.topbar .top-inner>span:first-child{font-size:.86rem;line-height:1.6;color:#4A4F5A}
+.topbar a,.topbar .breadcrumb a{color:#333743;text-decoration:none}
+.topbar a:hover,.topbar .breadcrumb a:hover{text-decoration:underline;color:#4635B1}
+.topbar .breadcrumb strong,.topbar .top-inner b{color:#15171C;font-weight:800}
+.topbar .brand,.topbar .meta{font-size:.76rem;color:#747B86;letter-spacing:0}
+@media(max-width:600px){.topbar .topbar-inner,.topbar .top-inner{padding:10px 14px}}
 </style>
 <style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
@@ -199,8 +209,8 @@ main[tabindex="-1"]:focus{outline:none}
 </style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner">
-<div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><strong>SoC 01</strong><span class="sep">/</span><a href="02_clock_reset_processor_system_reset.html">SoC 02</a></div>
-<div class="brand">PE. JUNG · TECHNICAL NOTES</div>
+<div class="breadcrumb"><a href="../../index.html">Basys3 SoC + NPU</a><span class="sep">/</span><strong>SoC 01</strong><span class="sep">/</span><a href="02_clock_reset_processor_system_reset.html">SoC 02</a></div>
+<div class="brand">BASYS3 · MICROBLAZE V SOC</div>
 </div></div>
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 01</p>
@@ -286,11 +296,11 @@ Load/Store → Data-side Bus → DLMB → BRAM → Data Read/Write</div>
 <section class="step-card" id="s05"><span class="step">SECTION 05 · GUI 실습</span><h2>Vivado 프로젝트 생성 · 2024.2</h2>
 <p>기존 성공 프로젝트를 삭제하거나 덮어쓰지 않는다. 다음 경로는 당시 실제 생성·검증된 프로젝트의 기준이다.</p>
 <ol class="step-seq">
-<li><h3>01 · Create Project</h3><p><strong>Quick Start → Create Project → Next</strong>. <strong>Project name</strong>은 <code>soc01_microblaze_bram</code>, <strong>Project location</strong>은 <code>/home/jung/soc/hw</code>를 입력한다.</p></li>
+<li><h3>01 · Create Project</h3><p><strong>Quick Start → Create Project → Next</strong>. <strong>Project name</strong>은 <code>soc01_microblaze_bram</code>, <strong>Project location</strong>은 <code>~/soc/hw</code>를 입력한다.</p></li>
 <li><h3>02 · RTL Project</h3><p><strong>RTL Project</strong>와 <strong>Do not specify sources at this time</strong>을 선택하고 <strong>Next</strong>.</p></li>
 <li><h3>03 · Parts 탭</h3><p><strong>Parts</strong> 탭에서 <code>xc7a35tcpg236-1</code>을 찾아 해당 행을 선택한다. <strong>Next → Finish</strong>. 이 실습에서는 자동 Board 인터페이스 선택으로 작업 순서가 달라지지 않도록 Parts 기준을 사용한다.</p></li>
 <li><h3>04 · 결과 확인</h3><p><strong>Project Settings → General</strong>의 Part가 <code>xc7a35tcpg236-1</code>인지 확인한다. <strong>Sources</strong>에 아직 RTL 파일이 없어도 정상이다.</p></li></ol>
-<div class="ok">프로젝트 파일: <code>/home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code>. 이 단계는 하드웨어 설정 파일만 만든 것이며 FPGA 실행은 아직 아니다.</div>
+<div class="ok">프로젝트 파일: <code>~/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code>. 이 단계는 하드웨어 설정 파일만 만든 것이며 FPGA 실행은 아직 아니다.</div>
 </section>
 <section class="step-card" id="s06"><span class="step">SECTION 06 · GUI 실습</span><h2>Block Design 생성</h2>
 <ol class="step-seq">
@@ -394,5 +404,5 @@ set_property -dict { PACKAGE_PIN U18 IOSTANDARD LVCMOS33 } [get_ports btnC]</cod
 </section>
 <nav class="chapter-nav"><a href="../../index.html">전체 목차</a><a href="02_clock_reset_processor_system_reset.html">SoC 02 →</a></nav>
 </main></div>
-<footer class="site-footer">PE. JUNG · BASYS3 SoC + NPU TECHNICAL NOTES</footer>
+<footer class="site-footer">BASYS3 · MICROBLAZE V SOC</footer>
 </body></html>
