@@ -1,1 +1,179 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>제1부 · SoC 기본 구축</title><link rel="stylesheet" href="../assets/site.css"></head><body><nav class="top"><a href="../">← SoC 통합 홈페이지</a></nav><header class="hero"><small>PART 01 · CHAPTER 01–10</small><h1>제1부 · MicroBlaze V SoC 기본 구축</h1><p>Basys3와 Vivado/Vitis 2024.2를 이용한 프로세서·메모리·AXI 주변장치 구성 및 기본 SoC 통합</p></header><main class="wrap"><h2>장별 목차</h2><div class="toc"><ol><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/01_microblaze_bram_minimal_soc.html">01장 · MicroBlaze V SoC 기본 구성</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/02_clock_reset_processor_system_reset.html">02장 · MicroBlaze V와 BRAM 하드웨어 구성</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/03_microblaze_bram_program_execution.html">03장 · Vitis BRAM 프로그램 실행 및 Debug</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/04_memory_map_memory_mapped_io.html">04장 · Memory Map 및 BRAM 주소 읽기·쓰기</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/05_axi4_axi4lite_axi4stream.html">05장 · AXI4 / AXI4-Lite / AXI4-Stream 구조</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/06_axi_gpio.html">06장 · AXI GPIO 주변장치 연결 및 제어</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/07_axi_uart_lite.html">07장 · AXI UART Lite</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/08_axi_timer.html">08장 · AXI Timer</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/09_axi_interrupt_controller.html">09장 · AXI Interrupt Controller</a></li><li><a href="../MicroBlaze_V_SoC01_41/pages/soc/10_microblaze_gpio_uart_timer_integration.html">10장 · MicroBlaze GPIO·UART·Timer 통합</a></li></ol></div><p class="muted">현재 장별 본문은 기존 교재 경로에 연결되어 있습니다. 각 장의 자료와 실습 이미지는 확인된 내용에 따라 순차 이관합니다.</p><footer><a href="../">통합 홈페이지</a></footer></main></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Basys3 MicroBlaze V SoC 제1부 — SoC 기본 구축 01~10장 목차">
+  <title>제1부 · SoC 기본 구축</title>
+  <link rel="stylesheet" href="../assets/site.css">
+  <style>
+    .toc-chapter { padding: 0; margin: 0 0 10px; list-style: none; }
+    .toc-chapter li { border-bottom: 1px solid var(--line); }
+    .toc-chapter li:last-child { border: 0; }
+    .ch-row { display: flex; align-items: baseline; gap: 12px; padding: 11px 0; }
+    .ch-num { font-size: 12px; font-weight: 800; color: var(--accent); letter-spacing: .06em; min-width: 44px; }
+    .ch-links { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .ch-main { font-weight: 700; text-decoration: none; color: var(--ink); font-size: 15px; }
+    .ch-main:hover { color: var(--accent); text-decoration: underline; }
+    .ch-sub { font-size: 13px; color: var(--muted); text-decoration: none; padding-left: 2px; }
+    .ch-sub:hover { color: var(--accent); text-decoration: underline; }
+    .ch-sub::before { content: "└ "; }
+    .badge-done { display: inline-block; font-size: 11px; font-weight: 800;
+      background: #e8f5e9; color: #2e7d32; border-radius: 5px;
+      padding: 2px 7px; margin-left: 8px; vertical-align: middle; letter-spacing: .04em; }
+    .section-label { font-size: 12px; font-weight: 800; letter-spacing: .1em;
+      color: var(--muted); margin: 28px 0 10px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+<nav class="top"><a href="../">← SoC 통합 홈페이지</a></nav>
+
+<header class="hero">
+  <small>PART 01 · 01–10장</small>
+  <h1>제1부 · MicroBlaze V SoC 기본 구축</h1>
+  <p>Basys3와 Vivado/Vitis 2024.2로 프로세서·메모리·AXI 주변장치를 단계별로 구성하고
+     기본 SoC를 통합하는 입문 과정</p>
+</header>
+
+<main class="wrap">
+
+  <p class="section-label">장별 목차</p>
+
+  <div class="toc">
+    <ul class="toc-chapter">
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">01장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/01_microblaze_bram_minimal_soc.html">
+              MicroBlaze V + BRAM 최소 SoC<span class="badge-done">완료</span>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">02장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/02_clock_reset_processor_system_reset.html">
+              Clock / Reset 구조와 Processor System Reset<span class="badge-done">완료</span>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">03장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/03_microblaze_bram_program_execution.html">
+              MicroBlaze V 실행 구조와 BRAM 프로그램 실행<span class="badge-done">완료</span>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">04장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/04_memory_map_memory_mapped_io.html">
+              Local BRAM Memory Map과 주소 기반 읽기·쓰기<span class="badge-done">완료</span>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">05장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/05_axi4_axi4lite_axi4stream.html">
+              AXI4 / AXI4-Lite / AXI4-Stream 구조<span class="badge-done">완료</span>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">06장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/06_axi_gpio.html">
+              AXI GPIO — Switch 입력을 LED 출력으로<span class="badge-done">완료</span>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">07장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/07_axi_uart_lite.html">
+              AXI UART Lite — PC 터미널 Echo 통신<span class="badge-done">완료</span>
+            </a>
+            <a class="ch-sub" href="../MicroBlaze_V_SoC01_41/pages/soc/07_1_uart_echo_c_code_guide.html">
+              07.1 · UART Echo C 코드 쉽게 이해하기
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">08장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/08_axi_timer.html">
+              AXI Timer — 0.5초 Polling과 LED Blink<span class="badge-done">완료</span>
+            </a>
+            <a class="ch-sub" href="../MicroBlaze_V_SoC01_41/pages/soc/08_1_axi_timer_c_code_guide.html">
+              08.1 · AXI Timer C 코드 쉽게 이해하기
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">09장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/09_axi_interrupt_controller.html">
+              AXI Interrupt Controller — Timer Interrupt와 ISR<span class="badge-done">완료</span>
+            </a>
+            <a class="ch-sub" href="../MicroBlaze_V_SoC01_41/pages/soc/09_1_axi_interrupt_c_code_guide.html">
+              09.1 · Timer Interrupt C 코드 쉽게 이해하기
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="ch-row">
+          <span class="ch-num">10장</span>
+          <div class="ch-links">
+            <a class="ch-main" href="../MicroBlaze_V_SoC01_41/pages/soc/10_microblaze_gpio_uart_timer_integration.html">
+              MicroBlaze V + GPIO + UART + Timer 통합<span class="badge-done">완료</span>
+            </a>
+            <a class="ch-sub" href="../MicroBlaze_V_SoC01_41/pages/soc/10_1_integration_c_code_guide.html">
+              10.1 · GPIO·UART·Timer 통합 C 코드 쉽게 이해하기
+            </a>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+
+  <footer>
+    <a href="../">통합 홈페이지</a> &nbsp;·&nbsp;
+    <a href="../part02/">제2부</a> &nbsp;·&nbsp;
+    <a href="../part03/">제3부</a>
+  </footer>
+
+</main>
+</body>
+</html>
