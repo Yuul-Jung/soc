@@ -190,6 +190,16 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 .soc07-shot.is-procedure{border-left:4px solid #6f87b6;}
 @media(max-width:600px){.soc07-shot{padding:6px}.soc07-shot img{max-height:none}.soc07-shot figcaption{font-size:.82rem}}
 
+
+/* Chapters 01-10: shared top navigation */
+.topbar{background:#fff;border-bottom:1px solid #DDDFD8}
+.topbar .topbar-inner,.topbar .top-inner{max-width:1560px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px}
+.topbar .breadcrumb,.topbar .top-inner>span:first-child{font-size:.86rem;line-height:1.6;color:#4A4F5A}
+.topbar a,.topbar .breadcrumb a{color:#333743;text-decoration:none}
+.topbar a:hover,.topbar .breadcrumb a:hover{text-decoration:underline;color:#4635B1}
+.topbar .breadcrumb strong,.topbar .top-inner b{color:#15171C;font-weight:800}
+.topbar .brand,.topbar .meta{font-size:.76rem;color:#747B86;letter-spacing:0}
+@media(max-width:600px){.topbar .topbar-inner,.topbar .top-inner{padding:10px 14px}}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -243,7 +253,7 @@ main[tabindex="-1"]:focus{outline:none}
 </style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
 <body>
 
-<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><a href="06_axi_gpio.html">SoC 06</a><span class="sep">/</span><strong>SoC 07</strong><span class="sep">/</span><a href="08_axi_timer.html">SoC 08</a></div><div class="brand">PE. JUNG · TECHNICAL NOTES</div></div></div>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">Basys3 SoC + NPU</a><span class="sep">/</span><a href="06_axi_gpio.html">SoC 06</a><span class="sep">/</span><strong>SoC 07</strong><span class="sep">/</span><a href="08_axi_timer.html">SoC 08</a></div><div class="brand">BASYS3 · MICROBLAZE V SOC</div></div></div>
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 07</p><h1>AXI UART Lite - PC 터미널 Echo 통신</h1>
 <p class="hero-desc">Basys3의 FT2232HQ USB-UART Bridge와 AXI UART Lite를 연결하고, PC에서 입력한 문자를 MicroBlaze V가 RX FIFO에서 읽은 뒤 TX FIFO로 다시 전송한다. Memory Map, AXI4-Lite, FIFO, UART 직렬 통신이 하나의 실습으로 연결된다.</p>
@@ -401,14 +411,14 @@ Ubuntu moserial Received ASCII</div>
 <p><strong>07장은 06장 성공 프로젝트를 복제하여 이어서 진행합니다.</strong> 처음부터 SoC를 새로 만들지 않으며 06장 원본은 수정하지 않습니다.</p>
 <div class="flow">06장 .xpr → 07장 Save As → 새 .bd Save As → 소스 경로 점검 → UART IP 추가</div>
 <div class="table-wrap" role="region" tabindex="0" aria-label="원본과 새 프로젝트 구분"><table><thead><tr><th>대상</th><th>06장 원본 · 보존</th><th>07장 작업 파일</th></tr></thead><tbody>
-<tr><td>Vivado Project</td><td><code>/home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr</code></td><td><code>/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code></td></tr>
+<tr><td>Vivado Project</td><td><code>~/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr</code></td><td><code>~/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code></td></tr>
 <tr><td>Block Design</td><td><code>soc06_axi_gpio.bd</code></td><td><code>soc07_axi_uartlite.bd</code></td></tr>
 <tr><td>HDL Wrapper</td><td><code>soc06_axi_gpio_wrapper</code></td><td><code>soc07_axi_uartlite_wrapper</code> · UART 포트 작성 후 생성</td></tr>
 <tr><td>Constraints</td><td>06장 Clock·Reset·GPIO XDC</td><td>07장에 독립 복사한 XDC + UART RX/TX</td></tr>
-<tr><td>Vitis Workspace</td><td colspan="2"><code>/home/jung/soc/sw</code> 사용 · 07장 Platform·Application만 새로 생성</td></tr>
+<tr><td>Vitis Workspace</td><td colspan="2"><code>~/soc/sw</code> 사용 · 07장 Platform·Application만 새로 생성</td></tr>
 </tbody></table></div>
 <ol class="step-seq"><li><h3>06장 성공 프로젝트 열기</h3><p>Vivado 2024.2의 <strong>File → Open Project</strong>에서 <code>soc06_axi_gpio.xpr</code>을 엽니다. <code>microblaze_riscv_0</code>, Local BRAM, <code>axi_gpio_0</code>, <code>axi_smc</code>를 확인합니다.</p><figure class="soc07-shot is-procedure"><a href="../../images/soc07/steps/soc07_01_open_soc06_project.webp" target="_blank" rel="noopener" aria-label="06장 성공 Vivado 프로젝트 열기 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_01_open_soc06_project.webp" alt="07장 실습 캡처 01: 06장 성공 Vivado 프로젝트 열기" loading="lazy" decoding="async"></a><figcaption><strong>그림 01 · 06장 성공 Vivado 프로젝트 열기</strong> — GUI 조작 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure></li>
-<li><h3>07장 프로젝트 복제</h3><p><strong>File → Project → Save As</strong>를 실행하여 새 이름 <code>soc07_axi_uartlite</code>, 최종 경로 <code>/home/jung/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code>로 저장합니다. 폴더가 중첩 생성되지 않도록 최종 경로를 확인합니다.</p><figure class="soc07-shot is-procedure"><a href="../../images/soc07/steps/soc07_02_save_project_as.webp" target="_blank" rel="noopener" aria-label="Save Project As — 07장 프로젝트 분리 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_02_save_project_as.webp" alt="07장 실습 캡처 02: Save Project As — 07장 프로젝트 분리" loading="lazy" decoding="async"></a><figcaption><strong>그림 02 · Save Project As — 07장 프로젝트 분리</strong> — GUI 조작 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure></li>
+<li><h3>07장 프로젝트 복제</h3><p><strong>File → Project → Save As</strong>를 실행하여 새 이름 <code>soc07_axi_uartlite</code>, 최종 경로 <code>~/soc/hw/soc07_axi_uartlite/soc07_axi_uartlite.xpr</code>로 저장합니다. 폴더가 중첩 생성되지 않도록 최종 경로를 확인합니다.</p><figure class="soc07-shot is-procedure"><a href="../../images/soc07/steps/soc07_02_save_project_as.webp" target="_blank" rel="noopener" aria-label="Save Project As — 07장 프로젝트 분리 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_02_save_project_as.webp" alt="07장 실습 캡처 02: Save Project As — 07장 프로젝트 분리" loading="lazy" decoding="async"></a><figcaption><strong>그림 02 · Save Project As — 07장 프로젝트 분리</strong> — GUI 조작 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure></li>
 <li><h3>Block Design을 07장으로 저장</h3><p>복제본의 <code>soc06_axi_gpio.bd</code>를 열고 <strong>File → Save Block Design As</strong> → 새 이름 <code>soc07_axi_uartlite</code> → <strong>Local to Project</strong>·<strong>Add to Design Sources</strong>를 선택합니다.</p><figure class="soc07-shot is-procedure"><a href="../../images/soc07/steps/soc07_03_save_block_design_as.webp" target="_blank" rel="noopener" aria-label="Save Block Design As — 07장 BD 분리 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_03_save_block_design_as.webp" alt="07장 실습 캡처 03: Save Block Design As — 07장 BD 분리" loading="lazy" decoding="async"></a><figcaption><strong>그림 03 · Save Block Design As — 07장 BD 분리</strong> — GUI 조작 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure></li>
 <li><h3>Design Sources와 XDC 경로 확인</h3><p><strong>Sources → Design Sources</strong>에 새 <code>soc07_axi_uartlite.bd</code>가 생성됐는지 확인합니다. BD·XDC의 실제 경로가 06장 원본 폴더를 가리키면 07장 프로젝트로 <strong>Copy File Into Project</strong> 등의 기능으로 독립 복사합니다. 불필요한 기존 BD는 <strong>Remove File from Project</strong>로만 정리합니다. <strong>Delete files from disk</strong>는 선택하지 않습니다.</p></li></ol>
 <p class="lesson-check"><strong>화면 확인</strong> 현재 프로젝트는 <code>soc07_axi_uartlite</code>이며 편집할 Block Design은 <code>soc07_axi_uartlite.bd</code>입니다. <strong>Wrapper는 아직 만들지 않습니다.</strong></p>
@@ -491,7 +501,7 @@ set_property -dict { PACKAGE_PIN A18 IOSTANDARD LVCMOS33 } [get_ports UART_0_txd
 <section class="step-card" id="s10"><span class="step">실습 10</span><h2>Vitis · 07장 Platform 생성</h2>
 
 <p>Vitis Unified IDE(비티스 통합 개발환경) 2024.2에서 <strong>06장 성공 Platform은 유지</strong>하고 07장 XSA 기반의 새 Platform을 만듭니다.</p>
-<ol class="step-seq"><li><h3>Workspace 열기</h3><p>Vitis에서 기존 Workspace <code>/home/jung/soc/sw</code>를 엽니다.</p></li>
+<ol class="step-seq"><li><h3>Workspace 열기</h3><p>Vitis에서 기존 Workspace <code>~/soc/sw</code>를 엽니다.</p></li>
 <li><h3>New Platform</h3><p>메뉴 <strong>File → New Component → Platform</strong>을 선택합니다. 새 Platform 이름은 <code>soc07_axi_uartlite_platform</code>을 권장합니다.</p><figure class="soc07-shot is-procedure"><a href="../../images/soc07/steps/soc07_19_platform_name.webp" target="_blank" rel="noopener" aria-label="Vitis Platform soc07_axi_uartlite_platform 생성 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_19_platform_name.webp" alt="07장 실습 캡처 19: Vitis Platform soc07_axi_uartlite_platform 생성" loading="lazy" decoding="async"></a><figcaption><strong>그림 19 · Vitis Platform soc07_axi_uartlite_platform 생성</strong> — GUI 조작 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure></li>
 <li><h3>07장 XSA 지정</h3><p><strong>Browse</strong>에서 <a href="#s09">Bitstream 생성 절</a>에서 생성한 <code>soc07_axi_uartlite.xsa</code>를 선택합니다. 06장 XSA를 선택하지 않습니다.</p><figure class="soc07-shot is-verified"><a href="../../images/soc07/steps/soc07_20_xsa_file_selected.webp" target="_blank" rel="noopener" aria-label="생성된 soc07_axi_uartlite.xsa 파일 선택 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_20_xsa_file_selected.webp" alt="07장 실습 캡처 20: 생성된 soc07_axi_uartlite.xsa 파일 선택" loading="lazy" decoding="async"></a><figcaption><strong>그림 20 · 생성된 soc07_axi_uartlite.xsa 파일 선택</strong> — 실제 확인 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure>
 <figure class="soc07-shot is-procedure"><a href="../../images/soc07/steps/soc07_21_platform_hardware_flow.webp" target="_blank" rel="noopener" aria-label="Vitis Hardware Design(XSA) 경로 확인 · 이미지 크게 보기"><img src="../../images/soc07/steps/soc07_21_platform_hardware_flow.webp" alt="07장 실습 캡처 21: Vitis Hardware Design(XSA) 경로 확인" loading="lazy" decoding="async"></a><figcaption><strong>그림 21 · Vitis Hardware Design(XSA) 경로 확인</strong> — GUI 조작 화면. <span class="shot-source">클릭하면 큰 화면으로 열립니다.</span></figcaption></figure></li>
@@ -651,7 +661,7 @@ moserial</code></pre>
 Type characters. Received data will be echoed.
 &gt; abc</code></pre>
 <div class="flow">PC Outgoing abc → FPGA B18(RX) → MicroBlaze V → FPGA A18(TX) → PC Received ASCII abc</div>
-<p class="step-result"><strong>실기 검증 성공:</strong> 2026-10-27, Basys3 + Vitis Unified IDE 2024.2 + moserial에서 115200 8N1 UART Echo 동작 확인. <code>A</code>, <code>B</code>, <code>1</code>의 개별 Watch 관찰은 별도 확장 확인 항목입니다.</p>
+<p class="step-result"><strong>실기 검증 성공:</strong> Basys3 + Vitis Unified IDE 2024.2 + moserial에서 115200 8N1 UART Echo 동작 확인. <code>A</code>, <code>B</code>, <code>1</code>의 개별 Watch 관찰은 별도 확장 확인 항목입니다.</p>
 </section>
 
 <section class="step-card" id="s16"><span class="step">검증 02</span><h2>Vitis Debugger · Watch 변수 확인</h2>
