@@ -31,24 +31,22 @@
 
 PNG 원본은 수집된 대화 첨부에 보존되어 있으며, 이 Markdown 파일은 증빙 파일 목록과 판독 결과만 기록한다. 해당 PNG가 GitHub에 업로드됐다는 의미가 아니다.
 
-## GitHub Pages 교재에 포함한 실제 캡처 이미지 (원본 PNG에서 변환한 WebP)
+## 교재에 실제 삽입한 개인 경로 비노출 GUI 8장
 
-정상 실습 과정을 나타내는 아래 10장의 WebP를 `images/soc10/gui_20261030/`에 게시하고 10장 HTML의 SECTION 07~11에 실제 시간순으로 배치했습니다.
+사람 이름이 포함된 GUI 원본은 교재에서 제외하고 GitHub 게시 이미지에서도 삭제했습니다. 10장 HTML SECTION 07~11에 현재 게시된 파일은 다음과 같습니다.
 
-| 교재 이미지 | 원본 캡처 | 본문 SECTION |
-|---|---|---|
-| `01_project_xpr.webp` | 024921 | 07 |
-| `02_save_bd_as.webp` | 030049 | 07 |
-| `03_bd_connections.webp` | 030103 | 07 |
-| `04_address_before.webp` | 033745 | 08 |
-| `05_address_64k.webp` | 034100 | 09 |
-| `06_local_bram_connections.webp` | 034339 | 10 |
-| `07_bram_basic.webp` | 034517 | 10 |
-| `08_validate_success.webp` | 034711 | 11 |
-| `09_bram_summary.webp` | 034948 | 11 |
-| `10_soc10_connections.webp` | 035256 | 11 |
+| 화면 순서 | 파일명 | SECTION | 용도 |
+|---|---|---|---|
+| 01 | `02_save_bd_as.webp` | 07 | 새 Block Design 생성 |
+| 02 | `04_address_before.webp` | 08 | 변경 전 16K 주소 |
+| 03 | `05_address_64k.webp` | 09 | ILMB·DLMB 64K 설정 완료 |
+| 04 | `06_local_bram_connections.webp` | 10 | 공유 BRAM 내부 연결 |
+| 05 | `07_bram_basic.webp` | 10 | 자동 메모리 구성 |
+| 06 | `08_validate_success.webp` | 11 | Validate Design 정상 |
+| 07 | `09_bram_summary.webp` | 11 | IP Summary BRAM36 16개 |
+| 08 | `10_soc10_connections.webp` | 11 | AXI/Clock/Reset 전체 구성 |
 
-기존의 09장 Vitis Platform 화면, 중간 16K/64K 혼합 화면, Vivado 경고가 나타난 화면은 교재 본문에서 제외했습니다. 10장 Implementation/Timing/Bitstream/보드 검증 성공 화면은 아직 게시되지 않았습니다.
+미게시/삭제한 기존 캡처: `01_project_xpr.webp`, `03_bd_connections.webp` (홈 사용자명·개인 프로젝트 경로가 표시됨). 중간/오류 상태 화면도 최종 성공 화면에 삽입하지 않음.
 
 ## 후속 Vivado 구현·XSA 캡처 — 2026-10-30 05시대
 
