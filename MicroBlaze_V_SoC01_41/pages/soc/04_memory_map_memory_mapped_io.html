@@ -249,7 +249,7 @@ main[tabindex="-1"]:focus{outline:none}
 <tr><td data-label="실제 Address Editor 항목"><code>/microblaze_riscv_0_local_memory/dlmb_bram_if_cntlr/SLMB</code></td><td data-label="확인값">Base <code>0x00000000</code> · Range <code>16K</code> · High <code>0x00003FFF</code></td></tr>
 <tr><td data-label="실제 Address Editor 항목">Assigned / Unassigned</td><td data-label="확인값"><code>2 / 0</code></td></tr>
 <tr><td data-label="실제 Address Editor 항목">Incomplete Paths</td><td data-label="확인값"><code>1</code> — <code>M_AXI_DP</code> 미연결</td></tr></tbody></table></div>
-<div class="note">Instruction과 Data가 동일한 물리 BRAM을 보는 구성에서는 두 주소 범위가 같아도 오류가 아니다. 실습에서 정상 검증된 설계를 임의로 바꾸지 않는다.</div>
+<div class="note">Instruction과 Data가 동일한 물리 BRAM을 보는 구성에서는 두 주소 범위가 같아도 오류가 아니다. 실습에서 정상 검증된 설계를 임의로 바꾸지 않는다.</div><div class="note"><strong>실제 확인값과 계산값 구분:</strong> Base <code>0x00000000</code>, High <code>0x00003FFF</code>는 Vivado Address Editor에서 확인했다. 아래 표에 등장하는 <code>0x00001460</code>은 Vitis Watch에서 확인한 <code>bram_word[0]</code>의 실행 주소이다. 두 주소는 서로 다른 개념이다.</div>
 </section>
 
 <section class="step-card" id="s03"><span class="step">SECTION 03</span><h2>Base · Range · High 주소 계산</h2>
@@ -374,7 +374,7 @@ int main(void)
 
 <section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>WATCH 최종 검증 — stage 5</h2>
 <p><code>bram_word[1]</code>에 <code>0xA5A5A5A5</code>를 다시 기록한 뒤 같은 위치에서 재읽기하여 값이 바뀌었는지 확인한다. 실행을 <code>while (1) {}</code> 위치까지 진행하면 <code>stage</code>가 5가 된다.</p>
-<div class="note"><strong>증빙 화면:</strong> 2026-10-26에 제출된 Vitis 원본 <code>image(20261026-085917).png</code>에서 <code>stage=5</code>, <code>read_1=0xA5A5A5A5</code>, <code>bram_word[1]=0xA5A5A5A5</code>가 동시에 확인되었다. 원본 PNG는 별도 검증 자료이며 아래 SVG는 실측값에 근거한 구조도다.</div>
+<div class="note"><strong>실기 검증 기록:</strong> 2026-10-26 Vitis Debug 원본 <code>image(20261026-085917).png</code>에서 <code>stage=5</code>, <code>read_1=0xA5A5A5A5</code>, <code>bram_word[1]=0xA5A5A5A5</code>를 확인했다. 현재 GitHub 교재에는 해당 원본 PNG가 포함되어 있지 않으므로 아래 표는 <strong>원본 스크린샷이 아닌 실제 관측값의 텍스트 기록</strong>으로 표시한다.</div>
 <div class="table-wrap" tabindex="0" role="region" aria-label="WATCH 변수 / 최종 검증값 / 판정 확인 표"><table><thead><tr><th scope="col">WATCH 변수</th><th scope="col">최종 검증값</th><th scope="col">판정</th></tr></thead><tbody><tr><td data-label="WATCH 변수"><code>stage</code></td><td data-label="최종 검증값"><code>0x00000005</code></td><td data-label="판정">정상</td></tr>
 <tr><td data-label="WATCH 변수"><code>addr_0</code></td><td data-label="최종 검증값"><code>0x00001460</code></td><td data-label="판정">BRAM 내부 주소</td></tr>
 <tr><td data-label="WATCH 변수"><code>bram_word[0]</code></td><td data-label="최종 검증값"><code>0x11111111</code></td><td data-label="판정">유지</td></tr>
@@ -382,11 +382,11 @@ int main(void)
 <tr><td data-label="WATCH 변수"><code>bram_word[2]</code></td><td data-label="최종 검증값"><code>0x33333333</code></td><td data-label="판정">유지</td></tr>
 <tr><td data-label="WATCH 변수"><code>bram_word[3]</code></td><td data-label="최종 검증값"><code>0x44444444</code></td><td data-label="판정">유지</td></tr>
 <tr><td data-label="WATCH 변수"><code>read_1</code></td><td data-label="최종 검증값"><code>0xA5A5A5A5</code></td><td data-label="판정">재읽기 성공</td></tr></tbody></table></div>
-<div class="flow"><strong>사용자 제공 Vitis 2024.2 디버깅 화면으로 검증</strong> — 동일 BRAM 주소에 새 데이터를 Write하고, 같은 주소에서 다시 Read한 결과가 일치함을 확인했다.</div>
+<div class="flow"><strong>검증 결과: PASS</strong> — <code>bram_word[1]</code>에 <code>0xA5A5A5A5</code>를 다시 쓴 후 <code>read_1</code>로 재읽었을 때 동일한 값이 나왔다. CPU → DLMB → Local BRAM 접근 성공이며 AXI 주변장치 MMIO는 이 결과로 검증되지 않는다.</div>
 <div class="note">실제 성공 화면에서 <code>main.c</code> 44행의 무한 루프 위치와 <code>stage = 5</code>가 확인되었다. 이는 실제 FPGA 다운로드 및 실행 결과이며, AXI 주변장치 검증 결과는 아니다.</div>
 </section>
 
-<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>주소와 32비트 데이터 관계</h2>
+<section class="step-card" id="s12"><span class="step">SECTION 12</span><h2>주소와 32비트 데이터 관계</h2><p><strong>검증한 시작 주소와 배열 간격을 구분합니다.</strong> <code>addr_0</code>는 Watch 관측값이며, 나머지 주소는 4바이트 배열 규칙으로 산출했습니다.</p><div class="table-wrap" tabindex="0" role="region" aria-label="BRAM 배열 요소별 주소 계산"><table><thead><tr><th>배열 요소</th><th>주소</th><th>값의 근거</th></tr></thead><tbody><tr><td><code>bram_word[0]</code></td><td><code>0x00001460</code></td><td>실제 Vitis WATCH에서 확인</td></tr><tr><td><code>bram_word[1]</code></td><td><code>0x00001464</code></td><td>32비트 배열 요소 간격 4바이트를 적용한 계산값</td></tr><tr><td><code>bram_word[2]</code></td><td><code>0x00001468</code></td><td>계산값</td></tr><tr><td><code>bram_word[3]</code></td><td><code>0x0000146C</code></td><td>계산값</td></tr></tbody></table></div>
 <p><code>bram_word</code>는 각 요소가 32비트(4바이트)인 배열이므로 연속 주소에 4바이트씩 배치된다. <code>addr_0</code>가 실제로 <code>0x00001460</code>임을 확인했다.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="요소 / 주소 / 근거 확인 표"><table><thead><tr><th scope="col">요소</th><th scope="col">주소</th><th scope="col">근거</th></tr></thead><tbody><tr><td data-label="요소"><code>bram_word[0]</code></td><td data-label="주소"><code>0x00001460</code></td><td data-label="근거">WATCH에서 실제 확인</td></tr>
 <tr><td data-label="요소"><code>bram_word[1]</code></td><td data-label="주소"><code>0x00001464</code></td><td data-label="근거">32비트 요소 간 4바이트 간격으로 계산</td></tr>
