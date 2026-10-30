@@ -40,49 +40,81 @@
 <tr><td><code>timer_event</code></td><td><code>0x00000000</code></td><td><code>0x00000000</code></td><td>ISR에서 1로 설정된 뒤 Main에서 0으로 지울 수 있음</td></tr>
 <tr><td><code>led_state</code></td><td><code>0x00000000</code></td><td><code>0x00000001</code></td><td>LED0 OFF → ON</td></tr></tbody></table></div>
 <div class="flow"><b>실제 프로그램 제어 흐름</b><p>AXI Timer → AXI INTC → MicroBlaze V → Timer 드라이버 Handler → <code>TimerCallback()</code> → Main Loop → AXI GPIO → LED0</p></div>
-<p class="source-link">Timer 입력 100 MHz, Reset Value 49,999,998 설정상 약 0.5초마다 LED0가 반전합니다. 실제 점멸은 보드에서 확인했으며, 정확한 주기 계측은 수행하지 않았습니다.</p><figure class="soc08-shot verified"><a href="../../images/soc09/gui_20261028/step_30.webp" target="_blank" rel="noopener"><img src="../../images/soc09/gui_20261028/step_30.webp" loading="lazy" alt="실제 GUI 30 · 실제 Vitis WATCH · interrupt_count 12, led_state 0"/></a><figcaption>실제 GUI 30 · 실제 Vitis WATCH · interrupt_count 12, led_state 0 (클릭하면 확대)</figcaption></figure><figure class="soc08-shot verified"><a href="../../images/soc09/gui_20261028/step_31.webp" target="_blank" rel="noopener"><img src="../../images/soc09/gui_20261028/step_31.webp" loading="lazy" alt="실제 GUI 31 · 실제 Vitis WATCH · interrupt_count 35, led_state 1"/></a><figcaption>실제 GUI 31 · 실제 Vitis WATCH · interrupt_count 35, led_state 1 (클릭하면 확대)</figcaption></figure></section><section class="step-card" id="code" data-group="gui"><div class="section-top"><span class="step">SECTION 32</span><span class="category">Vitis 코드</span></div><h2>Timer Interrupt main.c — 전체 코드</h2><p class="section-lead">09장 Application에서 사용할 코드이며 상세 설명은 <a href="09_1_axi_interrupt_c_code_guide.html">09.1장</a>에 정리했습니다.</p><p>09장 Application의 Build 성공과 실제 Debug 동작을 확인했습니다. 아래 코드는 검증한 인터럽트 처리 구조를 반영한 코드입니다. 실제 사용된 SDT 구성에서는 <code>#ifdef SDT</code> 쪽이 선택됩니다.</p><div class="code-head"><strong>main.c</strong><button type="button" class="copy" onclick="copyCode('main')">코드 복사</button></div><pre id="code-main"><code>#include &quot;xparameters.h&quot;     // 하드웨어 주소 및 장치 번호
-#include &quot;xtmrctr.h&quot;         // AXI Timer 드라이버
-#include &quot;xgpio.h&quot;           // AXI GPIO 드라이버
-#include &quot;xstatus.h&quot;         // 성공/실패 반환값
-#include &quot;xil_exception.h&quot;   // CPU 인터럽트 처리
+<p class="source-link">Timer 입력 100 MHz, Reset Value 49,999,998 설정상 약 0.5초마다 LED0가 반전합니다. 실제 점멸은 보드에서 확인했으며, 정확한 주기 계측은 수행하지 않았습니다.</p><figure class="soc08-shot verified"><a href="../../images/soc09/gui_20261028/step_30.webp" target="_blank" rel="noopener"><img src="../../images/soc09/gui_20261028/step_30.webp" loading="lazy" alt="실제 GUI 30 · 실제 Vitis WATCH · interrupt_count 12, led_state 0"/></a><figcaption>실제 GUI 30 · 실제 Vitis WATCH · interrupt_count 12, led_state 0 (클릭하면 확대)</figcaption></figure><figure class="soc08-shot verified"><a href="../../images/soc09/gui_20261028/step_31.webp" target="_blank" rel="noopener"><img src="../../images/soc09/gui_20261028/step_31.webp" loading="lazy" alt="실제 GUI 31 · 실제 Vitis WATCH · interrupt_count 35, led_state 1"/></a><figcaption>실제 GUI 31 · 실제 Vitis WATCH · interrupt_count 35, led_state 1 (클릭하면 확대)</figcaption></figure></section><section class="step-card" id="code" data-group="gui"><div class="section-top"><span class="step">SECTION 32</span><span class="category">Vitis 코드</span></div><h2>Timer Interrupt main.c — 전체 코드</h2><p class="section-lead">09장 Application에서 사용할 코드이며 상세 설명은 <a href="09_1_axi_interrupt_c_code_guide.html">09.1장</a>에 정리했습니다.</p><p>09장 Application의 Build 성공과 실제 Debug 동작을 확인했습니다. 아래 코드는 검증한 인터럽트 처리 구조를 반영한 코드입니다. 실제 사용된 SDT 구성에서는 <code>#ifdef SDT</code> 쪽이 선택됩니다.</p><div class="code-head"><strong>main.c</strong><button type="button" class="copy" onclick="copyCode('main')">코드 복사</button></div><pre id="code-main"><code>#include &quot;xparameters.h&quot;
+#include &quot;xtmrctr.h&quot;
+#include &quot;xgpio.h&quot;
+#include &quot;xstatus.h&quot;
+#include &quot;xil_types.h&quot;
+#include &quot;xil_exception.h&quot;
 
 #ifdef SDT
-#include &quot;xinterrupt_wrap.h&quot; // SDT 기반 인터럽트 연결
+#include &quot;xinterrupt_wrap.h&quot;
 #else
-#include &quot;xintc.h&quot;          // Classic 기반 AXI INTC 드라이버
+#include &quot;xintc.h&quot;
 #endif
 
-#define TIMER0             0U
-#define LED_CHANNEL        1U
-#define TIMER_RESET_VALUE  49999998U // 08장에서 사용한 값
+/*
+ * SoC 09 - AXI Interrupt Controller + AXI Timer
+ *
+ * Hardware path:
+ *   axi_timer_0/interrupt
+ *      -&gt; axi_intc_0/intr[0]
+ *      -&gt; axi_intc_0/interrupt
+ *      -&gt; microblaze_riscv_0/INTERRUPT
+ *
+ * Timer:
+ *   100 MHz
+ *   0.5 s interval
+ *   Down Count + Auto Reload + Interrupt
+ *
+ * User callback:
+ *   - interrupt_count++
+ *   - timer_event = 1
+ *
+ * Main loop:
+ *   - timer_event 확인
+ *   - AXI GPIO LED0 toggle
+ */
+
+#define TIMER0                  0U
+#define LED_CHANNEL             1U
+#define LED0_MASK               0x00000001U
+
+#define TIMER_TICKS_500MS       50000000U
+#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)
 
 #ifndef SDT
-// 다음 이름은 실제 xparameters.h 확인 후 확정
-#define TIMER_DEVICE_ID    XPAR_TMRCTR_0_DEVICE_ID
-#define GPIO_DEVICE_ID     XPAR_GPIO_0_DEVICE_ID
-#define INTC_DEVICE_ID     XPAR_INTC_0_DEVICE_ID
-#define TIMER_INTR_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
+#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
+#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
+#define TIMER_INTERRUPT_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
 #else
-// 다음 주소 매크로 역시 실제 BSP를 확인
-#define TIMER_BASEADDR     XPAR_XTMRCTR_0_BASEADDR
-#define GPIO_BASEADDR      XPAR_XGPIO_0_BASEADDR
+#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
+#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
 #endif
 
 static XTmrCtr Timer;
 static XGpio Gpio;
+
 #ifndef SDT
 static XIntc Intc;
 #endif
 
-volatile u32 interrupt_count = 0U; // 발생한 인터럽트 횟수
-volatile u32 timer_event = 0U;     // Main에 전달할 이벤트
-volatile u32 led_state = 0U;       // LED0 상태
+volatile u32 interrupt_count = 0U;
+volatile u32 timer_event     = 0U;
+volatile u32 led_state       = 0U;
 
-// Timer 드라이버에서 호출하는 사용자 Callback
+/*
+ * XTmrCtr_InterruptHandler()가 Timer HW interrupt를 처리한 뒤
+ * 이 callback을 Interrupt Context에서 호출한다.
+ *
+ * ISR/Callback에서는 긴 처리나 출력 작업을 하지 않는다.
+ */
 static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
 {
     (void)CallBackRef;
     (void)TmrCtrNumber;
+
     interrupt_count++;
     timer_event = 1U;
 }
@@ -99,64 +131,129 @@ static int InitGpio(void)
 static int InitTimer(void)
 {
     int status;
+
 #ifndef SDT
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
 #else
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
 #endif
-    if (status != XST_SUCCESS) return XST_FAILURE;
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 
     status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
-    if (status != XST_SUCCESS) return XST_FAILURE;
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 
     XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
-    XTmrCtr_SetOptions(&amp;Timer, TIMER0,
-        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_INT_MODE_OPTION);
+
+    XTmrCtr_SetOptions(
+        &amp;Timer,
+        TIMER0,
+        XTC_DOWN_COUNT_OPTION |
+        XTC_AUTO_RELOAD_OPTION |
+        XTC_INT_MODE_OPTION
+    );
+
     XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
+
     return XST_SUCCESS;
 }
 
 static int SetupInterruptSystem(void)
 {
     int status;
+
 #ifndef SDT
     status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
-    if (status != XST_SUCCESS) return XST_FAILURE;
-    status = XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
-        (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
-    if (status != XST_SUCCESS) return XST_FAILURE;
-    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
-    if (status != XST_SUCCESS) return XST_FAILURE;
-    XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
-    Xil_ExceptionInit();
-    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-        (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);
-    Xil_ExceptionEnable();
-#else
-    status = XSetupInterruptSystem(&amp;Timer,
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Connect(
+        &amp;Intc,
+        TIMER_INTERRUPT_ID,
         (XInterruptHandler)XTmrCtr_InterruptHandler,
-        Timer.Config.IntrId, Timer.Config.IntrParent,
-        XINTERRUPT_DEFAULT_PRIORITY);
-    if (status != XST_SUCCESS) return XST_FAILURE;
+        (void *)&amp;Timer
+    );
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XIntc_Enable(&amp;Intc, TIMER_INTERRUPT_ID);
+
+    Xil_ExceptionInit();
+
+    Xil_ExceptionRegisterHandler(
+        XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler,
+        &amp;Intc
+    );
+
+    Xil_ExceptionEnable();
+
+#else
+    status = XSetupInterruptSystem(
+        &amp;Timer,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        Timer.Config.IntrId,
+        Timer.Config.IntrParent,
+        XINTERRUPT_DEFAULT_PRIORITY
+    );
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 #endif
+
     return XST_SUCCESS;
 }
 
 int main(void)
 {
-    if (InitGpio() != XST_SUCCESS) return XST_FAILURE;
-    if (InitTimer() != XST_SUCCESS) return XST_FAILURE;
-    if (SetupInterruptSystem() != XST_SUCCESS) return XST_FAILURE;
+    int status;
+
+    status = InitGpio();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = InitTimer();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = SetupInterruptSystem();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 
     XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+
+    /*
+     * Interrupt path를 모두 준비한 뒤 Timer 시작
+     */
     XTmrCtr_Start(&amp;Timer, TIMER0);
 
     while (1) {
+        /*
+         * Callback은 event만 남긴다.
+         * 실제 AXI GPIO Write는 Main Context에서 수행한다.
+         */
         if (timer_event != 0U) {
             timer_event = 0U;
-            led_state ^= 1U;
+
+            led_state ^= LED0_MASK;
             XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
         }
     }
-}
-</code></pre><p class="source-link"><a href="09_1_axi_interrupt_c_code_guide.html">09.1장 · C 코드 쉽게 이해하기</a></p></section><section class="step-card" id="summary" data-group="gui"><div class="section-top"><span class="step">SECTION 33</span><span class="category">검증 · 정리</span></div><h2>09장 진행 결과</h2><p class="section-lead">Vivado 구성부터 Vitis ELF 빌드, Basys3 실제 LED0 점멸까지 확인했습니다. 실제 정밀 주기 측정 및 전력 측정은 별도입니다.</p><div class="tablewrap"><table><thead><tr><th>항목</th><th>확인 기준 또는 실제 값</th></tr></thead><tbody><tr><td>Vivado Block Design / AXI INTC</td><td>실제 연결 및 Validate Design 성공</td></tr><tr><td>AXI INTC Base</td><td>0x41200000 / 64 KiB</td></tr><tr><td>Timing</td><td>WNS +0.823 ns, TNS 0, WHS +0.020 ns</td></tr><tr><td>Power</td><td>0.204 W (분석 신뢰도 Low)</td></tr><tr><td>09장 XSA</td><td>Include bitstream 내보내기 완료 보고</td></tr><tr><td>Vitis 09장 Platform</td><td>Name / XSA / standalone / CPU / Summary 확인</td></tr><tr><td>Vitis Platform / Application</td><td>09장 BSP 생성·Application Build 성공, ELF 생성 확인</td></tr><tr><td>실제 Timer Interrupt / LED0</td><td>WATCH 12 → 35회, led_state 0 → 1, 보드 LED0 점멸 실기 확인</td></tr></tbody></table></div></section><section class="step-card" id="sources" data-group="gui"><div class="section-top"><span class="step">SOURCE</span><span class="category">공식 문서</span></div><h2>AMD 문서 및 소스 근거</h2><p class="section-lead">인터럽트 하드웨어와 드라이버 연결의 기준 문서입니다.</p><div class="tablewrap"><table><thead><tr><th>원본</th><th>대조 내용</th></tr></thead><tbody><tr><td><a target="_blank" rel="noopener" href="https://docs.amd.com/r/en-US/pg099-axi-intc">AMD PG099 · AXI Interrupt Controller</a></td><td>INTC 채널과 레지스터</td></tr><tr><td><a target="_blank" rel="noopener" href="https://docs.amd.com/r/en-US/pg079-axi-timer">AMD PG079 · AXI Timer</a></td><td>Timer T0INT, Reload, Interrupt</td></tr><tr><td><a target="_blank" rel="noopener" href="https://github.com/Xilinx/embeddedsw/blob/xlnx_rel_v2024.2/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c">AMD embeddedsw · XTmrCtr 예제 (2024.2)</a></td><td>Timer Handler 및 ISR 연결</td></tr><tr><td><a target="_blank" rel="noopener" href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/">AMD UG1629</a></td><td>MicroBlaze V Interrupt</td></tr></tbody></table></div></section><section class="step-card"><h2>다음 장</h2><p><a href="08_axi_timer.html">← SoC 08 · AXI Timer</a>　·　<a href="09_1_axi_interrupt_c_code_guide.html">SoC 09.1 · C 코드 풀이</a>　·　<a href="../../index.html">전체 목차</a>　·　<a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10 →</a></p></section><footer class="footer">SoC 09 · Vivado/Vitis 2024.2 · Timer Interrupt·LED0 실기 검증 완료</footer></main></div><script>function copyCode(id){const s=document.querySelector('#code-'+id+' code');if(s&&navigator.clipboard)navigator.clipboard.writeText(s.textContent);}</script></body></html>
+
+    return XST_SUCCESS;
+}</code></pre><p class="source-link"><a href="09_1_axi_interrupt_c_code_guide.html">09.1장 · C 코드 쉽게 이해하기</a></p></section><section class="step-card" id="summary" data-group="gui"><div class="section-top"><span class="step">SECTION 33</span><span class="category">검증 · 정리</span></div><h2>09장 진행 결과</h2><p class="section-lead">Vivado 구성부터 Vitis ELF 빌드, Basys3 실제 LED0 점멸까지 확인했습니다. 실제 정밀 주기 측정 및 전력 측정은 별도입니다.</p><div class="tablewrap"><table><thead><tr><th>항목</th><th>확인 기준 또는 실제 값</th></tr></thead><tbody><tr><td>Vivado Block Design / AXI INTC</td><td>실제 연결 및 Validate Design 성공</td></tr><tr><td>AXI INTC Base</td><td>0x41200000 / 64 KiB</td></tr><tr><td>Timing</td><td>WNS +0.823 ns, TNS 0, WHS +0.020 ns</td></tr><tr><td>Power</td><td>0.204 W (분석 신뢰도 Low)</td></tr><tr><td>09장 XSA</td><td>Include bitstream 내보내기 완료 보고</td></tr><tr><td>Vitis 09장 Platform</td><td>Name / XSA / standalone / CPU / Summary 확인</td></tr><tr><td>Vitis Platform / Application</td><td>09장 BSP 생성·Application Build 성공, ELF 생성 확인</td></tr><tr><td>실제 Timer Interrupt / LED0</td><td>WATCH 12 → 35회, led_state 0 → 1, 보드 LED0 점멸 실기 확인</td></tr></tbody></table></div></section><section class="step-card" id="sources" data-group="gui"><div class="section-top"><span class="step">SOURCE</span><span class="category">공식 문서</span></div><h2>AMD 문서 및 소스 근거</h2><p class="section-lead">인터럽트 하드웨어와 드라이버 연결의 기준 문서입니다.</p><div class="tablewrap"><table><thead><tr><th>원본</th><th>대조 내용</th></tr></thead><tbody><tr><td><a target="_blank" rel="noopener" href="https://docs.amd.com/r/en-US/pg099-axi-intc">AMD PG099 · AXI Interrupt Controller</a></td><td>INTC 채널과 레지스터</td></tr><tr><td><a target="_blank" rel="noopener" href="https://docs.amd.com/r/en-US/pg079-axi-timer">AMD PG079 · AXI Timer</a></td><td>Timer T0INT, Reload, Interrupt</td></tr><tr><td><a target="_blank" rel="noopener" href="https://github.com/Xilinx/embeddedsw/blob/xlnx_rel_v2024.2/XilinxProcessorIPLib/drivers/tmrctr/examples/xtmrctr_intr_example.c">AMD embeddedsw · XTmrCtr 예제 (2024.2)</a></td><td>Timer Handler 및 ISR 연결</td></tr><tr><td><a target="_blank" rel="noopener" href="https://docs.amd.com/r/2024.2-English/ug1629-microblaze-v-user-guide/">AMD UG1629</a></td><td>MicroBlaze V Interrupt</td></tr></tbody></table></div></section><section class="step-card"><h2>다음 장</h2><p><a href="08_axi_timer.html">← SoC 08 · AXI Timer</a>　·　<a href="09_1_axi_interrupt_c_code_guide.html">SoC 09.1 · C 코드 풀이</a>　·　<a href="../../index.html">전체 목차</a>　·　<a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10 →</a></p></section><footer class="footer">SoC 09 · Vivado/Vitis 2024.2 · Timer Interrupt·LED0 실기 검증 완료</footer></main></div><script>function copyCode(id){const s=document.querySelector('#code-'+id+' code');if(s&&navigator.clipboard)navigator.clipboard.writeText(s.textContent);}</script></body></html>
