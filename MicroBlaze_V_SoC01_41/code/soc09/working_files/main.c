@@ -17,8 +17,8 @@
  * Hardware path:
  *   axi_timer_0/interrupt
  *      -> axi_intc_0/intr[0]
- *      -> axi_intc_0/irq
- *      -> microblaze_riscv_0/Interrupt
+ *      -> axi_intc_0/interrupt
+ *      -> microblaze_riscv_0/INTERRUPT
  *
  * Timer:
  *   100 MHz
