@@ -290,9 +290,9 @@ volatile u32 led_state = 0U;</code></pre></div><div class="explain"><strong>코�
 XTmrCtr_SetOptions(&amp;Timer, TIMER0,
     XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION |
     XTC_INT_MODE_OPTION);
-XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>SetHandler는 사용자 Callback을 등록하고, SetOptions는 감소 계수·자동 재적재·인터럽트 모드를 사용하도록 설정합니다. SetResetValue는 08장과 같은 초기값을 넣습니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>주기가 끝나면 Timer는 다시 설정된 값부터 계수를 시작합니다. XTC_INT_MODE_OPTION이 누락되면 기대한 Timer 인터럽트가 발생하지 않을 수 있습니다.</p></div></section><section class="step-card" id="s09"><span class="step">CODE 09</span><h2>SetupInterruptSystem — Timer와 CPU 처리 경로 연결</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
+XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>SetHandler는 사용자 Callback을 등록하고, SetOptions는 감소 계수·자동 재적재·인터럽트 모드를 사용하도록 설정합니다. SetResetValue는 08장과 같은 초기값을 넣습니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>주기가 끝나면 Timer는 다시 설정된 값부터 계수를 시작합니다. XTC_INT_MODE_OPTION이 누락되면 기대한 Timer 인터럽트가 발생하지 않을 수 있습니다.</p></div></section><section class="step-card" id="s09"><span class="step">CODE 09</span><h2>SetupInterruptSystem — Timer와 CPU 처리 경로 연결</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>XIntc_Connect(&amp;Intc, TIMER_INTERRUPT_ID,
     (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
-XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
+XIntc_Enable(&amp;Intc, TIMER_INTERRUPT_ID);
 Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
     (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Classic 경로에서 Timer Handler를 인터럽트 번호에 연결한 뒤 활성화합니다. CPU는 먼저 INTC Handler를 실행하고, INTC Handler가 Timer Handler를 호출합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>SDT라면 XSetupInterruptSystem()으로 유사한 경로를 구성합니다. 실제 코드의 두 분기는 컴파일 때 분리됩니다.</p></div></section><section class="step-card" id="s10"><span class="step">CODE 10</span><h2>Main Loop — 이벤트를 받고 LED0를 반전한다</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>XTmrCtr_Start(&amp;Timer, TIMER0);
 while (1) {
@@ -303,49 +303,81 @@ while (1) {
     }
 }</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>Timer를 시작한 뒤 Main은 새로운 이벤트가 기록되었는지 확인합니다. 이벤트가 있으면 지우고 led_state의 최하위 비트를 뒤집은 다음 GPIO에 보냅니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>08장은 Timer의 하드웨어 상태 레지스터를 반복 읽고, 09장은 ISR이 남긴 소프트웨어 이벤트를 확인합니다. 이벤트 플래그 방식은 처리 중 다수 이벤트가 겹칠 경우 개수를 보존하지 못할 수 있습니다.</p></div></section><section class="step-card" id="s11"><span class="step">CODE 11</span><h2>Watch — 실제로 무엇을 관찰할까?</h2><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>interrupt_count  // 0x0000000C (12) → 0x00000023 (35)
 timer_event     // 0x00000000 → 0x00000000
-led_state       // 0x00000000 → 0x00000001</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>실행 중 Debug Watch에서 세 변수를 확인합니다. 인터럽트 수가 증가하는지, Main에서 이벤트를 처리하는지, LED0 상태가 반전하는지를 각각 확인합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>09장 실제 Vitis WATCH에서 인터럽트 횟수 12 → 35, LED 상태 0 → 1을 확인했습니다. timer_event 값이 두 화면 모두 0인 것은 Main에서 이벤트를 처리한 뒤일 수 있습니다.</p></div></section><p class="lesson-lead">실제 Watch 스크린샷은 <a href="09_axi_interrupt_controller.html#s19">09장 · Timer Interrupt 동작 검증</a>에서 확인합니다.</p><section class="step-card" id="s12"><span class="step">CODE 12</span><h2>main.c 전체 소스 — 한 번에 복사</h2><p class="lesson-lead">09장 main.c 전체 코드입니다. SDT 방식의 Timer 주소 및 Interrupt Parent 매크로를 실제 BSP에서 확인했고, 해당 Application의 빌드와 Debug 실행도 성공했습니다.</p><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>#include &quot;xparameters.h&quot;     // 하드웨어 주소 및 장치 번호
-#include &quot;xtmrctr.h&quot;         // AXI Timer 드라이버
-#include &quot;xgpio.h&quot;           // AXI GPIO 드라이버
-#include &quot;xstatus.h&quot;         // 성공/실패 반환값
-#include &quot;xil_exception.h&quot;   // CPU 인터럽트 처리
+led_state       // 0x00000000 → 0x00000001</code></pre></div><div class="explain"><strong>코드 풀이 — 이 코드가 무엇을 하는가</strong><p>실행 중 Debug Watch에서 세 변수를 확인합니다. 인터럽트 수가 증가하는지, Main에서 이벤트를 처리하는지, LED0 상태가 반전하는지를 각각 확인합니다.</p></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>09장 실제 Vitis WATCH에서 인터럽트 횟수 12 → 35, LED 상태 0 → 1을 확인했습니다. timer_event 값이 두 화면 모두 0인 것은 Main에서 이벤트를 처리한 뒤일 수 있습니다.</p></div></section><p class="lesson-lead">실제 Watch 스크린샷은 <a href="09_axi_interrupt_controller.html#s19">09장 · Timer Interrupt 동작 검증</a>에서 확인합니다.</p><section class="step-card" id="s12"><span class="step">CODE 12</span><h2>main.c 전체 소스 — 한 번에 복사</h2><p class="lesson-lead">09장 main.c 전체 코드입니다. SDT 방식의 Timer 주소 및 Interrupt Parent 매크로를 실제 BSP에서 확인했고, 해당 Application의 빌드와 Debug 실행도 성공했습니다.</p><div class="codebox"><pre class="codeblock-pre" tabindex="0"><code>#include &quot;xparameters.h&quot;
+#include &quot;xtmrctr.h&quot;
+#include &quot;xgpio.h&quot;
+#include &quot;xstatus.h&quot;
+#include &quot;xil_types.h&quot;
+#include &quot;xil_exception.h&quot;
 
 #ifdef SDT
-#include &quot;xinterrupt_wrap.h&quot; // SDT 기반 인터럽트 연결
+#include &quot;xinterrupt_wrap.h&quot;
 #else
-#include &quot;xintc.h&quot;          // Classic 기반 AXI INTC 드라이버
+#include &quot;xintc.h&quot;
 #endif
 
-#define TIMER0             0U
-#define LED_CHANNEL        1U
-#define TIMER_RESET_VALUE  49999998U // 08장에서 사용한 값
+/*
+ * SoC 09 - AXI Interrupt Controller + AXI Timer
+ *
+ * Hardware path:
+ *   axi_timer_0/interrupt
+ *      -&gt; axi_intc_0/intr[0]
+ *      -&gt; axi_intc_0/interrupt
+ *      -&gt; microblaze_riscv_0/INTERRUPT
+ *
+ * Timer:
+ *   100 MHz
+ *   0.5 s interval
+ *   Down Count + Auto Reload + Interrupt
+ *
+ * User callback:
+ *   - interrupt_count++
+ *   - timer_event = 1
+ *
+ * Main loop:
+ *   - timer_event 확인
+ *   - AXI GPIO LED0 toggle
+ */
+
+#define TIMER0                  0U
+#define LED_CHANNEL             1U
+#define LED0_MASK               0x00000001U
+
+#define TIMER_TICKS_500MS       50000000U
+#define TIMER_RESET_VALUE       (TIMER_TICKS_500MS - 2U)
 
 #ifndef SDT
-// 다음 이름은 실제 xparameters.h 확인 후 확정
-#define TIMER_DEVICE_ID    XPAR_TMRCTR_0_DEVICE_ID
-#define GPIO_DEVICE_ID     XPAR_GPIO_0_DEVICE_ID
-#define INTC_DEVICE_ID     XPAR_INTC_0_DEVICE_ID
-#define TIMER_INTR_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
+#define TIMER_DEVICE_ID         XPAR_TMRCTR_0_DEVICE_ID
+#define GPIO_DEVICE_ID          XPAR_GPIO_0_DEVICE_ID
+#define INTC_DEVICE_ID          XPAR_INTC_0_DEVICE_ID
+#define TIMER_INTERRUPT_ID      XPAR_INTC_0_TMRCTR_0_VEC_ID
 #else
-// 다음 주소 매크로 역시 실제 BSP를 확인
-#define TIMER_BASEADDR     XPAR_XTMRCTR_0_BASEADDR
-#define GPIO_BASEADDR      XPAR_XGPIO_0_BASEADDR
+#define TIMER_BASEADDR          XPAR_XTMRCTR_0_BASEADDR
+#define GPIO_BASEADDR           XPAR_XGPIO_0_BASEADDR
 #endif
 
 static XTmrCtr Timer;
 static XGpio Gpio;
+
 #ifndef SDT
 static XIntc Intc;
 #endif
 
-volatile u32 interrupt_count = 0U; // 발생한 인터럽트 횟수
-volatile u32 timer_event = 0U;     // Main에 전달할 이벤트
-volatile u32 led_state = 0U;       // LED0 상태
+volatile u32 interrupt_count = 0U;
+volatile u32 timer_event     = 0U;
+volatile u32 led_state       = 0U;
 
-// Timer 드라이버에서 호출하는 사용자 Callback
+/*
+ * XTmrCtr_InterruptHandler()가 Timer HW interrupt를 처리한 뒤
+ * 이 callback을 Interrupt Context에서 호출한다.
+ *
+ * ISR/Callback에서는 긴 처리나 출력 작업을 하지 않는다.
+ */
 static void TimerCallback(void *CallBackRef, u8 TmrCtrNumber)
 {
     (void)CallBackRef;
     (void)TmrCtrNumber;
+
     interrupt_count++;
     timer_event = 1U;
 }
@@ -362,64 +394,129 @@ static int InitGpio(void)
 static int InitTimer(void)
 {
     int status;
+
 #ifndef SDT
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_DEVICE_ID);
 #else
     status = XTmrCtr_Initialize(&amp;Timer, TIMER_BASEADDR);
 #endif
-    if (status != XST_SUCCESS) return XST_FAILURE;
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 
     status = XTmrCtr_SelfTest(&amp;Timer, TIMER0);
-    if (status != XST_SUCCESS) return XST_FAILURE;
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 
     XTmrCtr_SetHandler(&amp;Timer, TimerCallback, &amp;Timer);
-    XTmrCtr_SetOptions(&amp;Timer, TIMER0,
-        XTC_DOWN_COUNT_OPTION | XTC_AUTO_RELOAD_OPTION | XTC_INT_MODE_OPTION);
+
+    XTmrCtr_SetOptions(
+        &amp;Timer,
+        TIMER0,
+        XTC_DOWN_COUNT_OPTION |
+        XTC_AUTO_RELOAD_OPTION |
+        XTC_INT_MODE_OPTION
+    );
+
     XTmrCtr_SetResetValue(&amp;Timer, TIMER0, TIMER_RESET_VALUE);
+
     return XST_SUCCESS;
 }
 
 static int SetupInterruptSystem(void)
 {
     int status;
+
 #ifndef SDT
     status = XIntc_Initialize(&amp;Intc, INTC_DEVICE_ID);
-    if (status != XST_SUCCESS) return XST_FAILURE;
-    status = XIntc_Connect(&amp;Intc, TIMER_INTR_ID,
-        (XInterruptHandler)XTmrCtr_InterruptHandler, &amp;Timer);
-    if (status != XST_SUCCESS) return XST_FAILURE;
-    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
-    if (status != XST_SUCCESS) return XST_FAILURE;
-    XIntc_Enable(&amp;Intc, TIMER_INTR_ID);
-    Xil_ExceptionInit();
-    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
-        (Xil_ExceptionHandler)XIntc_InterruptHandler, &amp;Intc);
-    Xil_ExceptionEnable();
-#else
-    status = XSetupInterruptSystem(&amp;Timer,
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Connect(
+        &amp;Intc,
+        TIMER_INTERRUPT_ID,
         (XInterruptHandler)XTmrCtr_InterruptHandler,
-        Timer.Config.IntrId, Timer.Config.IntrParent,
-        XINTERRUPT_DEFAULT_PRIORITY);
-    if (status != XST_SUCCESS) return XST_FAILURE;
+        (void *)&amp;Timer
+    );
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = XIntc_Start(&amp;Intc, XIN_REAL_MODE);
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XIntc_Enable(&amp;Intc, TIMER_INTERRUPT_ID);
+
+    Xil_ExceptionInit();
+
+    Xil_ExceptionRegisterHandler(
+        XIL_EXCEPTION_ID_INT,
+        (Xil_ExceptionHandler)XIntc_InterruptHandler,
+        &amp;Intc
+    );
+
+    Xil_ExceptionEnable();
+
+#else
+    status = XSetupInterruptSystem(
+        &amp;Timer,
+        (XInterruptHandler)XTmrCtr_InterruptHandler,
+        Timer.Config.IntrId,
+        Timer.Config.IntrParent,
+        XINTERRUPT_DEFAULT_PRIORITY
+    );
+
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 #endif
+
     return XST_SUCCESS;
 }
 
 int main(void)
 {
-    if (InitGpio() != XST_SUCCESS) return XST_FAILURE;
-    if (InitTimer() != XST_SUCCESS) return XST_FAILURE;
-    if (SetupInterruptSystem() != XST_SUCCESS) return XST_FAILURE;
+    int status;
+
+    status = InitGpio();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = InitTimer();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    status = SetupInterruptSystem();
+    if (status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
 
     XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
+
+    /*
+     * Interrupt path를 모두 준비한 뒤 Timer 시작
+     */
     XTmrCtr_Start(&amp;Timer, TIMER0);
 
     while (1) {
+        /*
+         * Callback은 event만 남긴다.
+         * 실제 AXI GPIO Write는 Main Context에서 수행한다.
+         */
         if (timer_event != 0U) {
             timer_event = 0U;
-            led_state ^= 1U;
+
+            led_state ^= LED0_MASK;
             XGpio_DiscreteWrite(&amp;Gpio, LED_CHANNEL, led_state);
         }
     }
-}
-</code></pre></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>08장 Polling 프로그램과 구분되는 09장 Interrupt 프로그램입니다. FPGA에서 인터럽트 횟수 증가와 LED0 점멸을 확인했습니다.</p></div></section><div class="chapter-nav"><a href="09_axi_interrupt_controller.html">← SoC 09 GUI 실습</a><a href="../../index.html">전체 목차</a><a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10 →</a></div></main></div><footer class="site-footer">Basys3 + MicroBlaze V SoC · Chapter 09.1 · C 코드 쉬운 풀이</footer></body></html>
+
+    return XST_SUCCESS;
+}</code></pre></div><div class="explain"><strong>CPU·하드웨어에서는?</strong><p>08장 Polling 프로그램과 구분되는 09장 Interrupt 프로그램입니다. FPGA에서 인터럽트 횟수 증가와 LED0 점멸을 확인했습니다.</p></div></section><div class="chapter-nav"><a href="09_axi_interrupt_controller.html">← SoC 09 GUI 실습</a><a href="../../index.html">전체 목차</a><a href="10_microblaze_gpio_uart_timer_integration.html">SoC 10 →</a></div></main></div><footer class="site-footer">Basys3 + MicroBlaze V SoC · Chapter 09.1 · C 코드 쉬운 풀이</footer></body></html>
