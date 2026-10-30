@@ -1,22 +1,14 @@
-SoC 02 · MicroBlaze V
+SoC 02 · Clock / Reset과 Bitstream
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 하드웨어 검증
+- Basys3 100 MHz 입력 Clock 핀 W5, Reset 입력 btnC(U18), Clocking Wizard와 Processor System Reset 연결 확인.
+- XDC create_clock 중복 추가 옵션인 -add를 제거하고 단일 Clock 제약 적용.
+- Validate Design, Synthesis, Implementation, Generate Bitstream 단계 수행 및 Bitstream 생성 성공.
+- 최종 실행에서 Critical Warning 0건, 일반 Warning 5건 기록.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- Clock/Reset과 Bitstream까지 검증. C 프로그램 실행과 BRAM 데이터 확인은 SoC 03/04의 검증 결과에 해당.
+- 01·02장은 기초 단계로 GUI 캡처 증설 없이 절차와 공식 설정값 중심으로 유지.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 0 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
