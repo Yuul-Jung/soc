@@ -30,3 +30,22 @@
 - **교재 절차 수정:** SECTION 11은 Validate Design과 BMG IP Summary까지만, SECTION 12는 Bitstream 이후 실제 Utilization과 Timing Summary, Output Products 수동 실행 단계는 생략
 
 PNG 원본은 수집된 대화 첨부에 보존되어 있으며, 이 Markdown 파일은 증빙 파일 목록과 판독 결과만 기록한다. 해당 PNG가 GitHub에 업로드됐다는 의미가 아니다.
+
+## GitHub Pages 교재에 포함한 실제 캡처 이미지 (원본 PNG에서 변환한 WebP)
+
+정상 실습 과정을 나타내는 아래 10장의 WebP를 `images/soc10/gui_20261030/`에 게시하고 10장 HTML의 SECTION 07~11에 실제 시간순으로 배치했습니다.
+
+| 교재 이미지 | 원본 캡처 | 본문 SECTION |
+|---|---|---|
+| `01_project_xpr.webp` | 024921 | 07 |
+| `02_save_bd_as.webp` | 030049 | 07 |
+| `03_bd_connections.webp` | 030103 | 07 |
+| `04_address_before.webp` | 033745 | 08 |
+| `05_address_64k.webp` | 034100 | 09 |
+| `06_local_bram_connections.webp` | 034339 | 10 |
+| `07_bram_basic.webp` | 034517 | 10 |
+| `08_validate_success.webp` | 034711 | 11 |
+| `09_bram_summary.webp` | 034948 | 11 |
+| `10_soc10_connections.webp` | 035256 | 11 |
+
+기존의 09장 Vitis Platform 화면, 중간 16K/64K 혼합 화면, Vivado 경고가 나타난 화면은 교재 본문에서 제외했습니다. 10장 Implementation/Timing/Bitstream/보드 검증 성공 화면은 아직 게시되지 않았습니다.
