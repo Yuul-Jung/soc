@@ -49,3 +49,15 @@ PNG 원본은 수집된 대화 첨부에 보존되어 있으며, 이 Markdown �
 | `10_soc10_connections.webp` | 035256 | 11 |
 
 기존의 09장 Vitis Platform 화면, 중간 16K/64K 혼합 화면, Vivado 경고가 나타난 화면은 교재 본문에서 제외했습니다. 10장 Implementation/Timing/Bitstream/보드 검증 성공 화면은 아직 게시되지 않았습니다.
+
+## 후속 Vivado 구현·XSA 캡처 — 2026-10-30 05시대
+
+| 원본 PNG | SECTION | 판정 | 실제 관측 결과 |
+|---|---|---|---|
+| `image(20261030-050440).png` | 12 | 중간 절차 | Launch Runs, local host, 24 jobs. 최종 Build 성공 화면 아님 |
+| `image(20261030-050906).png` | 12 | 구현 타이밍 결과 정상 | WNS +1.347 ns, TNS 0, WHS +0.016 ns, THS 0, WPWS +3.000 ns, TPWS 0. 실패 Endpoint 0. 사용자 지정 제약 충족 |
+| `image(20261030-050928).png` | 12 | 분석 추정치 | On-Chip Power 0.205 W, Dynamic 0.132 W, Static 0.073 W, Tj 26.0°C, Confidence Low |
+| `image(20261030-051116).png` | 12 | 실제 구현 자원 보고서 | LUT 2762, FF 2653, Slice 991, Block RAM Tile 16/50, IOB 36/106 |
+| `image(20261030-051245).png` | 13 | XSA 내보내기 설정 중 | 이름 soc10_integration, export directory /home/jung/soc/hw/soc10_integration, 예상 파일 soc10_integration.xsa. Finish 미확인 |
+
+이번 5장의 판독 결과는 10장 HTML SECTION 12~13의 수치·절차에 반영했다. 캡처 원본 이미지 자체는 현재 GitHub 폴더에 포함하지 않았으며, 후속 GUI 자료와 함께 배치할 예정이다. 아직 `Check Timing`의 제약 미지정 경로 검증, `Finish`를 통한 XSA 생성, Vitis 10장 Platform/Application 및 실기 동작은 증빙이 제출되지 않았다.
