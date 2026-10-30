@@ -1,63 +1,14 @@
-SoC 07 · MicroBlaze V
+SoC 07 · AXI UART Lite
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 실제 확인
+- AXI UART Lite Base Address 0x40600000, RX(B18) / TX(A18) 외부 연결.
+- 115200 bps / 8N1 / Polling 설정의 UART Echo Application과 10장 이전 16 KiB BRAM 구성.
+- Vivado Bitstream/XSA, Vitis Platform 및 soc07_axi_uartlite ELF Build 성공.
+- Basys3와 Ubuntu moserial을 연결해 송신 문자 abc가 동일하게 수신되는 Echo 동작 확인.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- 실제 보드 UART Echo 성공. AMD IP 내부 구현 XSim 기능 시뮬레이션까지 완료한 것으로 기재하지 않음.
+- 벤치의 stub 인터페이스 컴파일 결과는 실제 AXI UART Lite 동작 시뮬레이션과 구별.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
-
-2026-10-27 documentation update:
-Official PG142 figure references added: Figure 1-1, 2-1, 2-2, 2-3, 2-4, 4-1, 5-1, 6-1.
-Digilent Basys 3 Reference Manual Figure 6 linked to publisher-hosted PDF.
-Sections 26-27 added for PG142 official example design and VHDL test bench (descriptive material only).
-Publisher-hosted PDF iframe rendering on GitHub Pages / mobile: NOT INDEPENDENTLY VERIFIED. Direct-PDF fallback links provided.
-Vivado 2024.2 official example test bench simulation: NOT RUN.
-MicroBlaze V target build / Basys3 Echo verification: NOT RUN.
-
-2026-10-27 adversarial correction / static-browser-verilog QA:
-Original official-figure render failure fixed: removed embedded cross-origin PDF iframe/object. All 10 original figure crops now reside under images/soc07/vendor/ with source PDF SHA256 and per-PNG SHA256 manifest. Original figures inspected individually against PG142/Digilent visual layouts. Digilent raster source is an archival mirror of its original publisher manual; PDF source link points to Digilent.
-SoC07 sections 03,04,07,12-16,26,27 display local original figure PNGs, not custom-redrawn illustrations.
-Browser QA GitHub Actions workflow: .github/workflows/soc07-adversarial-check.yml.
-Baseline run 40452860970: PASS, 10/10 loaded images, navigation 27/27, no broken images, no horizontal overflow at 1440/1024/390/320 px, original image SHA256 matched manifest.
-Verilog-2005 bench committed at code/soc07/tb_soc07_axi_uartlite.v. Icarus Verilog -g2005 compile with interface-only stub: PASS (syntax and declared-port compatibility ONLY; stub is not a functional model or Vivado IP implementation). Bench recreates official TX 'A' validation purpose and adds RX 'B'/AXI RX read/Echo 'B' coverage. It does not reproduce official vendor VHDL source line by line.
-PG142 legacy GUI Figure 4-1 shows baud 9600. SoC07 Vivado configuration is 115200 8N1; old figure is illustration, not a tested SoC07 GUI screenshot.
-Vivado 2024.2 generated UART Lite IP simulation: NOT RUN.
-MicroBlaze V target Build/ELF/debug and Basys3 07 Echo: NOT RUN.
-Actual Vivado GUI screenshots and on-board UART verification: NOT RUN.
-
-2026-10-27 final figure-crop and browser QA verification:
-Original Digilent Figure 6, PG142 Figures 1-1, 2-1, 2-2, 2-3, 2-4, 4-1, 5-1, 6-1 and Table 2-4 visually inspected individually from stored PNGs, including source captions, important control/status labels, and edges. Revised crops exclude adjacent PDF paragraph fragments while retaining complete labels.
-QA rerun GitHub Actions 40453311442: SUCCESS after latest image asset regeneration and document commits. 10/10 original figure PNG images displayed by Chromium at 1440/1024/390/320 px; no page horizontal overflow, 27/27 anchors and relative paths; image integrity hashes match manifest; Icarus Verilog-2005 compilation against interface-only IP stub PASS.
-GitHub Pages direct visual confirmation in this environment: NOT AVAILABLE (headless browser against built local HTML passed; Pages deploy tracked separately).
-Generated Xilinx IP execution in Vivado/XSim and Basys3 board: NOT RUN.
-
-2026-10-27 moserial-only serial procedure update:
-SoC07 HTML and Markdown replaced minicom with moserial GUI; /dev/serial/by-id/ identification, moserial Port Setup 115200 8N1, Handshake None, Echo received data Off, Connect, Outgoing ASCII + No end + Send, Sent/Received ASCII comparison, expected startup message order FPGA Program -> moserial Connect -> ELF Run.
-Ubuntu moserial GUI behavior cross-checked against GNOME moserial documentation; actual application and Basys3 hardware screen: NOT VERIFIED.
-Documentation/browser QA after HTML commit 9e0f32dde: SUCCESS, GitHub Actions run 40456152097 (source images/links/27 navigation, 4 viewport image rendering, Verilog syntax stub).
-
-
-2026-10-27 procedure-first editorial revision:
-The SoC07 HTML has been reorganized while retaining 27 navigable instructional sections, 10 official source figures, the complete C Echo program, and the Verilog optional testbench.
-Sections 01-17 now follow the actual hands-on path: 06 project cloning and isolated BD -> IP add and configure -> AXI/clock/reset -> external UART ports -> HDL wrapper / Set as Top -> XDC -> Address Editor -> Validate / Bitstream / XSA -> new Vitis Platform -> new Application -> main.c -> Build / FPGA program -> moserial -> practical Echo comparison -> Watch -> troubleshooting.
-Sections 18-27 place architecture and register explanations, vendor example design, and optional RTL simulation after the primary lab path.
-Vivado wrapper creation has been moved to after the UART external ports. Earlier web editor edits accidentally repeated Add IP in the "source path review" item and placed a nested heading around Wrapper/XDC; rewritten into separate valid chronological steps.
-Mirror Markdown docs/soc07.md now follows the same procedural sequence and explicitly preserves SoC06 hardware/software artifacts.
-GitHub Actions SoC07 adversarial QA run 40468753620: SUCCESS (27/27 section navigation, 10/10 PNG images and checksums, 1440/1024/390/320 viewport no horizontal overflow, Verilog port/syntax-only checks).
-GitHub Pages deployment of HTML edit commit e519a9eac0aa: SUCCESS (run 40468753079).
-No new actual Vivado 2024.2 XSim simulation, Basys3 implementation, Vitis target build, moserial Echo verification, or real GUI screenshots were performed in this documentation revision. These remain UNVERIFIED.
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
