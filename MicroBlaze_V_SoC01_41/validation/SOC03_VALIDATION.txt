@@ -1,22 +1,14 @@
-SoC 03 · MicroBlaze V
+SoC 03 · Vitis BRAM 프로그램 실행
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 실제 확인
+- Hardware XSA 기반 Vitis Platform soc_01_platform과 standalone_microblaze_riscv_0 Domain 사용.
+- soc03_bram_run Application Build / ELF 생성 성공.
+- Basys3 FPGA 프로그램 다운로드, Vitis Debug 진입 및 BRAM 프로그램 실행 확인.
+- 16 KiB Local BRAM의 CPU Instruction/Data 경로 사용.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- BRAM 프로그램 실행과 Debug 단계 검증. 주소·값 재기록의 최종 WATCH 세부값은 SoC 04에서 확인.
+- AXI GPIO·UART·Timer의 MMIO 접근 성공으로 해석하지 않음.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
