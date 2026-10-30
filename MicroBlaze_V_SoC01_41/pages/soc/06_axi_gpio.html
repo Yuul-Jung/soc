@@ -427,7 +427,7 @@ set_property -dict { PACKAGE_PIN L1  IOSTANDARD LVCMOS33 } [get_ports {led_tri_o
 </section>
 
 <section class="step-card" id="s13"><span class="step">SECTION 13</span><h2>main.c 작성 — 자동 제공 파일과 직접 작성 코드</h2>
-<p>Vitis의 <strong>Sources → src → main.c</strong>에 아래 코드를 입력합니다. <strong>이번 장에서는 짧고 쉽게 작성한 코드 하나만 사용합니다.</strong></p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="soc06_axi_gpio/src/main.c 전체 코드"><code>#include "xparameters.h"  // Vitis 자동 생성: GPIO 주소 정보
+<p>Vitis의 <strong>Sources → src → main.c</strong>에 아래 코드를 입력합니다. <strong>아래는 <strong>동작을 이해하기 위한 간결 코드</strong>입니다. 저장소의 <a href="../../code/soc06/main.c">실습 소스 main.c</a>는 Classic/SDT 초기화 분기와 Watch용 상태 변수를 포함한 별도 구현입니다. <strong>두 소스를 섞어 붙여넣지 않고 하나를 선택하여 사용합니다.</strong></strong></p><pre class="codeblock-pre" tabindex="0" role="region" aria-label="soc06_axi_gpio/src/main.c 전체 코드"><code>#include "xparameters.h"  // Vitis 자동 생성: GPIO 주소 정보
 #include "xgpio.h"        // Vitis 자동 제공: AXI GPIO 제어 함수
 #include "xstatus.h"      // Vitis 자동 제공: 성공·실패 값
 
