@@ -1,33 +1,15 @@
-SoC 08 · Basys3 MicroBlaze V AXI Timer
-Verified hardware lab on 2026-10-28 (user-supplied Vivado/Vitis screenshots and physical LED observation)
+SoC 08 · AXI Timer Polling
 
-Vivado project: /home/jung/soc/hw/soc08_axi_timer/soc08_axi_timer.xpr
-Block Design: soc08_axi_timer.bd
-AXI GPIO BASEADDR: 0x40000000
-AXI UART Lite BASEADDR: 0x40600000
-AXI Timer BASEADDR: 0x41C00000
-Local BRAM: 0x00000000 - 0x00003FFF (16 KiB)
-AXI Timer clock: 100 MHz, 32-bit, Down Count, Auto Reload, Timer0
-TLR0 0.5-second target: 49,999,998 = 0x02FAF07E (PG079 Generate Mode)
+## 실제 확인
+- 기존 GPIO·UART Lite 유지, AXI Timer Base Address 0x41C00000 추가.
+- 100 MHz Clock, TLR0=49,999,998 (0x02FAF07E), Down Count/Auto Reload; PG079 공식식 (TLRx+2)×Clock Period에 따른 목표 주기 약 0.5초.
+- Vivado Validate Design 정상, Bitstream/XSA 및 Vitis Application ELF Build 성공.
+- 구현 Timing: WNS +0.675 ns / WHS +0.035 ns / TNS 0 / THS 0.
+- Basys3 LED0 반복 점멸과 Debug WATCH의 Timer 계수 변화 확인.
 
-Validate Design: PASS (0 errors / 0 critical warnings)
-Implementation: PASS, WNS +0.675 ns, WHS +0.035 ns, TNS 0.000 ns, THS 0.000 ns
-DRC: 8 warnings observed (PDRC family) — requires separate investigation; not marked clean
-Estimated on-chip power: 0.200 W (LOW confidence; not measured)
-Bitstream: generated; hardware export include bitstream
-XSA: soc08_axi_timer_wrapper.xsa
-Platform: soc08_axi_timer_platform, Build PASS
-Application: soc08_axi_timer, ELF build PASS
-Debug: successful; CPU microblaze_riscv_0; Run/Continue successful
-Basys3 board: LED0 repeat blinking observed (functional PASS)
-Timing measurement of exact 0.5 s period: NOT PERFORMED
-Watch after Resume/Pause:
-  timer_value  = 0x028816E6
-  expire_count = 0x00000025 (37 timer expirations)
-  led_state    = 0x00000001 (LED0 ON)
+## 판정 경계
+- Polling 방식. Interrupt Controller는 SoC 09에서 연결.
+- 약 0.5초 간격은 카운터 설정에 근거하며 별도 정밀 시간계측 결과는 아님.
 
-Source of evidence: user-provided sequential GUI screenshots and user report of physical board operation. Verified conceptual/register details against AMD PG079. FPGA hardware was run by user, not assistant.
-Official sources:
-https://docs.amd.com/r/en-US/pg079-axi-timer/Functional-Description
-https://docs.amd.com/r/en-US/pg079-axi-timer/Register-Space
-https://docs.amd.com/r/en-US/pg079-axi-timer/Generate-Mode
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
