@@ -1,47 +1,15 @@
-SoC 06 · MicroBlaze V
+SoC 06 · AXI GPIO
 
-Document conversion: DONE
-Static links / chapter identifiers: checked in batch audit
-Browser 1440 / 1024 / 390 / 320 px: PASS
-RTL logic preservation: unchanged
-Host reference / mock tests: not applicable / not run
-MicroBlaze V target build: NOT RUN
-RTL simulation: NOT_APPLICABLE_OR_NOT_RUN
-Vivado synthesis / implementation: NOT RUN
-Basys3 board: NOT RUN
+## 실제 확인
+- MicroBlaze V → AXI SmartConnect → AXI GPIO 연결, Dual Channel 사용.
+- GPIO Channel 1: LED[15:0] 출력 / Channel 2: SW[15:0] 입력.
+- GPIO Base Address 0x40000000, XDC 및 Clock/Reset 연결 유지.
+- Vivado Validate/Bitstream/XSA, Vitis Platform 및 Application ELF Build 성공.
+- FPGA 보드에서 스위치 입력을 대응 LED에 표시하는 기능 확인.
 
-Readability: signal whitespace / table labels / figure original links: PASS
-200% text zoom without document horizontal overflow: PASS
-Source bytes unchanged in readability edit: PASS
+## 판정 경계
+- AXI GPIO Memory-Mapped I/O 동작 확인. UART·Timer·Interrupt는 후속 장의 검증 대상.
+- 스크린샷은 정상 설정과 성공 동작 화면을 기준으로 사용. 중간·오류 화면을 성공 사례로 사용하지 않음.
 
-Adversarial manual / source-link review: DONE
-Self-checking RTL PASS: 0; waveform-only: 0; tool-limited: 0
-Official-header syntax checks PASS: 2 (host compiler / synthetic parameter fixture; not target build)
-
-2026-10-19 finishing review: navigation / layout / source identity PASS.
-Hardware execution results unchanged; no new target or board run.
-
-2026-10-26 user-operated Vivado/Vitis 2024.2 practical session:
-- Original project actually opened: /home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr.
-- File -> Project -> Save As to 06: /home/jung/soc/hw/soc06_axi_gpio/soc06_axi_gpio.xpr.
-- Old Block Design soc01_mb_bram -> Save Block Design As -> soc06_axi_gpio (Local to Project, Add to Design Sources, Include Comments, Freeze boundary disabled).
-- Create HDL Wrapper via 'Let Vivado manage wrapper and auto-update'; soc06_axi_gpio_wrapper Set as Top.
-- Old soc01_mb_bram_wrapper removed FROM PROJECT ONLY; source files on disk preserved.
-- Report IP Status: existing 9 IPs Up-to-date / No changes required before adding AXI GPIO.
-- AXI GPIO added, connected to M_AXI_DP via SmartConnect, 16-bit LED output and 16-bit SW input, Interrupt disabled.
-- Vivado Bitstream generation: user GUI verified SUCCESS.
-- Export XSA: soc06_axi_gpio.xsa file reviewed and export verified.
-- Vitis Platform Build: soc06_axi_gpio_platform user GUI verified SUCCESS.
-- Vitis Application/ELF Build: soc06_axi_gpio user GUI verified SUCCESS.
-- Vitis launch.json Debug: user GUI verified successful entry.
-- Physical switch-to-LED 1:1 response on Basys3: NOT VERIFIED by accessible board-operation evidence.
-- 2026-10-27 33 chronological accepted screenshots from 74 review candidates were previously archived as soc06_axi_gpio_검증스크린샷_시간순.zip (18 Vivado, 5 Vitis Platform/Build, 6 Application, 4 Build/Debug; error/intermediate screenshots excluded). The original archive exists in the Project's personal Library; its ZIP bytes were not materializable for direct incorporation into this GitHub revision. Do NOT claim the photos were newly embedded in the HTML.
-- The 2026-10-19 NOT RUN rows above are historical report status from the pre-lab publication, not a claim that the later user-run Vivado/Vitis GUI session did not occur.
-
-2026-10-27 restoration of chronological textbook steps:
-- SoC06 HTML SECTION 02 restored project lineage, Save As, Save Block Design As, Design Sources, new HDL Wrapper / Set Top, safe old wrapper removal, 9-IP healthy status, independent XDC.
-- SECTION 06 wrapper re-generation explanation updated, with correct 3-line Tcl Console code.
-- Markdown soc06.md now follows the actual course sequence and matches HDL wrapper's sw_tri_i[15:0], led_tri_o[15:0] port names.
-- Both shipped copies of code/soc06/basys3_axi_gpio.xdc corrected (16 switches + 16 LEDs). The original successfully used user-side Vivado XDC was not modified.
-- Source/static/browser regression: GitHub Actions 40461135917 SUCCESS. Passed 01->06 lineage, BD/wrapper/Top references, 16/16 XDC port mappings, 16/16 section anchors, picture links, and no horizontal page overflow at 1440 / 1024 / 390 / 320px.
-- This QA verifies published source/static/browser integrity, not physical Basys3 LED response or a rerun of Vivado on the assistant environment.
+## 판정
+해당 장의 실습 검증 완료. 확인하지 않은 별도 검사는 판정 경계에 표시.
