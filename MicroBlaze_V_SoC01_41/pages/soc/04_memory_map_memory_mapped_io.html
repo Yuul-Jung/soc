@@ -142,6 +142,16 @@ main,.step-card,.overview-card{max-width:100%;min-width:0}
 @media(max-width:900px){.lesson-goal{grid-template-columns:repeat(2,minmax(0,1fr))}.acceptance{grid-template-columns:1fr}}
 @media(max-width:560px){.lesson-goal{grid-template-columns:1fr}}
 
+
+/* Chapters 01-10: shared top navigation */
+.topbar{background:#fff;border-bottom:1px solid #DDDFD8}
+.topbar .topbar-inner,.topbar .top-inner{max-width:1560px;margin:0 auto;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px}
+.topbar .breadcrumb,.topbar .top-inner>span:first-child{font-size:.86rem;line-height:1.6;color:#4A4F5A}
+.topbar a,.topbar .breadcrumb a{color:#333743;text-decoration:none}
+.topbar a:hover,.topbar .breadcrumb a:hover{text-decoration:underline;color:#4635B1}
+.topbar .breadcrumb strong,.topbar .top-inner b{color:#15171C;font-weight:800}
+.topbar .brand,.topbar .meta{font-size:.76rem;color:#747B86;letter-spacing:0}
+@media(max-width:600px){.topbar .topbar-inner,.topbar .top-inner{padding:10px 14px}}
 </style><style>
 /* MicroBlaze V 배포: 기존 스타일 유지, 좌측 세부 목차와 폭 제한 */
 :root{--sidebar:260px;--maxw:1520px}body{overflow-wrap:anywhere}.wrap{grid-template-columns:260px minmax(0,1fr)}.wrap>main{min-width:0}.flow-nav{position:sticky;top:0;max-height:100vh;overflow-y:auto}.step-card,.card,.section-card{min-width:0}figure{max-width:100%;margin-left:0;margin-right:0}figure img,img{display:block;max-width:100%;height:auto;object-fit:contain;margin-left:auto;margin-right:auto}figure img{max-height:760px}table{min-width:0!important;width:100%;table-layout:fixed}td,th{overflow-wrap:anywhere;white-space:normal!important}pre{max-width:100%;overflow-x:auto;white-space:pre;tab-size:4}.table-wrap{max-width:100%;overflow-x:auto}.resource-table td,.resource-table a{overflow-wrap:anywhere}.runtime-scope{display:none}@media(max-width:1050px){.wrap{grid-template-columns:225px minmax(0,1fr);gap:22px;padding-left:20px;padding-right:20px}.flow-nav{width:auto}td,th{padding:10px!important}}@media(max-width:760px){.wrap{display:block;padding-left:14px;padding-right:14px}.flow-nav{position:relative;max-height:340px;margin-bottom:22px}.hero-inner{padding:34px 20px}.hero-brief{grid-template-columns:1fr}table,thead,tbody,tr,td,th{display:block}thead{display:none}tr{border:1px solid #d9dce2;margin:12px 0}td{border:0;border-bottom:1px solid #e5e7eb}td:before{content:attr(data-label);display:block;font-size:11px;color:#6b7280;font-weight:650}td:first-child{background:#f3f1fa}.step-card{padding:22px 17px}pre{font-size:12px}}
@@ -194,7 +204,7 @@ main[tabindex="-1"]:focus{outline:none}
 }
 </style><link rel="stylesheet" href="../../assets/reader.css"><script defer src="../../assets/reader.js"></script></head>
 <body>
-<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">홈</a><span class="sep">/</span><a href="03_microblaze_bram_program_execution.html">SoC 03</a><span class="sep">/</span><strong>SoC 04</strong><span class="sep">/</span><a href="05_axi4_axi4lite_axi4stream.html">SoC 05</a></div><div class="brand">BASYS3 · MICROBLAZE V SOC</div></div></div>
+<a class="skip-link" href="#main-content">본문으로 바로가기</a><div class="topbar"><div class="topbar-inner"><div class="breadcrumb"><a href="../../index.html">Basys3 SoC + NPU</a><span class="sep">/</span><a href="03_microblaze_bram_program_execution.html">SoC 03</a><span class="sep">/</span><strong>SoC 04</strong><span class="sep">/</span><a href="05_axi4_axi4lite_axi4stream.html">SoC 05</a></div><div class="brand">BASYS3 · MICROBLAZE V SOC</div></div></div>
 <header class="hero"><div class="hero-grid"></div><div class="hero-inner">
 <p class="hero-kicker">Basys3 SoC + NPU · SoC 04</p><h1>Local BRAM Memory Map과 주소 기반 읽기·쓰기</h1>
 <p class="hero-desc">Vivado에서 16 KiB Local BRAM 주소를 확인하고, Vitis에서 C 프로그램을 빌드·실행한 뒤 WATCH로 실제 주소와 읽기·쓰기 결과를 검증한다.</p>
@@ -244,7 +254,7 @@ main[tabindex="-1"]:focus{outline:none}
 </section>
 
 <section class="step-card" id="s02"><span class="step">SECTION 02</span><h2>Vivado에서 BRAM 주소 확인</h2>
-<ol class="step-seq"><li><h3>기존 Vivado 프로젝트 열기</h3><p><code>/home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code>을 연다.</p></li><li><h3>Block Design 열기</h3><p><code>soc01_mb_bram</code>을 열고 상단 <strong>Address Editor</strong> 탭을 선택한다.</p></li><li><h3>ILMB와 DLMB 주소 확인</h3><p>두 SLMB 경로의 Base가 <code>0x00000000</code>, Range가 <code>16K</code>, High가 <code>0x00003FFF</code>인지 확인한다.</p></li><li><h3>미연결 경로 구분</h3><p><code>Incomplete Paths (1)</code>의 <code>/microblaze_riscv_0/M_AXI_DP</code>는 이번 장에서 미사용하는 경로이므로 별도로 주소를 할당하지 않는다.</p></li></ol>
+<ol class="step-seq"><li><h3>기존 Vivado 프로젝트 열기</h3><p><code>~/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code>을 연다.</p></li><li><h3>Block Design 열기</h3><p><code>soc01_mb_bram</code>을 열고 상단 <strong>Address Editor</strong> 탭을 선택한다.</p></li><li><h3>ILMB와 DLMB 주소 확인</h3><p>두 SLMB 경로의 Base가 <code>0x00000000</code>, Range가 <code>16K</code>, High가 <code>0x00003FFF</code>인지 확인한다.</p></li><li><h3>미연결 경로 구분</h3><p><code>Incomplete Paths (1)</code>의 <code>/microblaze_riscv_0/M_AXI_DP</code>는 이번 장에서 미사용하는 경로이므로 별도로 주소를 할당하지 않는다.</p></li></ol>
 <div class="table-wrap" tabindex="0" role="region" aria-label="실제 Address Editor 항목 / 확인값 확인 표"><table><thead><tr><th scope="col">실제 Address Editor 항목</th><th scope="col">확인값</th></tr></thead><tbody><tr><td data-label="실제 Address Editor 항목"><code>/microblaze_riscv_0_local_memory/ilmb_bram_if_cntlr/SLMB</code></td><td data-label="확인값">Base <code>0x00000000</code> · Range <code>16K</code> · High <code>0x00003FFF</code></td></tr>
 <tr><td data-label="실제 Address Editor 항목"><code>/microblaze_riscv_0_local_memory/dlmb_bram_if_cntlr/SLMB</code></td><td data-label="확인값">Base <code>0x00000000</code> · Range <code>16K</code> · High <code>0x00003FFF</code></td></tr>
 <tr><td data-label="실제 Address Editor 항목">Assigned / Unassigned</td><td data-label="확인값"><code>2 / 0</code></td></tr>
@@ -263,8 +273,8 @@ High   : Base + Range - 1 → 0x00003FFF</div>
 
 <section class="step-card" id="s04"><span class="step">SECTION 04</span><h2>기존 프로젝트와 새 Application</h2>
 <p>하드웨어 프로젝트와 기존 Vitis Application은 그대로 유지한다. 04장 C 프로그램만 새 Application으로 분리한다.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="구분 / 실습 경로 / 이름 확인 표"><table><thead><tr><th scope="col">구분</th><th scope="col">실습 경로 / 이름</th></tr></thead><tbody><tr><td data-label="구분">Vivado Project</td><td data-label="실습 경로 / 이름"><code>/home/jung/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code></td></tr>
-<tr><td data-label="구분">Vitis Workspace</td><td data-label="실습 경로 / 이름"><code>/home/jung/soc/sw</code></td></tr>
+<div class="table-wrap" tabindex="0" role="region" aria-label="구분 / 실습 경로 / 이름 확인 표"><table><thead><tr><th scope="col">구분</th><th scope="col">실습 경로 / 이름</th></tr></thead><tbody><tr><td data-label="구분">Vivado Project</td><td data-label="실습 경로 / 이름"><code>~/soc/hw/soc01_microblaze_bram/soc01_microblaze_bram.xpr</code></td></tr>
+<tr><td data-label="구분">Vitis Workspace</td><td data-label="실습 경로 / 이름"><code>~/soc/sw</code></td></tr>
 <tr><td data-label="구분">기존 Platform</td><td data-label="실습 경로 / 이름"><code>soc_01_platform</code></td></tr>
 <tr><td data-label="구분">기존 03장 Application</td><td data-label="실습 경로 / 이름"><code>soc03_bram_run</code> — 변경하지 않음</td></tr>
 <tr><td data-label="구분">신규 04장 Application</td><td data-label="실습 경로 / 이름"><code>soc04_memory_map</code></td></tr></tbody></table></div>
@@ -272,7 +282,7 @@ High   : Base + Range - 1 → 0x00003FFF</div>
 </section>
 
 <section class="step-card" id="s05"><span class="step">SECTION 05</span><h2>Vitis Application 생성</h2>
-<ol class="step-seq"><li><h3>Vitis 2024.2 실행</h3><p>Workspace <code>/home/jung/soc/sw</code>를 열고 <strong>New Application</strong> 생성 화면으로 이동한다.</p></li><li><h3>Application Name 입력</h3><p><code>soc04_memory_map</code>을 입력한다.</p></li><li><h3>Platform 선택</h3><p>기존 <code>soc_01_platform</code>을 선택한다. Board는 <code>basys3</code>, Processor는 <code>microblaze_riscv_0</code>이다.</p></li><li><h3>Domain 확인</h3><p><code>standalone_microblaze_riscv_0</code>을 선택한다.</p></li><li><h3>Template 및 Finish</h3><p><strong>Empty Application</strong>을 선택하고 Finish로 생성한다. 기존 <code>soc03_bram_run</code>은 유지한다.</p></li><li><h3>main.c 생성</h3><p><code>/home/jung/soc/sw/soc04_memory_map/src/main.c</code>를 생성하고 다음 절의 코드를 입력한다.</p></li></ol>
+<ol class="step-seq"><li><h3>Vitis 2024.2 실행</h3><p>Workspace <code>~/soc/sw</code>를 열고 <strong>New Application</strong> 생성 화면으로 이동한다.</p></li><li><h3>Application Name 입력</h3><p><code>soc04_memory_map</code>을 입력한다.</p></li><li><h3>Platform 선택</h3><p>기존 <code>soc_01_platform</code>을 선택한다. Board는 <code>basys3</code>, Processor는 <code>microblaze_riscv_0</code>이다.</p></li><li><h3>Domain 확인</h3><p><code>standalone_microblaze_riscv_0</code>을 선택한다.</p></li><li><h3>Template 및 Finish</h3><p><strong>Empty Application</strong>을 선택하고 Finish로 생성한다. 기존 <code>soc03_bram_run</code>은 유지한다.</p></li><li><h3>main.c 생성</h3><p><code>~/soc/sw/soc04_memory_map/src/main.c</code>를 생성하고 다음 절의 코드를 입력한다.</p></li></ol>
 </section>
 
 <section class="step-card" id="s06"><span class="step">SECTION 06</span><h2>main.c 원본 코드 입력</h2>
@@ -344,7 +354,7 @@ int main(void)
 </section>
 
 <section class="step-card" id="s08"><span class="step">SECTION 08</span><h2>Build와 ELF 생성 결과</h2>
-<ol class="step-seq"><li><h3>Application Build</h3><p>Vitis에서 <code>soc04_memory_map</code> Application을 Build한다.</p></li><li><h3>성공 메시지 확인</h3><p>Console에 <strong>Build Finished successfully</strong>가 나타나는지 확인한다.</p></li><li><h3>ELF 생성 확인</h3><p><code>/home/jung/soc/sw/soc04_memory_map/build/soc04_memory_map.elf</code>가 생성되었는지 확인한다.</p></li></ol>
+<ol class="step-seq"><li><h3>Application Build</h3><p>Vitis에서 <code>soc04_memory_map</code> Application을 Build한다.</p></li><li><h3>성공 메시지 확인</h3><p>Console에 <strong>Build Finished successfully</strong>가 나타나는지 확인한다.</p></li><li><h3>ELF 생성 확인</h3><p><code>~/soc/sw/soc04_memory_map/build/soc04_memory_map.elf</code>가 생성되었는지 확인한다.</p></li></ol>
 <div class="table-wrap" tabindex="0" role="region" aria-label="실제 Build 결과 / 값 확인 표"><table><thead><tr><th scope="col">실제 Build 결과</th><th scope="col">값</th></tr></thead><tbody><tr><td data-label="실제 Build 결과">Compiler</td><td data-label="값">GNU 13.3.0</td></tr>
 <tr><td data-label="실제 Build 결과">주요 옵션</td><td data-label="값"><code>-O2 -march=rv32i_zicsr_zifencei -mabi=ilp32</code></td></tr>
 <tr><td data-label="실제 Build 결과">text</td><td data-label="값">4,984 B</td></tr>
@@ -374,7 +384,7 @@ int main(void)
 
 <section class="step-card" id="s11"><span class="step">SECTION 11</span><h2>WATCH 최종 검증 — stage 5</h2>
 <p><code>bram_word[1]</code>에 <code>0xA5A5A5A5</code>를 다시 기록한 뒤 같은 위치에서 재읽기하여 값이 바뀌었는지 확인한다. 실행을 <code>while (1) {}</code> 위치까지 진행하면 <code>stage</code>가 5가 된다.</p>
-<div class="note"><strong>실기 검증 기록:</strong> 2026-10-26 Vitis Debug 원본 <code>image(20261026-085917).png</code>에서 <code>stage=5</code>, <code>read_1=0xA5A5A5A5</code>, <code>bram_word[1]=0xA5A5A5A5</code>를 확인했다. 현재 GitHub 교재에는 해당 원본 PNG가 포함되어 있지 않으므로 아래 표는 <strong>원본 스크린샷이 아닌 실제 관측값의 텍스트 기록</strong>으로 표시한다.</div>
+<div class="note"><strong>WATCH 최종 결과:</strong> <code>stage=5</code>, <code>read_1=0xA5A5A5A5</code>, <code>bram_word[1]=0xA5A5A5A5</code>를 확인했습니다. 아래 값은 실제 BRAM 데이터 접근의 Debug 결과이며 AXI 주변장치 MMIO 접근 검증과는 구분합니다.</div>
 <div class="table-wrap" tabindex="0" role="region" aria-label="WATCH 변수 / 최종 검증값 / 판정 확인 표"><table><thead><tr><th scope="col">WATCH 변수</th><th scope="col">최종 검증값</th><th scope="col">판정</th></tr></thead><tbody><tr><td data-label="WATCH 변수"><code>stage</code></td><td data-label="최종 검증값"><code>0x00000005</code></td><td data-label="판정">정상</td></tr>
 <tr><td data-label="WATCH 변수"><code>addr_0</code></td><td data-label="최종 검증값"><code>0x00001460</code></td><td data-label="판정">BRAM 내부 주소</td></tr>
 <tr><td data-label="WATCH 변수"><code>bram_word[0]</code></td><td data-label="최종 검증값"><code>0x11111111</code></td><td data-label="판정">유지</td></tr>
