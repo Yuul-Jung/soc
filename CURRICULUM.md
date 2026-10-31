@@ -46,7 +46,7 @@
 |---|---|---|
 | 4자리 7-Segment FND | **사용자 IP**: `fnd_scan_controller` + AXI4-Lite 레지스터 | AN/Segment Active-Low, 자리 스캔·표시 데이터 반영 타이밍 |
 | 16 Switch / 16 LED | **기존 AXI GPIO 재사용**; 필요 시 LED 패턴/상태 Controller만 추가 | 기존 제1부 GPIO를 중복 재제작하지 않음 |
-| 5 Pushbutton | **사용자 IP**: 2FF 동기화·디바운스·이벤트·IRQ + AXI 레지스터 | 비동기 입력, 짧은 펄스·동시 입력·Reset |
+| 5 Pushbutton (BTNC는 기존 Reset) | **신규 사용자 IP는 BTNU/BTND/BTNL/BTNR 4개만** 2FF 동기화·디바운스·이벤트·IRQ + AXI 레지스터에 연결 | **BTNC(U18)는 제1부 01·02·10장 SoC Reset 용도로 유지**; 비동기 입력·동시 입력·리셋·이벤트 유실 확인 |
 | LED 밝기·패턴 | **사용자 IP**: PWM Controller + AXI 제어; 출력은 내장 LED | 듀티 0/100%, 주기·업데이트 경계; 외부 LED 불필요 |
 | USB-UART Bridge | **기존 AXI UART Lite 재사용**; 명령/상태 Controller 또는 C 응용 추가 | USB-UART 브리지 자체를 FPGA에서 재구현하지 않음 |
 | 12-bit VGA 출력 | **사용자 IP**: 동기신호/픽셀 타이밍·패턴/문자 출력 + AXI 제어 | 모니터는 표시 확인 장치; FPGA 타이밍·자원 검증 |
@@ -63,7 +63,7 @@
 |---|---|---|
 | **11장 (확정된 시작점)** | 4자리 FND Controller + AXI4-Lite IP | CPU Register Map → FND 스캔 및 숫자 표시 |
 | 후속 A1 | Switch/LED GPIO 통합·레지스터 읽기/쓰기 | 제1부 AXI GPIO 재사용, FND와 값 연계 |
-| 후속 A2 | 버튼 디바운스·이벤트·인터럽트 IP | 버튼 → Event → CPU ISR/FND |
+| 후속 A2 | 방향 버튼 4개 디바운스·이벤트·인터럽트 IP | BTNU/BTND/BTNL/BTNR → Event → CPU ISR/FND. **BTNC는 SoC Reset으로 유지** |
 | 후속 A3 | 내장 LED PWM·패턴 IP | CPU Duty/Mode → LED 밝기·패턴 |
 | 후속 A4 | USB-UART 기반 원격 제어 | 기존 AXI UART Lite → 명령 → FND/LED/버튼 상태 |
 | 후속 A5 | VGA 타이밍·화면 출력 IP | RGB/HS/VS 검증 후 패턴·문자 출력 |
@@ -93,10 +93,11 @@
 ### 3.4 공통 구현·검증 원칙
 
 1. 실제 설계 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
-2. 모든 새 IP에 대해 `Register Map`, AXI 핸드셰이크·리셋·비트 폭, 독립 RTL TB, Vivado 합성/타이밍, Basys3 실물, 단계형 HTML을 **서로 다른 증거**로 관리한다.
-3. `dev-board/rtl/rtl08_hc595_7seg/`는 **외부 74HC595 용도**로 Basys3 내장 FND에 직접 사용할 수 없다. 단지 참고하며, 참고 원본 SHA 및 수정 이력을 남긴다.
-4. 외부 모듈은 실제 데이터시트·핀·전압·전류·전원 분리·제어 방향을 확인한 뒤 추가한다.
-5. 제2부 종료 장 수가 확정되면 제3–5부의 최초 계획 번호를 재편성하되 기존 `MicroBlaze_V_SoC01_41/` 파일명·URL·검증 프로젝트는 보존한다.
+2. 제1부에서 `btnC`(Center Button, FPGA 핀 U18)를 `Clocking Wizard`/`Processor System Reset`의 시스템 Reset 입력으로 사용했다. 제2부에서도 **해당 Reset 경로를 보존**하고, 버튼 이벤트 IP는 **방향 버튼 4개(BTNU/BTND/BTNL/BTNR)**만 연결한다. RESET 용도로 할당한 버튼은 동시에 일반 이벤트 입력으로 쓰지 않는다. 원본 근거: `MicroBlaze_V_SoC01_41/docs/soc01.md`, `docs/soc02.md`, `docs/soc10.md`, `code/soc10/basys3_soc10_integrated.xdc`.
+3. 모든 새 IP에 대해 `Register Map`, AXI 핸드셰이크·리셋·비트 폭, 독립 RTL TB, Vivado 합성/타이밍, Basys3 실물, 단계형 HTML을 **서로 다른 증거**로 관리한다.
+4. `dev-board/rtl/rtl08_hc595_7seg/`는 **외부 74HC595 용도**로 Basys3 내장 FND에 직접 사용할 수 없다. 단지 참고하며, 참고 원본 SHA 및 수정 이력을 남긴다.
+5. 외부 모듈은 실제 데이터시트·핀·전압·전류·전원 분리·제어 방향을 확인한 뒤 추가한다.
+6. 제2부 종료 장 수가 확정되면 제3–5부의 최초 계획 번호를 재편성하되 기존 `MicroBlaze_V_SoC01_41/` 파일명·URL·검증 프로젝트는 보존한다.
 
 ## 4. 제3부 — 하드웨어 가속 / NPU (21–30, 설계안)
 
