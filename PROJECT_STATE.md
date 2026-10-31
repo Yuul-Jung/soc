@@ -11,6 +11,7 @@
 - [VALIDATION.md](VALIDATION.md): 실험 증거 및 검증·승인 판정
 - [COLLABORATION.md](COLLABORATION.md): ChatGPT ↔ Claude 협업·인계
 - **PROJECT_STATE.md (현재 파일)**: 진행 위치, 우선순위, 미해결 문제와 재개 지점
+- [docs/references/digilent-vivado-library.md](docs/references/digilent-vivado-library.md): **외부 모듈/Arduino 자료 우선·Digilent 라이브러리 참고 기준** (참고 문서; 사용자 정책은 아래 §18과 [CURRICULUM.md §3.3](CURRICULUM.md)에 정본 기록)
 - 기술 자산: [Yuul-Jung/dev-board](https://github.com/Yuul-Jung/dev-board). 소스 재사용 및 검증 인용에는 **정확한 원본 커밋 SHA**와 경로를 명시한다.
 
 **새 대화/세션 시작 순서**
@@ -101,6 +102,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 | Claude 독립 검토 게시 확인 | [Issue #2 댓글 6543718040](https://github.com/Yuul-Jung/soc/issues/2#issuecomment-6543718040), [Issue #3 댓글 6544578500](https://github.com/Yuul-Jung/soc/issues/3#issuecomment-6544578500), [Issue #4 1차 6544578154](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544578154) 및 [2차 6544700455](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455), [Issue #5 댓글 6544578358](https://github.com/Yuul-Jung/soc/issues/5#issuecomment-6544578358). **GitHub 댓글 존재 확인**, 시뮬레이션/실물 검증은 미실시 |
 | 공통 관리상 미해결 | P1-1 **단일 작업 재개/새 대화 복원 시험** (부분 해소, 담당·Gate 확정 대기), P1-2 **미병합 브랜치 처리** 미결정. §7.2는 이전 기준 SHA의 **이력 비교 수치**이므로 최신 대비 차이는 다시 조회할 것 |
 | PWM 비교 실험 | **사용자 결정: 미실시·교육과정 제외.** Claude [Issue #4 2차 제안](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455)의 M1–M7 측정 지표와 소프트웨어 PWM·AXI Timer PWM·사용자 RTL PWM 3단 비교 시험은 채택하지 않는다. **범용 PWM 자체 기능 검증은 유지**한다 |
+| 외부 모듈/Arduino 선정 정책 | [Digilent Vivado Library 참고](docs/references/digilent-vivado-library.md): **기보유 Basys3는 기준 보드**, 전용 Pmod/Zmod **구매 전제 금지**, 저가 범용 Arduino 호환 모듈 및 Arduino 자료 우선. 5V/3.3V·모듈 실제 회로는 별도 확인 |
 | 다음 조치 | 11-A 작업 등록 여부 사용자 결정 → 작업 담당·기준 SHA·검증 Gate 지정; Claude 2차 검토의 문서 정정 재확인; 미병합 브랜치 검토·새 대화 복원 시험은 별도 추적 |
 | 최종 승인 | 사용자 판단 전 미완료 |
 
@@ -211,3 +213,11 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **예외:** 정밀 타이밍/프로토콜 모듈(HC-SR04, DHT22, 회전 엔코더 등)은 별도 Controller/IP 검토. 기능 중복 방지, 3.3V I/O 및 5V 레벨 변환, 외부 부하 별도 구동/전원 원칙 유지.
 - **기준 원칙 보충:** 외부 GPIO 허브는 CPU의 일반 상태 확인 및 필요 시 소프트웨어 출력 제어용이며, 실시간 센서→출력 동작을 AXI GPIO→CPU→AXI GPIO 소프트웨어 경로로 대체하지 않는다. 첫 CDS 실습은 CPU가 실행되지 않아도 센서 변화에 별도 외부 LED가 반응하는 RTL 하드웨어 경로를 확인한다(검증 예정). 제1부 내장 LED의 물리적 출력 소유권은 그대로 유지.
 - **진행 상태:** [CURRICULUM.md §3.3](CURRICULUM.md)에 원칙 반영. 추가 인스턴스·새 주소맵·보드 연결·실행·RTL_SIM/AXI_SIM/SYNTH_TIMING/BOARD/Web는 **미실시/미확인**. 제1부 성공 프로젝트·HTML 원본 변경 없음.
+
+## 18. 외부 모듈 선정 정책·내장 LED MUX 7항목 반대 검토 (2026-11-01)
+
+- **사용자 확정 정책:** Basys3는 기보유 기준 보드로 사용하고 **Digilent 전용 Pmod/Zmod 구매를 필수 전제로 하지 않는다**. 국내·AliExpress에서 구하기 쉬운 범용 Arduino 호환 모듈과 Arduino 교육·예제 자료를 우선 참고한다. Arduino의 물리 배선·신호 타이밍·작동 개념을 RTL·SoC에 맞춰 **독립 재설계**하며 C++ 스케치를 그대로 Verilog로 이식하지 않는다. 참고 문서 [docs/references/digilent-vivado-library.md](docs/references/digilent-vivado-library.md), [CURRICULUM.md §3.3](CURRICULUM.md), [dev-board/arduino/ROADMAP.md](https://github.com/Yuul-Jung/dev-board/blob/main/arduino/ROADMAP.md).
+- **선정 정책과 구현 완료의 구분:** 참고문서에 나열된 모듈은 실제 구매·회로도 확보·I/O 전압·RTL_SIM·AXI_SIM·SYNTH_TIMING·BOARD PASS를 의미하지 않는다. 기보유 Basys3와 외부 Pmod 전용 모듈을 혼동하지 않는다.
+- **사용자 잠정/미확정:** [Issue #4 댓글 6545953077](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6545953077)의 **내장 LED AXI GPIO/RTL MUX(A안)**, **FND 11장 앞 선행 실습**, MUX 선택 기본값/입력 선택 필요성/외부 LED(C안) 병행/추가 지원 RTL 분류는 **사용자 최종 결정 전**, 현행 교육과정 필수 조건으로 확정하지 않는다.
+- **독립 검토 중 위험:** 복제 프로젝트의 LED 포트 직행 경로를 MUX 경유로 바꾸는 것은 **복제본의 기능 변경**이며 XSA·Vitis/BSP·동작·Reset·출력 충돌 회귀 검증이 필요하다. 원본 `soc_hw.xpr`·`sw`·제1부 HTML은 보존한다. CPU 미관여 실물 주장은 RTL의 Clock/Reset이 살아 있는 조건과 선택값이 CPU 없이 결정되는 조건을 갖춰야 한다.
+- **현행 우선순위:** FND 11장 유지. CDS DO → RTL → 외부 LED 직접 구동(C안)은 문서상의 현행 기준이며 *구현/실물 검증 전*. `axi_gpio_external`은 CPU 모니터링용이며 실제 센서→LED 실시간 제어는 CPU를 경유하지 않는다. 단, **느린 CDS 자체의 기능 달성에 CPU 폴링이 무능하다고 주장하지 않는다.**
