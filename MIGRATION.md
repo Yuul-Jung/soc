@@ -102,10 +102,10 @@ soc/
 | 구 37–40 | 성능·최적화·병렬화 | 제4부 최적화 및 제3부 심화 참고 | 실측 근거 필요 |
 | 구 41 | 최종 누적 검증 매트릭스 | 제4·5부 최종 평가 참고 | 실제 검증 근거 필요 |
 
-### Basys3 사용자 IP 5개 확정 및 외부 확장 원칙 (2026-10-31 최신 결정)
+### Basys3 핵심 사용자 IP 4종 + LED PWM 선택 기능 및 외부 확장 원칙 (2026-10-31 최신 결정)
 
-- [CURRICULUM.md §3](CURRICULUM.md)에 따라 제2부 A단계에서 개발하는 **신규 사용자 IP는 정확히 다섯 종류: FND, 방향 버튼(Short/Long 통합), LED PWM, VGA, 키보드·마우스 공통 PS/2**이다. 이 개수는 내부 하위 RTL 모듈 수나 교육 장 수 제한이 아니다.
-- 기존 01–10장의 AXI GPIO(Switch/LED), UART Lite, Timer, INTC, MicroBlaze V/BRAM/Clock/Reset은 **재사용**한다. 내부 XADC Wizard도 필요 시 AMD 기존 IP로 활용하되 신규 사용자 IP로 세지 않는다.
+- [CURRICULUM.md §3](CURRICULUM.md)에 따라 제2부 A단계의 내장 기능 주제는 5개지만, **독립 핵심 사용자 IP는 FND, 방향 버튼(Short/Long 통합), VGA, 키보드·마우스 공통 PS/2의 4종**이다. **LED PWM은 기존 AXI GPIO를 이용한 LED 점등의 선택적 밝기 조절 옵션**이며, 독립 AXI PWM IP 패키징은 필수가 아니다. 기능별 내부 하위 RTL 모듈 수와 전체 교육 장 수는 별개이다.
+- 기존 01–10장의 AXI GPIO(Switch/LED), UART Lite, Timer, INTC, MicroBlaze V/BRAM/Clock/Reset은 **재사용**한다. GPIO LED 출력과 선택적 PWM 출력을 같은 물리 핀에 이중 연결하지 않으며, 통합 시 `led_output_controller`에서 단일 출력 경로를 선택한다. 기본 프로젝트와 성공 원본은 변경하지 않고 별도 프로젝트에서 구성한다. 내부 XADC Wizard도 필요 시 AMD 기존 IP로 활용하되 신규 사용자 IP로 세지 않는다.
 - **내장 Quad SPI Flash 32 Mbit(4 MB)는 비휘발성 FPGA 설정 비트스트림 보존용으로 취급**한다. 안전상 Flash 사용자 IP와 쓰기 실습은 제2부에서 제외한다. 설정 데이터 보호 및 모드/재구성은 제1부 인프라/부팅 설명만 참조한다. 공식 근거: [Digilent Basys3 Reference Manual §2·§3](https://www.amd.com/content/dam/amd/en/documents/university/aup-boards/XUPBasys3/documentation/Basys3_rm_8_22_2014.pdf).
 - 키보드·마우스는 Basys3 USB Host의 PIC24→PS/2 변환을 통해 **공통 IP 하나**에서 선택 사용한다. 보드는 USB 허브를 지원하지 않으므로 동시 연결을 전제로 하지 않는다.
 - B단계 **외부** HC-SR04/SG90/L298N/조도/DHT/BLE 등은 A단계 이후 연계하며 내용은 유지한다.
