@@ -34,9 +34,9 @@
 
 실제 페이지 경로는 `MicroBlaze_V_SoC01_41/pages/soc/` 아래이며, 07–10장에는 일부 `_1_` 형식의 C 코드 해설 보조 페이지가 있다. `part01/index.html`은 현재 이 원본으로 연결한다. 페이지의 '완료' 배지는 **사이트 표기**이며 본 문서가 하드웨어 전수 검증을 새로 확인했다는 뜻은 아니다.
 
-## 3. 제2부 — Basys3 핵심 사용자 IP 4종 + LED PWM 선택 기능 → 외부 주변장치 확장 (11장부터, 장 수 미확정)
+## 3. 제2부 — FND·버튼 IP 우선 → 외부 주변장치 확장 (11장부터, 장 수 미확정)
 
-> **2026-10-31 사용자 최신 확정:** 제1부에서 이미 학습한 AXI GPIO/UART/Timer/INTC/Clock/Reset은 **재사용**한다. **독립 사용자 IP 핵심 4종은 FND·4방향 버튼·VGA·PS/2 키보드/마우스 공통 입력**이며, **LED PWM은 기존 LED 점등 기능에 밝기 조절을 추가하는 선택 옵션**이다. 기존의 '5개 IP' 표현은 **5개 기능/실습 주제**를 가리키되 PWM을 별도 AXI 주변장치 IP로 반드시 패키징한다는 뜻은 아니다. 이후 보드에 없는 외부 모듈은 제2부 B단계에서 확장한다. 첫 실습은 11장 FND AXI IP([Issue #3](https://github.com/Yuul-Jung/soc/issues/3))이며 나머지 장 번호는 추후 확정한다.
+> **2026-10-31 사용자 최신 확정:** 제1부에서 이미 학습한 AXI GPIO/UART/Timer/INTC/Clock/Reset은 **재사용**한다. **현재 필수 사용자 IP는 FND·4방향 Short/Long 버튼 2종**이다. **LED/FND PWM은 밝기 조절 선택 기능**이며 별도 AXI PWM IP 제작은 의무가 아니다. 기존 구상의 **VGA 및 PS/2 키보드·마우스는 현 제2부 선행 실습에서 보류**하고, 카메라 입력과 VGA 출력·마우스 포인터를 함께 사용하는 **후속 영상 입출력/사용자 인터페이스 심화 묶음(편성 미정)**으로 검토한다. 이는 장 번호 확정이나 하드웨어 구현 완료를 뜻하지 않는다. 이후 보드에 없는 외부 모듈은 제2부 B단계에서 확장한다. 첫 실습은 11장 FND AXI IP([Issue #3](https://github.com/Yuul-Jung/soc/issues/3))이며 나머지 장 번호는 추후 확정한다.
 
 ### 3.1 내장 자원 목록과 구현 경계
 
@@ -49,32 +49,28 @@
 | 5 Pushbutton (BTNC는 기존 Reset) | **BTNU/BTND/BTNL/BTNR 방향 버튼 4개**: 2FF 동기화·디바운스·Short/Long(5초 이상) 이벤트·IRQ + AXI 레지스터 | **BTNC(U18)는 제1부 SoC Reset 용도로 유지**. 버튼별 독립 타이머·5초 경계·중복 이벤트·동시 입력·리셋·이벤트 유실 검증 |
 | LED 밝기·패턴 | **선택적 확장 기능**: 제1부 AXI GPIO LED ON/OFF는 그대로 사용하고, 필요 시 LED 출력 경로에 재사용형 `pwm_core`를 추가 | 기본 모드는 GPIO LED 출력, 선택 모드에서 PWM 밝기 조절. 별도 AXI PWM IP 패키징은 필수 아님; 출력 핀은 한 경로에서만 구동 |
 | USB-UART Bridge | **기존 AXI UART Lite 재사용**; 명령/상태 Controller 또는 C 응용 추가 | USB-UART 브리지 자체를 FPGA에서 재구현하지 않음 |
-| 12-bit VGA 출력 | **사용자 IP**: 동기신호/픽셀 타이밍·패턴/문자 출력 + AXI 제어 | 모니터는 표시 확인 장치; FPGA 타이밍·자원 검증 |
-| USB Type-A 키보드·마우스 | **사용자 공통 PS/2 Input IP 1개**: 수신부 공유·키보드 스캔코드/마우스 패킷 해독은 분리 (보드 PIC24가 USB HID를 PS/2로 변환) | FPGA에 USB Host를 새로 만들지 않음; USB 허브 미지원으로 키보드 또는 마우스 **한 번에 한 장치**, PS2_CLK/PS2_DAT 및 풀업 확인 |
+| 12-bit VGA 출력 | **후속 영상 심화로 보류**: 외부 카메라 입력의 영상·오버레이 표시용 VGA 타이밍/픽셀 출력 | 현 FND/버튼 기반 제2부의 필수 IP 대상 아님; 실제 VGA 모니터·카메라·영상 버퍼·클록 제약 검토 후 별도 추진 |
+| USB Type-A 키보드·마우스 | **후속 심화로 보류**: 카메라 영상/VGA 표시와 함께 마우스 커서·관심영역 선택에 사용하는 공통 PS/2 입력부, 키보드 해독은 추후 별도 선택 | 현 제2부 필수 IP 대상 아님; 보드 PIC24가 USB HID→PS/2로 변환하며 USB 허브 미지원(키보드 또는 마우스 한 번에 하나) |
 | FPGA 내부 XADC | 기존 AMD XADC Wizard 등 **제공 IP 재사용**(필요 시 모니터용); **신규 사용자 IP 5개에는 불포함** | 내부 온도·전압 모니터는 선택적 통합 과제, 보드 내장 조도·온습도 센서가 아니며 외부 센서는 B단계 |
 | 32 Mbit(4 MB) 직렬 Quad SPI Flash | **새 사용자 IP 대상에서 제외**. 비휘발성 FPGA 구성 비트스트림 저장·전원 켤 때 재구성 용도로 보존 | JTAG로 FPGA SRAM에만 설정한 경우 전원 OFF 시 소멸; Flash에 저장한 경우 모드 선택에 따라 부팅 가능. 공식 매뉴얼상 사용자 데이터 공간은 일부 존재하지만 본 과정에서 Flash 쓰기/포맷 실습 제외 |
 | 100 MHz Clock / Clock·Reset | 기존 Clock Wizard/Reset 구조 **공용 기반 인프라** | 사용자 주변장치로 중복 IP화하지 않음 |
 | 3개 디지털 Pmod + XADC용 Pmod | **외부 모듈 연결용 포트**; 내부 기능/센서로 간주하지 않음 | 보드 XDC, I/O 전압·전원·핀 배치 선확인 |
 | JTAG/PROG/전원 상태 LED | FPGA 설정·보드 지원 회로 | 제어 가능한 사용자 GPIO로 오인하거나 별도 주변장치 IP 대상에 넣지 않음 |
 
-### 3.2 제2부 A단계 — 핵심 사용자 IP 4종과 LED 선택 기능 1종
+### 3.2 제2부 A단계 — FND·버튼 IP 우선, LED/FND 밝기 조절 선택
 
-| 개발 순서 | 사용자 IP | 핵심 기능 및 기존 IP 연계 |
+| 순서 | 기능 | 범위 |
 |---|---|---|
-| **11장 (기존 착수점)** | **① FND Controller** | 4자리 내장 FND 자리 스캔·Active-Low 패턴·AXI4-Lite 레지스터. [작업 Issue #3](https://github.com/Yuul-Jung/soc/issues/3) |
-| 후속 | **② Button Controller** | **BTNC(U18)는 SoC Reset 유지**. BTNU/BTND/BTNL/BTNR 4개에 디바운스·Short(<5초)/Long(≥5초)·이벤트·IRQ. [요구사항 Issue #5](https://github.com/Yuul-Jung/soc/issues/5) |
-| 후속 선택 | **③ LED 밝기 옵션 (`pwm_core`)** | 기본 점등은 제1부 AXI GPIO 유지. PWM이 필요할 때만 별도 실습 프로젝트에서 구현 후, 통합 시 LED 출력 Controller가 GPIO/PWM 중 한 경로를 선택. **독립 AXI PWM IP는 필수 아님** |
-| 후속 | **④ VGA Controller** | 보드의 12-bit VGA 출력, HS/VS·픽셀 타이밍·표시 패턴·문자/상태 출력 |
-| 후속 | **⑤ PS/2 Input Controller** | 보드 PIC24가 USB HID를 PS/2로 변환한 신호를 1개의 공통 수신 IP로 받고, 키보드와 마우스는 서로 다른 패킷 디코더 적용. **키보드/마우스 동시 사용 전제 금지** |
-| **신규 IP 수에 포함하지 않음** | 내장 장치 통합 SoC | 검증된 핵심 4종 IP 및 선택적 LED PWM 기능을 필요에 따라 제1부 AXI GPIO/UART/Timer/INTC와 통합. XADC Wizard는 기존 AMD IP 이용 |
+| **11장 (기존 착수점)** | **① FND Controller — 필수** | Basys3 내장 FND 자리 스캔·표시값·AXI4-Lite 레지스터. 선택적으로 FND 전체 밝기 제어를 내부 기능으로 추가. [Issue #3](https://github.com/Yuul-Jung/soc/issues/3) |
+| **후속(장 번호 미정)** | **② Button Controller — 필수** | BTNC(U18)는 기존 SoC Reset 고정. 방향 버튼 BTNU/BTND/BTNL/BTNR 4개에서 디바운스·Short(<5초)/Long(≥5초)·이벤트·선택적 IRQ. [Issue #5](https://github.com/Yuul-Jung/soc/issues/5) |
+| **선택 기능** | **LED PWM/ FND 밝기 옵션** | 기존 AXI GPIO의 LED ON/OFF를 재사용, LED PWM 필요 시 단일 출력 구동권 Controller에서 선택. FND PWM은 자리 스캔 Controller 내부에서 적용. 독립 AXI PWM 주변장치 제작은 필수 아님 |
+| **선택적 조합** | **기존 SoC와 FND·버튼 연계** | 기존 AXI GPIO·UART Lite·Timer·INTC·BRAM·Clock/Reset 재사용. 각 Controller는 독립 개발·시험 후 필요할 때만 별도 SoC 프로젝트에서 선택적으로 통합 |
 
-**제1부 재사용:** Switch/LED용 AXI GPIO, USB-UART용 AXI UART Lite, AXI Timer, AXI Interrupt Controller, MicroBlaze V·BRAM·Clock/Reset을 **새 사용자 IP로 다시 만들지 않는다**. 기존 IP 사용법만 반복하는 별도 장도 두지 않는다. 하나의 LED 핀을 GPIO와 PWM이 동시에 구동하지 않도록 MUX/소유권 결정은 기능 Controller에서 수행하고 Top은 연결만 한다.
+**프로젝트 원칙:** 제1부 성공 Vivado/Vitis 프로젝트는 수정·덮어쓰기하지 않는다. FND와 버튼은 별도 RTL Controller 및 독립 TB를 먼저 작성하고, 필요 시 각각 AXI4-Lite Wrapper와 새로운 SoC 실습 프로젝트에서 CPU 연결·실물 검증을 진행한다. 기존 AXI GPIO와 PWM이 동일한 물리 LED 핀을 동시에 구동하지 않으며, 이 결정을 보드 Top이 아닌 기능 Controller에서 수행한다.
 
-**내장 실습 주제 5개와 독립 AXI IP 개수는 다르다.** 핵심 IP 4개(FND·Button·VGA·PS/2)에 LED 밝기 조절 **선택 기능** 1개를 더한 구성이며, PWM만을 위한 별도 AXI 패키징은 요구하지 않는다. GPIO LED 기본 점등과 PWM의 물리 핀 중복 구동은 금지한다. 통합 시에는 독립 `led_output_controller`가 GPIO 출력을 그대로 전달하거나 PWM 출력을 선택하여 단일 `led` 핀을 구동한다. **제1부 성공 프로젝트의 출력 배선을 직접 변경하지 않고 새 실습 프로젝트에서만 구성**한다. CPU에서 PWM Duty를 실시간 설정하는 과제를 선택할 경우 제어값을 위한 AXI 레지스터 또는 기존 GPIO 비트 재할당 등 별도 제어 경로를 설계·검증한다. PWM을 사용하지 않으면 기존 AXI GPIO만으로 LED 점등을 수행한다.
+**현 단계 범위 제외:** VGA(영상 출력), PS/2 마우스·키보드(사용자 입력)는 제2부 A단계의 필수·선행 과제가 아니다. 기존 교육과정에서 제안된 '핵심 IP 4종 + LED PWM' 표현은 **이전 편성안**이며, 현 단계 필수 사용자 IP는 FND·버튼 **2종**이다. 새로운 영상 심화 과제는 아래 §3.5에 묶어서 보류한다.
 
-**신규 사용자 IP 내부의 하위 RTL 모듈 수는 장별 기능에 따라 자유롭게 정할 수 있다.** PS/2 수신 코어, keyboard decoder, mouse packet decoder 등은 같은 다섯 번째 사용자 IP 안에서 분리할 수 있다. 제2부 전체 장 수는 외부 B단계를 포함해 별도 결정한다.
-
-**직렬 Flash 보존:** Basys3 32 Mbit Quad SPI Flash는 FPGA 구성 비트스트림을 비휘발성으로 저장하는 것이 대표 용도다. 보드의 모드 선택에 따라 재전원 시 자동 로드할 수 있다. 공식 문서상 여유 사용자 데이터 영역은 있지만, **구성 파일 손상 위험을 피하기 위해 제2부 Flash 접근/쓰기 IP 실습은 삭제**한다. 필요 시 비트스트림 영구 저장은 Vivado 프로그램/부팅 절차에서만 설명한다. 공식 근거: [Digilent Basys3 Reference Manual, §2 FPGA Configuration / §3 Memory](https://www.amd.com/content/dam/amd/en/documents/university/aup-boards/XUPBasys3/documentation/Basys3_rm_8_22_2014.pdf).
+**직렬 Flash:** Basys3 32 Mbit Quad SPI Flash는 FPGA 구성 비트스트림의 비휘발성 보존에 사용한다. 사용자 데이터용 여유 영역이 존재할 수 있으나 본 과정에서 Flash IP 제작·쓰기 실습은 제외하여 구성 이미지를 보호한다.
 
 ### 3.3 제2부 B단계 — 보드에 없는 외부 주변장치 연결 (A단계 이후)
 
@@ -91,9 +87,18 @@
 
 새로 필요한 사용자 IP는 **정밀 시간 제어·이벤트 처리·표시 처리·다중 동작 병렬화**에 집중한다. I2C/SPI/일반 GPIO/UART와 같은 공통 주변장치 기능은 AMD 지원 IP·필요 시 외부 MCU 중계 활용을 먼저 검토하고 중복 RTL 구현을 필수화하지 않는다.
 
+### 3.5 후속 심화 가안 — 카메라 입력 + VGA 출력 + PS/2 마우스 영상 시스템 (현 단계 보류)
+
+- **사용자 제안(2026-10-31):** VGA와 마우스를 각각 단독 필수 IP로 만들지 않고, 나중에 외부 **카메라 영상 입력과 동일한 학습 단계**에서 통합 실습으로 다룬다. 편성 부·장 번호와 실제 회로·프로젝트는 **미확정**. 고급 SoC 통합 또는 별도 영상 응용 블록으로 향후 검토한다.
+- 교육 흐름: 카메라의 픽셀/라인/프레임 동기 신호 수신 → 작은 영상 버퍼 또는 라인 버퍼 및 필요 시 클록 도메인 교차 → VGA 영상/상태 오버레이 출력 → PS/2 마우스 커서·관심영역(ROI) 제어.
+- **난이도 구분:** 카메라는 외부 인터페이스 전압·카메라 설정용 버스·픽셀 클록·입력 대역폭·메모리 용량이 핵심; VGA는 출력 픽셀 타이밍·HS/VS가 핵심; 마우스는 보드 PIC24가 USB HID를 PS/2로 변환해 주므로 패킷 수신/좌표만 구현한다. 세 인터페이스는 **동일한 구현 난이도**라고 보지 않는다.
+- Basys3 XC7A35T 온칩 BRAM은 약 1,800 Kbits(약 225 KB)이므로 640×480 RGB565 전체 프레임(600 KiB)은 온칩 메모리에 맞지 않는다. 저해상도/부분 프레임/라인 버퍼 등 자원 제약에 맞춘 영상 경로가 필요하며, 카메라 커넥터·핀 수·전압·클록 경로를 실제 보드/모듈 데이터시트로 검증한다.
+- USB 마우스와 USB 키보드는 Basys3 USB Host 경로에서 허브 동시 사용을 전제로 하지 않는다. 키보드 해독은 영상 통합과 별도로 필요할 때 추가하는 **후속 선택 사항**이다.
+- 이 항목은 후속 학습 아이디어 등록이며 **RTL_SIM·AXI_SIM·SYNTH_TIMING·BOARD·WEB 모두 미실시/미확인**이다.
+
 ### 3.4 공통 구현·검증 원칙
 
-1. 신규 핵심 IP 4종의 제어형 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**을 기준으로 하되, VGA/PS/2처럼 외부 신호 처리 방식은 특성에 맞게 설계한다. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
+1. 현 단계 필수 사용자 IP 2종(FND·버튼)의 제어형 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**을 기준으로 하되, VGA/PS/2처럼 외부 신호 처리 방식은 특성에 맞게 설계한다. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
 2. 제1부에서 `btnC`(Center Button, FPGA 핀 U18)를 `Clocking Wizard`/`Processor System Reset`의 시스템 Reset 입력으로 사용했다. 제2부에서도 **해당 Reset 경로를 보존**하고, 버튼 이벤트 IP는 **방향 버튼 4개(BTNU/BTND/BTNL/BTNR)**만 연결한다. RESET 용도로 할당한 버튼은 동시에 일반 이벤트 입력으로 쓰지 않는다. 원본 근거: `MicroBlaze_V_SoC01_41/docs/soc01.md`, `docs/soc02.md`, `docs/soc10.md`, `code/soc10/basys3_soc10_integrated.xdc`.
 3. 모든 새 IP에 대해 `Register Map`, AXI 핸드셰이크·리셋·비트 폭, 독립 RTL TB, Vivado 합성/타이밍, Basys3 실물, 단계형 HTML을 **서로 다른 증거**로 관리한다.
 4. `dev-board/rtl/rtl08_hc595_7seg/`는 **외부 74HC595 용도**로 Basys3 내장 FND에 직접 사용할 수 없다. 단지 참고하며, 참고 원본 SHA 및 수정 이력을 남긴다.
