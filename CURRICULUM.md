@@ -79,8 +79,21 @@
 
 **외부 모듈 선정 정책(사용자 확정):** **기보유 Basys3는 기준 개발 보드**로 유지하되, **Digilent 전용 Pmod/Zmod 모듈 구매를 필수 전제로 하지 않는다.** 국내 또는 AliExpress에서 쉽게 구할 수 있는 **범용 Arduino 호환 모듈과 Arduino 학습·예제 자료를 우선 참고**한다. Arduino 소스를 Verilog로 기계적 이식하지 않고 동작 순서·신호 타이밍·배선·응용 개념을 대조하여 **CPU와 독립적으로 동작할 RTL 및 SoC 연결 구조**로 재설계한다. **3.3V FPGA I/O 호환성, 실제 모듈 회로·전원·전압·극성은 별도 검증**한다. Digilent IP 라이브러리는 **[참고 문서](docs/references/digilent-vivado-library.md)**에 기록한 구조 연구용이며 실물 구현 검증 완료로 취급하지 않는다. 관련 Arduino 예제·검증 상태는 [dev-board Arduino ROADMAP](https://github.com/Yuul-Jung/dev-board/blob/main/arduino/ROADMAP.md), [CROSSWALK](https://github.com/Yuul-Jung/dev-board/blob/main/arduino/CROSSWALK.md)를 기준으로 확인한다.
 
-**현재 검토 중(미확정):** CDS(DO) 입력에서 내장 LED 출력을 AXI GPIO/RTL 중 선택하는 **MUX 방식(A안)** 및 FND 11장 이전 선행 실습 배치는 사용자 **잠정 의견**이다. 제1부 보존/CPU 미관여 검증을 함께 고려해 독립 비교 중이며, 확정 전에는 **FND 11장 우선순위를 바꾸지 않는다**. 외부 LED 직접 출력(C안)은 현재 CDS 실습 문서의 기본 설계 경로로 남겨 둔다. CDS 디지털 DO(GPIO 임계값 판정)와 아날로그 AO(XADC/외부 ADC 연계)는 같은 조도 센서를 쓰더라도 **서로 다른 실습 경로**이며 아래 B5의 XADC/ADC 행이 DO 직접 RTL 경로를 대체하지 않는다.
+**현재 검토 중(미확정):** CDS(DO) 입력에서 내장 LED 출력을 AXI GPIO/RTL 중 선택하는 **MUX 방식(A안)** 및 FND 11장 이전 선행 실습 배치는 사용자 **잠정 의견**이다. 제1부 보존/CPU 미관여 검증을 함께 고려해 독립 비교 중이며, 확정 전에는 **FND 11장 우선순위를 바꾸지 않는다**. 외부 LED 직접 출력(C안)은 현행 CDS 실습의 기준 경로이나, **C안도 별도 RTL Controller와 DO/LED 외부 포트를 통합하기 위한 사용자 Top 또는 BD Add Module이 필요**하다. 두 안의 차이는 '하드웨어 구조 변경 유무'가 아니라 **제1부 내장 LED 직행 경로를 MUX로 변경하는지 여부**다. 기존 SW/LED 핀 제약은 외부 Top 포트명을 그대로 유지하면 보존 가능하다. 사용자 Top 방식의 공통 적용은 **기술 권고이며 사용자 최종 확정 전**이다.
 
+
+**제2부 CDS SoC 통합의 클록/리셋 설계 기준(설계안·미검증):** CDS RTL Controller의 동기화·필터 클록은 **기존 SoC AXI GPIO가 사용하는 Clock Wizard 출력(`clk_out1`로 문서에 표기된 실제 출력 클록)**을 **같이 쓰는 단일 클록 도메인**을 우선한다. 실제 클록 주파수/넷 이름/리셋 극성은 **Vivado 2024.2 복제 BD와 자동 관리 Wrapper 포트에서 확인**한 후 결정한다. 새 RTL 리셋도 해당 도메인의 Processor System Reset(예: `peripheral_aresetn`)을 사용하되 Reset 해제 동기화·극성을 검증한다. **해당 클록·리셋이 Wrapper 밖으로 보이지 않으면 BD에서 적절한 출력 포트를 내보내고 Wrapper/구현/XSA를 갱신**해야 하며, C안에서도 'BD 무변경'은 보장되지 않는다. 외부 보드 100MHz 입력 클록과 Clock Wizard 출력은 출처·위상·리셋 관계를 확인하지 않은 채 같은 클록 도메인이라고 가정하지 않는다. **서로 다른 도메인을 선택할 경우 CDS 상태를 AXI GPIO로 보낼 때 별도 CDC(클록 도메인 교차) 회로·검증이 필요**하다. CDS DO 자체는 외부 비동기 입력이므로 선택한 도메인의 동기화 레지스터를 거친 뒤 사용한다. CPU 정지 시험에서 전체 SoC Reset을 유지하여 RTL까지 Reset하는 방식은 CPU 독립 제어의 증거가 아니다.
+
+**제2부 사용자 Top / 대안 비교(2026-11-01, 사용자 최종 선택 전):**
+
+| 대안 | 새 RTL 연결 위치 | 기존 내장 LED 경로 | BD·XSA/하드웨어 영향 | 교육 및 위험 판단 |
+|---|---|---|---|---|
+| A — 사용자 Top + `led_output_controller` MUX | 자동 관리 BD Wrapper를 사용자 Top에 인스턴스화, MUX는 하위 Controller | **GPIO 직행을 MUX 경유로 변경** | 단순 조합 MUX는 BD/주소맵 그대로 가능하나 클록·리셋 노출·CPU 제어 선택값 추가 시 BD 변경 가능. 새 비트스트림·회귀 검증 필요 | 내부 LED 출력 소유권/모드 선택 교육에 유용, 기존 SW→LED 의미가 바뀔 수 있음. **후속 선택·미확정** |
+| B — BD 내부 Add Module | RTL Module Reference를 BD에 추가 | 선택한 배선에 따라 달라짐 | **BD 수정**·Validate Design·Wrapper/하드웨어 내보내기·회귀 검증 필요 | IP Integrator 내부 RTL 통합에 유용, 구현·유지보수 부담 상대적으로 큼 |
+| C — 외부 LED 직접 RTL 제어(현행 기준) | **사용자 Top에 자동 관리 BD Wrapper + CDS Controller를 인스턴스화하거나 BD Add Module 이용** | **기존 SW/LED AXI GPIO 직행 유지** | **새 Top/RTL·CDS DO 및 외부 LED 핀·XDC·새 비트스트림 필요**. AXI 상태 모니터링용 `axi_gpio_external`을 추가하면 **BD·주소맵·XSA/Vitis 플랫폼 변경**. Clock Wizard 출력/Reset을 새 Controller로 내보내야 할 수도 있음 | 하드웨어 독립 경로 교육에 적합. 내장 LED 경로 회귀 부담은 A보다 낮지만 **구조 변경 없는 안은 아님** |
+| D — 제1부 구조 유지 | 신규 RTL 없음 | GPIO 직행 그대로 | 신규 하드웨어 변경 없음 | 원본 회귀 기준용. CDS→RTL→LED 실습 목표는 미충족 |
+
+**사용자 Top 적용 범위:** 제2부 **첫 SoC 통합 복제본(C안 CDS 실습 포함)**부터 사용자 Top을 Shell/Wrapper로 두는 방법을 **권장**한다. 이는 A안 MUX 도입 여부와 무관하다. 11-A 독립 RTL/TB 자체에는 BD Wrapper가 필요하지 않으며 11장 FND를 '11-0' 신설로 미루지 않는다. **공통 Top 방식의 최종 채택은 사용자 확인 전까지 미확정**이고, 선택한 구현 방식에 맞춰 검증 게이트를 적용한다.
 
 **외부 GPIO 확장 및 RTL 제어 기준(2026-11-01 사용자 최신 결정):** 제1부 AXI GPIO의 **기존 Basys3 내장 SW[15:0] 입력/LED[15:0] 출력 및 핀 제약은 변경하지 않는다.** 제2부는 성공 SoC의 **별도 복제 프로젝트에 추가 AMD AXI GPIO(`axi_gpio_external`)**를 두어 여러 외부 모듈의 **CPU 측 입력 상태 조회/소프트웨어 출력 제어**를 공통 수용한다. 그러나 **CDS 입력의 LED 제어는 절대로 MicroBlaze V Polling → AXI GPIO Write 경로를 거치지 않는다.** CDS DO는 FPGA 내부 **독립 RTL Controller**로 들어가 외부 LED를 하드웨어에서 직접 구동하며, 동일 입력의 동기화된 상태를 **추가 AXI GPIO 입력에도 분기**하여 CPU가 관찰할 수 있게 한다. 외부 모듈마다 AXI GPIO 인스턴스를 복제하지 않고, RTL의 고유 제어·필터링 기능은 재사용 가능한 Controller로 구현한다.
 
@@ -90,9 +103,9 @@
 | `axi_gpio_external` Channel 2 | **All Outputs / 8bit (예시)** | **CPU가 직접 제어하는** 외부 LED, 능동 부저, 릴레이/MOSFET 구동 입력 | **CDS→RTL 자동 제어 외부 LED는 이 AXI GPIO 출력과 분리**하여 RTL Controller가 단독 구동. 한 물리 핀에 AXI GPIO·RTL 출력 동시 연결 금지 |
 
 - 위 비트 폭·모듈별 비트 번호·JA/JB/JC 핀은 **예시이며 미확정**이다. 각 AXI GPIO 채널은 IP 설정에 따른 방향/폭을 가지며, 실제 Basys3 Pmod 가용 핀과 다른 확장 IP의 할당을 대조해 XDC를 작성한다. **RTL 전용 외부 LED 출력 핀은 AXI GPIO 채널 출력 비트와 물리적으로 분리**한다.
-- **첫 CDS RTL 기준 실습:** **CDS DO → 비동기 입력 동기화/필요 시 안정화 필터 RTL → 외부 LED**를 **CPU와 독립적으로 직접 제어**한다. 병렬 관찰 경로는 `CDS 동기화 상태 → 추가 AXI GPIO 입력 → MicroBlaze V(UART 상태 출력 선택)`이다. **CPU는 제어 루프에 포함되지 않는다.** 기존 내장 LED 16개는 제1부 AXI GPIO 연결을 유지하고, CDS용 LED는 별도 Pmod 출력과 적절한 전류 제한 회로로 사용한다. 간단한 분기 회로도 Top이 아니라 재사용 가능한 Controller/Core에 구현한다.
+- **첫 CDS RTL 기준 실습:** **CDS DO → 비동기 입력 2FF 동기화/필요 시 안정화 필터 RTL → 외부 LED**를 **CPU와 독립적으로 직접 제어**한다. 상태 관찰을 선택하면 `CDS 동기화 상태 → 추가 AXI GPIO 입력 → MicroBlaze V(UART 상태 출력 선택)`로 **분기만** 한다. **CPU는 LED 제어 루프에 포함되지 않는다.** 기존 내장 LED 16개는 제1부 AXI GPIO 연결을 유지하고, CDS용 LED는 별도 Pmod 출력과 적절한 전류 제한 회로를 사용한다. **C안에서도 새 RTL을 인스턴스화하고 CDS DO/외부 LED를 핀으로 내보내기 위해 사용자 Top(권장) 또는 BD Add Module이 필요**하다. 사용자 Top은 핀·wire·모듈 연결만 수행하며 센서 처리·출력 제어는 Controller/Core에 둔다.
 - 외부 모듈의 3.3V 신호 호환성, 5V 출력 레벨 변환, 접점·오픈 컬렉터용 풀업을 실물 결선 전에 검증한다. CDS DO 극성은 **실제 모듈에서 밝음/어두움 상태를 확인하여 RTL에서 해석**한다. 별도 정밀 타이밍/프로토콜(HC-SR04 Echo 측정, DHT22 단일선 프레임, 로터리 엔코더 A/B 디코드 등)은 **AXI GPIO 비트만으로 모든 기능을 처리한다고 단정하지 않으며** 전용 Controller/IP를 검토한다.
-- 제1부 성공 Vivado/Vitis 원본과 기존 SW·LED XDC, 주소맵은 보존하고, 복제본에서 **CDS RTL Controller + 외부 LED 전용 핀**을 먼저 연결·검증한다. CPU 모니터링 기능이 필요하면 `axi_gpio_external`의 새 AXI 주소·외부 GPIO 포트·XDC·새 XSA/Vitis 애플리케이션을 추가한다. **CPU 프로그램 없이도 CDS 변화에 LED가 반응하는지**를 독립 실물 검증하며, RTL 시뮬레이션·합성·실물 시험은 **현재 미실시**다.
+- 제1부 성공 Vivado/Vitis 원본과 기존 SW·LED XDC, 주소맵은 보존하고, 복제본의 **사용자 Top 또는 BD Add Module에서 CDS RTL Controller + 외부 LED 전용 핀**을 먼저 연결·검증한다. CPU 모니터링이 필요하면 `axi_gpio_external`의 새 AXI 주소·경계 포트·XDC·새 XSA/Vitis 애플리케이션을 추가하며 **이 경우 BD 변경이 필요**하다. C안이라도 Top·RTL·Bitstream이 변경되므로 이전 XSA/앱·보드 기능과 회귀 확인이 필요하다. **CPU가 제어 코드를 실행하지 않아도 CDS 변화에 LED가 반응하는지** 독립 실물 검증하되 RTL이 사용하는 클록·리셋은 반드시 정상 동작해야 한다. RTL 시뮬레이션·합성·실물 시험은 **현재 미실시**다.
 
 
 | 권장 순서 | 외부 모듈 / 실습 | 기술 및 안전 기준 | `dev-board` 후보 |
@@ -101,7 +114,8 @@
 | B2 | HC-SR04 초음파 | Trigger/Echo, timeout, Echo 5 V 레벨 변환 | `rtl/rtl11_ultrasonic_event/` |
 | B3 | SG90 서보 | 펄스 타이밍, 외부 전원·공통 GND | `rtl/rtl23_servo_pulse/` |
 | B4 | L298N DC 모터 | PWM·방향/데드타임 보호·외부 전원 | `rtl/rtl22_dc_motor/` |
-| B5 | 조도센서 및 ADC | 외부 센서 → XADC 입력 한계·ADC 선택 | `rtl/rtl05_xadc_pwm/` |
+| B5-D (기본) | **CDS 조도센서 디지털 DO → RTL → 외부 LED** | LM393 DO의 3.3V 출력·극성 실물 확인 → 2FF 동기화/필터 → **CPU 없이 하드웨어 직접 출력**. 사용자 Top 또는 BD Add Module에서 포트 연결; 추가 AXI GPIO는 **상태 관찰용** | `arduino/ROADMAP.md` 07차시의 조도 자동조명 개념 참고(디지털 DO용 신규 RTL Controller는 설계안, 실물 검증 전) |
+| B5-A (선택) | **조도센서 아날로그 AO / ADC** | 아날로그 전압은 디지털 GPIO에 직결하지 않음. 실제 XADC 입력 허용 범위·전처리/외부 ADC 별도 검증, 취득값으로 PWM 등 제어 | `rtl/rtl05_xadc_pwm/` (XADC 실 IP 연결·보드 검증 전) |
 | B6 | DHT 계열 온습도 | 1-wire 타이밍·체크섬·timeout | `rtl/rtl12_dht22_alarm/` |
 | B7 | UART형 BLE | 기존 AXI UART Lite 재사용·명령 응답 | `rtl/rtl26_bt_command/` |
 | B8 | **외부 센서·구동기 통합 SoC** | Event FIFO, CPU/RTL 역할·자원·실물 안전 | `rtl/rtl29_integration/`, `rtl/rtl30_event_fifo/`, `rtl/rtl32_capstone_control/` |
