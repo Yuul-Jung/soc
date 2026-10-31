@@ -138,9 +138,16 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 ## 10. 제2부 내장 I/O 우선 → 외부 모듈 확장 (2026-10-31 사용자 최신 결정)
 
 - **단일 기준:** [CURRICULUM.md §3](CURRICULUM.md)의 2026-10-31 재편성. 5부 체계 유지, 제2부 장 수 고정 금지, 11장 FND부터 시작.
-- **A단계 (Basys3 본체 우선):** 4자리 FND, 16 Switch·16 LED(AMD AXI GPIO 재사용), 5 버튼(이벤트/디바운스 사용자 IP), 내장 LED PWM, USB-UART(기존 AXI UART Lite), VGA, USB HID의 보드 PIC24→PS/2 경로, 내부 XADC 온도/전압, Serial Flash(선택/구성 데이터 보호), 내장 주변장치 통합.
+- **A단계 (Basys3 본체 우선):** 4자리 FND, 16 Switch·16 LED(AMD AXI GPIO 재사용), 5개 버튼 중 **BTNC(U18)는 기존 SoC Reset 고정**, 나머지 BTNU/BTND/BTNL/BTNR **4개를 이벤트/디바운스 IP 입력**으로 사용, 내장 LED PWM, USB-UART(기존 AXI UART Lite), VGA, USB HID의 보드 PIC24→PS/2 경로, 내부 XADC 온도/전압, Serial Flash(선택/구성 데이터 보호), 내장 주변장치 통합.
 - **B단계 (외부 모듈, A단계 이후):** Pmod/XADC 전기 제약·레벨 변환 → 초음파·서보·모터·조도·DHT·BLE → 외부 주변장치 통합. 다른 보드·외부 장치의 소스는 자체 보드 핀·전원·극성 검증 전 직접 재사용 금지.
 - **IP 재사용 정책:** 기존 AMD GPIO/UART/Clock/Reset/XADC 등은 가능하면 재사용하고, 사용자 IP는 보드 내장 장치의 독립 Controller와 정밀 타이밍/이벤트/표시/상태 레지스터를 담당한다. Top은 Shell/Wrapper만 수행한다. 온보드 PIC24 USB Host를 FPGA USB Host IP로 오인하지 않는다.
 - **번호:** 제2부 A/B 후속 실습의 실제 장 번호는 추후 확정하며, 제3–5부 기존 21–50은 이전 초안 번호이다. 기존 01–41장 원본과 Vivado/Vitis 성공 프로젝트 유지.
 - **증거:** 문서 재편성만 완료. 11장 RTL/AXI TB, 합성·타이밍, 보드, HTML 등 추가 성공 증거는 확보되지 않음. 기존 [Issue #3](https://github.com/Yuul-Jung/soc/issues/3)는 11장 범위 그대로 유지.
 - **다음 재개 지점:** 11장 프로젝트 복제 가능 여부·실제 XDC/Clock/Reset/Address 확인 → FND 독립 Controller 및 TB → AXI4-Lite Wrapper/Register Map → Vitis C → 실물 검증 → HTML 및 Claude 교차 검토. P1-1/P1-2의 과거 대화 삭제 보류, 미병합 브랜치는 별도 진행.
+
+## 11. BTNC Reset 보존 및 4버튼 이벤트 입력 (2026-10-31 확인)
+
+- **제1부 실제 문서/제약 근거:** `MicroBlaze_V_SoC01_41/docs/soc01.md`, `docs/soc02.md`, `docs/soc10.md`, `code/soc10/basys3_soc10_integrated.xdc`. 100 MHz Clock 입력 `clk`은 W5, 중앙 버튼 `btnC`는 FPGA `U18`에 연결되어 SoC Reset에 사용됨.
+- **제2부 운영 기준:** 사용자 버튼 IP에 연결할 자원은 **BTNU/BTND/BTNL/BTNR의 방향 버튼 4개**이다. **BTNC는 기존 MicroBlaze V/Clocking Wizard/Processor System Reset 경로용**으로 보존한다. 버튼 5개 모두 사용자 이벤트로 사용한다는 이전 표현은 적용하지 않는다.
+- 핀 제약·실제 BD 포트·Reset 극성은 11장 이후 새 프로젝트 구성 시 다시 확인한다. 문서 정정은 구현/보드 시험 성공을 의미하지 않는다.
+- [CURRICULUM.md §3](CURRICULUM.md)에도 반영함. 제2부 FND 11장 우선순위 및 기존 제1부 구조는 변경 없음.
