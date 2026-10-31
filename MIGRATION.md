@@ -102,15 +102,17 @@ soc/
 | 구 37–40 | 성능·최적화·병렬화 | 제4부 최적화 및 제3부 심화 참고 | 실측 근거 필요 |
 | 구 41 | 최종 누적 검증 매트릭스 | 제4·5부 최종 평가 참고 | 실제 검증 근거 필요 |
 
-### 현 단계 FND·버튼 필수 IP 2종 + LED/FND PWM 선택 기능 → 외부 확장 (2026-10-31 최신 결정)
+### 내부 사용자 IP 3종(FND·PB SW·범용 PWM) → 외부 확장 (2026-10-31 최신 결정)
 
-- [CURRICULUM.md §3](CURRICULUM.md)의 최신 편성에 따라 **현 단계 필수 사용자 IP는 FND(11장)·방향버튼 Short/Long의 2종만**이다. LED PWM과 FND PWM은 해당 출력장치 밝기 조절 **선택 기능**으로 두고 독립 AXI PWM IP 패키징을 의무화하지 않는다. VGA와 PS/2 키보드·마우스는 현 단계 필수 실습에서 빼고 **외부 카메라 영상 입력 + VGA 표시 + PS/2 마우스 커서·관심영역 제어** 후속 심화 묶음으로 보류한다. 키보드는 필요 시 별도 선택. 장 번호 및 제3/4부 배치 미정이다.
-- 기존 01–10장의 AXI GPIO(Switch/LED), UART Lite, Timer, INTC, MicroBlaze V/BRAM/Clock/Reset은 **재사용**한다. GPIO LED 출력과 선택적 PWM 출력을 같은 물리 핀에 이중 연결하지 않으며, 통합 시 `led_output_controller`에서 단일 출력 경로를 선택한다. 기본 프로젝트와 성공 원본은 변경하지 않고 별도 프로젝트에서 구성한다. 내부 XADC Wizard도 필요 시 AMD 기존 IP로 활용하되 신규 사용자 IP로 세지 않는다.
+- [CURRICULUM.md §3](CURRICULUM.md)의 최신 편성에 따라 **제2부 내부 사용자 IP는 FND(11장)·방향버튼 Short/Long·범용 PWM의 3종**이다. **범용 PWM Core 및 CPU 제어 인터페이스를 제2부 독립 재사용 IP로 개발**하며, 각 LED/FND/모터 실습에서 그 IP의 사용 여부는 기능·전기 제약을 따라 선택한다. 2026-10-31 이전의 'PWM은 별도 IP 아님' 기록은 과거 안이다. VGA와 PS/2 키보드·마우스는 현 단계 필수 실습에서 빼고 **외부 카메라 영상 입력 + VGA 표시 + PS/2 마우스 커서·관심영역 제어** 후속 심화 묶음으로 보류한다. 키보드는 필요 시 별도 선택. 장 번호 및 제3/4부 배치 미정이다.
+- 기존 01–10장의 AXI GPIO(Switch/LED), UART Lite, Timer, INTC, MicroBlaze V/BRAM/Clock/Reset은 **재사용**한다. GPIO LED 출력과 범용 PWM 출력을 같은 물리 핀에 이중 연결하지 않으며, LED 통합 시 `led_output_controller`에서 단일 출력 경로를 선택한다. FND에는 자리 스캔 동기화가 필요하고 모터에는 외부 드라이버가 필요하다. 기본 프로젝트와 성공 원본은 변경하지 않고 별도 프로젝트에서 구성한다. 내부 XADC Wizard도 필요 시 AMD 기존 IP로 활용하되 신규 사용자 IP로 세지 않는다.
 - **내장 Quad SPI Flash 32 Mbit(4 MB)는 비휘발성 FPGA 설정 비트스트림 보존용으로 취급**한다. 안전상 Flash 사용자 IP와 쓰기 실습은 제2부에서 제외한다. 설정 데이터 보호 및 모드/재구성은 제1부 인프라/부팅 설명만 참조한다. 공식 근거: [Digilent Basys3 Reference Manual §2·§3](https://www.amd.com/content/dam/amd/en/documents/university/aup-boards/XUPBasys3/documentation/Basys3_rm_8_22_2014.pdf).
 - 후속 영상 심화에서 키보드·마우스의 Basys3 USB Host 경로는 PIC24→PS/2 변환을 활용하고, USB 허브를 통한 키보드/마우스 동시 사용은 전제로 하지 않는다. 현재는 별도 프로젝트·IP·HTML을 생성하지 않는다.
 - B단계 **외부** HC-SR04/SG90/L298N/조도/DHT/BLE 등은 A단계 이후 연계하며 내용은 유지한다.
 - 기존 이관 대장에 표시된 11–20 및 21–50 번호나 `dev-board` 자산 대응은 **이전 편성의 역사적 참고표**이다. 기존 `MicroBlaze_V_SoC01_41/` 원본·URL/성공 Vivado/Vitis 프로젝트는 변경하지 않으며, 신규 HTML/장 번호는 실습 성과·검증을 기준으로 별도 확정한다.
 - 이번 커밋은 **교육과정 이관 방침만 기록**한다. RTL 시뮬레이션·AXI·합성/타이밍·실물·웹 통과를 주장하지 않는다.
+
+**Claude 교차 검토 및 검증 경계(2026-10-31):** [Issue #4](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544578154)의 3종/IP 편성·PWM 정당화·11장 3단계 분할, [Issue #5](https://github.com/Yuul-Jung/soc/issues/5#issuecomment-6544578358)의 5초 축소 시뮬레이션, [Issue #3](https://github.com/Yuul-Jung/soc/issues/3#issuecomment-6544578500)의 FND 자리 동기화 제안을 채택한다. ChatGPT가 AMD [PG079](https://docs.amd.com/r/en-US/pg079-axi-timer)의 AXI Timer PWM 두 Timer→한 채널, TLR0/TLR1 역할과 공식 [Master XDC](https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc)의 FND/방향 버튼 핀을 독립 대조했다. 11장 번호는 유지하고 RTL→AXI→Vitis/보드의 절차 묶음만 분리한다. `dev-board/rtl/rtl04_pwm_led`는 범용화 시 참고 원본으로만 사용하며, PWM 주기·다채널·극성·출력 동기화를 별도 구현·시험한다. 실제 RTL/AXI/보드 검증은 새 교과 범위에서 미실시.
 
 ## 6. dev-board 자산 편입 매핑
 
