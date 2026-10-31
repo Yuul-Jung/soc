@@ -102,6 +102,13 @@ soc/
 | 구 37–40 | 성능·최적화·병렬화 | 제4부 최적화 및 제3부 심화 참고 | 실측 근거 필요 |
 | 구 41 | 최종 누적 검증 매트릭스 | 제4·5부 최종 평가 참고 | 실제 검증 근거 필요 |
 
+### Basys3 내장 I/O 우선 확장 원칙 (2026-10-31 최신 결정)
+
+- [CURRICULUM.md §3](CURRICULUM.md)에 따라 **내장 4자리 FND·Switch/LED·Button·PWM(LED)·USB-UART·VGA·USB HID(보드 PIC24의 PS/2 변환)·내부 XADC·Serial Flash(선택)를 먼저 IP화·통합**하고, 이후 외부 HC-SR04/SG90/L298N/조도/DHT/BLE 등을 연결한다.
+- 아래 기존 11–20 과제 번호 및 `dev-board` 대응표는 **이전 편성의 역사적 참고 매핑**이다. 최신 제2부 실행 순서·장 번호로 간주하지 않으며 `CURRICULUM.md §3`를 우선 적용한다.
+- `dev-board` 자산의 외부 74HC595와 Basys3 내장 FND는 직접 호환되지 않는다. 내장 GPIO/UART/Clock/Reset/XADC는 가능한 AMD IP 재사용, 사용자 IP는 정밀 타이밍·버튼 이벤트·VGA/PS2·표시 Controller에 집중한다.
+- 재편성에 따른 실제 HTML 이관과 기존 페이지 이동·삭제·파일명 변경은 하지 않았고, 새 버전/검증 후 별도 Gate로 처리한다.
+
 ## 6. dev-board 자산 편입 매핑
 
 정본 저장소: https://github.com/Yuul-Jung/dev-board
