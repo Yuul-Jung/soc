@@ -33,7 +33,7 @@
 | 구간 | 현재 확인된 단계 | 다음 확인 과제 |
 |---|---|---|
 | 제1부 01–10 | 기존 교재 링크 존재; 추가 웹/실물 검증은 별도 | 원본·성공 프로젝트 보존, 링크/설정/증거 재점검 |
-| 제2부 11장부터 (종료 번호 미정) | **내장 I/O IP화 → 외부 Pmod/모듈 확장**으로 재편성. 교육과정·Issue 등록, 실습/검증 미진행 | FND(11장) → GPIO/버튼/PWM/UART/VGA/PS2/XADC/온보드 통합 → 외부 센서/구동기 |
+| 제2부 11장부터 (종료 번호 미정) | **신규 사용자 IP 5개만 개발 → 기존 AMD IP와 통합 → 외부 모듈 확장**. 설계 기준만 확정, 새 구현/검증 미확인 | FND(11장) → 4버튼 Short/Long → LED PWM → VGA → PS/2 키보드/마우스 공통 → 내장 통합 → 외부 센서/구동기 |
 | 제3부 (초기 21–30, 재번호 예정) | 가속기·NPU 설계안 | 제2부 확정 후 번호 조정, 실습/정답 모델/자원 제약 검증 |
 | 제4부 (초기 31–40, 재번호 예정) | 고급 SoC 통합 설계안 | 데이터 경로·CDC·Reset·타이밍 검증 |
 | 제5부 (초기 41–50, 재번호 예정) | RTL·UVM 검증 설계안 | 시뮬레이터 지원, 독립 TB/로그 확보 |
@@ -135,13 +135,14 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **현 상태:** Issue 등록과 교육과정 변경만 완료. RTL 시뮬레이션·AXI·합성/타이밍·실물 보드·웹 검증 **모두 미확인**. Claude의 담당 수락/독립 리뷰도 미확인.
 - **관련 미해결:** Issue #2의 P1-1/2, `docs/soc07-10-guided-revision-20261027` 및 `soc08-procedure-20261027` 미병합 브랜치, 새 대화 복원 시험은 계속 추적한다. 이 항목들을 해결했다고 기록하지 않는다.
 
-## 10. 제2부 내장 I/O 우선 → 외부 모듈 확장 (2026-10-31 사용자 최신 결정)
+## 10. 제2부 신규 5개 사용자 IP → 기존 IP 재사용 → 외부 확장 (2026-10-31 최신 결정)
 
 - **단일 기준:** [CURRICULUM.md §3](CURRICULUM.md)의 2026-10-31 재편성. 5부 체계 유지, 제2부 장 수 고정 금지, 11장 FND부터 시작.
-- **A단계 (Basys3 본체 우선):** 4자리 FND, 16 Switch·16 LED(AMD AXI GPIO 재사용), 5개 버튼 중 **BTNC(U18)는 기존 SoC Reset 고정**, 나머지 BTNU/BTND/BTNL/BTNR **4개를 디바운스·짧은 누름·5초 이상 긴 누름 이벤트 IP 입력**으로 사용, 내장 LED PWM, USB-UART(기존 AXI UART Lite), VGA, USB HID의 보드 PIC24→PS/2 경로, 내부 XADC 온도/전압, Serial Flash(선택/구성 데이터 보호), 내장 주변장치 통합.
+- **A단계 (신규 사용자 IP 정확히 5종):** ① FND Controller(11장 시작), ② BTNC Reset 보존 + 4방향 버튼 Short(<5s)/Long(≥5s) Controller, ③ 내장 LED PWM Controller, ④ VGA Controller, ⑤ USB HID→보드 PIC24→PS/2를 수신하는 키보드/마우스 공통 Input Controller. 키보드·마우스는 한 번에 하나만 연결하며 공통 수신/분리 디코더로 구성. **신규 사용자 IP 5개 이외의 내장 IP 추가 편성 금지**.
 - **B단계 (외부 모듈, A단계 이후):** Pmod/XADC 전기 제약·레벨 변환 → 초음파·서보·모터·조도·DHT·BLE → 외부 주변장치 통합. 다른 보드·외부 장치의 소스는 자체 보드 핀·전원·극성 검증 전 직접 재사용 금지.
-- **IP 재사용 정책:** 기존 AMD GPIO/UART/Clock/Reset/XADC 등은 가능하면 재사용하고, 사용자 IP는 보드 내장 장치의 독립 Controller와 정밀 타이밍/이벤트/표시/상태 레지스터를 담당한다. Top은 Shell/Wrapper만 수행한다. 온보드 PIC24 USB Host를 FPGA USB Host IP로 오인하지 않는다.
-- **번호:** 제2부 A/B 후속 실습의 실제 장 번호는 추후 확정하며, 제3–5부 기존 21–50은 이전 초안 번호이다. 기존 01–41장 원본과 Vivado/Vitis 성공 프로젝트 유지.
+- **기존 AMD IP 재사용:** AXI GPIO(Switch/LED), AXI UART Lite, AXI Timer, AXI INTC, BRAM, Clock/Reset, 필요 시 XADC Wizard. 이들은 신규 사용자 IP 5종에 포함하지 않으며 반복 실습 장을 별도로 두지 않는다. LED GPIO와 PWM의 핀 동시구동은 기능 Controller에서 해결하고 Top은 Shell 역할만 수행한다.
+- **Flash 용도/제외:** Basys3 32 Mbit(4 MB) 직렬 Quad SPI Flash는 FPGA 구성 비트스트림을 저장하여 전원 재인가 시 재구성하는 것이 주용도. 공식 매뉴얼에 사용자 데이터 여유 공간도 있으나 구성 이미지 보호가 우선이므로 **새 사용자 IP 실습/쓰기 실습 제외**. 이 내용은 FPGA 구성·부팅 절차에서만 언급한다.
+- **번호:** 11장 FND 다음 4개 IP 장 번호는 아직 미확정. 통합 작업은 신규 6번째 IP가 아니며 B단계 외부 주변장치 교과는 계속 유지한다. 제3–5부 초기 21–50은 잠정 번호이고 기존 01–41장 원본/프로젝트는 보존한다.
 - **증거:** 문서 재편성만 완료. 11장 RTL/AXI TB, 합성·타이밍, 보드, HTML 등 추가 성공 증거는 확보되지 않음. 기존 [Issue #3](https://github.com/Yuul-Jung/soc/issues/3)는 11장 범위 그대로 유지.
 - **다음 재개 지점:** 11장 프로젝트 복제 가능 여부·실제 XDC/Clock/Reset/Address 확인 → FND 독립 Controller 및 TB → AXI4-Lite Wrapper/Register Map → Vitis C → 실물 검증 → HTML 및 Claude 교차 검토. P1-1/P1-2의 과거 대화 삭제 보류, 미병합 브랜치는 별도 진행.
 
@@ -160,3 +161,11 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **검증 계획:** 4999/5000/5001 ms 경계, 바운스, 동시 4버튼, Reset, Long 후 Release, Sticky/clear/IRQ/AXI backpressure 테스트.
 - **증거 상태:** 요구사항만 문서화. RTL 구현·TB PASS·합성/타이밍·Basys3 보드 실험·웹 배포는 **미실시/미확인**.
 - **정본:** [CURRICULUM.md §3](CURRICULUM.md). 11장 FND 시작 작업과 본 버튼 IP 후속 순서는 유지하며 아직 신규 장 번호 확정 없음.
+
+## 13. 제2부 내장 사용자 IP 5개 범위 확정 및 구성 Flash 처리 (2026-10-31)
+
+- **최종 사용자 지시:** 제2부 내장 신규 IP는 **FND, 방향버튼(Short/Long을 1종으로), LED PWM, VGA, 키보드·마우스 공통 PS/2 총 5개**이다. 기존 AMD IP는 재사용하며 내장 XADC 모니터/Flash/Switch·LED GPIO/UART는 별도 사용자 IP로 만들지 않는다.
+- **USB 입력 주의:** Basys3 PIC24가 USB 키보드 또는 마우스를 PS/2로 변환하며 USB 허브는 미지원. 하나의 PS/2 Input IP 내에 공통 수신 및 장치별 디코더를 둔다. 두 장치 동시 연결을 목표로 하지 않는다.
+- **Flash:** 32 Mbit(4 MB) 비휘발성 Serial Flash의 주용도는 FPGA 전원 투입 시 불러올 구성 비트스트림 보존이다. Vivado의 Flash 구성 안내 외에는 사용자 IP 개발/쓰기 실습에서 제외하고, 기존 비트스트림과 구성 모드를 보존한다. 공식 근거: Digilent Basys3 Reference Manual §2/§3.
+- **정본:** [CURRICULUM.md §3](CURRICULUM.md) 커밋 `62df7923a920cb489f24ddc0bbd7d6f3297c3c75`를 출발 기준으로 사용하며 매 재개 시 HEAD 재조회.
+- **이후 단계:** 11장 FND Issue #3 → 버튼 Issue #5 → PWM → VGA → PS/2 → 기존 AMD IP들과 통합 → B단계 외부 모듈; 실물/RTL/AXI/합성/웹 검증은 새 범위에 대해 아직 미실시.
