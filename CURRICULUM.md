@@ -34,9 +34,9 @@
 
 실제 페이지 경로는 `MicroBlaze_V_SoC01_41/pages/soc/` 아래이며, 07–10장에는 일부 `_1_` 형식의 C 코드 해설 보조 페이지가 있다. `part01/index.html`은 현재 이 원본으로 연결한다. 페이지의 '완료' 배지는 **사이트 표기**이며 본 문서가 하드웨어 전수 검증을 새로 확인했다는 뜻은 아니다.
 
-## 3. 제2부 — Basys3 신규 사용자 IP 5개 → 외부 주변장치 확장 (11장부터, 장 수 미확정)
+## 3. 제2부 — Basys3 핵심 사용자 IP 4종 + LED PWM 선택 기능 → 외부 주변장치 확장 (11장부터, 장 수 미확정)
 
-> **2026-10-31 사용자 최신 확정:** 제1부에서 이미 학습한 AXI GPIO/UART/Timer/INTC/Clock/Reset은 **재사용**하고, Basys3 내장 입출력에서 새 사용자 IP는 **FND·4방향 버튼·LED PWM·VGA·PS/2 키보드/마우스 공통 입력, 총 5개**만 제작한다. 이후 보드에 없는 외부 모듈은 제2부 B단계에서 확장한다. 첫 실습은 11장 FND AXI IP([Issue #3](https://github.com/Yuul-Jung/soc/issues/3))이며 나머지 장 번호는 추후 확정한다.
+> **2026-10-31 사용자 최신 확정:** 제1부에서 이미 학습한 AXI GPIO/UART/Timer/INTC/Clock/Reset은 **재사용**한다. **독립 사용자 IP 핵심 4종은 FND·4방향 버튼·VGA·PS/2 키보드/마우스 공통 입력**이며, **LED PWM은 기존 LED 점등 기능에 밝기 조절을 추가하는 선택 옵션**이다. 기존의 '5개 IP' 표현은 **5개 기능/실습 주제**를 가리키되 PWM을 별도 AXI 주변장치 IP로 반드시 패키징한다는 뜻은 아니다. 이후 보드에 없는 외부 모듈은 제2부 B단계에서 확장한다. 첫 실습은 11장 FND AXI IP([Issue #3](https://github.com/Yuul-Jung/soc/issues/3))이며 나머지 장 번호는 추후 확정한다.
 
 ### 3.1 내장 자원 목록과 구현 경계
 
@@ -47,7 +47,7 @@
 | 4자리 7-Segment FND | **사용자 IP**: `fnd_scan_controller` + AXI4-Lite 레지스터 | AN/Segment Active-Low, 자리 스캔·표시 데이터 반영 타이밍 |
 | 16 Switch / 16 LED | **기존 AXI GPIO 재사용**; 필요 시 LED 패턴/상태 Controller만 추가 | 기존 제1부 GPIO를 중복 재제작하지 않음 |
 | 5 Pushbutton (BTNC는 기존 Reset) | **BTNU/BTND/BTNL/BTNR 방향 버튼 4개**: 2FF 동기화·디바운스·Short/Long(5초 이상) 이벤트·IRQ + AXI 레지스터 | **BTNC(U18)는 제1부 SoC Reset 용도로 유지**. 버튼별 독립 타이머·5초 경계·중복 이벤트·동시 입력·리셋·이벤트 유실 검증 |
-| LED 밝기·패턴 | **사용자 IP**: PWM Controller + AXI 제어; 출력은 내장 LED | 듀티 0/100%, 주기·업데이트 경계; 외부 LED 불필요 |
+| LED 밝기·패턴 | **선택적 확장 기능**: 제1부 AXI GPIO LED ON/OFF는 그대로 사용하고, 필요 시 LED 출력 경로에 재사용형 `pwm_core`를 추가 | 기본 모드는 GPIO LED 출력, 선택 모드에서 PWM 밝기 조절. 별도 AXI PWM IP 패키징은 필수 아님; 출력 핀은 한 경로에서만 구동 |
 | USB-UART Bridge | **기존 AXI UART Lite 재사용**; 명령/상태 Controller 또는 C 응용 추가 | USB-UART 브리지 자체를 FPGA에서 재구현하지 않음 |
 | 12-bit VGA 출력 | **사용자 IP**: 동기신호/픽셀 타이밍·패턴/문자 출력 + AXI 제어 | 모니터는 표시 확인 장치; FPGA 타이밍·자원 검증 |
 | USB Type-A 키보드·마우스 | **사용자 공통 PS/2 Input IP 1개**: 수신부 공유·키보드 스캔코드/마우스 패킷 해독은 분리 (보드 PIC24가 USB HID를 PS/2로 변환) | FPGA에 USB Host를 새로 만들지 않음; USB 허브 미지원으로 키보드 또는 마우스 **한 번에 한 장치**, PS2_CLK/PS2_DAT 및 풀업 확인 |
@@ -57,20 +57,22 @@
 | 3개 디지털 Pmod + XADC용 Pmod | **외부 모듈 연결용 포트**; 내부 기능/센서로 간주하지 않음 | 보드 XDC, I/O 전압·전원·핀 배치 선확인 |
 | JTAG/PROG/전원 상태 LED | FPGA 설정·보드 지원 회로 | 제어 가능한 사용자 GPIO로 오인하거나 별도 주변장치 IP 대상에 넣지 않음 |
 
-### 3.2 제2부 A단계 — 신규 사용자 IP 5개만 개발 (보드 내장 입출력)
+### 3.2 제2부 A단계 — 핵심 사용자 IP 4종과 LED 선택 기능 1종
 
 | 개발 순서 | 사용자 IP | 핵심 기능 및 기존 IP 연계 |
 |---|---|---|
 | **11장 (기존 착수점)** | **① FND Controller** | 4자리 내장 FND 자리 스캔·Active-Low 패턴·AXI4-Lite 레지스터. [작업 Issue #3](https://github.com/Yuul-Jung/soc/issues/3) |
 | 후속 | **② Button Controller** | **BTNC(U18)는 SoC Reset 유지**. BTNU/BTND/BTNL/BTNR 4개에 디바운스·Short(<5초)/Long(≥5초)·이벤트·IRQ. [요구사항 Issue #5](https://github.com/Yuul-Jung/soc/issues/5) |
-| 후속 | **③ LED PWM Controller** | 내장 LED의 PWM 밝기·Duty·패턴 제어; 제1부 AXI GPIO와 LED 출력 구동권 충돌 없도록 모드별 소유권 설계 |
+| 후속 선택 | **③ LED 밝기 옵션 (`pwm_core`)** | 기본 점등은 제1부 AXI GPIO 유지. PWM이 필요할 때만 별도 실습 프로젝트에서 구현 후, 통합 시 LED 출력 Controller가 GPIO/PWM 중 한 경로를 선택. **독립 AXI PWM IP는 필수 아님** |
 | 후속 | **④ VGA Controller** | 보드의 12-bit VGA 출력, HS/VS·픽셀 타이밍·표시 패턴·문자/상태 출력 |
 | 후속 | **⑤ PS/2 Input Controller** | 보드 PIC24가 USB HID를 PS/2로 변환한 신호를 1개의 공통 수신 IP로 받고, 키보드와 마우스는 서로 다른 패킷 디코더 적용. **키보드/마우스 동시 사용 전제 금지** |
-| **신규 IP 수에 포함하지 않음** | 내장 장치 통합 SoC | 앞의 5개와 제1부 AXI GPIO/UART/Timer/INTC를 통합; 필요 시 XADC Wizard를 기존 AMD IP로 추가하여 상태 출력 |
+| **신규 IP 수에 포함하지 않음** | 내장 장치 통합 SoC | 검증된 핵심 4종 IP 및 선택적 LED PWM 기능을 필요에 따라 제1부 AXI GPIO/UART/Timer/INTC와 통합. XADC Wizard는 기존 AMD IP 이용 |
 
 **제1부 재사용:** Switch/LED용 AXI GPIO, USB-UART용 AXI UART Lite, AXI Timer, AXI Interrupt Controller, MicroBlaze V·BRAM·Clock/Reset을 **새 사용자 IP로 다시 만들지 않는다**. 기존 IP 사용법만 반복하는 별도 장도 두지 않는다. 하나의 LED 핀을 GPIO와 PWM이 동시에 구동하지 않도록 MUX/소유권 결정은 기능 Controller에서 수행하고 Top은 연결만 한다.
 
-**신규 사용자 IP를 5개로 제한하는 결정은 각 IP 내부의 하위 RTL 모듈 수를 5개로 제한하는 뜻이 아니다.** PS/2 수신 코어, keyboard decoder, mouse packet decoder 등은 같은 다섯 번째 사용자 IP 안에서 분리할 수 있다. 제2부 전체 장 수는 외부 B단계를 포함해 별도 결정한다.
+**내장 실습 주제 5개와 독립 AXI IP 개수는 다르다.** 핵심 IP 4개(FND·Button·VGA·PS/2)에 LED 밝기 조절 **선택 기능** 1개를 더한 구성이며, PWM만을 위한 별도 AXI 패키징은 요구하지 않는다. GPIO LED 기본 점등과 PWM의 물리 핀 중복 구동은 금지한다. 통합 시에는 독립 `led_output_controller`가 GPIO 출력을 그대로 전달하거나 PWM 출력을 선택하여 단일 `led` 핀을 구동한다. **제1부 성공 프로젝트의 출력 배선을 직접 변경하지 않고 새 실습 프로젝트에서만 구성**한다. CPU에서 PWM Duty를 실시간 설정하는 과제를 선택할 경우 제어값을 위한 AXI 레지스터 또는 기존 GPIO 비트 재할당 등 별도 제어 경로를 설계·검증한다. PWM을 사용하지 않으면 기존 AXI GPIO만으로 LED 점등을 수행한다.
+
+**신규 사용자 IP 내부의 하위 RTL 모듈 수는 장별 기능에 따라 자유롭게 정할 수 있다.** PS/2 수신 코어, keyboard decoder, mouse packet decoder 등은 같은 다섯 번째 사용자 IP 안에서 분리할 수 있다. 제2부 전체 장 수는 외부 B단계를 포함해 별도 결정한다.
 
 **직렬 Flash 보존:** Basys3 32 Mbit Quad SPI Flash는 FPGA 구성 비트스트림을 비휘발성으로 저장하는 것이 대표 용도다. 보드의 모드 선택에 따라 재전원 시 자동 로드할 수 있다. 공식 문서상 여유 사용자 데이터 영역은 있지만, **구성 파일 손상 위험을 피하기 위해 제2부 Flash 접근/쓰기 IP 실습은 삭제**한다. 필요 시 비트스트림 영구 저장은 Vivado 프로그램/부팅 절차에서만 설명한다. 공식 근거: [Digilent Basys3 Reference Manual, §2 FPGA Configuration / §3 Memory](https://www.amd.com/content/dam/amd/en/documents/university/aup-boards/XUPBasys3/documentation/Basys3_rm_8_22_2014.pdf).
 
@@ -91,7 +93,7 @@
 
 ### 3.4 공통 구현·검증 원칙
 
-1. 신규 5개 IP의 제어형 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**을 기준으로 하되, VGA/PS/2처럼 외부 신호 처리 방식은 특성에 맞게 설계한다. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
+1. 신규 핵심 IP 4종의 제어형 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**을 기준으로 하되, VGA/PS/2처럼 외부 신호 처리 방식은 특성에 맞게 설계한다. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
 2. 제1부에서 `btnC`(Center Button, FPGA 핀 U18)를 `Clocking Wizard`/`Processor System Reset`의 시스템 Reset 입력으로 사용했다. 제2부에서도 **해당 Reset 경로를 보존**하고, 버튼 이벤트 IP는 **방향 버튼 4개(BTNU/BTND/BTNL/BTNR)**만 연결한다. RESET 용도로 할당한 버튼은 동시에 일반 이벤트 입력으로 쓰지 않는다. 원본 근거: `MicroBlaze_V_SoC01_41/docs/soc01.md`, `docs/soc02.md`, `docs/soc10.md`, `code/soc10/basys3_soc10_integrated.xdc`.
 3. 모든 새 IP에 대해 `Register Map`, AXI 핸드셰이크·리셋·비트 폭, 독립 RTL TB, Vivado 합성/타이밍, Basys3 실물, 단계형 HTML을 **서로 다른 증거**로 관리한다.
 4. `dev-board/rtl/rtl08_hc595_7seg/`는 **외부 74HC595 용도**로 Basys3 내장 FND에 직접 사용할 수 없다. 단지 참고하며, 참고 원본 SHA 및 수정 이력을 남긴다.
