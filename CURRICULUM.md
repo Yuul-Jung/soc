@@ -77,17 +77,17 @@
 
 ### 3.3 제2부 B단계 — 보드에 없는 외부 주변장치 연결 (A단계 이후)
 
-**외부 GPIO 확장 기준(2026-11-01 사용자 결정):** 제1부 AXI GPIO의 **기존 Basys3 내장 SW[15:0] 입력/LED[15:0] 출력 및 핀 제약은 변경하지 않는다.** 제2부는 기존 성공 SoC의 **별도 복제 프로젝트에서** 추가 **AMD AXI GPIO 인스턴스(`axi_gpio_external`)**를 AXI 버스에 연결해 외부 디지털 센서·출력 모듈을 한곳에 수용한다. AXI GPIO를 센서마다 새로 만들지 않으며, 필요할 때만 폭·인스턴스를 확장한다. 새 사용자 정의 GPIO IP를 만드는 것이 아니다.
+**외부 GPIO 확장 및 RTL 제어 기준(2026-11-01 사용자 최신 결정):** 제1부 AXI GPIO의 **기존 Basys3 내장 SW[15:0] 입력/LED[15:0] 출력 및 핀 제약은 변경하지 않는다.** 제2부는 성공 SoC의 **별도 복제 프로젝트에 추가 AMD AXI GPIO(`axi_gpio_external`)**를 두어 여러 외부 모듈의 **CPU 측 입력 상태 조회/소프트웨어 출력 제어**를 공통 수용한다. 그러나 **CDS 입력의 LED 제어는 절대로 MicroBlaze V Polling → AXI GPIO Write 경로를 거치지 않는다.** CDS DO는 FPGA 내부 **독립 RTL Controller**로 들어가 외부 LED를 하드웨어에서 직접 구동하며, 동일 입력의 동기화된 상태를 **추가 AXI GPIO 입력에도 분기**하여 CPU가 관찰할 수 있게 한다. 외부 모듈마다 AXI GPIO 인스턴스를 복제하지 않고, RTL의 고유 제어·필터링 기능은 재사용 가능한 Controller로 구현한다.
 
 | 외부 GPIO 인스턴스 예시 | 방향/폭 | 연결 후보 | 실습 기준 |
 |---|---|---|---|
-| `axi_gpio_external` Channel 1 | **All Inputs / 8bit (예시)** | CDS 디지털 DO, PIR, 터치 TTP223, 리드 스위치, TCRT5000 등의 디지털 출력 | 입력 비트별 극성·풀업·동기화·센서 출력 유지 시간을 확인. 기존 SW 16개 입력과 공유/대체하지 않음 |
-| `axi_gpio_external` Channel 2 | **All Outputs / 8bit (예시)** | 외부 LED, 능동 부저, 드라이버를 갖춘 릴레이/MOSFET 입력 | 모듈 구동회로/전원/공통 GND·전압 확인. 기존 LED 16개 출력과 공유/대체하지 않음 |
+| `axi_gpio_external` Channel 1 | **All Inputs / 8bit (예시)** | CDS 디지털 DO, PIR, 터치 TTP223, 리드 스위치, TCRT5000 등의 디지털 출력 상태 | CPU용 **모니터링 경로**. 실시간 RTL Controller가 사용할 센서 신호는 병렬 분기하되 별도 출력의 제어 루프를 CPU로 우회시키지 않음. 입력 극성·풀업·동기화 검토 |
+| `axi_gpio_external` Channel 2 | **All Outputs / 8bit (예시)** | **CPU가 직접 제어하는** 외부 LED, 능동 부저, 릴레이/MOSFET 구동 입력 | **CDS→RTL 자동 제어 외부 LED는 이 AXI GPIO 출력과 분리**하여 RTL Controller가 단독 구동. 한 물리 핀에 AXI GPIO·RTL 출력 동시 연결 금지 |
 
-- 위 비트 폭·모듈별 비트 번호·JA/JB/JC 핀은 **예시이며 미확정**이다. 각 AXI GPIO 채널은 IP 설정에 따른 방향/폭을 가지며, 실제 Basys3 Pmod 가용 핀과 다른 확장 IP의 할당을 대조해 XDC를 작성한다.
-- 첫 기준 실습은 **CDS 디지털 DO → 추가 AXI GPIO 입력 → MicroBlaze V의 C 프로그램 → UART 상태 출력/기존 LED 상태 표시**로 잡는다. 기존 LED를 상태 표시로 활용할 때는 **기존 GPIO의 LED 출력 레지스터를 CPU에서 명시적으로 제어**하며, 제1부 SW→LED 원래 소프트웨어 동작이 그대로 병행되는 것으로 가정하지 않는다.
-- 외부 모듈의 3.3V 신호 호환성, 5V 출력 레벨 변환, 접점·오픈 컬렉터용 풀업을 실물 결선 전에 검증한다. 별도 정밀 타이밍/프로토콜(HC-SR04 Echo 측정, DHT22 단일선 프레임, 로터리 엔코더 A/B 디코드 등)은 **AXI GPIO 비트만으로 모든 기능을 처리한다고 단정하지 않으며** 전용 Controller/IP를 검토한다.
-- 제1부 성공 Vivado/Vitis 원본과 기존 SW·LED XDC, 주소맵은 보존하고, `axi_gpio_external` 인스턴스의 새 AXI 주소·외부 포트·XDC·새 XSA/Vitis 애플리케이션을 복제본에서 추가·검증한다. **현재는 설계 결정만 반영했으며 실물 시험/합성/AXI 테스트는 미실시**다.
+- 위 비트 폭·모듈별 비트 번호·JA/JB/JC 핀은 **예시이며 미확정**이다. 각 AXI GPIO 채널은 IP 설정에 따른 방향/폭을 가지며, 실제 Basys3 Pmod 가용 핀과 다른 확장 IP의 할당을 대조해 XDC를 작성한다. **RTL 전용 외부 LED 출력 핀은 AXI GPIO 채널 출력 비트와 물리적으로 분리**한다.
+- **첫 CDS RTL 기준 실습:** **CDS DO → 비동기 입력 동기화/필요 시 안정화 필터 RTL → 외부 LED**를 **CPU와 독립적으로 직접 제어**한다. 병렬 관찰 경로는 `CDS 동기화 상태 → 추가 AXI GPIO 입력 → MicroBlaze V(UART 상태 출력 선택)`이다. **CPU는 제어 루프에 포함되지 않는다.** 기존 내장 LED 16개는 제1부 AXI GPIO 연결을 유지하고, CDS용 LED는 별도 Pmod 출력과 적절한 전류 제한 회로로 사용한다. 간단한 분기 회로도 Top이 아니라 재사용 가능한 Controller/Core에 구현한다.
+- 외부 모듈의 3.3V 신호 호환성, 5V 출력 레벨 변환, 접점·오픈 컬렉터용 풀업을 실물 결선 전에 검증한다. CDS DO 극성은 **실제 모듈에서 밝음/어두움 상태를 확인하여 RTL에서 해석**한다. 별도 정밀 타이밍/프로토콜(HC-SR04 Echo 측정, DHT22 단일선 프레임, 로터리 엔코더 A/B 디코드 등)은 **AXI GPIO 비트만으로 모든 기능을 처리한다고 단정하지 않으며** 전용 Controller/IP를 검토한다.
+- 제1부 성공 Vivado/Vitis 원본과 기존 SW·LED XDC, 주소맵은 보존하고, 복제본에서 **CDS RTL Controller + 외부 LED 전용 핀**을 먼저 연결·검증한다. CPU 모니터링 기능이 필요하면 `axi_gpio_external`의 새 AXI 주소·외부 GPIO 포트·XDC·새 XSA/Vitis 애플리케이션을 추가한다. **CPU 프로그램 없이도 CDS 변화에 LED가 반응하는지**를 독립 실물 검증하며, RTL 시뮬레이션·합성·실물 시험은 **현재 미실시**다.
 
 
 | 권장 순서 | 외부 모듈 / 실습 | 기술 및 안전 기준 | `dev-board` 후보 |
