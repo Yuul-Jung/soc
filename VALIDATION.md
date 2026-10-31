@@ -55,6 +55,23 @@
 | 실물 | 보드 ID·XSA/bitstream·동작 | GUI 캡처, 측정 로그 |
 | 웹 | 링크·그림·다운로드·모바일·한글 | URL, 검사 로그 |
 
+### 제2부 CDS 외부 GPIO/RTL SoC 통합 검증 게이트 (2026-11-01, 수행 전)
+
+**[CURRICULUM.md §3.3](CURRICULUM.md)의 사용자 Top 또는 BD Add Module 연결 설계안에 적용한다.** 현재 C안(CDS DO → RTL Controller → 외부 LED)을 기준으로 하되, A안(내장 LED MUX)은 **미확정 선택 실습**이므로 필수 PASS 대상으로 추가하지 않는다.
+
+| 검증 축 | 확인해야 할 사항 | 증거 및 판정 |
+|---|---|---|
+| 구조·원본 보존 | 제1부 성공 프로젝트/원본 BD·내장 `SW[15:0]`/`LED[15:0]` 경로·XDC 파일을 그대로 보존. 복제본에서 **C안도 새 사용자 Top 또는 BD Add Module, CDS DO·외부 LED 포트 추가가 필요**함을 파일/계층으로 확인 | 실제 경로·파일 비교, Vivado Design Sources/BD 캡처 (미실행) |
+| 클록/리셋 단일 도메인 | CDS 입력 2FF 동기화·필터 및 `axi_gpio_external` 관찰은 **기존 SoC AXI 측 Clock Wizard 출력 클록**을 공통 사용하도록 우선 설계. 실제 출력 주파수·Reset 극성·`clk_out1`/`peripheral_aresetn` 명칭·BD/Wrapper 포트 노출 확인 | BD 포트/Clock Summary, Reset 연결 스크린샷, CDC·Reset 정적 검토. Clock/Reset 외부 미노출 시 **BD 포트 내보내기 + XSA 재생성** 필요성 기록 |
+| 클록 교차 예외 | 외부 보드 100MHz 클록을 새 Controller에 쓰면서 BD AXI는 별도 Clock Wizard 클록을 쓰는 경우, **동일 도메인이라고 간주하지 않음**. 1비트 상태 동기화/핸드셰이크 및 타이밍 제약/리셋 해제 검증 | CDC/Timing 보고서 및 RTL TB. 단순 동일 주파수만으로 PASS 금지 |
+| RTL_SIM | 실제 CDS DO 극성 반영, 비동기 입력 2FF 동기화, 안정화 필터(적용 시), 밝음·어두움 전환, Reset·글리치·단일 최종 LED 구동을 시험 | Self-checking TB/로그; 검증 전 **미실시** |
+| AXI_SIM(선택 기능) | `axi_gpio_external`을 실제 추가한 경우, **상태 관찰만** 가능하고 LED 자동 제어 경로에 CPU 쓰기를 요구하지 않는지 확인; AXI 입력 읽기/주소/Reset 확인 | AXI 레지스터 TB/로그. AXI GPIO 인스턴스를 추가하지 않은 C안 초기 독립 RTL 실습에는 **해당 없음** |
+| 합성·타이밍·XSA | 기존 Wrapper 포트→사용자 Top 핀 매핑·XDC 일치, 클록·리셋 경로, 기존 SW/LED 기능 회귀, 새 Bitstream과 XSA/Vitis 플랫폼의 일치 | Vivado Validate Design, Implementation, Timing, XSA/bitstream 확인; **미실시** |
+| BOARD | 센서 모듈의 정확한 모델·3.3V DO 논리 레벨/극성·Pmod 핀, 외부 LED 직렬 전류제한 확인. **CPU가 LED 제어 코드를 실행하지 않아도** CDS가 외부 LED를 직접 제어하는지 실물 시험. 공유 Reset에 의해 RTL까지 Reset되는 상황을 CPU 독립 동작 시험으로 착각하지 않음 | 실제 Basys3 + 모듈 배선/사진·동작 관찰/로그. **미실시** |
+| 후속 A안 MUX(미확정) | 사용자 최종 채택 시에만 기존 AXI GPIO→내장 LED 직행 경로가 MUX로 바뀌는지, MUX 기본값/단일 구동원/기존 SW→LED 동작을 독립 회귀 검증 | A안 선정 후 별도 RTL/BOARD Gate 설정; **현재 해당 없음** |
+
+**비교 기준:** 사용자 Top이 있다는 것만으로 모든 RTL의 BD 변경이 없어지는 것은 아니다. **A안과 C안 모두 Top/BD 계층 추가라는 구조 변경**이 있으나, **내장 LED 출력 경로 변경은 A안에만 해당**한다. 추가 AXI GPIO 모니터링 또는 공통 Clock Wizard 클록/Reset 내보내기가 필요하면 C안에서도 BD가 변경될 수 있다. 설계안 기록·코드 작성·정적 검토를 RTL_SIM/SYNTH_TIMING/BOARD PASS로 전용하지 않는다.
+
 ### 시간 정확성 검증
 
 - Clock 주기·분주 방식·출력 주기/펄스폭을 계산하고 테스트벤치에서 측정한다.
