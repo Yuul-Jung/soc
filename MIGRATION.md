@@ -102,12 +102,15 @@ soc/
 | 구 37–40 | 성능·최적화·병렬화 | 제4부 최적화 및 제3부 심화 참고 | 실측 근거 필요 |
 | 구 41 | 최종 누적 검증 매트릭스 | 제4·5부 최종 평가 참고 | 실제 검증 근거 필요 |
 
-### Basys3 내장 I/O 우선 확장 원칙 (2026-10-31 최신 결정)
+### Basys3 사용자 IP 5개 확정 및 외부 확장 원칙 (2026-10-31 최신 결정)
 
-- [CURRICULUM.md §3](CURRICULUM.md)에 따라 **내장 4자리 FND·Switch/LED·Button·PWM(LED)·USB-UART·VGA·USB HID(보드 PIC24의 PS/2 변환)·내부 XADC·Serial Flash(선택)를 먼저 IP화·통합**하고, 이후 외부 HC-SR04/SG90/L298N/조도/DHT/BLE 등을 연결한다.
-- 아래 기존 11–20 과제 번호 및 `dev-board` 대응표는 **이전 편성의 역사적 참고 매핑**이다. 최신 제2부 실행 순서·장 번호로 간주하지 않으며 `CURRICULUM.md §3`를 우선 적용한다.
-- `dev-board` 자산의 외부 74HC595와 Basys3 내장 FND는 직접 호환되지 않는다. 내장 GPIO/UART/Clock/Reset/XADC는 가능한 AMD IP 재사용, 사용자 IP는 정밀 타이밍·버튼 이벤트·VGA/PS2·표시 Controller에 집중한다.
-- 재편성에 따른 실제 HTML 이관과 기존 페이지 이동·삭제·파일명 변경은 하지 않았고, 새 버전/검증 후 별도 Gate로 처리한다.
+- [CURRICULUM.md §3](CURRICULUM.md)에 따라 제2부 A단계에서 개발하는 **신규 사용자 IP는 정확히 다섯 종류: FND, 방향 버튼(Short/Long 통합), LED PWM, VGA, 키보드·마우스 공통 PS/2**이다. 이 개수는 내부 하위 RTL 모듈 수나 교육 장 수 제한이 아니다.
+- 기존 01–10장의 AXI GPIO(Switch/LED), UART Lite, Timer, INTC, MicroBlaze V/BRAM/Clock/Reset은 **재사용**한다. 내부 XADC Wizard도 필요 시 AMD 기존 IP로 활용하되 신규 사용자 IP로 세지 않는다.
+- **내장 Quad SPI Flash 32 Mbit(4 MB)는 비휘발성 FPGA 설정 비트스트림 보존용으로 취급**한다. 안전상 Flash 사용자 IP와 쓰기 실습은 제2부에서 제외한다. 설정 데이터 보호 및 모드/재구성은 제1부 인프라/부팅 설명만 참조한다. 공식 근거: [Digilent Basys3 Reference Manual §2·§3](https://www.amd.com/content/dam/amd/en/documents/university/aup-boards/XUPBasys3/documentation/Basys3_rm_8_22_2014.pdf).
+- 키보드·마우스는 Basys3 USB Host의 PIC24→PS/2 변환을 통해 **공통 IP 하나**에서 선택 사용한다. 보드는 USB 허브를 지원하지 않으므로 동시 연결을 전제로 하지 않는다.
+- B단계 **외부** HC-SR04/SG90/L298N/조도/DHT/BLE 등은 A단계 이후 연계하며 내용은 유지한다.
+- 기존 이관 대장에 표시된 11–20 및 21–50 번호나 `dev-board` 자산 대응은 **이전 편성의 역사적 참고표**이다. 기존 `MicroBlaze_V_SoC01_41/` 원본·URL/성공 Vivado/Vitis 프로젝트는 변경하지 않으며, 신규 HTML/장 번호는 실습 성과·검증을 기준으로 별도 확정한다.
+- 이번 커밋은 **교육과정 이관 방침만 기록**한다. RTL 시뮬레이션·AXI·합성/타이밍·실물·웹 통과를 주장하지 않는다.
 
 ## 6. dev-board 자산 편입 매핑
 
