@@ -207,7 +207,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 
 ## 17. 제2부 외부 디지털 GPIO 모듈 공용 확장 구조 (2026-11-01 사용자 결정)
 
-- **사용자 결정:** 제1부 AXI GPIO의 16개 SW 입력·16개 LED 출력과 해당 XDC/원본 프로젝트는 그대로 유지. 제2부 **별도 복제 SoC 프로젝트에 AMD AXI GPIO 인스턴스 `axi_gpio_external`을 추가**하고 외부 디지털 입력·출력 모듈들을 해당 인스턴스의 두 채널에 여러 비트로 연결해 재사용. **센서마다 새 AXI GPIO 인스턴스 또는 사용자 정의 GPIO IP를 만드는 방식 아님**.
+- **사용자 결정 및 적용 범위:** 제1부 AXI GPIO의 16개 SW 입력·16개 LED 출력과 해당 XDC/원본 프로젝트는 그대로 유지. 제2부 복제 SoC에서 **CPU가 여러 외부 디지털 입출력을 처리할 때 AMD AXI GPIO 인스턴스 `axi_gpio_external` 하나를 추가·비트별 공유**하며 센서마다 중복 AXI GPIO/새 사용자 GPIO IP를 만들지 않는다. **첫 CDS DO → RTL → LED의 하드웨어 독립 경로에는 AXI GPIO/CPU 관찰 기능이 필수 아님**; 소프트웨어 상태 모니터링이나 외부 GPIO 제어 실습 시 추가 인스턴스를 통합한다.
 - **예시 배정(실제 핀·폭 미확정):** 채널 1 입력 8비트에 CDS DO·PIR·TTP223·리드 스위치·TCRT5000 등, 채널 2 출력 8비트에 외부 LED·능동 부저·드라이버 구비 릴레이/모스펫 제어 등. JA/JB/JC의 실제 핀/가용 수·모듈별 전압·출력 극성/풀업·전원 검증 뒤 XDC에 확정.
 - **CDS 기준 실습(사용자 최신 설계 정정, 2026-11-01):** **CDS 디지털 DO → FPGA RTL 입력 동기화/필터 → 별도 외부 LED 직접 구동**. CPU는 이 LED의 실시간 동작 경로에 **절대 포함하지 않음**. 관찰이 필요하면 센서 동기화 상태를 `axi_gpio_external` **입력에도 분기**해 MicroBlaze V가 읽을 수 있으나 CPU→LED write는 사용하지 않는다. 기존 Basys3 내장 SW[15:0]/LED[15:0] AXI GPIO·XDC 및 제1부 SW→LED 프로젝트는 보존. **같은 외부 LED 핀에 RTL과 AXI GPIO 출력의 두 구동원을 중복 연결하지 않는다**.
 - **예외:** 정밀 타이밍/프로토콜 모듈(HC-SR04, DHT22, 회전 엔코더 등)은 별도 Controller/IP 검토. 기능 중복 방지, 3.3V I/O 및 5V 레벨 변환, 외부 부하 별도 구동/전원 원칙 유지.
@@ -221,3 +221,13 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **사용자 잠정/미확정:** [Issue #4 댓글 6545953077](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6545953077)의 **내장 LED AXI GPIO/RTL MUX(A안)**, **FND 11장 앞 선행 실습**, MUX 선택 기본값/입력 선택 필요성/외부 LED(C안) 병행/추가 지원 RTL 분류는 **사용자 최종 결정 전**, 현행 교육과정 필수 조건으로 확정하지 않는다.
 - **독립 검토 중 위험:** 복제 프로젝트의 LED 포트 직행 경로를 MUX 경유로 바꾸는 것은 **복제본의 기능 변경**이며 XSA·Vitis/BSP·동작·Reset·출력 충돌 회귀 검증이 필요하다. 원본 `soc_hw.xpr`·`sw`·제1부 HTML은 보존한다. CPU 미관여 실물 주장은 RTL의 Clock/Reset이 살아 있는 조건과 선택값이 CPU 없이 결정되는 조건을 갖춰야 한다.
 - **현행 우선순위:** FND 11장 유지. CDS DO → RTL → 외부 LED 직접 구동(C안)은 문서상의 현행 기준이며 *구현/실물 검증 전*. `axi_gpio_external`은 CPU 모니터링용이며 실제 센서→LED 실시간 제어는 CPU를 경유하지 않는다. 단, **느린 CDS 자체의 기능 달성에 CPU 폴링이 무능하다고 주장하지 않는다.**
+
+## 19. Issue #4 사용자 Top 계층·CDS B5/클록 도메인 보완 (2026-11-01)
+
+- **근거:** [Issue #4 댓글 6546340090](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6546340090). 반영: [CURRICULUM.md §3.3](CURRICULUM.md), [VALIDATION.md §4](VALIDATION.md). 이전에 제시했던 "C안은 기존 구조 변경 없음"이라는 비교는 부정확하여 시정했다.
+- **A안과 C안 공통:** 제1부의 자동 관리 BD Wrapper를 최상위로 둔 구조에서는 CDS RTL Controller를 합치려면 **사용자 Top(권장) 또는 BD Add Module**이 필요. 사용자 Top은 외부 핀/배선/인스턴스만 담당하고, Controller가 필터/MUX/출력 정책을 처리. **사용자 Top 공통 적용은 기술 권고이지 최종 사용자 확정 아님**.
+- **A안(사용자 잠정):** 내부 AXI GPIO가 내장 LED로 직접 나가는 경로에 MUX를 도입. 복제본에서 기존 LED 경로와 출력 제어 의미가 달라져 회귀 검증 필요. FND 11장보다 앞에 선행 필수화하지 않음.
+- **C안(현행 첫 CDS 실습 경로):** **CDS DO → RTL → 외부 LED**. 제1부 내장 LED/SW GPIO 출력 경로는 유지하지만 **Top/RTL·새 포트/제약/Bitstream 변경과 하드웨어 회귀**는 필요. `axi_gpio_external` 상태 관찰 기능을 더할 때는 BD/주소맵/XSA·Vitis 플랫폼 변경 가능/필요성을 확인한다.
+- **클록/리셋 선택 설계안:** CDS RTL의 입력 2FF 동기화/필터와 AXI GPIO 상태 관찰 기능은 **기존 SoC Clock Wizard 출력 클록(실제 IP 도메인과 주파수 확인)**을 공통으로 사용하는 것을 우선한다. `clk_out1`/`peripheral_aresetn`는 **문서상의 예시 이름**이며 실제 BD/Wrapper 포트·극성·Reset 해제 확인 전 확정 아님. 경계 포트에 미노출이면 BD로 클록/Reset 출력 포트를 추가하고 Wrapper/XSA를 갱신해야 할 수 있다. 외부 100MHz 입력 클록과 Clock Wizard 출력 클록이 같은 도메인이라고 임의 가정하지 않음. 다른 도메인 선택 시 CDC 검증 필수. CPU Reset이 RTL까지 Reset하면 그 상태로 LED 독립 동작을 시험하지 않음.
+- **B5 표 구분:** **B5-D 기본**(CDS 디지털 DO → RTL → 외부 LED, CPU 모니터링 선택), **B5-A 선택**(AO → XADC/외부 ADC → 밝기 값 처리)으로 분리했다. 기존 B2–B8 번호를 재배정하지 않는다. 아두이노 07차시는 조도 자동조명 개념 참고이지 동일한 디지털 DO RTL 실습의 실물 검증 근거가 아니다.
+- **검증 상태:** 문서 수정 및 GitHub 정적 확인만 수행. Vivado 2024.2 Top/BD 실제 구성, IP 포트·Clock/Reset, RTL/AXI TB, 합성·Timing, Vitis, CDS 센서·외부 LED 실제 보드 시험은 **미실시**. 제1부 원본/제2부 FND 11장 우선순위 유지.
