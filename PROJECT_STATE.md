@@ -33,7 +33,7 @@
 | 구간 | 현재 확인된 단계 | 다음 확인 과제 |
 |---|---|---|
 | 제1부 01–10 | 기존 교재 링크 존재; 추가 웹/실물 검증은 별도 | 원본·성공 프로젝트 보존, 링크/설정/증거 재점검 |
-| 제2부 11장부터 (종료 번호 미정) | **신규 사용자 IP 5개만 개발 → 기존 AMD IP와 통합 → 외부 모듈 확장**. 설계 기준만 확정, 새 구현/검증 미확인 | FND(11장) → 4버튼 Short/Long → LED PWM → VGA → PS/2 키보드/마우스 공통 → 내장 통합 → 외부 센서/구동기 |
+| 제2부 11장부터 (종료 번호 미정) | **핵심 신규 IP 4종 + LED PWM 선택 확장 → 기존 AMD IP와 통합 → 외부 모듈 확장**. 설계 기준만 확정, 새 구현/검증 미확인 | FND(11장) → 4버튼 Short/Long → VGA → PS/2 키보드/마우스 공통, LED PWM은 선택 확장 → 내장 통합 → 외부 센서/구동기 |
 | 제3부 (초기 21–30, 재번호 예정) | 가속기·NPU 설계안 | 제2부 확정 후 번호 조정, 실습/정답 모델/자원 제약 검증 |
 | 제4부 (초기 31–40, 재번호 예정) | 고급 SoC 통합 설계안 | 데이터 경로·CDC·Reset·타이밍 검증 |
 | 제5부 (초기 41–50, 재번호 예정) | RTL·UVM 검증 설계안 | 시뮬레이터 지원, 독립 TB/로그 확보 |
@@ -135,10 +135,10 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **현 상태:** Issue 등록과 교육과정 변경만 완료. RTL 시뮬레이션·AXI·합성/타이밍·실물 보드·웹 검증 **모두 미확인**. Claude의 담당 수락/독립 리뷰도 미확인.
 - **관련 미해결:** Issue #2의 P1-1/2, `docs/soc07-10-guided-revision-20261027` 및 `soc08-procedure-20261027` 미병합 브랜치, 새 대화 복원 시험은 계속 추적한다. 이 항목들을 해결했다고 기록하지 않는다.
 
-## 10. 제2부 신규 5개 사용자 IP → 기존 IP 재사용 → 외부 확장 (2026-10-31 최신 결정)
+## 10. 제2부 4개 핵심 사용자 IP + LED PWM 선택 기능 → 외부 확장 (2026-10-31 개정)
 
 - **단일 기준:** [CURRICULUM.md §3](CURRICULUM.md)의 2026-10-31 재편성. 5부 체계 유지, 제2부 장 수 고정 금지, 11장 FND부터 시작.
-- **A단계 (신규 사용자 IP 정확히 5종):** ① FND Controller(11장 시작), ② BTNC Reset 보존 + 4방향 버튼 Short(<5s)/Long(≥5s) Controller, ③ 내장 LED PWM Controller, ④ VGA Controller, ⑤ USB HID→보드 PIC24→PS/2를 수신하는 키보드/마우스 공통 Input Controller. 키보드·마우스는 한 번에 하나만 연결하며 공통 수신/분리 디코더로 구성. **신규 사용자 IP 5개 이외의 내장 IP 추가 편성 금지**.
+- **A단계 (핵심 사용자 IP 4종 + LED 선택 기능):** ① FND Controller(11장 시작), ② BTNC Reset 보존 + 4방향 버튼 Short(<5s)/Long(≥5s) Controller, ③ VGA Controller, ④ USB HID→보드 PIC24→PS/2 키보드/마우스 공통 Input Controller. **LED PWM은 기존 AXI GPIO LED ON/OFF의 선택적 밝기 조절 기능**이며 독립 AXI PWM IP 패키징은 필수가 아니다. 키보드/마우스는 한 번에 하나만 연결한다.
 - **B단계 (외부 모듈, A단계 이후):** Pmod/XADC 전기 제약·레벨 변환 → 초음파·서보·모터·조도·DHT·BLE → 외부 주변장치 통합. 다른 보드·외부 장치의 소스는 자체 보드 핀·전원·극성 검증 전 직접 재사용 금지.
 - **기존 AMD IP 재사용:** AXI GPIO(Switch/LED), AXI UART Lite, AXI Timer, AXI INTC, BRAM, Clock/Reset, 필요 시 XADC Wizard. 이들은 신규 사용자 IP 5종에 포함하지 않으며 반복 실습 장을 별도로 두지 않는다. LED GPIO와 PWM의 핀 동시구동은 기능 Controller에서 해결하고 Top은 Shell 역할만 수행한다.
 - **Flash 용도/제외:** Basys3 32 Mbit(4 MB) 직렬 Quad SPI Flash는 FPGA 구성 비트스트림을 저장하여 전원 재인가 시 재구성하는 것이 주용도. 공식 매뉴얼에 사용자 데이터 여유 공간도 있으나 구성 이미지 보호가 우선이므로 **새 사용자 IP 실습/쓰기 실습 제외**. 이 내용은 FPGA 구성·부팅 절차에서만 언급한다.
@@ -164,8 +164,16 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 
 ## 13. 제2부 내장 사용자 IP 5개 범위 확정 및 구성 Flash 처리 (2026-10-31)
 
-- **최종 사용자 지시:** 제2부 내장 신규 IP는 **FND, 방향버튼(Short/Long을 1종으로), LED PWM, VGA, 키보드·마우스 공통 PS/2 총 5개**이다. 기존 AMD IP는 재사용하며 내장 XADC 모니터/Flash/Switch·LED GPIO/UART는 별도 사용자 IP로 만들지 않는다.
+- **최신 사용자 구분:** 내장 기능 주제는 FND, 방향버튼(Short/Long 1종), LED PWM 선택 기능, VGA, 키보드·마우스 공통 PS/2로 5개이나 **독립 핵심 사용자 IP는 4개**이다. PWM은 LED 점등에 부가되는 선택 기능이며 별도 AXI PWM IP로 의무 제작하지 않는다. 기존 AMD IP는 재사용하며 내장 XADC 모니터/Flash/Switch·LED GPIO/UART는 별도 사용자 IP로 만들지 않는다.
 - **USB 입력 주의:** Basys3 PIC24가 USB 키보드 또는 마우스를 PS/2로 변환하며 USB 허브는 미지원. 하나의 PS/2 Input IP 내에 공통 수신 및 장치별 디코더를 둔다. 두 장치 동시 연결을 목표로 하지 않는다.
 - **Flash:** 32 Mbit(4 MB) 비휘발성 Serial Flash의 주용도는 FPGA 전원 투입 시 불러올 구성 비트스트림 보존이다. Vivado의 Flash 구성 안내 외에는 사용자 IP 개발/쓰기 실습에서 제외하고, 기존 비트스트림과 구성 모드를 보존한다. 공식 근거: Digilent Basys3 Reference Manual §2/§3.
 - **정본:** [CURRICULUM.md §3](CURRICULUM.md) 커밋 `62df7923a920cb489f24ddc0bbd7d6f3297c3c75`를 출발 기준으로 사용하며 매 재개 시 HEAD 재조회.
-- **이후 단계:** 11장 FND Issue #3 → 버튼 Issue #5 → PWM → VGA → PS/2 → 기존 AMD IP들과 통합 → B단계 외부 모듈; 실물/RTL/AXI/합성/웹 검증은 새 범위에 대해 아직 미실시.
+- **이후 단계:** 11장 FND Issue #3 → 버튼 Issue #5 → VGA → PS/2, 필요 시 LED PWM 옵션 → 기존 AMD IP들과 통합 → B단계 외부 모듈; 실물/RTL/AXI/합성/웹 검증은 새 범위에 대해 아직 미실시.
+
+## 14. LED PWM은 독립 AXI IP가 아닌 GPIO LED 선택 기능 (2026-10-31 최신 결정)
+
+- **사용자 설계 구분:** PWM은 제1부 LED 점등(AXI GPIO)의 선택적 **밝기 제어 옵션**이다. 새로운 독립 AXI PWM Peripheral 제작은 필수 아님. 기존 5개 실습 기능 주제 가운데 PWM이 이 옵션에 해당하여 독립 핵심 사용자 IP는 FND, Button, VGA, PS/2의 4개.
+- **기본:** 기존 AXI GPIO의 LED On/Off 경로 유지. **선택:** RTL `pwm_core`를 별도 독립 실습 프로젝트에서 시험, PWM 모드가 필요할 때에만 최종 LED 출력 경로에 추가. CPU에서 Duty를 지정해야 한다면 레지스터 제어 경로를 별도로 검증한다.
+- **중요:** GPIO 출력과 PWM 출력을 같은 FPGA 물리 LED 핀에 이중 구동하지 않는다. 통합 프로젝트에서는 `led_output_controller`가 GPIO 모드/PWM 모드를 선택해 최종 단일 `led` 출력으로 전달한다. 모드 선택 로직은 Top이 아닌 Controller에 둔다.
+- **원본 보존:** 제1부 성공 프로젝트와 원본 Top/XDC는 손대지 않고 별도 실습 프로젝트를 생성한다. PWM 미사용 프로젝트에 PWM 회로/IP를 의무 포함하지 않는다.
+- **검증 상태:** 결정/문서만 갱신. 신규 SoC 통합·RTL·합성·실물 시험 모두 미확인.
