@@ -77,6 +77,11 @@
 
 ### 3.3 제2부 B단계 — 보드에 없는 외부 주변장치 연결 (A단계 이후)
 
+**외부 모듈 선정 정책(사용자 확정):** **기보유 Basys3는 기준 개발 보드**로 유지하되, **Digilent 전용 Pmod/Zmod 모듈 구매를 필수 전제로 하지 않는다.** 국내 또는 AliExpress에서 쉽게 구할 수 있는 **범용 Arduino 호환 모듈과 Arduino 학습·예제 자료를 우선 참고**한다. Arduino 소스를 Verilog로 기계적 이식하지 않고 동작 순서·신호 타이밍·배선·응용 개념을 대조하여 **CPU와 독립적으로 동작할 RTL 및 SoC 연결 구조**로 재설계한다. **3.3V FPGA I/O 호환성, 실제 모듈 회로·전원·전압·극성은 별도 검증**한다. Digilent IP 라이브러리는 **[참고 문서](docs/references/digilent-vivado-library.md)**에 기록한 구조 연구용이며 실물 구현 검증 완료로 취급하지 않는다. 관련 Arduino 예제·검증 상태는 [dev-board Arduino ROADMAP](https://github.com/Yuul-Jung/dev-board/blob/main/arduino/ROADMAP.md), [CROSSWALK](https://github.com/Yuul-Jung/dev-board/blob/main/arduino/CROSSWALK.md)를 기준으로 확인한다.
+
+**현재 검토 중(미확정):** CDS(DO) 입력에서 내장 LED 출력을 AXI GPIO/RTL 중 선택하는 **MUX 방식(A안)** 및 FND 11장 이전 선행 실습 배치는 사용자 **잠정 의견**이다. 제1부 보존/CPU 미관여 검증을 함께 고려해 독립 비교 중이며, 확정 전에는 **FND 11장 우선순위를 바꾸지 않는다**. 외부 LED 직접 출력(C안)은 현재 CDS 실습 문서의 기본 설계 경로로 남겨 둔다. CDS 디지털 DO(GPIO 임계값 판정)와 아날로그 AO(XADC/외부 ADC 연계)는 같은 조도 센서를 쓰더라도 **서로 다른 실습 경로**이며 아래 B5의 XADC/ADC 행이 DO 직접 RTL 경로를 대체하지 않는다.
+
+
 **외부 GPIO 확장 및 RTL 제어 기준(2026-11-01 사용자 최신 결정):** 제1부 AXI GPIO의 **기존 Basys3 내장 SW[15:0] 입력/LED[15:0] 출력 및 핀 제약은 변경하지 않는다.** 제2부는 성공 SoC의 **별도 복제 프로젝트에 추가 AMD AXI GPIO(`axi_gpio_external`)**를 두어 여러 외부 모듈의 **CPU 측 입력 상태 조회/소프트웨어 출력 제어**를 공통 수용한다. 그러나 **CDS 입력의 LED 제어는 절대로 MicroBlaze V Polling → AXI GPIO Write 경로를 거치지 않는다.** CDS DO는 FPGA 내부 **독립 RTL Controller**로 들어가 외부 LED를 하드웨어에서 직접 구동하며, 동일 입력의 동기화된 상태를 **추가 AXI GPIO 입력에도 분기**하여 CPU가 관찰할 수 있게 한다. 외부 모듈마다 AXI GPIO 인스턴스를 복제하지 않고, RTL의 고유 제어·필터링 기능은 재사용 가능한 Controller로 구현한다.
 
 | 외부 GPIO 인스턴스 예시 | 방향/폭 | 연결 후보 | 실습 기준 |
