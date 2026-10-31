@@ -67,7 +67,7 @@
 
 **① FND 11장 실습의 내부 절차 분할(같은 장 안 3단계, 장 번호 변경 아님):** (a) FND RTL Scan Controller + 독립 TB → (b) AXI4-Lite Register Bank/Wrapper + IP Packager + AXI TB → (c) Vitis C 제어 + 실물 Basys3 검증 + HTML. FND 스캔·밝기 연계의 독립성을 지키되, **범용 PWM 실습을 11장의 선수조건으로 요구하지 않는다**. 11장의 기본 밝기는 100%이고, PWM 재사용/슬롯 동기는 ③ 개발 이후 통합 실습에서 검증한다.
 
-**범용 PWM과 제1부 AMD AXI Timer 차별화(정당화):** AMD [PG079](https://docs.amd.com/r/en-US/pg079-axi-timer)의 AXI Timer에는 **2개 Timer를 한 쌍으로 묶어 PWM0 한 채널을 생성**하는 모드가 있다. 따라서 단순 1채널 PWM을 또 만드는 것만으로는 독립 IP의 필요성이 약하다. 이 과정의 ③은 **모듈형 재사용, 다채널 확장, 정확한 0%/100% 처리, 주기 경계 설정 갱신, 선택 가능한 출력 극성, FND Slot 동기 입력**을 직접 검증하는 데 차별점이 있다. 사용 Vivado 2024.2 내 실제 AXI Timer IP 구성과 PG079 버전을 대조해야 하며, PG079 본문만으로 해당 제품의 0%·100% 듀티 제약 및 재설정 글리치를 확정하지 않는다. `dev-board/rtl/rtl04_pwm_led/src/pwm_core.v`는 기존 약 1kHz/256단계 PWM 예시이므로 범용화 시 주기·채널·출력 정책을 확장한다.
+**범용 PWM과 기존 AMD AXI Timer 관계:** AMD [PG079](https://docs.amd.com/r/en-US/pg079-axi-timer) AXI Timer도 두 Timer를 한 쌍으로 사용해 하드웨어 PWM 한 채널을 생성한다. 새 범용 PWM IP는 **모듈형 재사용, 다채널 확장, 0%/100% 처리, 주기 경계 설정 갱신, 출력 극성, FND 자리 슬롯 동기화**를 구현·검증하는 RTL 설계 실습이다. 이는 기존 Timer의 성능이 열등하다는 뜻이 아니다. **사용자 결정: M1~M7 성능 측정 지표 및 소프트웨어 PWM ↔ AXI Timer PWM ↔ 사용자 RTL PWM의 3단 성능 비교 실험은 진행하지 않는다.** PG079 비교는 기능적 배경 설명에만 사용하고, 새 PWM 단독의 필수 기능 테스트(설정 주기·Duty, 0/100%, 갱신, Reset, 채널·극성)는 유지한다. `dev-board/rtl/rtl04_pwm_led/src/pwm_core.v`는 약 1kHz/256단계 참고 소스이며 범용 확장 시 검증이 필요하다.
 
 **FND 밝기와 PWM 경계:** FND의 `an[3:0]`, `seg[6:0]`, `dp`는 Active-Low. 4자리 스캔 슬롯과 무관하게 프리런하는 PWM 하나로 자릿수 전체를 게이팅하면 자리별 밝기가 달라질 수 있다. FND 모드에서는 **자리 슬롯 시작에 PWM 위상 동기화**하고, 자리 전환 때 소등(Blanking) 시간을 고려한다. 모터 PWM은 FND 슬롯/LED 표시와 독립된 주기로 운용한다. **같은 Core를 사용하더라도 응용별 동기화·출력 래퍼는 구분**한다.
 
