@@ -100,7 +100,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 | **단일 구현 작업 할당** | **미지정(착수 승인 대기)**. 다음 구현 후보를 명확히 기록한 것이므로 '무엇을 해야 하는지 미정'이라는 뜻이 아니다. 작업 등록 후 이 항목에 담당·파일·커밋·검증 Gate를 기재 |
 | Claude 독립 검토 게시 확인 | [Issue #2 댓글 6543718040](https://github.com/Yuul-Jung/soc/issues/2#issuecomment-6543718040), [Issue #3 댓글 6544578500](https://github.com/Yuul-Jung/soc/issues/3#issuecomment-6544578500), [Issue #4 1차 6544578154](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544578154) 및 [2차 6544700455](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455), [Issue #5 댓글 6544578358](https://github.com/Yuul-Jung/soc/issues/5#issuecomment-6544578358). **GitHub 댓글 존재 확인**, 시뮬레이션/실물 검증은 미실시 |
 | 공통 관리상 미해결 | P1-1 **단일 작업 재개/새 대화 복원 시험** (부분 해소, 담당·Gate 확정 대기), P1-2 **미병합 브랜치 처리** 미결정. §7.2는 이전 기준 SHA의 **이력 비교 수치**이므로 최신 대비 차이는 다시 조회할 것 |
-| PWM 비교 실험 | Claude [Issue #4 2차 제안](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455) M1–M7 및 SW/AXI Timer/RTL 3단 대비는 **제안·사용자 선택 대기**. 현 단계 필수 개발·검증 Gate로 자동 편입하지 않는다 |
+| PWM 비교 실험 | **사용자 결정: 미실시·교육과정 제외.** Claude [Issue #4 2차 제안](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455)의 M1–M7 측정 지표와 소프트웨어 PWM·AXI Timer PWM·사용자 RTL PWM 3단 비교 시험은 채택하지 않는다. **범용 PWM 자체 기능 검증은 유지**한다 |
 | 다음 조치 | 11-A 작업 등록 여부 사용자 결정 → 작업 담당·기준 SHA·검증 Gate 지정; Claude 2차 검토의 문서 정정 재확인; 미병합 브랜치 검토·새 대화 복원 시험은 별도 추적 |
 | 최종 승인 | 사용자 판단 전 미완료 |
 
@@ -200,4 +200,5 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **FND PWM 위험 관리:** 자리 스캔과 무관한 PWM 신호를 AN에 게이팅하면 밝기 불균일 위험. 자리 슬롯 시작에 PWM 위상 동기화, 슬롯 소등·전환 처리. 기본 FND 밝기 100%; 후속 범용 PWM 개발과 통합 단계에서 밝기 연계. FND 기본 표시를 PWM의 선수학습에 묶지 않음.
 - **11장 분할 결정:** 장 번호는 **11장 그대로 보존**, 내부 절차만 `A: FND RTL+TB` → `B: AXI Wrapper/IP Packager+Register Map/TB` → `C: Vitis C+실물 보드+HTML` 세 묶음으로 분할한다. 공통 AXI Wrapper 템플릿은 버튼·PWM에서 재사용하는 설계 후보이며 구현/검증은 미실시.
 - **버튼 5초 축소 TB 채택:** 1 ms Tick 생성을 파라미터로 축소해 4,999/5,000/5,001 Tick과 동시 입력/리셋/W1C 등을 검증, `100 MHz / 100,000 = 1ms` 생성 정확성 별도 TB, 실제 5초는 Basys3에서 별도 계측. 축소 TB PASS를 실측 5초 PASS라고 보고하지 않는다.
+- **PWM 대비 실험 제외(최신 사용자 결정):** Claude [Issue #4 2차 검토](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455)의 M1–M7 정밀 성능 지표 및 S(소프트웨어)·T(AXI Timer)·R(사용자 RTL) 3단 비교 실험은 **진행하지 않는다**. CPU 부하별 지터·출력 우열을 측정·주장하지 않는다. 단, 범용 PWM IP의 RTL/AXI 정상 동작 검증(주기·Duty·0/100%·설정 경계 갱신·극성·다채널·Reset)과 실물 사용 기능 확인은 유지한다. 이 항목을 미실시 실험의 PASS/FAIL로 기록하지 않으며 **교육과정 제외**로 명시한다.
 - **보존·검증:** 제1부 기존 `~/soc/hw/soc_hw.xpr`, `~/soc/sw`와 HTML 원본은 수정하지 않는다. FND/버튼/PWM 각 독립 프로젝트 구현·RTL/AXI 테스트·합성/타이밍·실물 보드·웹 배포는 **아직 미확인**. Claude 리뷰의 **조건부** 상태는 교차 검토 의견이며 보드 PASS나 독립 구현 PASS가 아니다.
