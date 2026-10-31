@@ -73,6 +73,8 @@
 | 5부 | RTL 검증과 UVM 검증을 분리 실행, 커버리지와 미검출 항목 명시 |
 
 ## 제2부 FND·PB SW·범용 PWM 3종 검증 게이트 (2026-10-31)
+**PWM 비교 실험 제외(사용자 최신 결정):** Claude가 [Issue #4에서 제안](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455)한 M1~M7 성능 측정 지표 및 소프트웨어 PWM/AXI Timer PWM/사용자 RTL PWM의 3단 성능 비교는 **교육과정에서 수행하지 않는다**. 해당 지표·대비 실험의 로그나 결과를 제출 조건으로 요구하지 않는다. 이는 새 범용 PWM IP 자체의 기본 기능 검증을 생략한다는 뜻이 아니다.
+
 
 **범위 결정:** 최근 사용자 지시에 따라 내부 사용자 IP는 FND, PB SW(Short/Long), 범용 PWM의 3종이다. 앞선 'FND·버튼 2종 + PWM 선택'은 현재 편성안이 아니다. 현재 기록은 **설계 요구사항**이며 수행 증거는 없다.
 
@@ -85,7 +87,7 @@
 | PB SW **실분주 검증** | Basys3 100MHz에서 1ms마다 Tick 1개(100,000 입력 Clock 당 1 Tick), 오프바이원 검증 | `TICK_REAL_DIV_SIM` |
 | PB SW **실물 시간 검증** | FPGA 실물에서 Long 이벤트 약 5초 발생, 5초 이전 Short·이후 Long 구분을 스톱워치 또는 로직 측정으로 검증 | `BOARD_5S_MEASURED` |
 | 범용 PWM RTL | 장치 비의존 Core, 다채널 확장, 정확한 0/100%, Duty/Period 갱신 경계, 극성 | `RTL_SIM` |
-| 범용 PWM 기존 IP 비교 | AMD PG079 AXI Timer PWM과 제공 기능 비교; 두 Timer 묶음/1채널 확인. 실제 Vivado 2024.2 인스턴스의 PWM 지원·드라이버 차이·출력 측정은 별도 | `DESIGN_REVIEW` 및 필요 시 실제 Vivado 실험 |
+| 범용 PWM RTL·AXI 단독 검증 | 설정한 PWM 주기·Duty, 0%/100% 상수 출력, 주기 경계 설정 갱신, 극성, 다채널 동작, Reset·Register Map을 자기 명세와 대조 | `RTL_SIM` / `AXI_SIM`, 필요 시 `BOARD`로 기본 출력 확인 |
 | AXI IP 연결 | 독립 AW/W 수락, WSTRB, B/R backpressure, Reset, register read/write·동시 Clear/Event | `AXI_SIM` |
 | 보드/구현/웹 | 핀·클록·리셋·실제 비트스트림, 합성·타이밍, 물리 출력, HTML 링크/그림 | `SYNTH_TIMING`·`BOARD`·`WEB` 분리 |
 
