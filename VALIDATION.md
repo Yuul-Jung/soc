@@ -72,6 +72,25 @@
 | 4부 | 시스템 인터페이스·CDC/Reset·성능 측정·최종 통합 보고서 |
 | 5부 | RTL 검증과 UVM 검증을 분리 실행, 커버리지와 미검출 항목 명시 |
 
+## 제2부 FND·PB SW·범용 PWM 3종 검증 게이트 (2026-10-31)
+
+**범위 결정:** 최근 사용자 지시에 따라 내부 사용자 IP는 FND, PB SW(Short/Long), 범용 PWM의 3종이다. 앞선 'FND·버튼 2종 + PWM 선택'은 현재 편성안이 아니다. 현재 기록은 **설계 요구사항**이며 수행 증거는 없다.
+
+| 구분 | 최소 검증 조건 | 증거 구분 |
+|---|---|---|
+| FND RTL | `an[3:0]`, `seg[6:0]`, `dp` Active-Low, 자리 스캔·표시값·전환 소등 | `RTL_SIM`; 실제 7-seg 표시와 밝기는 별도 `BOARD` |
+| FND·PWM 연계 | 슬롯 시작에 PWM 위상 동기화, 0·100% 밝기, 자리별 점등시간 균일, 주기 변경 시 잔상/편차 | RTL 파형 및 필요 시 보드 밝기 비교 |
+| PB SW RTL | 방향 버튼 4개 독립 동기화·디바운스, Short/Long 5초, 중복 방지·IRQ·W1C·Reset | 단위 TB·AXI TB |
+| PB SW 5초 **축소 TB** | Tick 생성 분주를 파라미터로 축소하고 **4999/5000/5001 Tick**, 누름/해제·동시 4버튼·반복·Reset·W1C 경쟁 시험 | `RTL_SIM_SCALED` — **실제 5초 검증 아님** |
+| PB SW **실분주 검증** | Basys3 100MHz에서 1ms마다 Tick 1개(100,000 입력 Clock 당 1 Tick), 오프바이원 검증 | `TICK_REAL_DIV_SIM` |
+| PB SW **실물 시간 검증** | FPGA 실물에서 Long 이벤트 약 5초 발생, 5초 이전 Short·이후 Long 구분을 스톱워치 또는 로직 측정으로 검증 | `BOARD_5S_MEASURED` |
+| 범용 PWM RTL | 장치 비의존 Core, 다채널 확장, 정확한 0/100%, Duty/Period 갱신 경계, 극성 | `RTL_SIM` |
+| 범용 PWM 기존 IP 비교 | AMD PG079 AXI Timer PWM과 제공 기능 비교; 두 Timer 묶음/1채널 확인. 실제 Vivado 2024.2 인스턴스의 PWM 지원·드라이버 차이·출력 측정은 별도 | `DESIGN_REVIEW` 및 필요 시 실제 Vivado 실험 |
+| AXI IP 연결 | 독립 AW/W 수락, WSTRB, B/R backpressure, Reset, register read/write·동시 Clear/Event | `AXI_SIM` |
+| 보드/구현/웹 | 핀·클록·리셋·실제 비트스트림, 합성·타이밍, 물리 출력, HTML 링크/그림 | `SYNTH_TIMING`·`BOARD`·`WEB` 분리 |
+
+`RTL_SIM_SCALED` 통과만으로 `BOARD_5S_MEASURED` 또는 `TICK_REAL_DIV_SIM` 통과로 판정하지 않는다. FND 11장은 **A: RTL+TB → B: AXI Wrapper/IP Packager/TB → C: Vitis C+Board/HTML** 세 절차로 나누되 기존 장 번호·원본 프로젝트를 변경하지 않는다. 공식 근거: [PG079](https://docs.amd.com/r/en-US/pg079-axi-timer), [Digilent Basys-3-Master.xdc](https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc), [Issue #4 Claude 리뷰](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544578154), [Issue #5](https://github.com/Yuul-Jung/soc/issues/5#issuecomment-6544578358), [Issue #3](https://github.com/Yuul-Jung/soc/issues/3#issuecomment-6544578500).
+
 ## 6. 검증 결과 레코드 템플릿
 
 ```text
