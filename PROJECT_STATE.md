@@ -138,7 +138,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 ## 10. 제2부 내장 I/O 우선 → 외부 모듈 확장 (2026-10-31 사용자 최신 결정)
 
 - **단일 기준:** [CURRICULUM.md §3](CURRICULUM.md)의 2026-10-31 재편성. 5부 체계 유지, 제2부 장 수 고정 금지, 11장 FND부터 시작.
-- **A단계 (Basys3 본체 우선):** 4자리 FND, 16 Switch·16 LED(AMD AXI GPIO 재사용), 5개 버튼 중 **BTNC(U18)는 기존 SoC Reset 고정**, 나머지 BTNU/BTND/BTNL/BTNR **4개를 이벤트/디바운스 IP 입력**으로 사용, 내장 LED PWM, USB-UART(기존 AXI UART Lite), VGA, USB HID의 보드 PIC24→PS/2 경로, 내부 XADC 온도/전압, Serial Flash(선택/구성 데이터 보호), 내장 주변장치 통합.
+- **A단계 (Basys3 본체 우선):** 4자리 FND, 16 Switch·16 LED(AMD AXI GPIO 재사용), 5개 버튼 중 **BTNC(U18)는 기존 SoC Reset 고정**, 나머지 BTNU/BTND/BTNL/BTNR **4개를 디바운스·짧은 누름·5초 이상 긴 누름 이벤트 IP 입력**으로 사용, 내장 LED PWM, USB-UART(기존 AXI UART Lite), VGA, USB HID의 보드 PIC24→PS/2 경로, 내부 XADC 온도/전압, Serial Flash(선택/구성 데이터 보호), 내장 주변장치 통합.
 - **B단계 (외부 모듈, A단계 이후):** Pmod/XADC 전기 제약·레벨 변환 → 초음파·서보·모터·조도·DHT·BLE → 외부 주변장치 통합. 다른 보드·외부 장치의 소스는 자체 보드 핀·전원·극성 검증 전 직접 재사용 금지.
 - **IP 재사용 정책:** 기존 AMD GPIO/UART/Clock/Reset/XADC 등은 가능하면 재사용하고, 사용자 IP는 보드 내장 장치의 독립 Controller와 정밀 타이밍/이벤트/표시/상태 레지스터를 담당한다. Top은 Shell/Wrapper만 수행한다. 온보드 PIC24 USB Host를 FPGA USB Host IP로 오인하지 않는다.
 - **번호:** 제2부 A/B 후속 실습의 실제 장 번호는 추후 확정하며, 제3–5부 기존 21–50은 이전 초안 번호이다. 기존 01–41장 원본과 Vivado/Vitis 성공 프로젝트 유지.
@@ -151,3 +151,12 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **제2부 운영 기준:** 사용자 버튼 IP에 연결할 자원은 **BTNU/BTND/BTNL/BTNR의 방향 버튼 4개**이다. **BTNC는 기존 MicroBlaze V/Clocking Wizard/Processor System Reset 경로용**으로 보존한다. 버튼 5개 모두 사용자 이벤트로 사용한다는 이전 표현은 적용하지 않는다.
 - 핀 제약·실제 BD 포트·Reset 극성은 11장 이후 새 프로젝트 구성 시 다시 확인한다. 문서 정정은 구현/보드 시험 성공을 의미하지 않는다.
 - [CURRICULUM.md §3](CURRICULUM.md)에도 반영함. 제2부 FND 11장 우선순위 및 기존 제1부 구조는 변경 없음.
+
+## 12. 방향 버튼 Short/Long Press IP 요구사항 (2026-10-31)
+
+- **사용자 결정:** 기존 `BTNC(U18)` SoC Reset은 유지. `BTNU/BTND/BTNL/BTNR` 4방향 버튼에서 짧은 누름과 **연속 5초 이상 긴 누름**을 구분한다.
+- **제안된 판정 시점:** Short(<5000 ms)는 디바운스된 해제 시 1회, Long(>=5000 ms)은 임계값 도달 시 1회; Long 후 해제에 Short 중복 없음. 버튼별 독립 누름 타이머·동시 누름 지원.
+- **구현 제안:** 2FF 동기화 → 디바운스(기본 20 ms, 설정값) → 1 ms 동기 Clock Enable/포화 카운터 → Short/Long Event → Sticky Status/AXI4-Lite Register → 선택 IRQ. 이벤트와 W1C 클리어 동시 발생 시 이벤트 우선; 여러 개의 동일 이벤트를 개별 보존할 필요가 생기면 카운터 또는 FIFO 검토.
+- **검증 계획:** 4999/5000/5001 ms 경계, 바운스, 동시 4버튼, Reset, Long 후 Release, Sticky/clear/IRQ/AXI backpressure 테스트.
+- **증거 상태:** 요구사항만 문서화. RTL 구현·TB PASS·합성/타이밍·Basys3 보드 실험·웹 배포는 **미실시/미확인**.
+- **정본:** [CURRICULUM.md §3](CURRICULUM.md). 11장 FND 시작 작업과 본 버튼 IP 후속 순서는 유지하며 아직 신규 장 번호 확정 없음.
