@@ -33,7 +33,7 @@
 | 구간 | 현재 확인된 단계 | 다음 확인 과제 |
 |---|---|---|
 | 제1부 01–10 | 기존 교재 링크 존재; 추가 웹/실물 검증은 별도 | 원본·성공 프로젝트 보존, 링크/설정/증거 재점검 |
-| 제2부 11장부터 (종료 번호 미정) | **현재 필수 IP는 FND·Short/Long 버튼 2종, LED/FND PWM은 선택 기능**. VGA·PS/2는 카메라 연계 영상 심화로 후순위. 구현·실물 검증 미확인 | FND(11장) → 방향버튼 4개 Short/Long → 필요 시 밝기 제어·기존 SoC 연계 → 외부 센서/구동기. 카메라+VGA+마우스는 별도 후속 심화 |
+| 제2부 11장부터 (종료 번호 미정) | **현재 내부 사용자 IP는 FND·Short/Long 버튼·범용 PWM 3종**. VGA·PS/2는 카메라 연계 영상 심화로 후순위. 구현·실물 검증 미확인 | FND(11장) → 방향 버튼 4개 Short/Long → 범용 PWM Core/AXI → 필요에 따라 SoC 통합 → 외부 센서/구동기. 카메라+VGA+마우스는 별도 후속 심화 |
 | 제3부 (초기 21–30, 재번호 예정) | 가속기·NPU 설계안 | 제2부 확정 후 번호 조정, 실습/정답 모델/자원 제약 검증 |
 | 제4부 (초기 31–40, 재번호 예정) | 고급 SoC 통합 설계안 | 데이터 경로·CDC·Reset·타이밍 검증 |
 | 제5부 (초기 41–50, 재번호 예정) | RTL·UVM 검증 설계안 | 시뮬레이터 지원, 독립 TB/로그 확보 |
@@ -48,7 +48,7 @@
 | 우선순위 | 목표 | 완료로 인정할 증거 |
 |---|---|---|
 | P0 | 기존 원본 보호·제1부 안정화·5부 목차 정비 | 변경 커밋, 기능/링크 검증 기록 |
-| P1 | 제2부 대표 AXI IP (FND·버튼); PWM은 출력 밝기 선택 기능 | 프로젝트·원본 SHA, TB/AXI/보드 증거 |
+| P1 | 제2부 내부 사용자 IP 3종(FND·PB SW·범용 PWM) | 프로젝트·원본 SHA, TB/AXI/보드 증거 |
 | P2 | 제3–5부 가속기·통합·UVM | 단계별 소스·시험 로그·독립 리뷰 |
 
 동일 파일 동시 편집을 피하고, 작성자와 독립 검토자가 커밋·PR·인계 파일로 협력한다. 최종 승인은 사용자가 담당한다.
@@ -186,3 +186,14 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **제1부 재사용/보존:** MicroBlaze V·BRAM·AXI GPIO/UART Lite/Timer/INTC·Clock/Reset의 성공 프로젝트를 변경하지 않는다. 각각의 사용자 IP를 별도 소스·TB와 필요 시 별도 Vivado SoC에서 검증하고, 통합은 선택적으로 수행한다.
 - **정본:** [CURRICULUM.md §3.2·§3.5](CURRICULUM.md). 이전 §10·§13에 있는 4종(또는 5종) 현행 필수 IP 표현은 **과거 편성 이력**이다. 이 §15가 최신 진행 우선순위를 대체한다.
 - **증거:** 신규 FND/버튼/VGA/PS2/카메라의 RTL_SIM·AXI_SIM·합성·실물·웹 PASS 증거는 이번 결정에서 확보되지 않음. 후속 영상 시스템은 편성 가안일 뿐 실제 개발 착수 아님.
+
+## 16. 내부 사용자 IP 3종 최종 확정 및 Claude 독립 검토 반영 (2026-10-31)
+
+- **최근 사용자 결정 우선:** 제2부 내부 사용자 IP는 **① FND, ② 방향버튼 PB SW(Short/Long 5초), ③ 범용 PWM**의 3종으로 확정. 이전 §10·§13·§14·§15의 '필수 2개 + PWM 옵션' 또는 'VGA/PS2 포함'은 **과거 의사결정 기록**이고, 최신 실습 기준은 [CURRICULUM.md §3.2](CURRICULUM.md)이다. 개별 출력장치에서 PWM의 채택 여부는 선택이지만 **범용 PWM IP 개발 자체는 제2부 수행 과제**이다.
+- **Claude 독립 검토:** [Issue #4](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544578154), [Issue #5](https://github.com/Yuul-Jung/soc/issues/5#issuecomment-6544578358), [Issue #3](https://github.com/Yuul-Jung/soc/issues/3#issuecomment-6544578500). Claude가 기록한 검토 기준은 `soc/main=55029f9`(과거 SHA) 및 `dev-board/main=40adda4`이며, Claude는 자료 정적 검토만 수행했다.
+- **공식 자료 독립 대조:** AMD [PG079 AXI Timer](https://docs.amd.com/r/en-US/pg079-axi-timer) 실제 본문에서 Timer 0·1 한 쌍으로 `PWM0` 한 채널을 생성하고 `TLR0`에 주기,`TLR1`에 HIGH 시간을 설정함을 확인. **단순 PWM의 중복 구현이 아닌 다채널·0/100%·경계 갱신·극성·스캔 동기화** 검증을 범용 IP의 교육적 차별화로 명시. PG079 문서(2025-08-15)의 제품 사양과 실제 Vivado 2024.2 인스턴스 설정은 실습 시 대조하고, AMD PWM의 '100% 불가/변경 시 글리치'는 이 검토만으로 단정하지 않는다.
+- **공식 [Digilent Master XDC](https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc) 핀 대조:** `btnC=U18`(Reset 보존), `btnU=T18`, `btnL=W19`, `btnR=T17`, `btnD=U17`; FND `seg[0..6]=W7,W6,U8,V8,U5,V5,U7`, `dp=V7`, `an[0..3]=U2,U4,V4,W4`. 공식 Basys3 매뉴얼에 따르면 버튼은 눌렀을 때 HIGH, FND 자리/세그먼트는 LOW 활성. **XDC는 핀 매핑 근거이며 극성 근거는 보드 매뉴얼/회로**.
+- **FND PWM 위험 관리:** 자리 스캔과 무관한 PWM 신호를 AN에 게이팅하면 밝기 불균일 위험. 자리 슬롯 시작에 PWM 위상 동기화, 슬롯 소등·전환 처리. 기본 FND 밝기 100%; 후속 범용 PWM 개발과 통합 단계에서 밝기 연계. FND 기본 표시를 PWM의 선수학습에 묶지 않음.
+- **11장 분할 결정:** 장 번호는 **11장 그대로 보존**, 내부 절차만 `A: FND RTL+TB` → `B: AXI Wrapper/IP Packager+Register Map/TB` → `C: Vitis C+실물 보드+HTML` 세 묶음으로 분할한다. 공통 AXI Wrapper 템플릿은 버튼·PWM에서 재사용하는 설계 후보이며 구현/검증은 미실시.
+- **버튼 5초 축소 TB 채택:** 1 ms Tick 생성을 파라미터로 축소해 4,999/5,000/5,001 Tick과 동시 입력/리셋/W1C 등을 검증, `100 MHz / 100,000 = 1ms` 생성 정확성 별도 TB, 실제 5초는 Basys3에서 별도 계측. 축소 TB PASS를 실측 5초 PASS라고 보고하지 않는다.
+- **보존·검증:** 제1부 기존 `/home/jung/soc/hw/soc_hw.xpr`, `/home/jung/soc/sw`와 HTML 원본은 수정하지 않는다. FND/버튼/PWM 각 독립 프로젝트 구현·RTL/AXI 테스트·합성/타이밍·실물 보드·웹 배포는 **아직 미확인**. Claude 리뷰의 **조건부** 상태는 교차 검토 의견이며 보드 PASS나 독립 구현 PASS가 아니다.
