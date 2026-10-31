@@ -34,9 +34,9 @@
 
 실제 페이지 경로는 `MicroBlaze_V_SoC01_41/pages/soc/` 아래이며, 07–10장에는 일부 `_1_` 형식의 C 코드 해설 보조 페이지가 있다. `part01/index.html`은 현재 이 원본으로 연결한다. 페이지의 '완료' 배지는 **사이트 표기**이며 본 문서가 하드웨어 전수 검증을 새로 확인했다는 뜻은 아니다.
 
-## 3. 제2부 — FND·버튼 IP 우선 → 외부 주변장치 확장 (11장부터, 장 수 미확정)
+## 3. 제2부 — Basys3 내부 사용자 IP 3종(FND·PB SW·범용 PWM) → 외부 확장 (11장부터, 장 수 미확정)
 
-> **2026-10-31 사용자 최신 확정:** 제1부에서 이미 학습한 AXI GPIO/UART/Timer/INTC/Clock/Reset은 **재사용**한다. **현재 필수 사용자 IP는 FND·4방향 Short/Long 버튼 2종**이다. **LED/FND PWM은 밝기 조절 선택 기능**이며 별도 AXI PWM IP 제작은 의무가 아니다. 기존 구상의 **VGA 및 PS/2 키보드·마우스는 현 제2부 선행 실습에서 보류**하고, 카메라 입력과 VGA 출력·마우스 포인터를 함께 사용하는 **후속 영상 입출력/사용자 인터페이스 심화 묶음(편성 미정)**으로 검토한다. 이는 장 번호 확정이나 하드웨어 구현 완료를 뜻하지 않는다. 이후 보드에 없는 외부 모듈은 제2부 B단계에서 확장한다. 첫 실습은 11장 FND AXI IP([Issue #3](https://github.com/Yuul-Jung/soc/issues/3))이며 나머지 장 번호는 추후 확정한다.
+> **2026-10-31 최종 사용자 결정(Claude Issue #4 독립 검토 후 기준):** 내부 신규 사용자 IP는 **① FND Controller, ② PB SW Controller(방향 버튼 4개 Short/Long), ③ 범용 PWM Controller**의 3종이다. 앞선 '필수 2종 + PWM 선택'은 과거 단계의 편성안으로 대체한다. **범용 PWM IP 자체는 제2부 개발 대상**, 개별 프로젝트가 PWM 기능을 연결할지는 선택이다. VGA·PS/2 키보드·마우스는 외부 카메라 입력과 묶는 후속 영상 심화로 보류한다. 기존 AXI GPIO/UART Lite/Timer/INTC/BRAM/Clock·Reset은 제1부 성과를 재사용한다. **11장 FND부터 시작**하며, 전체 장 수와 후속 장 번호는 확정하지 않는다([Issue #3](https://github.com/Yuul-Jung/soc/issues/3), [Issue #4](https://github.com/Yuul-Jung/soc/issues/4), [Issue #5](https://github.com/Yuul-Jung/soc/issues/5)).
 
 ### 3.1 내장 자원 목록과 구현 경계
 
@@ -47,30 +47,33 @@
 | 4자리 7-Segment FND | **사용자 IP**: `fnd_scan_controller` + AXI4-Lite 레지스터 | AN/Segment Active-Low, 자리 스캔·표시 데이터 반영 타이밍 |
 | 16 Switch / 16 LED | **기존 AXI GPIO 재사용**; 필요 시 LED 패턴/상태 Controller만 추가 | 기존 제1부 GPIO를 중복 재제작하지 않음 |
 | 5 Pushbutton (BTNC는 기존 Reset) | **BTNU/BTND/BTNL/BTNR 방향 버튼 4개**: 2FF 동기화·디바운스·Short/Long(5초 이상) 이벤트·IRQ + AXI 레지스터 | **BTNC(U18)는 제1부 SoC Reset 용도로 유지**. 버튼별 독립 타이머·5초 경계·중복 이벤트·동시 입력·리셋·이벤트 유실 검증 |
-| LED 밝기·패턴 | **선택적 확장 기능**: 제1부 AXI GPIO LED ON/OFF는 그대로 사용하고, 필요 시 LED 출력 경로에 재사용형 `pwm_core`를 추가 | 기본 모드는 GPIO LED 출력, 선택 모드에서 PWM 밝기 조절. 별도 AXI PWM IP 패키징은 필수 아님; 출력 핀은 한 경로에서만 구동 |
+| 범용 PWM(LED·FND·모터) | **③ 독립 사용자 IP**: 장치 비의존 PWM Core + 필요 시 AXI4-Lite 설정 Wrapper(주기·Duty·채널·극성·적용 경계) | 기존 AXI Timer PWM과 비교 후 차별 기능 검증. LED는 GPIO와 단일 출력 소유권, FND는 자리 슬롯에 동기, 모터는 외부 드라이버/전원 필요 |
 | USB-UART Bridge | **기존 AXI UART Lite 재사용**; 명령/상태 Controller 또는 C 응용 추가 | USB-UART 브리지 자체를 FPGA에서 재구현하지 않음 |
 | 12-bit VGA 출력 | **후속 영상 심화로 보류**: 외부 카메라 입력의 영상·오버레이 표시용 VGA 타이밍/픽셀 출력 | 현 FND/버튼 기반 제2부의 필수 IP 대상 아님; 실제 VGA 모니터·카메라·영상 버퍼·클록 제약 검토 후 별도 추진 |
 | USB Type-A 키보드·마우스 | **후속 심화로 보류**: 카메라 영상/VGA 표시와 함께 마우스 커서·관심영역 선택에 사용하는 공통 PS/2 입력부, 키보드 해독은 추후 별도 선택 | 현 제2부 필수 IP 대상 아님; 보드 PIC24가 USB HID→PS/2로 변환하며 USB 허브 미지원(키보드 또는 마우스 한 번에 하나) |
-| FPGA 내부 XADC | 기존 AMD XADC Wizard 등 **제공 IP 재사용**(필요 시 모니터용); **신규 사용자 IP 5개에는 불포함** | 내부 온도·전압 모니터는 선택적 통합 과제, 보드 내장 조도·온습도 센서가 아니며 외부 센서는 B단계 |
+| FPGA 내부 XADC | 기존 AMD XADC Wizard 등 **제공 IP 재사용**(필요 시 모니터용); **내부 사용자 IP 3종에는 불포함** | 내부 온도·전압 모니터는 선택적 통합 과제, 보드 내장 조도·온습도 센서가 아니며 외부 센서는 B단계 |
 | 32 Mbit(4 MB) 직렬 Quad SPI Flash | **새 사용자 IP 대상에서 제외**. 비휘발성 FPGA 구성 비트스트림 저장·전원 켤 때 재구성 용도로 보존 | JTAG로 FPGA SRAM에만 설정한 경우 전원 OFF 시 소멸; Flash에 저장한 경우 모드 선택에 따라 부팅 가능. 공식 매뉴얼상 사용자 데이터 공간은 일부 존재하지만 본 과정에서 Flash 쓰기/포맷 실습 제외 |
 | 100 MHz Clock / Clock·Reset | 기존 Clock Wizard/Reset 구조 **공용 기반 인프라** | 사용자 주변장치로 중복 IP화하지 않음 |
 | 3개 디지털 Pmod + XADC용 Pmod | **외부 모듈 연결용 포트**; 내부 기능/센서로 간주하지 않음 | 보드 XDC, I/O 전압·전원·핀 배치 선확인 |
 | JTAG/PROG/전원 상태 LED | FPGA 설정·보드 지원 회로 | 제어 가능한 사용자 GPIO로 오인하거나 별도 주변장치 IP 대상에 넣지 않음 |
 
-### 3.2 제2부 A단계 — FND·버튼 IP 우선, LED/FND 밝기 조절 선택
+### 3.2 제2부 A단계 — 사용자 IP 3종 우선 개발
 
-| 순서 | 기능 | 범위 |
+| 순서 | 사용자 IP | 핵심 기능·재사용 경계 |
 |---|---|---|
-| **11장 (기존 착수점)** | **① FND Controller — 필수** | Basys3 내장 FND 자리 스캔·표시값·AXI4-Lite 레지스터. 선택적으로 FND 전체 밝기 제어를 내부 기능으로 추가. [Issue #3](https://github.com/Yuul-Jung/soc/issues/3) |
-| **후속(장 번호 미정)** | **② Button Controller — 필수** | BTNC(U18)는 기존 SoC Reset 고정. 방향 버튼 BTNU/BTND/BTNL/BTNR 4개에서 디바운스·Short(<5초)/Long(≥5초)·이벤트·선택적 IRQ. [Issue #5](https://github.com/Yuul-Jung/soc/issues/5) |
-| **선택 기능** | **LED PWM/ FND 밝기 옵션** | 기존 AXI GPIO의 LED ON/OFF를 재사용, LED PWM 필요 시 단일 출력 구동권 Controller에서 선택. FND PWM은 자리 스캔 Controller 내부에서 적용. 독립 AXI PWM 주변장치 제작은 필수 아님 |
-| **선택적 조합** | **기존 SoC와 FND·버튼 연계** | 기존 AXI GPIO·UART Lite·Timer·INTC·BRAM·Clock/Reset 재사용. 각 Controller는 독립 개발·시험 후 필요할 때만 별도 SoC 프로젝트에서 선택적으로 통합 |
+| **11장 (확정된 시작점)** | **① FND Controller** | Basys3 내장 4자리 FND 자리 스캔·Active-Low 세그먼트·표시값·AXI 제어. **기본 밝기 100%**, 후속 범용 PWM과 자리 슬롯 동기 연계. [Issue #3](https://github.com/Yuul-Jung/soc/issues/3) |
+| 후속(장 번호 미정) | **② PB SW Controller** | BTNC(U18)는 기존 SoC Reset 유지. BTNU/BTND/BTNL/BTNR 4개에서 2FF·디바운스·Short(<5초, 해제 시)·Long(≥5초, 임계값 도달 시) 1회 이벤트·Sticky 상태·선택 IRQ. [Issue #5](https://github.com/Yuul-Jung/soc/issues/5) |
+| 후속(장 번호 미정) | **③ General PWM Controller** | **독립·범용 PWM IP**. LED/FND 밝기·외부 모터 드라이버 속도 제어 등에서 동일한 Core 재사용. 입력 주기·Duty·극성·갱신 정책 및 다채널 확장, AXI 래퍼는 기능 범위에 맞춰 분리. FND는 Scan Slot 연동 필요 |
 
-**프로젝트 원칙:** 제1부 성공 Vivado/Vitis 프로젝트는 수정·덮어쓰기하지 않는다. FND와 버튼은 별도 RTL Controller 및 독립 TB를 먼저 작성하고, 필요 시 각각 AXI4-Lite Wrapper와 새로운 SoC 실습 프로젝트에서 CPU 연결·실물 검증을 진행한다. 기존 AXI GPIO와 PWM이 동일한 물리 LED 핀을 동시에 구동하지 않으며, 이 결정을 보드 Top이 아닌 기능 Controller에서 수행한다.
+**① FND 11장 실습의 내부 절차 분할(같은 장 안 3단계, 장 번호 변경 아님):** (a) FND RTL Scan Controller + 독립 TB → (b) AXI4-Lite Register Bank/Wrapper + IP Packager + AXI TB → (c) Vitis C 제어 + 실물 Basys3 검증 + HTML. FND 스캔·밝기 연계의 독립성을 지키되, **범용 PWM 실습을 11장의 선수조건으로 요구하지 않는다**. 11장의 기본 밝기는 100%이고, PWM 재사용/슬롯 동기는 ③ 개발 이후 통합 실습에서 검증한다.
 
-**현 단계 범위 제외:** VGA(영상 출력), PS/2 마우스·키보드(사용자 입력)는 제2부 A단계의 필수·선행 과제가 아니다. 기존 교육과정에서 제안된 '핵심 IP 4종 + LED PWM' 표현은 **이전 편성안**이며, 현 단계 필수 사용자 IP는 FND·버튼 **2종**이다. 새로운 영상 심화 과제는 아래 §3.5에 묶어서 보류한다.
+**범용 PWM과 제1부 AMD AXI Timer 차별화(정당화):** AMD [PG079](https://docs.amd.com/r/en-US/pg079-axi-timer)의 AXI Timer에는 **2개 Timer를 한 쌍으로 묶어 PWM0 한 채널을 생성**하는 모드가 있다. 따라서 단순 1채널 PWM을 또 만드는 것만으로는 독립 IP의 필요성이 약하다. 이 과정의 ③은 **모듈형 재사용, 다채널 확장, 정확한 0%/100% 처리, 주기 경계 설정 갱신, 선택 가능한 출력 극성, FND Slot 동기 입력**을 직접 검증하는 데 차별점이 있다. 사용 Vivado 2024.2 내 실제 AXI Timer IP 구성과 PG079 버전을 대조해야 하며, PG079 본문만으로 해당 제품의 0%·100% 듀티 제약 및 재설정 글리치를 확정하지 않는다. `dev-board/rtl/rtl04_pwm_led/src/pwm_core.v`는 기존 약 1kHz/256단계 PWM 예시이므로 범용화 시 주기·채널·출력 정책을 확장한다.
 
-**직렬 Flash:** Basys3 32 Mbit Quad SPI Flash는 FPGA 구성 비트스트림의 비휘발성 보존에 사용한다. 사용자 데이터용 여유 영역이 존재할 수 있으나 본 과정에서 Flash IP 제작·쓰기 실습은 제외하여 구성 이미지를 보호한다.
+**FND 밝기와 PWM 경계:** FND의 `an[3:0]`, `seg[6:0]`, `dp`는 Active-Low. 4자리 스캔 슬롯과 무관하게 프리런하는 PWM 하나로 자릿수 전체를 게이팅하면 자리별 밝기가 달라질 수 있다. FND 모드에서는 **자리 슬롯 시작에 PWM 위상 동기화**하고, 자리 전환 때 소등(Blanking) 시간을 고려한다. 모터 PWM은 FND 슬롯/LED 표시와 독립된 주기로 운용한다. **같은 Core를 사용하더라도 응용별 동기화·출력 래퍼는 구분**한다.
+
+**버튼 5초 검증 방식(Claude 제안 수용):** 1 ms Tick 분주를 TB에서 파라미터로 축소하고 4,999/5,000/5,001 Tick, 바운스·동시 입력·반복·리셋·W1C 충돌을 검증한다. 실제 100 MHz에서 1 ms는 **100,000 클록**인지 분주기 단독 검증을 추가하고, 실제 5초 길이는 Basys3에서 계측한다. 축소 TB 통과를 실제 5초 보드 검증 통과로 바꾸어 기록하지 않는다.
+
+**원본 보존·연동:** 기존 제1부 AXI GPIO/UART Lite/Timer/INTC 및 Clock/Reset은 재사용하고 기존 `/home/jung/soc/hw/soc_hw.xpr`, `/home/jung/soc/sw`와 구 41장 HTML 원본은 변경하지 않는다. 세 IP는 각각 독립 Core/TB/프로젝트로 개발하여 필요한 경우에만 새 SoC 프로젝트에서 선택적으로 통합한다. LED는 AXI GPIO와 PWM이 물리 핀을 동시에 구동하지 않게 출력 Controller에서 선택한다. 모터는 PWM 신호를 직접 연결하지 않고 L298N 등 드라이버 및 안전한 외부 전원을 사용한다.
 
 ### 3.3 제2부 B단계 — 보드에 없는 외부 주변장치 연결 (A단계 이후)
 
@@ -89,9 +92,9 @@
 
 ### 3.4 공통 구현·검증 원칙
 
-1. 현 단계 필수 사용자 IP 2종(FND·버튼)의 제어형 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**을 기준으로 하되, VGA/PS/2처럼 외부 신호 처리 방식은 특성에 맞게 설계한다. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
+1. 내부 사용자 IP 3종(FND·PB SW·범용 PWM)은 **기능 독립 Controller/Core → 독립 RTL TB → 필요할 때 AXI4-Lite Wrapper/Register Bank → 별도 MicroBlaze V SoC 연동** 순서로 개발한다. Top은 배선·인스턴스·상수 연결만 담당하고, 원본 제1부 프로젝트를 수정하지 않는다.
 2. 제1부에서 `btnC`(Center Button, FPGA 핀 U18)를 `Clocking Wizard`/`Processor System Reset`의 시스템 Reset 입력으로 사용했다. 제2부에서도 **해당 Reset 경로를 보존**하고, 버튼 이벤트 IP는 **방향 버튼 4개(BTNU/BTND/BTNL/BTNR)**만 연결한다. RESET 용도로 할당한 버튼은 동시에 일반 이벤트 입력으로 쓰지 않는다. 원본 근거: `MicroBlaze_V_SoC01_41/docs/soc01.md`, `docs/soc02.md`, `docs/soc10.md`, `code/soc10/basys3_soc10_integrated.xdc`.
-3. 모든 새 IP에 대해 `Register Map`, AXI 핸드셰이크·리셋·비트 폭, 독립 RTL TB, Vivado 합성/타이밍, Basys3 실물, 단계형 HTML을 **서로 다른 증거**로 관리한다.
+3. 새 IP는 독립 RTL TB를 필수로 검증하고, AXI 인터페이스를 추가하는 장에서는 별도 Register Map·AXI 핸드셰이크/리셋·TB 증거를 남긴다. 합성/타이밍·Basys3 실물·HTML 검증도 **서로 다른 증거**로 관리한다. PWM은 0/100%, 1주기 동기 갱신, 극성, 다채널/주기 설정을 검증한다.
 4. `dev-board/rtl/rtl08_hc595_7seg/`는 **외부 74HC595 용도**로 Basys3 내장 FND에 직접 사용할 수 없다. 단지 참고하며, 참고 원본 SHA 및 수정 이력을 남긴다.
 5. 외부 모듈은 실제 데이터시트·핀·전압·전류·전원 분리·제어 방향을 확인한 뒤 추가한다.
 6. 제2부 종료 장 수가 확정되면 제3–5부의 최초 계획 번호를 재편성하되 기존 `MicroBlaze_V_SoC01_41/` 파일명·URL·검증 프로젝트는 보존한다.
