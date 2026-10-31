@@ -46,7 +46,7 @@
 |---|---|---|
 | 4자리 7-Segment FND | **사용자 IP**: `fnd_scan_controller` + AXI4-Lite 레지스터 | AN/Segment Active-Low, 자리 스캔·표시 데이터 반영 타이밍 |
 | 16 Switch / 16 LED | **기존 AXI GPIO 재사용**; 필요 시 LED 패턴/상태 Controller만 추가 | 기존 제1부 GPIO를 중복 재제작하지 않음 |
-| 5 Pushbutton (BTNC는 기존 Reset) | **신규 사용자 IP는 BTNU/BTND/BTNL/BTNR 4개만** 2FF 동기화·디바운스·이벤트·IRQ + AXI 레지스터에 연결 | **BTNC(U18)는 제1부 01·02·10장 SoC Reset 용도로 유지**; 비동기 입력·동시 입력·리셋·이벤트 유실 확인 |
+| 5 Pushbutton (BTNC는 기존 Reset) | **BTNU/BTND/BTNL/BTNR 방향 버튼 4개**: 2FF 동기화·디바운스·Short/Long(5초 이상) 이벤트·IRQ + AXI 레지스터 | **BTNC(U18)는 제1부 SoC Reset 용도로 유지**. 버튼별 독립 타이머·5초 경계·중복 이벤트·동시 입력·리셋·이벤트 유실 검증 |
 | LED 밝기·패턴 | **사용자 IP**: PWM Controller + AXI 제어; 출력은 내장 LED | 듀티 0/100%, 주기·업데이트 경계; 외부 LED 불필요 |
 | USB-UART Bridge | **기존 AXI UART Lite 재사용**; 명령/상태 Controller 또는 C 응용 추가 | USB-UART 브리지 자체를 FPGA에서 재구현하지 않음 |
 | 12-bit VGA 출력 | **사용자 IP**: 동기신호/픽셀 타이밍·패턴/문자 출력 + AXI 제어 | 모니터는 표시 확인 장치; FPGA 타이밍·자원 검증 |
@@ -63,7 +63,7 @@
 |---|---|---|
 | **11장 (확정된 시작점)** | 4자리 FND Controller + AXI4-Lite IP | CPU Register Map → FND 스캔 및 숫자 표시 |
 | 후속 A1 | Switch/LED GPIO 통합·레지스터 읽기/쓰기 | 제1부 AXI GPIO 재사용, FND와 값 연계 |
-| 후속 A2 | 방향 버튼 4개 디바운스·이벤트·인터럽트 IP | BTNU/BTND/BTNL/BTNR → Event → CPU ISR/FND. **BTNC는 SoC Reset으로 유지** |
+| 후속 A2 | 방향 버튼 4개 Short/Long(≥5초)·디바운스·이벤트·인터럽트 IP | BTNU/BTND/BTNL/BTNR → Debounce → Press Timer → Short/Long Event → AXI/IRQ → CPU/FND. **BTNC는 Reset 유지** |
 | 후속 A3 | 내장 LED PWM·패턴 IP | CPU Duty/Mode → LED 밝기·패턴 |
 | 후속 A4 | USB-UART 기반 원격 제어 | 기존 AXI UART Lite → 명령 → FND/LED/버튼 상태 |
 | 후속 A5 | VGA 타이밍·화면 출력 IP | RGB/HS/VS 검증 후 패턴·문자 출력 |
@@ -72,6 +72,15 @@
 | 후속 A8 | FPGA 내부 XADC 모니터 IP | 온칩 온도/전압 → C 읽기 → FND/VGA |
 | 후속 A9 (선택) | SPI Flash 읽기·검증 | 기존 구성 데이터 보호를 최우선으로 적용 |
 | 후속 A10 | **Basys3 내장 장치 통합 SoC** | GPIO/FND/PWM/UART/VGA/HID/모니터 중 선택 통합, 자원·타이밍 검증 |
+
+**방향 버튼 4개 공통 사용자 IP 동작 제안(2026-10-31):**
+
+- **Short Press(쇼트 프레스, 짧게 누르기):** 디바운스된 버튼 누름부터 해제까지 **5,000 ms 미만**인 경우, 안정적인 **해제 시점**에 버튼별 `short_event`를 한 클록 펄스로 1회 생성한다.
+- **Long Press(롱 프레스, 길게 누르기):** 디바운스된 누름을 **5,000 ms 이상 연속 유지**하면, 임계값에 도달한 시점에 버튼별 `long_event`를 한 클록 펄스로 **1회만** 생성한다. 이후 해제 시 Short 이벤트를 만들지 않고 Long 이벤트도 반복 생성하지 않는다.
+- 기존 중앙 `BTNC(U18)`는 **시스템 Reset 전용**이다. 방향 버튼 `BTNU / BTND / BTNL / BTNR`별로 **독립 동기화·디바운스·누름 시간 계측**을 수행하여 다중 동시 누름을 처리한다.
+- 동일한 100 MHz 시스템 클록에서 **1 ms Clock Enable(클록 인에이블, 동작 허가 펄스)**을 만들고 5,000 ms 포화 카운터 등으로 구현한다. 별도 비동기/분주 클록을 불필요하게 생성하지 않는다. `DEBOUNCE_MS`(예: 20 ms)와 `LONG_PRESS_MS`(기본값 5000 ms)는 Parameter(파라미터, 설계 설정값)로 설계한다.
+- AXI4-Lite를 통한 버튼별 Short/Long 이벤트 **보존 상태 비트(Sticky Bit)** 및 선택적 IRQ를 제공하되, 동시 이벤트/상태 클리어 충돌에서는 **신규 이벤트 기록 우선**으로 데이터 유실을 방지한다. 장시간 폴링할 때 여러 번 발생한 같은 이벤트의 개수까지 보존할지는 필요 조건에 따라 이벤트 카운터/FIFO(선입선출 버퍼)로 확장한다.
+- TB는 4,999 ms / 5,000 ms / 5,001 ms, 디바운스 경계·바운스·Reset 중 누름·동시 4개 누름·장시간 홀드·해제 중복·읽기/클리어 충돌·AXI 핸드셰이크를 각각 검증한다. **현재는 설계 요구사항이며 RTL 시뮬레이션·보드 검증 결과가 아니다.**
 
 개별 실습은 교수·실습 분량과 검증 Gate에 맞춰 분리/통합한다. **A1–A10은 순서 표기일 뿐 확정 장 번호가 아니다.** 제1부에서 이미 학습한 GPIO/UART/Timer를 이해 없이 그대로 반복하는 장은 만들지 않는다.
 
