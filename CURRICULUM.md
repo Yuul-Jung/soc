@@ -34,24 +34,69 @@
 
 실제 페이지 경로는 `MicroBlaze_V_SoC01_41/pages/soc/` 아래이며, 07–10장에는 일부 `_1_` 형식의 C 코드 해설 보조 페이지가 있다. `part01/index.html`은 현재 이 원본으로 연결한다. 페이지의 '완료' 배지는 **사이트 표기**이며 본 문서가 하드웨어 전수 검증을 새로 확인했다는 뜻은 아니다.
 
-## 3. 제2부 — 실시간 주변장치 / 사용자 AXI IP (11장부터, 장 수 미확정)
+## 3. 제2부 — Basys3 내장 입출력 IP화 → 외부 주변장치 확장 (11장부터, 장 수 미확정)
 
-| 장 | 프로젝트 | 기존 dev-board 참고 | 검증의 핵심 |
+> **2026-10-31 사용자 최신 결정:** Basys3에 이미 장착된 입출력 장치를 최대한 활용하여 재사용 가능한 SoC IP로 구성한 후, **보드에 없는 기능만 외부 모듈**로 연결한다. 제1부 01–10장의 AMD IP/SoC 성과를 반복 제작하지 않고 이어받는다. 11장 FND AXI IP 착수 계획은 유지한다([Issue #3](https://github.com/Yuul-Jung/soc/issues/3)).
+
+### 3.1 내장 자원 목록과 구현 경계
+
+공식 기준: [AMD Digilent Basys3 Board](https://www.amd.com/ko/corporate/university-program/aup-boards/digilent-basys3.html), [Digilent Basys3 rev.C Reference Manual](https://www.amd.com/content/dam/amd/en/documents/university/aup-boards/XUPBasys3/documentation/Basys3_rm_8_22_2014.pdf). 대상은 실제 Basys3 XC7A35T이며, 해당 보드 회로·마스터 XDC를 대조한다.
+
+| 내장 자원 | 구성 방향 | 중복·제약 및 검증 |
+|---|---|---|
+| 4자리 7-Segment FND | **사용자 IP**: `fnd_scan_controller` + AXI4-Lite 레지스터 | AN/Segment Active-Low, 자리 스캔·표시 데이터 반영 타이밍 |
+| 16 Switch / 16 LED | **기존 AXI GPIO 재사용**; 필요 시 LED 패턴/상태 Controller만 추가 | 기존 제1부 GPIO를 중복 재제작하지 않음 |
+| 5 Pushbutton | **사용자 IP**: 2FF 동기화·디바운스·이벤트·IRQ + AXI 레지스터 | 비동기 입력, 짧은 펄스·동시 입력·Reset |
+| LED 밝기·패턴 | **사용자 IP**: PWM Controller + AXI 제어; 출력은 내장 LED | 듀티 0/100%, 주기·업데이트 경계; 외부 LED 불필요 |
+| USB-UART Bridge | **기존 AXI UART Lite 재사용**; 명령/상태 Controller 또는 C 응용 추가 | USB-UART 브리지 자체를 FPGA에서 재구현하지 않음 |
+| 12-bit VGA 출력 | **사용자 IP**: 동기신호/픽셀 타이밍·패턴/문자 출력 + AXI 제어 | 모니터는 표시 확인 장치; FPGA 타이밍·자원 검증 |
+| USB Type-A 키보드·마우스 | **사용자 PS/2 수신·해독 IP** (보드 PIC24가 USB HID를 PS/2 호환 CLK/DAT로 변환) | FPGA에 USB Host 컨트롤러를 새로 만드는 것이 아님; 키보드/마우스 하나씩 실습, PIC 인터페이스·풀업 확인 |
+| FPGA 내부 XADC | AMD XADC Wizard 등 **기존 IP 활용**, 내부 온도·전압 모니터링 | 내장 조도·온습도 센서가 있는 것은 아님; 외부 아날로그 입력은 후속 실습 |
+| 32 Mbit 직렬 Flash | **선택·심화**: 공식 지원 SPI/Flash 접근 IP 확인 | FPGA 부트/설정 이미지 보호, 메모리 소유권·구성 핀·쓰기 위험 검토 |
+| 100 MHz Clock / Clock·Reset | 기존 Clock Wizard/Reset 구조 **공용 기반 인프라** | 사용자 주변장치로 중복 IP화하지 않음 |
+| 3개 디지털 Pmod + XADC용 Pmod | **외부 모듈 연결용 포트**; 내부 기능/센서로 간주하지 않음 | 보드 XDC, I/O 전압·전원·핀 배치 선확인 |
+| JTAG/PROG/전원 상태 LED | FPGA 설정·보드 지원 회로 | 제어 가능한 사용자 GPIO로 오인하거나 별도 주변장치 IP 대상에 넣지 않음 |
+
+### 3.2 제2부 A단계 — 보드만으로 수행하는 SoC 실습 (우선)
+
+| 권장 순서 | 핵심 과제 | 연결 및 시험 |
+|---|---|---|
+| **11장 (확정된 시작점)** | 4자리 FND Controller + AXI4-Lite IP | CPU Register Map → FND 스캔 및 숫자 표시 |
+| 후속 A1 | Switch/LED GPIO 통합·레지스터 읽기/쓰기 | 제1부 AXI GPIO 재사용, FND와 값 연계 |
+| 후속 A2 | 버튼 디바운스·이벤트·인터럽트 IP | 버튼 → Event → CPU ISR/FND |
+| 후속 A3 | 내장 LED PWM·패턴 IP | CPU Duty/Mode → LED 밝기·패턴 |
+| 후속 A4 | USB-UART 기반 원격 제어 | 기존 AXI UART Lite → 명령 → FND/LED/버튼 상태 |
+| 후속 A5 | VGA 타이밍·화면 출력 IP | RGB/HS/VS 검증 후 패턴·문자 출력 |
+| 후속 A6 | 키보드 입력 IP | 온보드 PIC24 PS/2 변환 → 수신·키코드 → 이벤트 |
+| 후속 A7 | 마우스 입력 IP | 동일한 PS/2 경로 → 좌표/버튼 → VGA 표시 |
+| 후속 A8 | FPGA 내부 XADC 모니터 IP | 온칩 온도/전압 → C 읽기 → FND/VGA |
+| 후속 A9 (선택) | SPI Flash 읽기·검증 | 기존 구성 데이터 보호를 최우선으로 적용 |
+| 후속 A10 | **Basys3 내장 장치 통합 SoC** | GPIO/FND/PWM/UART/VGA/HID/모니터 중 선택 통합, 자원·타이밍 검증 |
+
+개별 실습은 교수·실습 분량과 검증 Gate에 맞춰 분리/통합한다. **A1–A10은 순서 표기일 뿐 확정 장 번호가 아니다.** 제1부에서 이미 학습한 GPIO/UART/Timer를 이해 없이 그대로 반복하는 장은 만들지 않는다.
+
+### 3.3 제2부 B단계 — 보드에 없는 외부 주변장치 연결 (A단계 이후)
+
+| 권장 순서 | 외부 모듈 / 실습 | 기술 및 안전 기준 | `dev-board` 후보 |
 |---|---|---|---|
-| 11 | Basys3 4자리 FND 사용자 AXI IP | `atlas/`, `rtl/rtl08_hc595_7seg/`(개념만) | 내장 FND 전용 자리 스캔, Active-Low 핀, 레지스터 |
-| 12 | 버튼 입력·디바운스·이벤트 IP | `rtl01_button_led/`, `rtl02_rgb_buttons/` | 2FF 동기화·바운스·리셋·동시 입력 |
-| 13 | 하드웨어 PWM 출력 IP | `rtl04_pwm_led/` | 0/100% 듀티·주기 경계·지터·갱신 시점 |
-| 14 | HC-SR04 초음파 거리 측정 | `rtl11_ultrasonic_event/` | Trigger/Echo, Timeout, 5V 입력 보호 |
-| 15 | SG90 서보 제어 | `rtl23_servo_pulse/` | 펄스 폭·프레임 주기·전원 분리 |
-| 16 | L298N DC 모터 제어 | `rtl22_dc_motor/` | 방향 전환 보호·PWM·외부 전원 |
-| 17 | 조도·ADC 측정 | `rtl05_xadc_pwm/` | XADC/외부 ADC 경로 선택·입력 범위 |
-| 18 | DHT 계열 온습도 센서 | `rtl12_dht22_alarm/` | 단일선 타이밍·체크섬·타임아웃 |
-| 19 | UART형 BLE 제어 | `rtl26_bt_command/` | 기존 AXI UART Lite 재사용·명령/응답 |
-| 20 | 실시간 주변장치 통합 SoC | `rtl29_integration/`, `rtl30_event_fifo/`, `rtl32_capstone_control/` | 이벤트 누락·CPU/RTL 역할 구분·실물 |
+| B1 | Pmod 연결·3.3 V I/O·레벨 변환 | 핀맵·공통 GND·전원·입력 보호 | `atlas/` (참고) |
+| B2 | HC-SR04 초음파 | Trigger/Echo, timeout, Echo 5 V 레벨 변환 | `rtl/rtl11_ultrasonic_event/` |
+| B3 | SG90 서보 | 펄스 타이밍, 외부 전원·공통 GND | `rtl/rtl23_servo_pulse/` |
+| B4 | L298N DC 모터 | PWM·방향/데드타임 보호·외부 전원 | `rtl/rtl22_dc_motor/` |
+| B5 | 조도센서 및 ADC | 외부 센서 → XADC 입력 한계·ADC 선택 | `rtl/rtl05_xadc_pwm/` |
+| B6 | DHT 계열 온습도 | 1-wire 타이밍·체크섬·timeout | `rtl/rtl12_dht22_alarm/` |
+| B7 | UART형 BLE | 기존 AXI UART Lite 재사용·명령 응답 | `rtl/rtl26_bt_command/` |
+| B8 | **외부 센서·구동기 통합 SoC** | Event FIFO, CPU/RTL 역할·자원·실물 안전 | `rtl/rtl29_integration/`, `rtl/rtl30_event_fifo/`, `rtl/rtl32_capstone_control/` |
 
-**진행 순서:** 11장 Basys3 내장 FND AXI IP부터 시작한다([작업 Issue #3](https://github.com/Yuul-Jung/soc/issues/3)). 아래 11–20은 초기 실습 후보 목록이며, 11장의 IP 생성·레지스터·C 제어·시험이 과도하게 압축되거나 다른 선수학습이 필요하면 적절한 장 경계로 확장한다. 새 장 번호와 종합실습 위치는 실제 작업 계획 확정 후 정한다.
+새로 필요한 사용자 IP는 **정밀 시간 제어·이벤트 처리·표시 처리·다중 동작 병렬화**에 집중한다. I2C/SPI/일반 GPIO/UART와 같은 공통 주변장치 기능은 AMD 지원 IP·필요 시 외부 MCU 중계 활용을 먼저 검토하고 중복 RTL 구현을 필수화하지 않는다.
 
-**중요:** `rtl08_hc595_7seg`는 외부 74HC595용이며 Basys3 내장 FND에 직접 사용하는 소스가 아니다. AMD가 제공하는 GPIO/UART/Timer/IIC/SPI 등을 기능적으로 중복 재구현하지 않는다. 사용자 IP는 정밀 타이밍·특수 기능·병렬 처리에 집중한다.
+### 3.4 공통 구현·검증 원칙
+
+1. 실제 설계 구조는 **MicroBlaze V → AMD AXI 인프라 → 사용자 AXI4-Lite Wrapper/Register Bank → 재사용 가능한 독립 Controller → 보드 핀**. Top은 배선/인스턴스/상수 연결 중심으로 유지한다.
+2. 모든 새 IP에 대해 `Register Map`, AXI 핸드셰이크·리셋·비트 폭, 독립 RTL TB, Vivado 합성/타이밍, Basys3 실물, 단계형 HTML을 **서로 다른 증거**로 관리한다.
+3. `dev-board/rtl/rtl08_hc595_7seg/`는 **외부 74HC595 용도**로 Basys3 내장 FND에 직접 사용할 수 없다. 단지 참고하며, 참고 원본 SHA 및 수정 이력을 남긴다.
+4. 외부 모듈은 실제 데이터시트·핀·전압·전류·전원 분리·제어 방향을 확인한 뒤 추가한다.
+5. 제2부 종료 장 수가 확정되면 제3–5부의 최초 계획 번호를 재편성하되 기존 `MicroBlaze_V_SoC01_41/` 파일명·URL·검증 프로젝트는 보존한다.
 
 ## 4. 제3부 — 하드웨어 가속 / NPU (21–30, 설계안)
 
