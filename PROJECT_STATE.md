@@ -87,17 +87,21 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 > 아래 커밋은 **조회 당시 스냅샷**이며 고정 HEAD 값이 아니다. 이 파일 자체도 계속 수정되므로 매 재개 시 GitHub 최신 `main`을 다시 조회해야 한다.
 > 확인 기준: `soc/main` **`c75d81ae4111b40f52e0c3fb511a996afbeae6c8` (이번 갱신 직전)**, `dev-board/main` **`40adda4a08c44603d6345810891c10165db01bd3`**.
 
-### 7.1 현재 진행 위치 및 재개 방법
+### 7.1 현재 진행 위치 및 재개 방법 (2026-10-31 최신 반영)
 
-| 필드 | 기준 시점 확인 사항 |
+> **재개 출발점:** 반드시 저장소 최신 `main` HEAD를 재조회한 뒤 [CURRICULUM.md §3.2](CURRICULUM.md), [VALIDATION.md](VALIDATION.md), [Issue #3](https://github.com/Yuul-Jung/soc/issues/3)·[Issue #4](https://github.com/Yuul-Jung/soc/issues/4)·[Issue #5](https://github.com/Yuul-Jung/soc/issues/5)를 대조한다. 아래는 재개 절차의 현재 결정 사항이며, 문서 작성 당시 커밋을 현재 HEAD로 고정하지 않는다.
+
+| 필드 | 현재 판정·다음 조치 |
 |---|---|
-| 프로젝트 | 5부/총 50장 신규 편성안, 기존 41장 교재 보존 |
-| 현재 공통 관리 작업 | GitHub 단일 기억 운영 정비·Claude 독립 검토 인계 ([Issue #2](https://github.com/Yuul-Jung/soc/issues/2)) |
-| 구현 기준 상태 | 제1부 기존 01–10장 페이지 유지/검증 추가 필요, 제2–5부 신규 실습은 설계안; 실제 PASS는 [VALIDATION.md](VALIDATION.md) 근거만 인정 |
-| 우선 작업 후보 | P0 제1부 원본/링크 안정화 및 07–10 변경 브랜치 검토 → P1 제2부 FND·버튼 중심, PWM 옵션, 이후 외부 확장; 카메라·VGA·마우스 후속 심화 |
-| 현재 할당된 단일 구현 작업 | **미지정**. 작업 파일·담당자·기준 커밋·검증 Gate를 정한 뒤 착수 |
-| ChatGPT/Claude 인계 | Issue #2 문서 전달 완료, 사용자 전달 Claude 피드백 수신; Claude가 GitHub에 독립 리뷰를 게시했는지는 별도 확인 |
-| 다음 조치 | 두 브랜치의 원본 보존·병합 여부 판단, 재개 실험, 필요한 경우 Issue #2에 독립 검토 결과 기록 |
+| 프로젝트 | **5부 체계**, 부별 장 수 유동적. 제1부 01–10장·기존 41장 교재와 성공 프로젝트 보존 |
+| 제2부 내부 사용자 IP **3종** | **① FND Controller ② PB SW Controller(방향 버튼 4개 Short/Long ≥5초) ③ 범용 PWM Controller**. 기존 AXI GPIO/UART/Timer/INTC·Clock/Reset은 재사용. VGA·PS/2는 카메라 연계 후속 심화 |
+| 구현 기준 상태 | **제2부 3종은 설계·검토 단계**. RTL·AXI·합성/타이밍·실물·웹 PASS는 증거 확인 전 **미확인**. [VALIDATION.md](VALIDATION.md) 게이트 적용 |
+| **다음 구현 후보** | **11-A FND RTL Scan Controller + 독립 TB** → 11-B AXI Wrapper/IP Packager + TB → 11-C Vitis C + Basys3 실물 + HTML. 11장 번호 유지. 이 후보의 실제 착수·담당 AI·브랜치·기준 커밋·완료 Gate는 **사용자 확인 후 지정** |
+| **단일 구현 작업 할당** | **미지정(착수 승인 대기)**. 다음 구현 후보를 명확히 기록한 것이므로 '무엇을 해야 하는지 미정'이라는 뜻이 아니다. 작업 등록 후 이 항목에 담당·파일·커밋·검증 Gate를 기재 |
+| Claude 독립 검토 게시 확인 | [Issue #2 댓글 6543718040](https://github.com/Yuul-Jung/soc/issues/2#issuecomment-6543718040), [Issue #3 댓글 6544578500](https://github.com/Yuul-Jung/soc/issues/3#issuecomment-6544578500), [Issue #4 1차 6544578154](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544578154) 및 [2차 6544700455](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455), [Issue #5 댓글 6544578358](https://github.com/Yuul-Jung/soc/issues/5#issuecomment-6544578358). **GitHub 댓글 존재 확인**, 시뮬레이션/실물 검증은 미실시 |
+| 공통 관리상 미해결 | P1-1 **단일 작업 재개/새 대화 복원 시험** (부분 해소, 담당·Gate 확정 대기), P1-2 **미병합 브랜치 처리** 미결정. §7.2는 이전 기준 SHA의 **이력 비교 수치**이므로 최신 대비 차이는 다시 조회할 것 |
+| PWM 비교 실험 | Claude [Issue #4 2차 제안](https://github.com/Yuul-Jung/soc/issues/4#issuecomment-6544700455) M1–M7 및 SW/AXI Timer/RTL 3단 대비는 **제안·사용자 선택 대기**. 현 단계 필수 개발·검증 Gate로 자동 편입하지 않는다 |
+| 다음 조치 | 11-A 작업 등록 여부 사용자 결정 → 작업 담당·기준 SHA·검증 Gate 지정; Claude 2차 검토의 문서 정정 재확인; 미병합 브랜치 검토·새 대화 복원 시험은 별도 추적 |
 | 최종 승인 | 사용자 판단 전 미완료 |
 
 ### 7.2 병합되지 않은 작업 브랜치 후보
@@ -119,7 +123,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **P1-2:** 위 두 미병합 후보를 식별했지만 처리 결정·작업 증거 확인은 미완료. 브랜치별 채택/보류/폐기 근거가 기록될 때까지 **대화/프로젝트 삭제 보류**.
 - 역할: AMD 공식 문서·실험 증거 대조는 **ChatGPT와 Claude가 모두 독립적으로 수행**한다.
 - 매시간 정기 보고: **ChatGPT 00 상황실 단독**. Claude는 요청 시만 검토·보고한다.
-- **Issue #2 원문은 ChatGPT가 GitHub에서 조회 완료**. Claude의 원문 직접 조회와 댓글 작성은 별도 작업이며 확인 전 '완료'로 쓰지 않는다.
+- **Issue #2 Claude 직접 검토/댓글 게시 확인:** [댓글 6543718040](https://github.com/Yuul-Jung/soc/issues/2#issuecomment-6543718040) — GitHub 원문 존재 확인. 이는 **정적 검토 결과**이고 실제 동작/검증 PASS가 아니다.
 
 **새 대화 복원 시험 체크:** 최신 `main` 조회 → 위 5개 기준 문서와 Issue #2 확인 → 두 브랜치/미해결 P1/담당 작업 및 근거 제시 → 필요한 로컬/별도 백업 접근 확인 → 사용자가 정상 재개를 승인한 뒤 삭제 허용.
 
@@ -135,7 +139,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **현 상태:** Issue 등록과 교육과정 변경만 완료. RTL 시뮬레이션·AXI·합성/타이밍·실물 보드·웹 검증 **모두 미확인**. Claude의 담당 수락/독립 리뷰도 미확인.
 - **관련 미해결:** Issue #2의 P1-1/2, `docs/soc07-10-guided-revision-20261027` 및 `soc08-procedure-20261027` 미병합 브랜치, 새 대화 복원 시험은 계속 추적한다. 이 항목들을 해결했다고 기록하지 않는다.
 
-## 10. 제2부 4개 핵심 사용자 IP + LED PWM 선택 기능 → 외부 확장 (2026-10-31 개정)
+## 10. [이력: 대체됨 → §16] 제2부 4개 핵심 사용자 IP + LED PWM 선택 기능 → 외부 확장 (2026-10-31 개정)
 
 - **단일 기준:** [CURRICULUM.md §3](CURRICULUM.md)의 2026-10-31 재편성. 5부 체계 유지, 제2부 장 수 고정 금지, 11장 FND부터 시작.
 - **A단계 (핵심 사용자 IP 4종 + LED 선택 기능):** ① FND Controller(11장 시작), ② BTNC Reset 보존 + 4방향 버튼 Short(<5s)/Long(≥5s) Controller, ③ VGA Controller, ④ USB HID→보드 PIC24→PS/2 키보드/마우스 공통 Input Controller. **LED PWM은 기존 AXI GPIO LED ON/OFF의 선택적 밝기 조절 기능**이며 독립 AXI PWM IP 패키징은 필수가 아니다. 키보드/마우스는 한 번에 하나만 연결한다.
@@ -162,7 +166,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **증거 상태:** 요구사항만 문서화. RTL 구현·TB PASS·합성/타이밍·Basys3 보드 실험·웹 배포는 **미실시/미확인**.
 - **정본:** [CURRICULUM.md §3](CURRICULUM.md). 11장 FND 시작 작업과 본 버튼 IP 후속 순서는 유지하며 아직 신규 장 번호 확정 없음.
 
-## 13. 제2부 내장 사용자 IP 5개 범위 확정 및 구성 Flash 처리 (2026-10-31)
+## 13. [이력: 대체됨 → §16] 제2부 내장 사용자 IP 5개 범위 확정 및 구성 Flash 처리 (2026-10-31)
 
 - **최신 사용자 구분:** 내장 기능 주제는 FND, 방향버튼(Short/Long 1종), LED PWM 선택 기능, VGA, 키보드·마우스 공통 PS/2로 5개이나 **독립 핵심 사용자 IP는 4개**이다. PWM은 LED 점등에 부가되는 선택 기능이며 별도 AXI PWM IP로 의무 제작하지 않는다. 기존 AMD IP는 재사용하며 내장 XADC 모니터/Flash/Switch·LED GPIO/UART는 별도 사용자 IP로 만들지 않는다.
 - **USB 입력 주의:** Basys3 PIC24가 USB 키보드 또는 마우스를 PS/2로 변환하며 USB 허브는 미지원. 하나의 PS/2 Input IP 내에 공통 수신 및 장치별 디코더를 둔다. 두 장치 동시 연결을 목표로 하지 않는다.
@@ -170,7 +174,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **정본:** [CURRICULUM.md §3](CURRICULUM.md) 커밋 `62df7923a920cb489f24ddc0bbd7d6f3297c3c75`를 출발 기준으로 사용하며 매 재개 시 HEAD 재조회.
 - **이후 단계:** 11장 FND Issue #3 → 버튼 Issue #5 → VGA → PS/2, 필요 시 LED PWM 옵션 → 기존 AMD IP들과 통합 → B단계 외부 모듈; 실물/RTL/AXI/합성/웹 검증은 새 범위에 대해 아직 미실시.
 
-## 14. LED PWM은 독립 AXI IP가 아닌 GPIO LED 선택 기능 (2026-10-31 최신 결정)
+## 14. [이력: 대체됨 → §16] LED PWM은 독립 AXI IP가 아닌 GPIO LED 선택 기능 (2026-10-31 최신 결정)
 
 - **사용자 설계 구분:** PWM은 제1부 LED 점등(AXI GPIO)의 선택적 **밝기 제어 옵션**이다. 새로운 독립 AXI PWM Peripheral 제작은 필수 아님. 기존 5개 실습 기능 주제 가운데 PWM이 이 옵션에 해당하여 독립 핵심 사용자 IP는 FND, Button, VGA, PS/2의 4개.
 - **기본:** 기존 AXI GPIO의 LED On/Off 경로 유지. **선택:** RTL `pwm_core`를 별도 독립 실습 프로젝트에서 시험, PWM 모드가 필요할 때에만 최종 LED 출력 경로에 추가. CPU에서 Duty를 지정해야 한다면 레지스터 제어 경로를 별도로 검증한다.
@@ -178,7 +182,7 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **원본 보존:** 제1부 성공 프로젝트와 원본 Top/XDC는 손대지 않고 별도 실습 프로젝트를 생성한다. PWM 미사용 프로젝트에 PWM 회로/IP를 의무 포함하지 않는다.
 - **검증 상태:** 결정/문서만 갱신. 신규 SoC 통합·RTL·합성·실물 시험 모두 미확인.
 
-## 15. 현 단계 FND·버튼 집중 및 카메라·VGA·마우스 영상 심화 후속 이관 (2026-10-31)
+## 15. [이력: 대체됨 → §16] 현 단계 FND·버튼 집중 및 카메라·VGA·마우스 영상 심화 후속 이관 (2026-10-31)
 
 - **사용자 결정:** VGA와 키보드·마우스 PS/2를 **지금 제2부 필수 실습에서 제외**한다. 이후 사용자 제안에 따라 **카메라 영상 입력과 VGA 출력 및 마우스 제어를 같은 후속 영상 입출력/사용자 인터페이스 학습 단계에서 다루는 구성**으로 정리한다. 이는 같은 난이도를 뜻하지 않으며, 제3·4부 중 어느 장에 배치할지는 추가 검토 후 결정한다.
 - **현재 필수 사용자 AXI IP 2종:** Basys3 4자리 **FND Controller**([Issue #3](https://github.com/Yuul-Jung/soc/issues/3)), BTNC Reset 보존 + 4방향 버튼 **Short/Long(5초 이상) Button Controller**([Issue #5](https://github.com/Yuul-Jung/soc/issues/5)). **LED PWM과 FND 전체 밝기는 선택 기능**이며 독립 AXI PWM 주변장치 패키징은 필수가 아니다.
@@ -196,4 +200,4 @@ P0/P1 문제와 재현 방법 / 수정 또는 보류:
 - **FND PWM 위험 관리:** 자리 스캔과 무관한 PWM 신호를 AN에 게이팅하면 밝기 불균일 위험. 자리 슬롯 시작에 PWM 위상 동기화, 슬롯 소등·전환 처리. 기본 FND 밝기 100%; 후속 범용 PWM 개발과 통합 단계에서 밝기 연계. FND 기본 표시를 PWM의 선수학습에 묶지 않음.
 - **11장 분할 결정:** 장 번호는 **11장 그대로 보존**, 내부 절차만 `A: FND RTL+TB` → `B: AXI Wrapper/IP Packager+Register Map/TB` → `C: Vitis C+실물 보드+HTML` 세 묶음으로 분할한다. 공통 AXI Wrapper 템플릿은 버튼·PWM에서 재사용하는 설계 후보이며 구현/검증은 미실시.
 - **버튼 5초 축소 TB 채택:** 1 ms Tick 생성을 파라미터로 축소해 4,999/5,000/5,001 Tick과 동시 입력/리셋/W1C 등을 검증, `100 MHz / 100,000 = 1ms` 생성 정확성 별도 TB, 실제 5초는 Basys3에서 별도 계측. 축소 TB PASS를 실측 5초 PASS라고 보고하지 않는다.
-- **보존·검증:** 제1부 기존 `/home/jung/soc/hw/soc_hw.xpr`, `/home/jung/soc/sw`와 HTML 원본은 수정하지 않는다. FND/버튼/PWM 각 독립 프로젝트 구현·RTL/AXI 테스트·합성/타이밍·실물 보드·웹 배포는 **아직 미확인**. Claude 리뷰의 **조건부** 상태는 교차 검토 의견이며 보드 PASS나 독립 구현 PASS가 아니다.
+- **보존·검증:** 제1부 기존 `~/soc/hw/soc_hw.xpr`, `~/soc/sw`와 HTML 원본은 수정하지 않는다. FND/버튼/PWM 각 독립 프로젝트 구현·RTL/AXI 테스트·합성/타이밍·실물 보드·웹 배포는 **아직 미확인**. Claude 리뷰의 **조건부** 상태는 교차 검토 의견이며 보드 PASS나 독립 구현 PASS가 아니다.
