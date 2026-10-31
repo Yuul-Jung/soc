@@ -73,7 +73,7 @@
 
 **버튼 5초 검증 방식(Claude 제안 수용):** 1 ms Tick 분주를 TB에서 파라미터로 축소하고 4,999/5,000/5,001 Tick, 바운스·동시 입력·반복·리셋·W1C 충돌을 검증한다. 실제 100 MHz에서 1 ms는 **100,000 클록**인지 분주기 단독 검증을 추가하고, 실제 5초 길이는 Basys3에서 계측한다. 축소 TB 통과를 실제 5초 보드 검증 통과로 바꾸어 기록하지 않는다.
 
-**원본 보존·연동:** 기존 제1부 AXI GPIO/UART Lite/Timer/INTC 및 Clock/Reset은 재사용하고 기존 `/home/jung/soc/hw/soc_hw.xpr`, `/home/jung/soc/sw`와 구 41장 HTML 원본은 변경하지 않는다. 세 IP는 각각 독립 Core/TB/프로젝트로 개발하여 필요한 경우에만 새 SoC 프로젝트에서 선택적으로 통합한다. LED는 AXI GPIO와 PWM이 물리 핀을 동시에 구동하지 않게 출력 Controller에서 선택한다. 모터는 PWM 신호를 직접 연결하지 않고 L298N 등 드라이버 및 안전한 외부 전원을 사용한다.
+**원본 보존·연동:** 기존 제1부 AXI GPIO/UART Lite/Timer/INTC 및 Clock/Reset은 재사용하고 기존 `~/soc/hw/soc_hw.xpr`, `~/soc/sw`와 구 41장 HTML 원본은 변경하지 않는다. 세 IP는 각각 독립 Core/TB/프로젝트로 개발하여 필요한 경우에만 새 SoC 프로젝트에서 선택적으로 통합한다. LED는 AXI GPIO와 PWM이 물리 핀을 동시에 구동하지 않게 출력 Controller에서 선택한다. 모터는 PWM 신호를 직접 연결하지 않고 L298N 등 드라이버 및 안전한 외부 전원을 사용한다.
 
 ### 3.3 제2부 B단계 — 보드에 없는 외부 주변장치 연결 (A단계 이후)
 
